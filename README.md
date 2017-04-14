@@ -1,1 +1,1 @@
-NEON-utilities is a repository hosting packages and code for basic data handling for NEON data.
+NEON-utilities is a repository hosting packages and code for basic data handling for NEON data. It is currently a private repository internal to the NEON project; we expect to turn it public in the future.
