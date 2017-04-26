@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 
 # ******* IMPORTANT ********: Due to file names, this script should currently only be used with litterfall files.
-# This code is designed to be run from the command line: python unzipNEONdownload_27.py <zip file path>
+# This code is designed to be run from the command line: python neon-data-stacker.py <zip file path>
 # It unzips a single NEON dowload file in a new target directory, next to the zip file.
 # Duplicate files from different sub-zip folders will be ignored
 
