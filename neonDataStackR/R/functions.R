@@ -107,6 +107,7 @@ stackfiles <- function(tables, outpath){
 #'
 #' @param filepath The location of the zip file
 #' @return All files are unzipped and one file for each table type is created and written.
+#' @export
 stackByTable <- function(location.package){
   location.data <- substr(location.package, 1, nchar(location.package)-4)
   unzip.zipfile(inpath = location.package, outpath = location.data, level = "all")
