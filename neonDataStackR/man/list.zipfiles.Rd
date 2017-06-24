@@ -11,7 +11,7 @@ list.zipfiles(filepath)
 \item{filepath}{The path to a zip file}
 }
 \value{
-An array any zip files contained within the focal zip file
+An array of all zip files contained within the focal zip file
 }
 \description{
 Given the data frame of all the files within the top level zip file,

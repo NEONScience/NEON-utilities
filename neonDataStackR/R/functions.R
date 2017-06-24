@@ -2,6 +2,7 @@
 #'
 #' @param filepath The path to the file
 #' @return The size of the file in megabytes
+#' @export
 get.filesize <- function(filepath){
   fs <- humanReadable(file.size(filepath), units = "auto", standard = "SI")
   return(fs)
@@ -12,7 +13,8 @@ get.filesize <- function(filepath){
 #' unzipping the file
 #'
 #' @param filepath The path to a zip file
-#' @return A list of filenames within the give zip file
+#' @return A list of filenames within the given zip file
+#' @export
 list.files.inZip <- function(filepath){
   unzip(zipfile = filepath, list = T)
 }
@@ -21,7 +23,8 @@ list.files.inZip <- function(filepath){
 #' return just an array of just the zip file names (no pdfs, etc.)
 #'
 #' @param filepath The path to a zip file
-#' @return An array any zip files contained within the focal zip file
+#' @return An array of all zip files contained within the focal zip file
+#' @export
 list.zipfiles <- function(filepath){
   df <- unzip(zipfile = filepath, list = T)
   ns <- df[,1]
@@ -56,12 +59,13 @@ unzip.zipfile <- function(inpath, outpath, level){
 #' @param filepath The filepath of the input file
 #' @param fnames Full names - if true, then return the full file names including enclosing folders, if false, return only the file names
 #' @return a data frame of file names
+#' @export
 find.datatables <- function(filepath, fnames=T){
   fs <- list.dirs(filepath)
   fs <- fs[-c(1,2)]
   fls <- character()
   for(i in 1:length(fs)){
-    fls <- c(fls, list.files(fs[i], full.names=fnames))
+    fls <- c(fls, list.files.inZip(fs[i], full.names=fnames))
   }
   return(fls[which(substr(fls, nchar(fls)-3, nchar(fls)) == ".csv")])
 }
@@ -70,6 +74,7 @@ find.datatables <- function(filepath, fnames=T){
 #'
 #' @param filelist A list of data files
 #' @return a list of unique tables
+#' @export
 find.tables.unique <- function(filelist){
   splitNames <- strsplit(x = filelist, split = "\\.")
   t <- character()

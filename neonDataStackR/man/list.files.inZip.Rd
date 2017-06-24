@@ -11,7 +11,7 @@ list.files.inZip(filepath)
 \item{filepath}{The path to a zip file}
 }
 \value{
-A list of filenames within the give zip file
+A list of filenames within the given zip file
 }
 \description{
 Given the top level zip file, return dataframe of all of the files within it without
