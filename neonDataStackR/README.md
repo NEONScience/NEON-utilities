@@ -12,4 +12,4 @@ is re-published in the near future.
 * Data files in Stream discharge field collection, DP1.20048, need final line endings. Warnings will be generated but the program will
 still make stacked files. This will be resolved when this data product is re-published in the near future.
 
-This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues
+This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney.
