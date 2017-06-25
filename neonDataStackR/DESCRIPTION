@@ -8,6 +8,9 @@ Description: NEON data packages are delivered as monthly zip files packaged with
     zip file. This package unzips all files and provides options to organize the data files
     and merge the monthly data files into different configurations. This includes grouping 
     data by site or type.
+Imports:
+    dplyr,
+    gdata
 License: MIT
 Encoding: UTF-8
 LazyData: true
