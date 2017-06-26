@@ -1,5 +1,5 @@
-#' Get the file's size in megabytes
-#'
+#' Get a file's size in megabytes
+#' @importFrom gdata humanReadable
 #' @param filepath The path to the file
 #' @return The size of the file in megabytes
 #' @export
@@ -9,6 +9,8 @@ get.filesize <- function(filepath){
 }
 
 
+#' Get a data frame with the names of all files within a zipped NEON data package
+#'
 #' Given the top level zip file, return dataframe of all of the files within it without
 #' unzipping the file
 #'
@@ -19,8 +21,10 @@ list.files.inZip <- function(zippath){
   unzip(zipfile = zippath, list = T)
 }
 
+#' Get all zip file names within a zipped NEON data package
+#'
 #' Given the data frame of all the files within the top level zip file,
-#' return just an array of just the zip file names (no pdfs, etc.)
+#' return an array of just the zip file names (no pdf, xml, or other files).
 #'
 #' @param zippath The path to a zip file
 #' @return An array of all zip files contained within the focal zip file
@@ -32,8 +36,7 @@ list.zipfiles <- function(zippath){
   return(fn)
 }
 
-#' Unzip a zip file either at just the top level or recursively through the file.
-#'
+#' Unzip a zip file either at just the top level or recursively through the file
 #' @param zippath The filepath of the input file
 #' @param outpath The name of the folder to save unpacked files to
 #' @param level Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively
@@ -55,7 +58,7 @@ unzip.zipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4
 }
 
 #' List the names of the data tables within each folder
-#'
+#' @keywords internal
 #' @param folder The folder of the outputs
 #' @param fnames Full names - if true, then return the full file names including enclosing folders, if false, return only the file names
 #' @return a data frame of file names
@@ -71,11 +74,13 @@ find.datatables <- function(folder, fnames = T){
   return(fls[which(substr(fls, nchar(fls)-3, nchar(fls)) == ".csv")])
 }
 
+#' Internal use only
+#'
 #' Find the data tables that are present in the dataset (e.g., 2 minute vs 30 minute, or pinning vs identification data)
 #'
+#' @keywords internal
 #' @param datatables A list of data files
 #' @return An array of unique table names
-#' @export
 find.tables.unique <- function(datatables){
   splitNames <- strsplit(x = datatables, split = "\\.")
   t <- character()
@@ -96,11 +101,13 @@ find.tables.unique <- function(datatables){
   return(unique(t))
 }
 
+#' Internal use only
+#'
 #' Support way to force R to read assign correct data types to each column based on variables file
 #'
+#' @keywords internal
 #' @param varFile A file that contains variable definitions
 #' @return A data frame with fieldName and assigned column class, along with table if present
-#' @export
 getVariables <- function(varFile){
   d <- read.csv(varFile, header = T, stringsAsFactors = F)                     # read in a variables file
   d$colClass <- rep("numeric", nrow(d))                                       # make a new colClass column defaulting to numeric
@@ -110,12 +117,14 @@ getVariables <- function(varFile){
   return(d[, c("fieldName","colClass")])
 }
 
+#' Internal use only
+#'
 #' Use the variables file to assign classes to each column in each data file
 #'
+#' @keywords internal
 #' @param df A data frame
 #' @param inVars The variables expected in the df
 #' @return A data frame with corrected column classes
-#' @export
 assignClasses <- function(df, inVars){
   for(i in 1:ncol(df)){
     if(names(df)[i] %in% inVars$fieldName){
@@ -131,9 +140,12 @@ assignClasses <- function(df, inVars){
 
 
 
+#' Join data files in a unzipped NEON data package by table type
+#'
 #' Given a folder of unzipped files (unzipped NEON data file), do a full join of all data files, grouped by table type.
 #' This should result in a small number of large files.
 #'
+#' @importFrom dplyr full_join
 #' @param folder The location of the data
 #' @return One file for each table type is created and written.
 #' @export
@@ -219,7 +231,7 @@ stackDataFiles <- function(folder){
 
 # The ultimate function...
 
-#' stackByTable: Join data files by table type.
+#' Primary function: Join data files in a zipped NEON data package by table type
 #'
 #' Given a zipped data file, do a full join of all data files, grouped by table type.
 #' This should result in a small number of large files.
