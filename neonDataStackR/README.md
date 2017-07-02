@@ -5,6 +5,16 @@ year-month. `neonDataStackR` is an R package for unzipping and joining the data 
 This package will only work for data products that organize data in CSV files. Other data file types, such as HDF5 files from the 
 eddy covariance and airborne observing systems are not supported by this package.
 
+### How to Use
+This provides one basic function, `stackByTable()`. 
+
+``` 
+library(devtools)
+install_github("NEONScience/NEON-utilities/neonDataStackR", dependencies=TRUE)
+library (neonDataStackR)
+stackByTable("testdata/NEON_size-dust-particulate.zip")
+```
+
 ### Known issues that prevent the use of this package with certain data products:
 * The downloaded variables file for Soil physical properties (Megapit), DP1.00096, is a tab-delimited file saved as a .csv. Variables 
 can't be read in correctly. The files will be unzipped but stacked files will not be generated. This will be resolved when this data product
