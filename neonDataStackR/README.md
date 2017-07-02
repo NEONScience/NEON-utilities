@@ -13,3 +13,11 @@ is re-published in the near future.
 still make stacked files. This will be resolved when this data product is re-published in the near future.
 
 This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney.
+
+
+### Change Log
+
+2016-07-02 v0.1.1
+_________________
+* removed supporting functions from public view
+

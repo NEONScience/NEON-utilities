@@ -2,7 +2,6 @@
 #' @importFrom gdata humanReadable
 #' @param filepath The path to the file
 #' @return The size of the file in megabytes
-#' @export
 get.filesize <- function(filepath){
   fs <- humanReadable(file.size(filepath), units = "auto", standard = "SI")
   return(fs)
@@ -16,7 +15,6 @@ get.filesize <- function(filepath){
 #'
 #' @param zippath The path to a zip file
 #' @return A list of filenames within the given zip file
-#' @export
 list.files.inZip <- function(zippath){
   unzip(zipfile = zippath, list = T)
 }
@@ -28,7 +26,6 @@ list.files.inZip <- function(zippath){
 #'
 #' @param zippath The path to a zip file
 #' @return An array of all zip files contained within the focal zip file
-#' @export
 list.zipfiles <- function(zippath){
   df <- unzip(zipfile = zippath, list = T)
   ns <- df[,1]
@@ -40,7 +37,6 @@ list.zipfiles <- function(zippath){
 #' @param zippath The filepath of the input file
 #' @param outpath The name of the folder to save unpacked files to
 #' @param level Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively
-#' @export
 unzip.zipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
   if(level == "top"){
     unzip(zipfile = zippath, exdir=outpath)
@@ -62,7 +58,6 @@ unzip.zipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4
 #' @param folder The folder of the outputs
 #' @param fnames Full names - if true, then return the full file names including enclosing folders, if false, return only the file names
 #' @return a data frame of file names
-#' @export
 find.datatables <- function(folder, fnames = T){
   fs <- list.dirs(folder)
   g <- grep(pattern = "stackedFiles", x = fs)
@@ -138,7 +133,19 @@ assignClasses <- function(df, inVars){
   return(df)
 }
 
-
+getPos <- function(d, splName){
+  horPos <- 8  #default string length = 12
+  verPos <- 9
+  if(length(splName) == 14){
+    horPos <- 7
+    verPos <- 8
+  }
+  d$horizontalPosition <- rep(as.character(splName[[1]][horPos]), nrow(d))
+  d$verticalPosition <- rep(as.character(splName[[1]][verPos]), nrow(d))
+  d$horizontalPosition <- as.character(d$horizontalPosition)
+  d$verticalPosition <- as.character(d$verticalPosition)
+  return(d)
+}
 
 #' Join data files in a unzipped NEON data package by table type
 #'
@@ -148,7 +155,7 @@ assignClasses <- function(df, inVars){
 #' @importFrom dplyr full_join
 #' @param folder The location of the data
 #' @return One file for each table type is created and written.
-#' @export
+
 stackDataFiles <- function(folder){
   filenames <- find.datatables(folder = folder, fnames = F)                    # filenames without full path
   filepaths <- find.datatables(folder = folder, fnames = T)                    # filenames with full path
@@ -187,18 +194,7 @@ stackDataFiles <- function(folder){
       d <- assignClasses(d, variables)
       d.splitFile <- strsplit(x = f[1][[1]], split = "\\/")
       d.splitName <- strsplit(x = d.splitFile[[1]][length(d.splitFile[[1]])], split = "\\.")
-      if(length(d.splitName[[1]]) == 12){
-        d$horizontalPosition <- rep(as.character(d.splitName[[1]][8]), nrow(d))
-        d$verticalPosition <- rep(as.character(d.splitName[[1]][9]), nrow(d))
-        d$horizontalPosition <- as.character(d$horizontalPosition)
-        d$verticalPosition <- as.character(d$verticalPosition)
-      }
-      if(length(d.splitName[[1]]) == 14){
-        d$horizontalPosition <- rep(as.character(d.splitName[[1]][7]), nrow(d))
-        d$verticalPosition <- rep(as.character(d.splitName[[1]][8]), nrow(d))
-        d$horizontalPosition <- as.character(d$horizontalPosition)
-        d$verticalPosition <- as.character(d$verticalPosition)
-      }
+      d <- getPos(d, d.splitName)
 
       if(length(f) > 1){
         for(j in 2:length(f)){
@@ -206,18 +202,7 @@ stackDataFiles <- function(folder){
           d.next <- assignClasses(d.next, variables)
           d.next.splitFile <- strsplit(x = f[j][[1]], split = "\\/")
           d.next.splitName <- strsplit(x = d.next.splitFile[[1]][length(d.next.splitFile[[1]])], split = "\\.")
-          if(length(d.next.splitName[[1]]) == 12){
-            d.next$horizontalPosition <- rep(as.character(d.next.splitName[[1]][8]), nrow(d.next))
-            d.next$verticalPosition <- rep(as.character(d.next.splitName[[1]][9]), nrow(d.next))
-            d.next$horizontalPosition <- as.character(d.next$horizontalPosition)
-            d.next$verticalPosition <- as.character(d.next$verticalPosition)
-          }
-          if(length(d.next.splitName[[1]]) == 14){
-            d.next$horizontalPosition <- rep(as.character(d.next.splitName[[1]][7]), nrow(d.next))
-            d.next$verticalPosition <- rep(as.character(d.next.splitName[[1]][8]), nrow(d.next))
-            d.next$horizontalPosition <- as.character(d.next$horizontalPosition)
-            d.next$verticalPosition <- as.character(d.next$verticalPosition)
-          }
+          d.next <- getPos(d.next, d.next.splitName)
           d <- dplyr::full_join(d, d.next)
         }
         if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}

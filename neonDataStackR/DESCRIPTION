@@ -1,6 +1,6 @@
 Package: neonDataStackR
-Version: 0.1
-Date: 2017-06-25
+Version: 0.1.1
+Date: 2017-07-02
 Title: Unzips and stacks monthly data files from NEON
 Author: Christine Laney <claney@battelleecology.org>
 Maintainer: Christine Laney <claney@battelleecology.org>
