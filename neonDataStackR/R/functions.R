@@ -44,12 +44,14 @@ unzip.zipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4
   if(level == "all"){
     unzip(zipfile = zippath, exdir=outpath)
     zps <- list.zipfiles(zippath)
-    for(i in 1:length(zps)){
-      p <- paste0(outpath, "/", zps[i])
-      unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
-      if (file.exists(p)) file.remove(p)
-      writeLines(paste("Unpacked ", zps[i]))
-    }
+    if(length(zps) > 1){
+      for(i in 1:length(zps)){
+        p <- paste0(outpath, "/", zps[i])
+        unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
+        if (file.exists(p)) file.remove(p)
+        writeLines(paste("Unpacked ", zps[i]))
+      }
+    } else writeLines("This zip file doesn't contain monthly data packages")
   }
 }
 
@@ -106,9 +108,10 @@ find.tables.unique <- function(datatables){
 getVariables <- function(varFile){
   d <- read.csv(varFile, header = T, stringsAsFactors = F)                     # read in a variables file
   d$colClass <- rep("numeric", nrow(d))                                       # make a new colClass column defaulting to numeric
-  d$colClass[which(d$dataType %in% c("string", "dateTime"))] <- "character"   # change to character if string or dateTime
-  if("table" %in% names(d))                                                   # OS variables files have table, IS do not
+  d$colClass[which(d$dataType %in% c("string", "date", "dateTime"))] <- "character"   # change to character if string or dateTime
+  if("table" %in% names(d)){                                                   # OS variables files have table, IS do not
     return(d[, c("table", "fieldName", "colClass")])
+  }
   return(d[, c("fieldName","colClass")])
 }
 
@@ -134,16 +137,20 @@ assignClasses <- function(df, inVars){
 }
 
 getPos <- function(d, splName){
-  horPos <- 8  #default string length = 12
-  verPos <- 9
-  if(length(splName) == 14){
-    horPos <- 7
-    verPos <- 8
+  if(length(splName[[1]]) %in% c(12,14)){
+    if(length(splName[[1]]) == 12){
+      horPos <- 8
+      verPos <- 9
+    }
+    if(length(splName[[1]]) == 14){
+      horPos <- 7
+      verPos <- 8
+    }
+    d$horizontalPosition <- rep(as.character(splName[[1]][horPos]), nrow(d))
+    d$verticalPosition <- rep(as.character(splName[[1]][verPos]), nrow(d))
+    d$horizontalPosition <- as.character(d$horizontalPosition)
+    d$verticalPosition <- as.character(d$verticalPosition)
   }
-  d$horizontalPosition <- rep(as.character(splName[[1]][horPos]), nrow(d))
-  d$verticalPosition <- rep(as.character(splName[[1]][verPos]), nrow(d))
-  d$horizontalPosition <- as.character(d$horizontalPosition)
-  d$verticalPosition <- as.character(d$verticalPosition)
   return(d)
 }
 
@@ -162,9 +169,20 @@ stackDataFiles <- function(folder){
   filelist <- setNames(as.list(filepaths), filenames)           # make a list, where filenames are the keys to the filepath values
   varfls <- grep(pattern = "variables", x = filenames)       # find the positions in the filename list where there are variables files
 
-  if(length(varfls > 0)){                                 # choose the first variables file there is (need to replace with checking diffs between all)
+  varFile <- NA
+  if(length(varfls) == 1){                                 # choose the first variables file there is (need to replace with checking diffs between all)
     varFile <- filelist[varfls[1]][[1]]
-  } else varFile <- NA
+  }
+
+  if(length(varfls > 1)){                                  # choose the first variables file there is (need to replace with checking diffs between all)
+    varFile <- filelist[varfls[1]][[1]]
+    for(i in 2:length(varfls)){
+      vf <- filelist[varfls[i]][[1]]
+      if(length(grep(pattern = "variables.20", x = vf)) > 0){
+        varFile <- filelist[varfls[i]][[1]]
+      }
+    }
+  }
 
   valfls <- grep(pattern = "validation", x = filenames)      # find the positions in the filename list where there are validiation files
   nondatafls <- c(varfls, valfls)                         # these two lists together make up files that aren't data files
@@ -175,6 +193,7 @@ stackDataFiles <- function(folder){
   }
 
   if(length(datafls)==0){                                  # if there are no datafiles, exit
+    writeLines("No data files are present")
     return()
   }
 
@@ -195,7 +214,6 @@ stackDataFiles <- function(folder){
       d.splitFile <- strsplit(x = f[1][[1]], split = "\\/")
       d.splitName <- strsplit(x = d.splitFile[[1]][length(d.splitFile[[1]])], split = "\\.")
       d <- getPos(d, d.splitName)
-
       if(length(f) > 1){
         for(j in 2:length(f)){
           d.next <- read.csv(f[j][[1]], header = T, stringsAsFactors = F)
@@ -211,7 +229,7 @@ stackDataFiles <- function(folder){
       writeLines(paste("Stacked ", tables[i]))
     }
   }
-  writeLines(paste("Finished: All data is stacked into ", i, " tables!"))
+  writeLines(paste("Finished: All of the data are stacked into ", i, " tables!"))
 }
 
 # The ultimate function...
