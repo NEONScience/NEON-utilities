@@ -8,7 +8,7 @@ Description: NEON data packages are delivered as monthly zip files packaged with
     zip file. This package unzips all files and provides options to organize the data files
     and merge the monthly data files into different configurations. This includes grouping 
     data by site or type.
-Depends: R (>= 3.4.0),
+Depends: R (>= 3.2.0), stats, utils
 Imports: dplyr(>= 0.7.1), gdata(>= 2.18)
 License: MIT
 URL: https://github.com/NEONScience/NEON-utilities
