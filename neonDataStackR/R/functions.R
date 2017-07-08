@@ -44,7 +44,7 @@ unzip.zipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4
   if(level == "all"){
     unzip(zipfile = zippath, exdir=outpath)
     zps <- list.zipfiles(zippath)
-    if(length(zps) > 1){
+    if(length(zps) >= 1){
       for(i in 1:length(zps)){
         p <- paste0(outpath, "/", zps[i])
         unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
@@ -200,7 +200,8 @@ stackDataFiles <- function(folder){
   if(length(datafls)==1){                                 # if there is just one data file (and thus one table name)
     newdata <- read.csv(datafls[1][[1]], header = T, stringsAsFactors = F) # read it in
     table <- find.tables.unique(names(datafls))           # find the unique table names
-    write.csv(newdata, paste0(folder, "/", table, ".csv"), row.names = F)  # then write out the data file with a new name into the top level folder.
+    if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
+    write.csv(newdata, paste0(folder, "/stackedFiles/", table, ".csv"), row.names = F)  # then write out the data file with a new name into the top level folder.
   }
 
   if(length(datafls)>1){                                  # if there is more than one data file
