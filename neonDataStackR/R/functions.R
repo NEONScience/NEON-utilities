@@ -137,6 +137,7 @@ assignClasses <- function(df, inVars){
 }
 
 getPos <- function(d, splName){
+  nc <- ncol(d)
   if(length(splName[[1]]) %in% c(12,14)){
     if(length(splName[[1]]) == 12){
       horPos <- 8
@@ -146,11 +147,16 @@ getPos <- function(d, splName){
       horPos <- 7
       verPos <- 8
     }
+    if(!("siteID" %in% names(d))){
+      d$domainID <- rep(as.character(splName[[1]][2]), nrow(d))
+      d$siteID <- rep(as.character(splName[[1]][3]), nrow(d))
+      }
     d$horizontalPosition <- rep(as.character(splName[[1]][horPos]), nrow(d))
     d$verticalPosition <- rep(as.character(splName[[1]][verPos]), nrow(d))
     d$horizontalPosition <- as.character(d$horizontalPosition)
     d$verticalPosition <- as.character(d$verticalPosition)
   }
+  d <- d[ , c((nc+1):(nc+4), 1:nc)]
   return(d)
 }
 
