@@ -155,8 +155,9 @@ getPos <- function(d, splName){
     d$verticalPosition <- rep(as.character(splName[[1]][verPos]), nrow(d))
     d$horizontalPosition <- as.character(d$horizontalPosition)
     d$verticalPosition <- as.character(d$verticalPosition)
+    d <- d[ , c((nc+1):(nc+4), 1:nc)]
+    return(d)
   }
-  d <- d[ , c((nc+1):(nc+4), 1:nc)]
   return(d)
 }
 
