@@ -35,11 +35,11 @@ Information and documents contained within this repository are available as-is. 
 
 ### Change Log
 
-2017-07-21 v0.1.2
+##### 2017-07-21 v0.1.2
 -----------------
 * fixed bug where code was attempting to reorder columns for republished OS data products when it should only be reordering columns for IS data.
 
-2017-07-02 v0.1.1
+##### 2017-07-02 v0.1.1
 -----------------
 * removed supporting functions from public view
 
