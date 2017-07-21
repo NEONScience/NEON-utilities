@@ -24,14 +24,22 @@ still make stacked files. This will be resolved when this data product is re-pub
 
 This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney.
 
+### Credits & Acknowledgements
+The National Ecological Observatory Network is a project solely funded by the National Science Foundation and managed under cooperative agreement by Battelle. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+
+### License
+GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+
+### Disclaimer
+Information and documents contained within this repository are available as-is. Codes or documents, or their use, may not be supported or maintained under any program or service and may not be compatible with data currently available from the NEON Data Portal.
 
 ### Change Log
 
 2017-07-21 v0.1.2
-_________________
+-----------------
 * fixed bug where code was attempting to reorder columns for republished OS data products when it should only be reordering columns for IS data.
 
 2017-07-02 v0.1.1
-_________________
+-----------------
 * removed supporting functions from public view
 
