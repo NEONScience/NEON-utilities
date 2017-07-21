@@ -27,7 +27,11 @@ This package is under development - please post any issues [here](https://github
 
 ### Change Log
 
-2016-07-02 v0.1.1
+2017-07-21 v0.1.2
+_________________
+* fixed bug where code was attempting to reorder columns for republished OS data products when it should only be reordering columns for IS data.
+
+2017-07-02 v0.1.1
 _________________
 * removed supporting functions from public view
 
