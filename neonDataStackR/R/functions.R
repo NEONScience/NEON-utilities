@@ -191,7 +191,7 @@ stackDataFiles <- function(folder){
     }
   }
 
-  valfls <- grep(pattern = "validation", x = filenames)      # find the positions in the filename list where there are validiation files
+  valfls <- grep(pattern = "validation", x = filenames)   # find the positions in the filename list where there are validiation files
   nondatafls <- c(varfls, valfls)                         # these two lists together make up files that aren't data files
   datafls <- filelist
 
@@ -205,15 +205,17 @@ stackDataFiles <- function(folder){
   }
 
   if(length(datafls)==1){                                 # if there is just one data file (and thus one table name)
-    newdata <- read.csv(datafls[1][[1]], header = T, stringsAsFactors = F) # read it in
-    table <- find.tables.unique(names(datafls))           # find the unique table names
+#    newdata <- read.csv(datafls[1][[1]], header = T, stringsAsFactors = F) # read it in
+#    table <- find.tables.unique(names(datafls))           # find the unique table names
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
-    write.csv(newdata, paste0(folder, "/stackedFiles/", table, ".csv"), row.names = F)  # then write out the data file with a new name into the top level folder.
-  }
+    file.copy(from = datafls[1][[1]], to = "/stackedFiles")
+#    write.csv(newdata, paste0(folder, "/stackedFiles/", table, ".csv"), row.names = F)  # then write out the data file with a new name into the top level folder.
+    }
 
   if(length(datafls)>1){                                  # if there is more than one data file
     tables <- find.tables.unique(names(datafls))          # find the unique tables
     variables <- getVariables(varFile)                    # get the variables from the chosen variables file
+    argonnesumfls <- datafls[grep(pattern = "Argonne National Laboratory", datafls)]
 
     for(i in 1:length(tables)){
       f <- datafls[grep(pattern = tables[i], datafls)]
@@ -235,6 +237,8 @@ stackDataFiles <- function(folder){
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
       }
       writeLines(paste("Stacked ", tables[i]))
+      if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
+      if(length(argonnesumfls) > 0){file.copy(from = argonnesumfls[1][[1]], to = paste0(folder, "/stackedFiles"))}
     }
   }
   writeLines(paste("Finished: All of the data are stacked into ", i, " tables!"))
