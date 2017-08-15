@@ -1,3 +1,5 @@
+# test_functions.R
+
 #' Get a file's size in megabytes
 #' @importFrom gdata humanReadable
 #' @param filepath The path to the file
@@ -7,6 +9,10 @@ get.filesize <- function(filepath){
   return(fs)
 }
 
+get.tabletypes <- function(){
+  t <- read.csv("data/table_types.csv", header = T, stringsAsFactors = F)
+  return(t)
+}
 
 #' Get a data frame with the names of all files within a zipped NEON data package
 #'
@@ -78,13 +84,17 @@ find.datatables <- function(folder, fnames = T){
 #' @keywords internal
 #' @param datatables A list of data files
 #' @return An array of unique table names
-find.tables.unique <- function(datatables){
-  splitNames <- strsplit(x = datatables, split = "\\.")
+find.tables.unique <- function(datatables, tabletypes){
+  dt <- datatables
+  tt <- tabletypes
+  splitNames <- strsplit(x = dt, split = "\\.")
   t <- character()
   for (i in 1:length(splitNames)){
-    if(length(splitNames[[i]]) %in% c(8,11)){
-      n <- splitNames[[i]][7]
-      t <- c(t, n)
+    for(j in 1:length(splitNames[[i]])){
+      s <- splitNames[[i]][j]
+      if(s %in% tt$table){
+        t <- c(t, s)
+      }
     }
     if(length(splitNames[[i]]) == 12){
       n <- splitNames[[i]][11]
@@ -136,23 +146,25 @@ assignClasses <- function(df, inVars){
   return(df)
 }
 
-getPos <- function(d, splName){
+getPos <- function(d, datafl){
+  d.splitFile <- strsplit(x = datafl, split = "\\/")
+  d.splitName <- strsplit(x = d.splitFile[[1]][length(d.splitFile[[1]])], split = "\\.")
   nc <- ncol(d)
-  if(length(splName[[1]]) %in% c(12,14)){
-    if(length(splName[[1]]) == 12){
+  if(length(d.splitName[[1]]) %in% c(12,14)){
+    if(length(d.splitName[[1]]) == 12){
       horPos <- 8
       verPos <- 9
     }
-    if(length(splName[[1]]) == 14){
+    if(length(d.splitName[[1]]) == 14){
       horPos <- 7
       verPos <- 8
     }
     if(!("siteID" %in% names(d))){
-      d$domainID <- rep(as.character(splName[[1]][2]), nrow(d))
-      d$siteID <- rep(as.character(splName[[1]][3]), nrow(d))
-      }
-    d$horizontalPosition <- rep(as.character(splName[[1]][horPos]), nrow(d))
-    d$verticalPosition <- rep(as.character(splName[[1]][verPos]), nrow(d))
+      d$domainID <- rep(as.character(d.splitName[[1]][2]), nrow(d))
+      d$siteID <- rep(as.character(d.splitName[[1]][3]), nrow(d))
+    }
+    d$horizontalPosition <- rep(as.character(d.splitName[[1]][horPos]), nrow(d))
+    d$verticalPosition <- rep(as.character(d.splitName[[1]][verPos]), nrow(d))
     d$horizontalPosition <- as.character(d$horizontalPosition)
     d$verticalPosition <- as.character(d$verticalPosition)
     d <- d[ , c((nc+1):(nc+4), 1:nc)]
@@ -160,6 +172,8 @@ getPos <- function(d, splName){
   }
   return(d)
 }
+
+
 
 #' Join data files in a unzipped NEON data package by table type
 #'
@@ -171,77 +185,74 @@ getPos <- function(d, splName){
 #' @return One file for each table type is created and written.
 
 stackDataFiles <- function(folder){
+  ttypes <- get.tabletypes()
   filenames <- find.datatables(folder = folder, fnames = F)                    # filenames without full path
   filepaths <- find.datatables(folder = folder, fnames = T)                    # filenames with full path
-  filelist <- setNames(as.list(filepaths), filenames)           # make a list, where filenames are the keys to the filepath values
-  varfls <- grep(pattern = "variables", x = filenames)       # find the positions in the filename list where there are variables files
+  filelist <- setNames(as.list(filepaths), filenames)        # make a list, where filenames are the keys to the filepath values
 
-  varFile <- NA
-  if(length(varfls) == 1){                                 # choose the first variables file there is (need to replace with checking diffs between all)
-    varFile <- filelist[varfls[1]][[1]]
-  }
-
-  if(length(varfls > 1)){                                  # choose the first variables file there is (need to replace with checking diffs between all)
-    varFile <- filelist[varfls[1]][[1]]
-    for(i in 2:length(varfls)){
-      vf <- filelist[varfls[i]][[1]]
-      if(length(grep(pattern = "variables.20", x = vf)) > 0){
-        varFile <- filelist[varfls[i]][[1]]
-      }
-    }
-  }
-
-  valfls <- grep(pattern = "validation", x = filenames)   # find the positions in the filename list where there are validiation files
-  nondatafls <- c(varfls, valfls)                         # these two lists together make up files that aren't data files
+#  nondatafls <- c(varfls, valfls)                         # these two lists together make up files that aren't data files
+#  if(length(nondatafls) > 0){                             # remove the non-data files from the list
+#    datafls <- filelist[-nondatafls]
+# } else {
   datafls <- filelist
 
-  if(length(nondatafls) > 0){                             # remove the non-data files from the list
-    datafls <- filelist[-nondatafls]
-  }
-
-  if(length(datafls)==0){                                  # if there are no datafiles, exit
+  if(length(datafls) == 0){                                  # if there are no datafiles, exit
     writeLines("No data files are present")
-    return()
   }
-
-  if(length(datafls)==1){                                 # if there is just one data file (and thus one table name)
-#    newdata <- read.csv(datafls[1][[1]], header = T, stringsAsFactors = F) # read it in
-#    table <- find.tables.unique(names(datafls))           # find the unique table names
+  if(length(datafls) == 1){                                 # if there is just one data file (and thus one table name)
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     file.copy(from = datafls[1][[1]], to = "/stackedFiles")
-#    write.csv(newdata, paste0(folder, "/stackedFiles/", table, ".csv"), row.names = F)  # then write out the data file with a new name into the top level folder.
-    }
-
-  if(length(datafls)>1){                                  # if there is more than one data file
-    tables <- find.tables.unique(names(datafls))          # find the unique tables
-    variables <- getVariables(varFile)                    # get the variables from the chosen variables file
-    argonnesumfls <- datafls[grep(pattern = "Argonne National Laboratory", datafls)]
-
-    for(i in 1:length(tables)){
-      f <- datafls[grep(pattern = tables[i], datafls)]
-      d <- read.csv(f[1][[1]], header = T, stringsAsFactors = F)
-      d <- assignClasses(d, variables)
-      d.splitFile <- strsplit(x = f[1][[1]], split = "\\/")
-      d.splitName <- strsplit(x = d.splitFile[[1]][length(d.splitFile[[1]])], split = "\\.")
-      d <- getPos(d, d.splitName)
-      if(length(f) > 1){
-        for(j in 2:length(f)){
-          d.next <- read.csv(f[j][[1]], header = T, stringsAsFactors = F)
-          d.next <- assignClasses(d.next, variables)
-          d.next.splitFile <- strsplit(x = f[j][[1]], split = "\\/")
-          d.next.splitName <- strsplit(x = d.next.splitFile[[1]][length(d.next.splitFile[[1]])], split = "\\.")
-          d.next <- getPos(d.next, d.next.splitName)
-          d <- dplyr::full_join(d, d.next)
-        }
-        if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
-        write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+  }
+  if(length(datafls) > 1){                                  # if there is more than one data file
+    if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
+    tables <- find.tables.unique(names(datafls), ttypes)    # find the unique tables
+    varpath <- filepaths[grep("variables.20", filepaths)[1]]
+    valpath <- filepaths[grep("validation", filepaths)[1]]
+    if(is.na(valpath)){
+      tables <- c(tables, "variables")
+      } else {
+      tables <- c(tables, "variables","validation")
       }
-      writeLines(paste("Stacked ", tables[i]))
-      if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
-      if(length(argonnesumfls) > 0){file.copy(from = argonnesumfls[1][[1]], to = paste0(folder, "/stackedFiles"))}
+
+    messages <- character()
+    if(!is.na(varpath)){
+      variables <- getVariables(varpath)                    # get the variables from the chosen variables file
+      file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
+      messages <- c(messages, "Copied the first available variable definition file to /stackedFiles and renamed as variables.csv")
+    }
+    if(!is.na(valpath)){
+      file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
+      messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as validation.csv")
+    }
+    n <- 1
+    for(i in 1:length(tables)){
+      tbltype <- ttypes$tableType[which(ttypes$table == tables[i])]
+      if(length(tbltype) > 0 && tbltype != "site-date"){
+        file.copy(from = filepaths[grep(tables[i], filepaths)][1], to = paste0(folder, "/stackedFiles/", tables[i], ".csv"))
+        messages <- c(messages, paste("Copied the first available", tables[i], "file to /stackedFiles"))
+      }
+      if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-date")){
+        tblfls <- filepaths[grep(tables[i], filepaths)]
+        tblnames <- filenames[grep(tables[i], filenames)]
+        d <- read.csv(tblfls[1], header = T, stringsAsFactors = F)
+        d <- assignClasses(d, variables)
+        d <- getPos(d, tblnames[1])
+        if(length(tblfls) > 1){
+          for(j in 2:length(tblfls)){
+            d.next <- read.csv(tblfls[j], header = T, stringsAsFactors = F)
+            d.next <- assignClasses(d.next, variables)
+            d.next <- getPos(d.next, tblnames[j])
+            d <- dplyr::full_join(d, d.next)
+          }
+        }
+        write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+        messages <- c(messages, paste("Stacked ", tables[i]))
+        if(i > 1){n <- n + 1}
+      }
     }
   }
-  writeLines(paste("Finished: All of the data are stacked into ", i, " tables!"))
+  writeLines(paste("Finished: All of the data are stacked into ", n, " tables!"))
+  writeLines(paste0(messages, collapse = "\n"))
 }
 
 # The ultimate function...

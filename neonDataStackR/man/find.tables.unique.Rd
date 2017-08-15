@@ -4,7 +4,7 @@
 \alias{find.tables.unique}
 \title{Internal use only}
 \usage{
-find.tables.unique(datatables)
+find.tables.unique(datatables, tabletypes)
 }
 \arguments{
 \item{datatables}{A list of data files}
