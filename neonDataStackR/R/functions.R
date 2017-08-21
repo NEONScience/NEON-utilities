@@ -207,6 +207,9 @@ stackDataFiles <- function(folder){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     tables <- find.tables.unique(names(datafls), ttypes)    # find the unique tables
     varpath <- filepaths[grep("variables.20", filepaths)[1]]
+    if(is.na(varpath)){
+      varpath <- filepaths[grep("variables", filepaths)[1]]
+    }
     valpath <- filepaths[grep("validation", filepaths)[1]]
     if(is.na(valpath)){
       tables <- c(tables, "variables")
@@ -227,6 +230,7 @@ stackDataFiles <- function(folder){
     n <- 1
     for(i in 1:length(tables)){
       tbltype <- ttypes$tableType[which(ttypes$table == tables[i])]
+      variables <- getVariables(varpath)                    # get the variables from the chosen variables file
       if(length(tbltype) > 0 && tbltype != "site-date"){
         file.copy(from = filepaths[grep(tables[i], filepaths)][1], to = paste0(folder, "/stackedFiles/", tables[i], ".csv"))
         messages <- c(messages, paste("Copied the first available", tables[i], "file to /stackedFiles"))
