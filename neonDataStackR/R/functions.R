@@ -9,10 +9,6 @@ get.filesize <- function(filepath){
   return(fs)
 }
 
-get.tabletypes <- function(){
-  t <- read.csv("table_types.csv", header = T, stringsAsFactors = F)
-  return(t)
-}
 
 #' Get a data frame with the names of all files within a zipped NEON data package
 #'
@@ -185,7 +181,7 @@ getPos <- function(d, datafl){
 #' @return One file for each table type is created and written.
 
 stackDataFiles <- function(folder){
-  ttypes <- get.tabletypes()
+  ttypes <- load(file="data/table_types.RDA")
   filenames <- find.datatables(folder = folder, fnames = F)                    # filenames without full path
   filepaths <- find.datatables(folder = folder, fnames = T)                    # filenames with full path
   filelist <- setNames(as.list(filepaths), filenames)        # make a list, where filenames are the keys to the filepath values
