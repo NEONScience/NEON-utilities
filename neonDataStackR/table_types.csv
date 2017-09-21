@@ -88,3 +88,5 @@ DP1.10098.001,vst_mapping,site-all
 DP1.10098.001,vst_perplotperyear,site-date
 DP1.10098.001,vst_apparentindividual,site-date
 DP1.10098.001,vst_shrubgroup,site-date
+DP1.20048.001,dsc_fieldData,site-date
+DP1.20048.001,dsc_individualFieldData,site-date

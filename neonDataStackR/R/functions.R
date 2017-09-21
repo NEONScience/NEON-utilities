@@ -10,7 +10,7 @@ get.filesize <- function(filepath){
 }
 
 get.tabletypes <- function(){
-  t <- read.csv("data/table_types.csv", header = T, stringsAsFactors = F)
+  t <- read.csv("table_types.csv", header = T, stringsAsFactors = F)
   return(t)
 }
 
