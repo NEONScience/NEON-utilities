@@ -181,7 +181,7 @@ getPos <- function(d, datafl){
 #' @return One file for each table type is created and written.
 
 stackDataFiles <- function(folder){
-  ttypes <- load(file="data/table_types.RDA")
+  ttypes <- table_types
   filenames <- find.datatables(folder = folder, fnames = F)                    # filenames without full path
   filepaths <- find.datatables(folder = folder, fnames = T)                    # filenames with full path
   filelist <- setNames(as.list(filepaths), filenames)        # make a list, where filenames are the keys to the filepath values
