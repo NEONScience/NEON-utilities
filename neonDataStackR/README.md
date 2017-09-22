@@ -16,9 +16,6 @@ stackByTable("testdata/NEON_size-dust-particulate.zip")
 ```
 
 ### Known issues that prevent the use of this package with certain data products:
-* The downloaded variables file for Soil physical properties (Megapit), DP1.00096, is a tab-delimited file saved as a .csv. Variables 
-can't be read in correctly. The files will be unzipped but stacked files will not be generated. This will be resolved when this data product
-is re-published in the near future.
 * Data files in Stream discharge field collection, DP1.20048, need final line endings. Warnings will be generated but the program will
 still make stacked files. This will be resolved when this data product is re-published in the near future.
 
@@ -34,6 +31,11 @@ GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Information and documents contained within this repository are available as-is. Codes or documents, or their use, may not be supported or maintained under any program or service and may not be compatible with data currently available from the NEON Data Portal.
 
 ### Change Log
+##### 2017-09-21 v0.1.3 pecan
+-----------------
+This has two main bug fixes:
+* Stops stacking or overwriting multiple copies of a lab file that is the same from one monthly zip file to the next. The code now reads from table_types.rda to figure out whether a table is of type site-date, lab-all, lab-current, site-all. This file needs to be updated every time that a new or revised data product is available.
+* Can properly read new and reprocessed OS data products that use the new file naming convention.
 
 ##### 2017-07-21 v0.1.2
 -----------------
