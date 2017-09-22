@@ -92,6 +92,10 @@ find.tables.unique <- function(datatables, tabletypes){
         t <- c(t, s)
       }
     }
+    if(length(splitNames[[i]]) == 11){
+      n <- splitNames[[i]][7]
+      t <- c(t, n)
+    }
     if(length(splitNames[[i]]) == 12){
       n <- splitNames[[i]][11]
       t <- c(t, n)
