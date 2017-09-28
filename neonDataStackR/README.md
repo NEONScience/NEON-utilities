@@ -15,9 +15,20 @@ library (neonDataStackR)
 stackByTable("testdata/NEON_size-dust-particulate.zip")
 ```
 
+A feeder function, `zipsByProduct()`, can be used to pull data from the NEON API in the correct format to be stacked by `stackByTable()`.
+
+```
+zipsByProduct(dpID="DP1.10023.001", site="all", package="basic")
+stackByTable("~/filesToStack10023", folder=T)
+```
+
+Warning: depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.
+
 ### Known issues that prevent the use of this package with certain data products:
 * Data files in Stream discharge field collection, DP1.20048, need final line endings. Warnings will be generated but the program will
 still make stacked files. This will be resolved when this data product is re-published in the near future.
+* Instrumentation data (IS) are currently undergoing re-publication into NEON's cloud storage system. Data products that haven't been re-published yet are unlikely to be downloadable by `zipsByProduct()`.
+* Remote sensing data (AOP) are not provided in tabular form, therefore can't be stacked.
 
 This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney.
 

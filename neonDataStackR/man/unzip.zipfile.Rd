@@ -12,7 +12,7 @@ unzip.zipfile(zippath, outpath = substr(zippath, 1, nchar(zippath) - 4),
 
 \item{outpath}{The name of the folder to save unpacked files to}
 
-\item{level}{Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively}
+\item{level}{Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively, or only files 'in' the folder specified}
 }
 \description{
 Unzip a zip file either at just the top level or recursively through the file

@@ -38,7 +38,7 @@ list.zipfiles <- function(zippath){
 #' Unzip a zip file either at just the top level or recursively through the file
 #' @param zippath The filepath of the input file
 #' @param outpath The name of the folder to save unpacked files to
-#' @param level Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively
+#' @param level Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively, or only files 'in' the folder specified
 unzip.zipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
   if(level == "top"){
     unzip(zipfile = zippath, exdir=outpath)
@@ -49,6 +49,17 @@ unzip.zipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4
     if(length(zps) >= 1){
       for(i in 1:length(zps)){
         p <- paste0(outpath, "/", zps[i])
+        unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
+        if (file.exists(p)) file.remove(p)
+        writeLines(paste("Unpacked ", zps[i]))
+      }
+    } else writeLines("This zip file doesn't contain monthly data packages")
+  }
+  if(level == "in"){
+    zps <- list.files(zippath)
+    if(length(zps) >= 1){
+      for(i in 1:length(zps)){
+        p <- paste0(zippath, "/", zps[i])
         unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
         writeLines(paste("Unpacked ", zps[i]))
@@ -267,12 +278,18 @@ stackDataFiles <- function(folder){
 #' This should result in a small number of large files.
 #'
 #' @param filepath The location of the zip file
+#' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @return All files are unzipped and one file for each table type is created and written.
 #' @export
-stackByTable <- function(filepath){
-  location.data <- substr(filepath, 1, nchar(filepath)-4)
-  unzip.zipfile(zippath = filepath, outpath = location.data, level = "all")
-  stackDataFiles(location.data)
+stackByTable <- function(filepath, folder=F){
+  if(folder==F) {
+    location.data <- substr(filepath, 1, nchar(filepath)-4)
+    unzip.zipfile(zippath = filepath, outpath = location.data, level = "all")
+    stackDataFiles(location.data)
+  } else {
+    unzip.zipfile(zippath = filepath, outpath = filepath, level = "in")
+    stackDataFiles(filepath)
+  }
 }
 
 
