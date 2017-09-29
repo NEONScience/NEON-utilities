@@ -115,9 +115,12 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
 
   # copy zip files into folder
   for(i in 1:nrow(zip.urls)) {
-    download.file(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), method = "curl")
+    if(Sys.info()["sysname"] == "windows"){
+    download.file(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"))
+    } else {
+      download.file(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), method = "curl")
+    }
   }
-
 }
 
 

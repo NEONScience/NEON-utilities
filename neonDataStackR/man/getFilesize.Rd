@@ -13,7 +13,7 @@ getFilesize(filepath)
 The size of the file in megabytes
 }
 \description{
-For any NEON data file, read the size and translate into a human readable string
+For any file, read the size and translate into a human readable string
 }
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
