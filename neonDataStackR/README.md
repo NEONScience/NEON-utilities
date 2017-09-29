@@ -19,7 +19,7 @@ A feeder function, `zipsByProduct()`, can be used to pull data from the NEON API
 
 ```
 zipsByProduct(dpID="DP1.10023.001", site="all", package="basic")
-stackByTable("~/filesToStack10023", folder=T)
+stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 ```
 
 Warning: depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.
