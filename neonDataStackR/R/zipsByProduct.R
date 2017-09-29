@@ -67,7 +67,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   zip.urls <- c(NA, NA, NA)
   for(i in 1:length(month.urls)) {
     tmp <- httr::GET(month.urls[i])
-    tmp.files <- jsonlite::fromJSON(content(tmp, as="text"),
+    tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
                                     simplifyDataFrame=T, flatten=T)
 
     # if package==expanded, check that expanded package exists
@@ -108,7 +108,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
       stop("Download halted.")
     }
   }
-
+  
   # create folder in working directory to put files in
   filepath <- paste(getwd(), "/filesToStack", substr(dpID, 5, 9), sep="")
   dir.create(filepath)
