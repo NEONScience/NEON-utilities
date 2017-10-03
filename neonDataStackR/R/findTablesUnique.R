@@ -26,7 +26,7 @@ findTablesUnique <- function(datatables, tabletypes){
   for (i in 1:length(splitNames)){
     for(j in 1:length(splitNames[[i]])){
       s <- splitNames[[i]][j]
-      if(s %in% tt$table){
+      if(s %in% tt$tableName){
         t <- c(t, s)
       }
     }

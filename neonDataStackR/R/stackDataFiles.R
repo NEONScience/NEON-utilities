@@ -50,6 +50,7 @@ stackDataFiles <- function(folder){
 
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     tables <- findTablesUnique(names(datafls), ttypes)
+    externalLabFile <- filepaths[grep("externalSummary", filepaths)[1]]
     varpath <- filepaths[grep("variables.20", filepaths)[1]]
 
     if(is.na(varpath)){
@@ -65,6 +66,11 @@ stackDataFiles <- function(folder){
 
     messages <- character()
 
+    if(!is.na(externalLabFile)){
+      file.copy(from = externalLabFile, to = paste0(folder, "/stackedFiles/"))
+      messages <- c(messages, "Copied the first available external lab summary file to /stackedFiles")
+    }
+
     if(!is.na(varpath)){
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
@@ -79,7 +85,7 @@ stackDataFiles <- function(folder){
     n <- 1
 
     for(i in 1:length(tables)){
-      tbltype <- ttypes$tableType[which(ttypes$table == tables[i])]
+      tbltype <- ttypes$tableType[which(ttypes$tableName == tables[i])]
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
       if(length(tbltype) > 0 && tbltype != "site-date"){
