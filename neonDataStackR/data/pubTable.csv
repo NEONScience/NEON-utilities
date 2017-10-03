@@ -90,6 +90,7 @@ IRBT_1_minute,"IR Biological Temperature averaged over 1 minute",site-date,001
 IRBT_30_minute,"IR Biological Temperature averaged over 30 minute",site-date,030
 ltr_chemistrySubsampling_pub,"Identifiers for subsamples created for chemical analyses or archive",site-date,001
 ltr_fielddata_pub,"Field collection details and sample tracking",site-date,001
+ltr_litterStableIsotopes_pub,"External lab analysis of carbon and nitrogen stable isotopes in litterfall",site-date,001
 ltr_massdata_pub,"Dry mass of litter and fine woody debris components per trap per bout",site-date,001
 ltr_pertrap_pub,"Record of trap establishment, contains date, trap type and location",site-all,001
 mam_perplotnight_pub,"Small mammal trapping summary data per plot per night",site-date,001
@@ -104,8 +105,8 @@ mgp_perbiogeosample_pub,"Data collected on biogeochemistry sample",site-date,001
 mgp_perbulksample_pub,"Data collected on bulk density sample",site-date,001
 mgp_perhorizon_pub,"Per soil horizon metadata",site-date,001
 mgp_permegapit_pub,"Data collected per megapit",site-date,001
-mms_metagenomeDnaExtraction_pub,"Laboratory metadata from soil DNA extraction for metagenomics sequencing",NULL,001
-mms_metagenomeSequencing_pub,"Soil metagenomics sequencing metadata",NULL,001
+mms_metagenomeDnaExtraction_pub,"Laboratory metadata from soil DNA extraction for metagenomics sequencing",site-date,001
+mms_metagenomeSequencing_pub,"Soil metagenomics sequencing metadata",site-date,001
 mos_archivepooling_pub,"Mosquito archival information from external labs",site-date,001
 mos_barcoding_pub,"Mosquito barcoding sample data from external labs",site-date,001
 mos_expertTaxonomistIDProcessed_pub,"Mosquito identifications by expert taxonomists - desynonomized",site-date,001
@@ -220,3 +221,9 @@ wdi_collectionIso_pub,"Wet deposition isotope parent sample data",site-date,001
 wdi_collectionIsoTest_pub,"Wet deposition isotope analysis subsample data",site-date,001
 wdi_isoPerSample_pub,"Wet deposition H2O stable isotope data per sample",site-date,001
 wdp_sensor_pub,"Wet deposition collector automated sensor data",site-date,001
+WSDBuoy_1min,"Windspeed and direction above water on-buoy 1 minute mean",site-date,001
+WSDBuoy_30min,"Windspeed and direction above water on-buoy averaged over 30 minutes",site-date,030
+zoo_fieldData_pub,"Aquatic zooplankton field data",site-date,001
+zoo_perVial_pub,"Aquatic zooplankton identified archive data",site-date,001
+zoo_taxonomyProcessed_pub,"Aquatic zooplankton identifications by expert taxonomists - desynonimized ",site-date,001
+zoo_taxonomyRaw_pub,"Aquatic zooplankton identifications by expert taxonomists - raw ",site-date,001
