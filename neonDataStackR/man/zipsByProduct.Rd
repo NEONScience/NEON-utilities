@@ -13,7 +13,7 @@ zipsByProduct(dpID, site = "all", package = "basic", check.size = TRUE)
 
 \item{package}{Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.}
 
-\item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T.}
+\item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 }
 \value{
 A folder in the working directory, containing all zip files meeting query criteria.

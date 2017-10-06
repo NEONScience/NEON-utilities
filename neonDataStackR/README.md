@@ -18,8 +18,10 @@ stackByTable("testdata/NEON_size-dust-particulate.zip")
 A feeder function, `zipsByProduct()`, can be used to pull data from the NEON API in the correct format to be stacked by `stackByTable()`.
 
 ```
+{
 zipsByProduct(dpID="DP1.10023.001", site="all", package="basic")
 stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
+}
 ```
 
 Warning: depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.

@@ -10,7 +10,7 @@
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param site Either the string 'all', or the four-letter code of a single NEON site, e.g. 'CLBJ'. Future versions may allow more options for subsetting than one or all sites. Defaults to all.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
-#' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T.
+#' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 
 #' @return A folder in the working directory, containing all zip files meeting query criteria.
 
