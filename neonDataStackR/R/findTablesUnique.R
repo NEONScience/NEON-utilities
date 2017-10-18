@@ -30,7 +30,7 @@ findTablesUnique <- function(datatables, tabletypes){
         t <- c(t, s)
       }
     }
-    if(length(splitNames[[i]]) == 11){
+    if(length(splitNames[[i]]) %in% c(10,11)){
       n <- splitNames[[i]][7]
       t <- c(t, n)
     }
