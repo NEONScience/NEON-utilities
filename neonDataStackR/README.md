@@ -19,14 +19,13 @@ A feeder function, `zipsByProduct()`, can be used to pull data from the NEON API
 
 ```
 {
-zipsByProduct(dpID="DP1.10023.001", site="all", package="basic")
+zipsByProduct(dpID="DP1.10023.001", site="all", package="basic", check.size=T)
 stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 }
 ```
 
 Warning: depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.
 
-Warning #2: As of October 2017, `zipsByProduct()` is working reliably on Mac OS but unpredictably on Windows. We are working on a solution.
 
 ### Known issues that prevent the use of this package with certain data products:
 * Data files in Stream discharge field collection, DP1.20048, need final line endings. Warnings will be generated but the program will

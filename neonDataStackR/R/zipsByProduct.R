@@ -104,7 +104,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   if(check.size==TRUE) {
     resp <- readline(paste("Continuing will download files totaling approximately",
                            downld.size, "MB. Do you want to proceed y/n: ", sep=" "))
-    if(resp=="n" | resp=="N") {
+    if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
     }
   }
@@ -115,11 +115,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
 
   # copy zip files into folder
   for(i in 1:nrow(zip.urls)) {
-    if(Sys.info()["sysname"] == "Windows"){
-    download.file(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"))
-    } else {
-      download.file(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), method = "curl")
-    }
+    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"))
   }
 }
 
