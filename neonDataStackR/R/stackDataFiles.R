@@ -21,7 +21,8 @@
 
 stackDataFiles <- function(folder){
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
-  ttypes <- neonDataStackR::table_types
+  load("data/table_types.rda")
+  ttypes <<- table_types
 
   # filenames without full path
   filenames <- findDatatables(folder = folder, fnames = F)
