@@ -21,7 +21,6 @@
 
 stackDataFiles <- function(folder){
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
-  data(table_types)
   ttypes <- table_types
 
   # filenames without full path
