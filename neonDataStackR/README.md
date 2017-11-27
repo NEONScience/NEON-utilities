@@ -26,6 +26,7 @@ stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 
 Warning: depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.
 
+For a tutorial explaining how to use the `neonDataStackR` package in more detail, view the [*Use the neonDataStackR Package to Access NEON Data* tutorial](http://www.neonscience.org/neonDataStackR).
 
 ### Known issues that prevent the use of this package with certain data products:
 * Data files in Stream discharge field collection, DP1.20048, need final line endings. Warnings will be generated but the program will
