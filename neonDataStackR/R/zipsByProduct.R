@@ -115,7 +115,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
 
   # copy zip files into folder
   for(i in 1:nrow(zip.urls)) {
-    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"))
+    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), mode="wb")
   }
 }
 
