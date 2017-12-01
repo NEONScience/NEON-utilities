@@ -29,12 +29,10 @@ Warning: depending on the data product and data volume, pulling data from the AP
 For a tutorial explaining how to use the `neonDataStackR` package in more detail, view the [*Use the neonDataStackR Package to Access NEON Data* tutorial](http://www.neonscience.org/neonDataStackR).
 
 ### Known issues that prevent the use of this package with certain data products:
-* Data files in Stream discharge field collection, DP1.20048, need final line endings. Warnings will be generated but the program will
-still make stacked files. This will be resolved when this data product is re-published in the near future.
-* Instrumentation data (IS) are currently undergoing re-publication into NEON's cloud storage system. Data products that haven't been re-published yet are unlikely to be downloadable by `zipsByProduct()`.
 * Remote sensing data (AOP) are not provided in tabular form, therefore can't be stacked.
+* `zipsByProduct()` uses the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
 
-This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney.
+This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
 ### Credits & Acknowledgements
 The National Ecological Observatory Network is a project solely funded by the National Science Foundation and managed under cooperative agreement by Battelle. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
