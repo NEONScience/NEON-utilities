@@ -9,7 +9,7 @@
 
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr GET
-#' @param dpid The data product id (optional), formated as DP0.00000.000
+#' @param dpID The data product id (optional), formated as DP0.00000.000
 #' @return A data table with product information
 
 #' @references

@@ -11,6 +11,7 @@
 
 #' @param filepath The location of the zip file
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
+#' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @return All files are unzipped and one file for each table type is created and written.
 
 #' @export
@@ -23,14 +24,16 @@
 #   Claire Lunch (2017-09-28)
 ##############################################################################################
 
-stackByTable <- function(filepath, folder=FALSE){
+stackByTable <- function(filepath, folder=FALSE, saveUnzippedFiles = TRUE){
   if(folder==FALSE) {
     location.data <- substr(filepath, 1, nchar(filepath)-4)
     unzipZipfile(zippath = filepath, outpath = location.data, level = "all")
     stackDataFiles(location.data)
+    if(saveUnzippedFiles == FALSE){cleanUp(location.data)}
   } else {
     unzipZipfile(zippath = filepath, outpath = filepath, level = "in")
     stackDataFiles(filepath)
+    if(saveUnzippedFiles == FALSE){cleanUp(filepath)}
   }
 }
 

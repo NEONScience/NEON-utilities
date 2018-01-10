@@ -4,12 +4,14 @@
 \alias{stackByTable}
 \title{Join data files in a zipped NEON data package by table type}
 \usage{
-stackByTable(filepath, folder = FALSE)
+stackByTable(filepath, folder = FALSE, saveUnzippedFiles = TRUE)
 }
 \arguments{
 \item{filepath}{The location of the zip file}
 
 \item{folder}{T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.}
+
+\item{saveUnzippedFiles}{T or F: should the unzipped monthly data folders be retained?}
 }
 \value{
 All files are unzipped and one file for each table type is created and written.
