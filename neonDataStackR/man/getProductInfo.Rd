@@ -7,7 +7,7 @@
 getProductInfo(dpID)
 }
 \arguments{
-\item{dpid}{The data product id (optional), formated as DP0.00000.000}
+\item{dpID}{The data product id (optional), formated as DP0.00000.000}
 }
 \value{
 A data table with product information
