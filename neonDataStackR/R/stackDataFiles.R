@@ -95,8 +95,8 @@ stackDataFiles <- function(folder){
       }
 
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-all")){
-        tblfls <- filepaths[grep(tables[i], filepaths)]
-        tblnames <- filenames[grep(tables[i], filenames)]
+        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         sites <- unique(substr(tblnames, 10, 13))
         sites <- sites[order(sites)]
         d <- read.csv(tblfls[grep(sites[1], tblfls)][1], header = T, stringsAsFactors = F)
@@ -117,8 +117,8 @@ stackDataFiles <- function(folder){
 
 
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-date")){
-        tblfls <- filepaths[grep(tables[i], filepaths)]
-        tblnames <- filenames[grep(tables[i], filenames)]
+        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         d <- read.csv(tblfls[1], header = T, stringsAsFactors = F)
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
