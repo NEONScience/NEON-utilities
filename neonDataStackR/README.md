@@ -44,6 +44,12 @@ GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Information and documents contained within this repository are available as-is. Codes or documents, or their use, may not be supported or maintained under any program or service and may not be compatible with data currently available from the NEON Data Portal.
 
 ### Change Log
+
+##### 2018-01-24 v0.1.5 'filbert'
+-----------------
+* This release adds an option to delete the unzipped, unstacked files after stacking.
+* Also fixes a bug that incorrectly merged tables in the case where one table name was a substring of another table name.
+
 ##### 2017-12-14 v0.1.4 'walnut'
 -----------------
 * 'Site-all' data tables were not being properly stacked. This package includes a new function to identify 'site-all' data tables and stack only one per site (site-all tables are exact replicates in each monthly package for a given site).
