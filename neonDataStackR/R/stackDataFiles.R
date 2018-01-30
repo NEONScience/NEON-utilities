@@ -89,14 +89,36 @@ stackDataFiles <- function(folder){
       tbltype <- ttypes$tableType[which(ttypes$tableName == tables[i])]
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
-      if(length(tbltype) > 0 && tbltype != "site-date"){
+      if(length(tbltype) > 0 && !(tbltype %in% c("site-date", "site-all"))){
         file.copy(from = filepaths[grep(tables[i], filepaths)][1], to = paste0(folder, "/stackedFiles/", tables[i], ".csv"))
         messages <- c(messages, paste("Copied the first available", tables[i], "file to /stackedFiles"))
       }
 
+      if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-all")){
+        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
+        sites <- unique(substr(tblnames, 10, 13))
+        sites <- sites[order(sites)]
+        d <- read.csv(tblfls[grep(sites[1], tblfls)][1], header = T, stringsAsFactors = F)
+        d <- assignClasses(d, variables)
+        d <- makePosColumns(d, tblnames[1])
+        for(j in 2:length(sites)){
+          sitefls <- tblfls[grep(sites[j], tblfls)]
+          sitenames <- tblnames[grep(sites[j], tblnames)]
+          d.next <- read.csv(sitefls[1], header = T, stringsAsFactors = F)
+          d.next <- assignClasses(d.next, variables)
+          d.next <- makePosColumns(d.next, sitenames[j])
+          d <- dplyr::full_join(d, d.next)
+        }
+        write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+        messages <- c(messages, paste("Stacked ", tables[i]))
+        if(i > 1){n <- n + 1}
+      }
+
+
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-date")){
-        tblfls <- filepaths[grep(tables[i], filepaths)]
-        tblnames <- filenames[grep(tables[i], filenames)]
+        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         d <- read.csv(tblfls[1], header = T, stringsAsFactors = F)
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])

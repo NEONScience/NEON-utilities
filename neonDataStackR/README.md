@@ -29,12 +29,10 @@ Warning: depending on the data product and data volume, pulling data from the AP
 For a tutorial explaining how to use the `neonDataStackR` package in more detail, view the [*Use the neonDataStackR Package to Access NEON Data* tutorial](http://www.neonscience.org/neonDataStackR).
 
 ### Known issues that prevent the use of this package with certain data products:
-* Data files in Stream discharge field collection, DP1.20048, need final line endings. Warnings will be generated but the program will
-still make stacked files. This will be resolved when this data product is re-published in the near future.
-* Instrumentation data (IS) are currently undergoing re-publication into NEON's cloud storage system. Data products that haven't been re-published yet are unlikely to be downloadable by `zipsByProduct()`.
 * Remote sensing data (AOP) are not provided in tabular form, therefore can't be stacked.
+* `zipsByProduct()` uses the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
 
-This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney.
+This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
 ### Credits & Acknowledgements
 The National Ecological Observatory Network is a project solely funded by the National Science Foundation and managed under cooperative agreement by Battelle. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
@@ -46,7 +44,18 @@ GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Information and documents contained within this repository are available as-is. Codes or documents, or their use, may not be supported or maintained under any program or service and may not be compatible with data currently available from the NEON Data Portal.
 
 ### Change Log
-##### 2017-09-21 v0.1.3 pecan
+
+##### 2018-01-24 v0.1.5 'filbert'
+-----------------
+* This release adds an option to delete the unzipped, unstacked files after stacking.
+* Also fixes a bug that incorrectly merged tables in the case where one table name was a substring of another table name.
+
+##### 2017-12-14 v0.1.4 'walnut'
+-----------------
+* 'Site-all' data tables were not being properly stacked. This package includes a new function to identify 'site-all' data tables and stack only one per site (site-all tables are exact replicates in each monthly package for a given site).
+* This release also formally includes the function zipsByProduct(), which allows the user to pull data using the NEON API and stack the tables in one step.
+
+##### 2017-09-21 v0.1.3 'pecan'
 -----------------
 This has two main bug fixes:
 * Stops stacking or overwriting multiple copies of a lab file that is the same from one monthly zip file to the next. The code now reads from table_types.rda to figure out whether a table is of type site-date, lab-all, lab-current, site-all. This file needs to be updated every time that a new or revised data product is available.

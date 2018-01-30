@@ -93,7 +93,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   }
 
   # get size info
-  zip.urls <- data.frame(zip.urls[-1,])
+  zip.urls <- data.frame(zip.urls)
   colnames(zip.urls) <- c("name", "URL", "size")
   downld.size <- sum(as.numeric(as.character(zip.urls$size)), na.rm=T)/1e6
   zip.urls$URL <- as.character(zip.urls$URL)
@@ -114,8 +114,8 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   dir.create(filepath)
 
   # copy zip files into folder
-  for(i in 1:nrow(zip.urls)) {
-    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"))
+  for(i in 2:nrow(zip.urls)) {
+    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), mode="wb")
   }
 }
 
