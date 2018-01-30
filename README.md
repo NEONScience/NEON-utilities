@@ -24,7 +24,6 @@ Credits & Acknowledgements
 
 
 <!-- HTML tags to produce image, resize, add hyperlink. -->
-<!-- ONLY WORKS WITH HTML or GITHUB documents -->
 <a href="http://www.neonscience.org/"> <img src="logo.png" width="300px" /> </a>
 
 
