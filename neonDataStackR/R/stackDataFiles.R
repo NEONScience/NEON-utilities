@@ -51,7 +51,23 @@ stackDataFiles <- function(folder){
 
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     tables <- findTablesUnique(names(datafls), ttypes)
-    externalLabFile <- filepaths[grep("externalSummary", filepaths)[1]]
+    messages <- character()
+
+    # find external lab tables (lab-current, lab-all) and copy the first file from each lab into stackedFiles
+    labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
+    if(length(labTables)>0){
+      labFilePaths <- filepaths[grep(labTables, filepaths)]
+      labFiles <- character()
+      labFiles <- unique(filenames[grep(labTables, filenames)])
+      if(length(labFiles)>0){
+        for(l in 1:length(labFiles)){
+          file.copy(from = labFilePaths[grep(labFiles[l], labFilePaths)][1], to = paste0(folder, "/stackedFiles/"))
+          messages <- c(messages, paste("Copied the first available", labFiles[l], "to /stackedFiles"))
+        }
+      }
+    }
+
+    # copy first variables and validation files to /stackedFiles
     varpath <- filepaths[grep("variables.20", filepaths)[1]]
 
     if(is.na(varpath)){
@@ -63,13 +79,6 @@ stackDataFiles <- function(folder){
       tables <- c(tables, "variables")
     } else {
       tables <- c(tables, "variables","validation")
-    }
-
-    messages <- character()
-
-    if(!is.na(externalLabFile)){
-      file.copy(from = externalLabFile, to = paste0(folder, "/stackedFiles/"))
-      messages <- c(messages, "Copied the first available external lab summary file to /stackedFiles")
     }
 
     if(!is.na(varpath)){
@@ -89,10 +98,10 @@ stackDataFiles <- function(folder){
       tbltype <- ttypes$tableType[which(ttypes$tableName == tables[i])]
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
-      if(length(tbltype) > 0 && !(tbltype %in% c("site-date", "site-all"))){
-        file.copy(from = filepaths[grep(tables[i], filepaths)][1], to = paste0(folder, "/stackedFiles/", tables[i], ".csv"))
-        messages <- c(messages, paste("Copied the first available", tables[i], "file to /stackedFiles"))
-      }
+      # if(length(tbltype) > 0 && !(tbltype %in% c("site-date", "site-all"))){
+      #   file.copy(from = filepaths[grep(tables[i], filepaths)][1], to = paste0(folder, "/stackedFiles/", tables[i], ".csv"))
+      #   messages <- c(messages, paste("Copied the first available", tables[i], "file to /stackedFiles"))
+      # }
 
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-all")){
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
