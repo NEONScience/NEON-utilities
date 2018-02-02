@@ -65,28 +65,53 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
 
   # get all the file names, and stash the URLs for just the zips in an object
   zip.urls <- c(NA, NA, NA)
+  messages <- NA
   for(i in 1:length(month.urls)) {
     tmp <- httr::GET(month.urls[i])
     tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
                                     simplifyDataFrame=T, flatten=T)
 
+    # check for no files
+    if(length(tmp.files$data$files)==0) {
+      messages <- c(messages, paste("No files found for site", tmp.files$data$siteCode,
+                                    "and month", tmp.files$data$month, sep=" "))
+      next
+    }
+    
+    all.zip <- grep(".zip", tmp.files$data$files$name, fixed=T)
+    
+    # error message if there are no zips in the package
+    if(length(all.zip)==0) {
+      messages <- c(messages, paste("No zip files found for site", tmp.files$data$siteCode,
+                 "and month", tmp.files$data$month, sep=" "))
+      next
+    }
+    
     # if package==expanded, check that expanded package exists
-    if(package=="expanded") {
-      if(length(grep(package, tmp.files$data$files$name))==0) {
-        stop(paste("There is no expanded package for product", dpID, sep=" "))
+    # if it doesn't, download basic package
+    pk <- package
+    if(pk=="expanded") {
+      if(length(grep(pk, tmp.files$data$files$name))==0) {
+        pk <- "basic"
+        messages <- c(messages, paste("No expanded package found for site ",
+                                      tmp.files$data$siteCode, " and month ", 
+                                      tmp.files$data$month, 
+                                      ". Basic package downloaded instead.", 
+                                      sep=""))
       }
     }
 
-    which.zip <- intersect(grep(package, tmp.files$data$files$name, fixed=T),
-                           grep("zip", tmp.files$data$files$name, fixed=T))
-
-    # error message if there are no zips in the package
+    which.zip <- intersect(grep(pk, tmp.files$data$files$name, fixed=T),
+                           grep(".zip", tmp.files$data$files$name, fixed=T))
+    
+    # check again for no files
     if(length(which.zip)==0) {
-      stop(paste("There are no zip files in the", package,
-                 "package for product", dpID,
-                 "\n Re-publication is pending for many IS products, check back soon."))
+      messages <- c(messages, paste("No basic package files found for site", 
+                                    tmp.files$data$siteCode,
+                                    "and month", tmp.files$data$month, sep=" "))
+      next
     }
-
+    
     zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.zip],
                                       tmp.files$data$files$url[which.zip],
                                       tmp.files$data$files$size[which.zip]))
@@ -117,6 +142,11 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   for(i in 2:nrow(zip.urls)) {
     downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), mode="wb")
   }
+  
+  messages <- c(messages, paste(nrow(zip.urls)-1, "zip files downloaded to",
+                                filepath, sep=" "))
+  writeLines(paste0(messages[-1], collapse = "\n"))
+  
 }
 
 
