@@ -30,6 +30,11 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   if(!package %in% c("basic", "expanded")) {
     stop(paste(package, "is not a valid package name. Package must be basic or expanded", sep=" "))
   }
+  
+  # error message if dpID isn't formatted as expected
+  if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
+    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
+  }
 
   # query the products endpoint for the product requested
   productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
@@ -118,7 +123,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   }
 
   # get size info
-  zip.urls <- data.frame(zip.urls)
+  zip.urls <- data.frame(zip.urls, row.names=NULL)
   colnames(zip.urls) <- c("name", "URL", "size")
   downld.size <- sum(as.numeric(as.character(zip.urls$size)), na.rm=T)/1e6
   zip.urls$URL <- as.character(zip.urls$URL)
