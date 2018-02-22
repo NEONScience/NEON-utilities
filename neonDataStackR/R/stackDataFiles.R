@@ -91,7 +91,7 @@ stackDataFiles <- function(folder){
       tables <- c(tables, "validation")
     }
 
-    n <- 1i
+    n <- 1
 
     for(i in 1:length(tables)){
       tbltype <- ttypes$tableType[which(ttypes$tableName == tables[i])]
