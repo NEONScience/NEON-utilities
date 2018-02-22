@@ -69,39 +69,33 @@ stackDataFiles <- function(folder){
 
     # copy first variables and validation files to /stackedFiles
     varpath <- filepaths[grep("variables.20", filepaths)[1]]
-
     if(is.na(varpath)){
       varpath <- filepaths[grep("variables", filepaths)[1]]
     }
-    valpath <- filepaths[grep("validation", filepaths)[1]]
-
-    if(is.na(valpath)){
-      tables <- c(tables, "variables")
-    } else {
-      tables <- c(tables, "variables","validation")
-    }
-
     if(!is.na(varpath)){
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
       messages <- c(messages, "Copied the first available variable definition file to /stackedFiles and renamed as variables.csv")
     }
 
+    valpath <- filepaths[grep("validation", filepaths)[1]]
     if(!is.na(valpath)){
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
       messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as validation.csv")
     }
 
-    n <- 1
+    if(!is.na(varpath)){
+      tables <- c(tables, "variables")
+    }
+    if(!is.na(valpath)){
+      tables <- c(tables, "validation")
+    }
+
+    n <- 1i
 
     for(i in 1:length(tables)){
       tbltype <- ttypes$tableType[which(ttypes$tableName == tables[i])]
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
-
-      # if(length(tbltype) > 0 && !(tbltype %in% c("site-date", "site-all"))){
-      #   file.copy(from = filepaths[grep(tables[i], filepaths)][1], to = paste0(folder, "/stackedFiles/", tables[i], ".csv"))
-      #   messages <- c(messages, paste("Copied the first available", tables[i], "file to /stackedFiles"))
-      # }
 
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-all")){
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
