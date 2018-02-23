@@ -105,7 +105,7 @@ stackDataFiles <- function(folder){
         d <- read.csv(tblfls[grep(sites[1], tblfls)][1], header = T, stringsAsFactors = F)
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
-        if(length(tblfls) > 1){
+        if(length(sites) > 1){
           for(j in 2:length(sites)){
             sitefls <- tblfls[grep(sites[j], tblfls)]
             sitenames <- tblnames[grep(sites[j], tblnames)]
