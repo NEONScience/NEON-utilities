@@ -105,13 +105,15 @@ stackDataFiles <- function(folder){
         d <- read.csv(tblfls[grep(sites[1], tblfls)][1], header = T, stringsAsFactors = F)
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
-        for(j in 2:length(sites)){
-          sitefls <- tblfls[grep(sites[j], tblfls)]
-          sitenames <- tblnames[grep(sites[j], tblnames)]
-          d.next <- read.csv(sitefls[1], header = T, stringsAsFactors = F)
-          d.next <- assignClasses(d.next, variables)
-          d.next <- makePosColumns(d.next, sitenames[j])
-          d <- dplyr::full_join(d, d.next)
+        if(length(tblfls) > 1){
+          for(j in 2:length(sites)){
+            sitefls <- tblfls[grep(sites[j], tblfls)]
+            sitenames <- tblnames[grep(sites[j], tblnames)]
+            d.next <- read.csv(sitefls[1], header = T, stringsAsFactors = F)
+            d.next <- assignClasses(d.next, variables)
+            d.next <- makePosColumns(d.next, sitenames[j])
+            d <- dplyr::full_join(d, d.next)
+          }
         }
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
         messages <- c(messages, paste("Stacked ", tables[i]))
