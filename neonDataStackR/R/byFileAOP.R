@@ -108,7 +108,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
 
   # create folder in working directory to put files in
   filepath <- paste(getwd(), "/", dpID, sep="")
-  dir.create(filepath)
+  if(dir.exists(filepath) == F) dir.create(filepath)
 
   # copy zip files into folder
   j <- 1
