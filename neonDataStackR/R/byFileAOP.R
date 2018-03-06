@@ -58,10 +58,11 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
     stop("There are no data at the selected site and year.")
   }
 
+  messages <- character()
+
   # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
   getFileUrls <- function(m.urls){
     file.urls <- c(NA, NA, NA)
-    messages <- character()
     for(i in 1:length(m.urls)) {
       tmp <- httr::GET(m.urls[i])
       tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
