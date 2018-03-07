@@ -58,10 +58,11 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
     stop("There are no data at the selected site and year.")
   }
 
-  messages <- character()
+
 
   # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
   getFileUrls <- function(m.urls){
+    url.messages <- character()
     file.urls <- c(NA, NA, NA)
     for(i in 1:length(m.urls)) {
       tmp <- httr::GET(m.urls[i])
@@ -70,7 +71,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
 
       # check for no files
       if(length(tmp.files$data$files)==0) {
-        messages <- c(messages, paste("No files found for site", tmp.files$data$siteCode,
+        url.messages <- c(url.messages, paste("No files found for site", tmp.files$data$siteCode,
                                       "and year", tmp.files$data$month, sep=" "))
         next
       }
@@ -86,7 +87,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
       file.urls$name <- as.character(file.urls$name)
       file.urls$downloaded <- 0
 
-      if(length(messages) > 0){writeLines(messages)}
+      if(length(url.messages) > 0){writeLines(url.messages)}
       file.urls <- file.urls[-1, ]
       return(file.urls)
     }
@@ -99,7 +100,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
   # ask user if they want to proceed
   # can disable this with check.size=F
   if(check.size==TRUE) {
-    resp <- readline(paste("Continuing will download files totaling approximately",
+    resp <- readline(paste("Continuing will download", nrow(file.urls.current), "files totaling approximately",
                            downld.size.read, ". Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
@@ -112,6 +113,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
 
   # copy zip files into folder
   j <- 1
+  messages <- character()
   while(j <= nrow(file.urls.current)) {
     t <- try(downloader::download(file.urls.current$URL[j], paste(filepath, file.urls.current$name[j], sep="/"), mode="wb"), silent = T)
     if(class(t) == "try-error"){
@@ -125,9 +127,5 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
       j = j + 1
     }
   }
-
-  messages <- c(messages, paste(nrow(file.urls.current)-1, "files downloaded to",
-                                filepath, sep=" "))
   writeLines(paste0(messages[-1], collapse = "\n"))
-
 }
