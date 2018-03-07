@@ -30,7 +30,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   if(!package %in% c("basic", "expanded")) {
     stop(paste(package, "is not a valid package name. Package must be basic or expanded", sep=" "))
   }
-  
+
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
@@ -44,13 +44,6 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   # error message if product not found
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
-  }
-
-  # error message if data are from AOP
-  # Christine do we want to put this here, or in stackByTable? People could
-  # use this function to pull data files even if they don't want to stack them
-  if(avail$data$productScienceTeamAbbr=="AOP") {
-    stop(paste(dpID, "is a remote sensing product and is not stackable."))
   }
 
   # get the urls for months with data available
@@ -82,16 +75,16 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
                                     "and month", tmp.files$data$month, sep=" "))
       next
     }
-    
+
     all.zip <- grep(".zip", tmp.files$data$files$name, fixed=T)
-    
+
     # error message if there are no zips in the package
     if(length(all.zip)==0) {
       messages <- c(messages, paste("No zip files found for site", tmp.files$data$siteCode,
                  "and month", tmp.files$data$month, sep=" "))
       next
     }
-    
+
     # if package==expanded, check that expanded package exists
     # if it doesn't, download basic package
     pk <- package
@@ -99,24 +92,24 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
       if(length(grep(pk, tmp.files$data$files$name))==0) {
         pk <- "basic"
         messages <- c(messages, paste("No expanded package found for site ",
-                                      tmp.files$data$siteCode, " and month ", 
-                                      tmp.files$data$month, 
-                                      ". Basic package downloaded instead.", 
+                                      tmp.files$data$siteCode, " and month ",
+                                      tmp.files$data$month,
+                                      ". Basic package downloaded instead.",
                                       sep=""))
       }
     }
 
     which.zip <- intersect(grep(pk, tmp.files$data$files$name, fixed=T),
                            grep(".zip", tmp.files$data$files$name, fixed=T))
-    
+
     # check again for no files
     if(length(which.zip)==0) {
-      messages <- c(messages, paste("No basic package files found for site", 
+      messages <- c(messages, paste("No basic package files found for site",
                                     tmp.files$data$siteCode,
                                     "and month", tmp.files$data$month, sep=" "))
       next
     }
-    
+
     zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.zip],
                                       tmp.files$data$files$url[which.zip],
                                       tmp.files$data$files$size[which.zip]))
@@ -138,7 +131,7 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
       stop("Download halted.")
     }
   }
-  
+
   # create folder in working directory to put files in
   filepath <- paste(getwd(), "/filesToStack", substr(dpID, 5, 9), sep="")
   dir.create(filepath)
@@ -147,11 +140,11 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
   for(i in 2:nrow(zip.urls)) {
     downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), mode="wb")
   }
-  
+
   messages <- c(messages, paste(nrow(zip.urls)-1, "zip files downloaded to",
                                 filepath, sep=" "))
   writeLines(paste0(messages[-1], collapse = "\n"))
-  
+
 }
 
 

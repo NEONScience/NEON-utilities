@@ -24,7 +24,23 @@
 #   Claire Lunch (2017-09-28)
 ##############################################################################################
 
-stackByTable <- function(filepath, folder=FALSE, saveUnzippedFiles = TRUE){
+stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUnzippedFiles = TRUE){
+  if(missing(dpID)){
+    stop("Missing a value for dpID")
+  }
+
+  # error message if package is not basic or expanded
+  if(!package %in% c("basic", "expanded")) {
+    stop(paste(package, "is not a valid package name. Package must be basic or expanded", sep=" "))
+  }
+
+  # error message if dpID isn't formatted as expected
+  if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
+    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001, where the first placeholder must be between 1 and 4.", sep=" "))
+  }
+
+  checkNonstackables(dpID, package)
+
   if(folder==FALSE) {
     location.data <- substr(filepath, 1, nchar(filepath)-4)
     unzipZipfile(zippath = filepath, outpath = location.data, level = "all")

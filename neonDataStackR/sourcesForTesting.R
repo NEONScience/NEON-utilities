@@ -1,4 +1,5 @@
 source("R/assignClasses.R")
+source("R/byFileAOP.R")
 source("R/findDataTables.R")
 source("R/findTablesUnique.R")
 source("R/getFilesize.R")
