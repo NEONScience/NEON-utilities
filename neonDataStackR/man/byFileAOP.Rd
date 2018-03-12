@@ -19,7 +19,8 @@ byFileAOP(dpID, site = "SJER", year = "2017", check.size = TRUE)
 A folder in the working directory, containing all files meeting query criteria.
 }
 \description{
-Query the API for AOP data by site, year, and product, and download all files found. Downloads serially to avoid overload; may take a very long time.
+Query the API for AOP data by site, year, and product, and download all files found, preserving original
+folder structure. Downloads serially to avoid overload; may take a very long time.
 }
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
