@@ -21,10 +21,10 @@
 
 checkNonstackables <- function(dpID, package='basic'){
   if(substr(dpID, 5, 5) == "3"){
-    stop("This is an AOP data product, files cannot be stacked.")
+    stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() instead.")
   }
   if(dpID == "DP4.00200.001"){
-    stop("This eddy covariance data product is in HDF5 format and cannot be stacked")
+    stop("This eddy covariance data product is in HDF5 format and cannot be stacked.")
   }
   if(dpID == "DP1.10017.001" && package != 'basic'){
     warning("Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.")
