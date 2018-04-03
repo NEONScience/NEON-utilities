@@ -20,7 +20,8 @@
 #   2018-04-03 (Christine Laney):
 #     * Swap read.csv() for data.table::fread() for faster data table loading
 #     * Swap data.table::merge() for dplyr::join() for faster table joins
-#     * Small tests indicate about 30% improvement on speed
+#     * Small tests indicate about 30-40% improvement on speed
+#     * Remove join messages, replace with progress bars
 ##############################################################################################
 
 stackDataFiles <- function(folder){
@@ -165,5 +166,5 @@ stackDataFiles <- function(folder){
   writeLines(paste("Finished: All of the data are stacked into ", n, " tables!"))
   writeLines(paste0(messages, collapse = "\n"))
   endtime <- Sys.time()
-  print(endtime-starttime)
+  writeLines(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
 }

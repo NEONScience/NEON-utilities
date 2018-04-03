@@ -12,7 +12,6 @@
 #' @param filepath The location of the zip file
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
-#' @param silent T or F: should general messages about unzipping or joining files be suppressed?
 #' @return All files are unzipped and one file for each table type is created and written.
 
 #' @export
@@ -23,13 +22,11 @@
 # Changelog and author contributions / copyrights
 #   2017-07-02 (Christine Laney): Original creation
 #   2017-09-28 (Claire Lunch): Add error messages
-#   2018-04-03 (Christine Laney):
-#     * Add error/warning messages for AOP, eddy covariance, and hemispheric digital photo data products (and if the latter,
-#       don't allow user to remove the unzipped files).
-#     * Add message suppression on user request
+#   2018-04-03 (Christine Laney): Add error/warning messages for AOP, eddy covariance, and hemispheric
+#       digital photo data products (and if the latter, don't allow user to remove the unzipped files).
 ##############################################################################################
 
-stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUnzippedFiles=TRUE, silent=FALSE){
+stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUnzippedFiles=TRUE){
 
   #### Check whether data should be stacked ####
 
@@ -65,20 +62,11 @@ stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUn
   if(folder==FALSE) {
     location.data <- substr(filepath, 1, nchar(filepath)-4)
     unzipZipfile(zippath = filepath, outpath = location.data, level = "all")
-    if(silent==TRUE){
-      suppressMessages(stackDataFiles(location.data))}
-    if(silent==FALSE){
-      stackDataFiles(location.data)
-    }
+    stackDataFiles(location.data)
     if(saveUnzippedFiles == FALSE){cleanUp(location.data)}
   } else {
     unzipZipfile(zippath = filepath, outpath = filepath, level = "in")
-    if(silent==TRUE){
-      suppressMessages(stackDataFiles(filepath))
-    }
-    if(silent==FALSE){
-      stackDataFiles(filepath)
-    }
+    stackDataFiles(filepath)
     if(saveUnzippedFiles == FALSE){cleanUp(filepath)}
   }
 }

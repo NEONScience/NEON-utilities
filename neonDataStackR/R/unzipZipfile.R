@@ -17,8 +17,9 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
-#   Christine Laney (2017-09-28)
-#   Claire Lunch (2017-09-28)
+#   2017-07-02 (Christine Laney): Original creation of function
+#   2017-09-28 (Claire Lunch): Addition of option for files downloaded using API (via zipsByProduct())
+#   2018-04-03 (Christine Laney): Replacement of line-by-line message of unzipping files with a progress bar
 ##############################################################################################
 
 unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
@@ -38,7 +39,6 @@ unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4)
         unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
         setTxtProgressBar(pb, 1/length(zps))
-#        writeLines(paste("Unpacked ", zps[i]))
       }
       setTxtProgressBar(pb, 1)
       close(pb)
@@ -56,7 +56,6 @@ unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4)
         unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
         setTxtProgressBar(pb, 1/length(zps))
-#        writeLines(paste("Unpacked ", zps[i]))
       }
       setTxtProgressBar(pb, 1)
       close(pb)
