@@ -9,6 +9,7 @@
 #' This should result in a small number of large files.
 
 #' @importFrom dplyr full_join
+#' @importFrom data.table fread merge
 #' @param folder The location of the data
 #' @return One file for each table type is created and written.
 
@@ -16,10 +17,16 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
-#   Christine Laney (2017-07-02)
+#   2017-07-02 (Christine Laney): Original creation
+#   2018-04-03 (Christine Laney):
+#     * Swap read.csv() for data.table::fread() for faster data table loading
+#     * Swap data.table::merge() for dplyr::join() for faster table joins
+#     * Small tests indicate about 30% improvement on speed
 ##############################################################################################
 
 stackDataFiles <- function(folder){
+  starttime <- Sys.time()
+
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   data("table_types")
   ttypes <- table_types
@@ -102,17 +109,17 @@ stackDataFiles <- function(folder){
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         sites <- unique(substr(tblnames, 10, 13))
         sites <- sites[order(sites)]
-        d <- read.csv(tblfls[grep(sites[1], tblfls)][1], header = T, stringsAsFactors = F)
+        d <- suppressWarnings(fread(tblfls[grep(sites[1], tblfls)][1], header = T))
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
         if(length(sites) > 1){
           for(j in 2:length(sites)){
             sitefls <- tblfls[grep(sites[j], tblfls)]
             sitenames <- tblnames[grep(sites[j], tblnames)]
-            d.next <- read.csv(sitefls[1], header = T, stringsAsFactors = F)
+            d.next <- suppressWarnings(fread(sitefls[1], header = T))
             d.next <- assignClasses(d.next, variables)
             d.next <- makePosColumns(d.next, sitenames[j])
-            d <- dplyr::full_join(d, d.next)
+            d <- merge(d, d.next, all = TRUE)
           }
         }
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
@@ -124,15 +131,15 @@ stackDataFiles <- function(folder){
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-date")){
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
-        d <- read.csv(tblfls[1], header = T, stringsAsFactors = F)
+        d <- suppressWarnings(fread(tblfls[1], header = T))
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
         if(length(tblfls) > 1){
           for(j in 2:length(tblfls)){
-            d.next <- read.csv(tblfls[j], header = T, stringsAsFactors = F)
+            d.next <- suppressWarnings(fread(tblfls[j], header = T))
             d.next <- assignClasses(d.next, variables)
             d.next <- makePosColumns(d.next, tblnames[j])
-            d <- dplyr::full_join(d, d.next)
+            d <- merge(d, d.next, all = TRUE)
           }
         }
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
@@ -144,5 +151,6 @@ stackDataFiles <- function(folder){
 
   writeLines(paste("Finished: All of the data are stacked into ", n, " tables!"))
   writeLines(paste0(messages, collapse = "\n"))
-
+  endtime <- Sys.time()
+  print(endtime-starttime)
 }

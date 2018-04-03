@@ -12,6 +12,7 @@
 #' @param filepath The location of the zip file
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
+#' @param silent T or F: should general messages about unzipping or joining files be suppressed?
 #' @return All files are unzipped and one file for each table type is created and written.
 
 #' @export
@@ -20,11 +21,18 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
-#   Christine Laney (2017-07-02)
-#   Claire Lunch (2017-09-28)
+#   2017-07-02 (Christine Laney): Original creation
+#   2017-09-28 (Claire Lunch): Add error messages
+#   2018-04-03 (Christine Laney):
+#     * Add error/warning messages for AOP, eddy covariance, and hemispheric digital photo data products (and if the latter,
+#       don't allow user to remove the unzipped files).
+#     * Add message suppression on user request
 ##############################################################################################
 
-stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUnzippedFiles = TRUE){
+stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUnzippedFiles=TRUE, silent=FALSE){
+
+  #### Check whether data should be stacked ####
+
   if(missing(dpID)){
     stop("Missing a value for dpID")
   }
@@ -39,16 +47,38 @@ stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUn
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001, where the first placeholder must be between 1 and 4.", sep=" "))
   }
 
-  checkNonstackables(dpID, package)
+  if(substr(dpID, 5, 5) == "3"){
+    stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() if you would like to download data.")
+  }
+
+  if(dpID == "DP4.00200.001"){
+    stop("This eddy covariance data product is in HDF5 format and cannot be stacked.")
+  }
+
+  if(dpID == "DP1.10017.001" && package != 'basic'){
+    saveUnzippedFiles = TRUE
+    writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.")
+  }
+
+  #### If all checks pass, unzip and stack files ####
 
   if(folder==FALSE) {
     location.data <- substr(filepath, 1, nchar(filepath)-4)
     unzipZipfile(zippath = filepath, outpath = location.data, level = "all")
-    stackDataFiles(location.data)
+    if(silent==TRUE){
+      suppressMessages(stackDataFiles(location.data))}
+    if(silent==FALSE){
+      stackDataFiles(location.data)
+    }
     if(saveUnzippedFiles == FALSE){cleanUp(location.data)}
   } else {
     unzipZipfile(zippath = filepath, outpath = filepath, level = "in")
-    stackDataFiles(filepath)
+    if(silent==TRUE){
+      suppressMessages(stackDataFiles(filepath))
+    }
+    if(silent==FALSE){
+      stackDataFiles(filepath)
+    }
     if(saveUnzippedFiles == FALSE){cleanUp(filepath)}
   }
 }
