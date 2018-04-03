@@ -67,15 +67,13 @@ stackByTable <- function(dpID, filepath, savepath = filepath, package = 'basic',
   if(folder==FALSE) {
     savepath <- substr(filepath, 1, nchar(filepath)-4)
     unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
-    stackDataFiles(savepath)
-    if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
   }
   if(folder==TRUE) {
     if(is.na(savepath)){savepath <- filepath}
     unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
-    stackDataFiles(savepath)
-    if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
   }
+  stackDataFiles(savepath)
+  if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
 
 }
 

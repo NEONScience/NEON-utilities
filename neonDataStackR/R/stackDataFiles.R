@@ -130,7 +130,8 @@ stackDataFiles <- function(folder){
           }
         }
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
-        messages <- c(messages, paste("Stacked ", tables[i], "which has", numRows, "out of the expected", nrow(d), "rows."))
+        messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
+                                       nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
         if(i > 1){n <- n + 1}
         setTxtProgressBar(pb, 1)
         close(pb)
@@ -159,7 +160,8 @@ stackDataFiles <- function(folder){
           }
         }
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
-        messages <- c(messages, paste("Stacked ", tables[i], "which has", numRows, "out of the expected", nrow(d), "rows."))
+        messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
+                                      nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
         if(i > 1){n <- n + 1}
         setTxtProgressBar(pb, 1)
         close(pb)
