@@ -9,7 +9,10 @@
 #' Given a zipped data file, do a full join of all data files, grouped by table type.
 #' This should result in a small number of large files.
 
+#' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param filepath The location of the zip file
+#' @param savepath The location to save the output files to
+#' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @return All files are unzipped and one file for each table type is created and written.
@@ -22,11 +25,13 @@
 # Changelog and author contributions / copyrights
 #   2017-07-02 (Christine Laney): Original creation
 #   2017-09-28 (Claire Lunch): Add error messages
-#   2018-04-03 (Christine Laney): Add error/warning messages for AOP, eddy covariance, and hemispheric
+#   2018-04-03 (Christine Laney):
+#     * Add error/warning messages for AOP, eddy covariance, and hemispheric
 #       digital photo data products (and if the latter, don't allow user to remove the unzipped files).
+#     * Allow user to specify the filepath to save to
 ##############################################################################################
 
-stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUnzippedFiles=TRUE){
+stackByTable <- function(dpID, filepath, savepath = filepath, package = 'basic', folder=FALSE, saveUnzippedFiles=FALSE){
 
   #### Check whether data should be stacked ####
 
@@ -60,15 +65,17 @@ stackByTable <- function(dpID, filepath, package = 'basic', folder=FALSE, saveUn
   #### If all checks pass, unzip and stack files ####
 
   if(folder==FALSE) {
-    location.data <- substr(filepath, 1, nchar(filepath)-4)
-    unzipZipfile(zippath = filepath, outpath = location.data, level = "all")
-    stackDataFiles(location.data)
-    if(saveUnzippedFiles == FALSE){cleanUp(location.data)}
-  } else {
-    unzipZipfile(zippath = filepath, outpath = filepath, level = "in")
-    stackDataFiles(filepath)
-    if(saveUnzippedFiles == FALSE){cleanUp(filepath)}
+    savepath <- substr(filepath, 1, nchar(filepath)-4)
+    unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
+    stackDataFiles(savepath)
+    if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
   }
-}
+  if(folder==TRUE) {
+    if(is.na(savepath)){savepath <- filepath}
+    unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
+    stackDataFiles(savepath)
+    if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
+  }
 
+}
 
