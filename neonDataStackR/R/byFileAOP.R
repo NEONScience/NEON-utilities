@@ -6,7 +6,8 @@
 #' Christine Laney \email{claney@battelleecology.org}
 
 #' @description
-#' Query the API for AOP data by site, year, and product, and download all files found. Downloads serially to avoid overload; may take a very long time.
+#' Query the API for AOP data by site, year, and product, and download all files found, preserving original
+#' folder structure. Downloads serially to avoid overload; may take a very long time.
 #'
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param site The four-letter code of a single NEON site, e.g. 'CLBJ'.
@@ -57,10 +58,11 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
     stop("There are no data at the selected site and year.")
   }
 
-  messages <- character()
+
 
   # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
   getFileUrls <- function(m.urls){
+    url.messages <- character()
     file.urls <- c(NA, NA, NA)
     for(i in 1:length(m.urls)) {
       tmp <- httr::GET(m.urls[i])
@@ -69,7 +71,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
 
       # check for no files
       if(length(tmp.files$data$files)==0) {
-        messages <- c(messages, paste("No files found for site", tmp.files$data$siteCode,
+        url.messages <- c(url.messages, paste("No files found for site", tmp.files$data$siteCode,
                                       "and year", tmp.files$data$month, sep=" "))
         next
       }
@@ -83,9 +85,8 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
       colnames(file.urls) <- c("name", "URL", "size")
       file.urls$URL <- as.character(file.urls$URL)
       file.urls$name <- as.character(file.urls$name)
-      file.urls$downloaded <- 0
 
-      if(length(messages) > 0){writeLines(messages)}
+      if(length(url.messages) > 0){writeLines(url.messages)}
       file.urls <- file.urls[-1, ]
       return(file.urls)
     }
@@ -98,7 +99,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
   # ask user if they want to proceed
   # can disable this with check.size=F
   if(check.size==TRUE) {
-    resp <- readline(paste("Continuing will download files totaling approximately",
+    resp <- readline(paste("Continuing will download", nrow(file.urls.current), "files totaling approximately",
                            downld.size.read, ". Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
@@ -111,22 +112,28 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
 
   # copy zip files into folder
   j <- 1
+  messages <- list()
   while(j <= nrow(file.urls.current)) {
-    t <- try(downloader::download(file.urls.current$URL[j], paste(filepath, file.urls.current$name[j], sep="/"), mode="wb"), silent = T)
+    path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
+    pathparts <- strsplit(path1, "\\/")
+    path2 <- paste(pathparts[[1]][4:(length(pathparts[[1]])-1)], collapse="/")
+    newpath <- paste0(filepath, "/", path2)
+
+    if(dir.exists(newpath) == F) dir.create(newpath, recursive = T)
+    t <- try(downloader::download(file.urls.current$URL[j],
+                                  paste(newpath, file.urls.current$name[j], sep="/"),
+                                  mode="wb"), silent = T)
+
     if(class(t) == "try-error"){
       writeLines("File could not be downloaded. URLs may have expired. Getting new URLs.")
       file.urls.new <- getFileUrls(month.urls)
-      file.urls.current <- merge(file.urls.current, file.urls.new, by = names(file.urls.current), all.x = F, all.y = T)
+      file.urls.current <- file.urls.new
       writeLines("Continuing downloads.")}
-    else {
-      messages <- c(messages, paste(file.urls.current$name[j], "downloaded to",
-                                    filepath, sep=" "))
+    if(class(t) != "try-error"){
+      messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
       j = j + 1
     }
   }
-
-  messages <- c(messages, paste(nrow(file.urls.current)-1, "files downloaded to",
-                                filepath, sep=" "))
-  writeLines(paste0(messages[-1], collapse = "\n"))
-
+  writeLines(paste("Successfully downloaded ", length(messages), " files."))
+  writeLines(paste0(messages, collapse = "\n"))
 }
