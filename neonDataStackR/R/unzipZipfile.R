@@ -17,8 +17,9 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
-#   Christine Laney (2017-09-28)
-#   Claire Lunch (2017-09-28)
+#   2017-07-02 (Christine Laney): Original creation of function
+#   2017-09-28 (Claire Lunch): Addition of option for files downloaded using API (via zipsByProduct())
+#   2018-04-03 (Christine Laney): Replacement of line-by-line message of unzipping files with a progress bar
 ##############################################################################################
 
 unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
@@ -29,25 +30,35 @@ unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4)
   if(level == "all"){
     unzip(zipfile = zippath, exdir=outpath)
     zps <- listZipfiles(zippath)
+    writeLines("Unpacking zip files")
+    pb <- txtProgressBar(style=3)
+    setTxtProgressBar(pb, 0)
     if(length(zps) >= 1){
       for(i in 1:length(zps)){
         p <- paste0(outpath, "/", zps[i])
         unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
-        writeLines(paste("Unpacked ", zps[i]))
+        setTxtProgressBar(pb, 1/length(zps))
       }
+      setTxtProgressBar(pb, 1)
+      close(pb)
     } else writeLines("This zip file doesn't contain monthly data packages")
   }
 
   if(level == "in"){
     zps <- list.files(zippath)
+    writeLines("Unpacking zip files")
+    pb <- txtProgressBar(style=3)
+    setTxtProgressBar(pb, 0)
     if(length(zps) >= 1){
       for(i in 1:length(zps)){
         p <- paste0(zippath, "/", zps[i])
         unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
-        writeLines(paste("Unpacked ", zps[i]))
+        setTxtProgressBar(pb, 1/length(zps))
       }
+      setTxtProgressBar(pb, 1)
+      close(pb)
     } else writeLines("This zip file doesn't contain monthly data packages")
   }
 }

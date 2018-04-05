@@ -8,7 +8,6 @@
 #' Given a folder of unzipped files (unzipped NEON data file), do a full join of all data files, grouped by table type.
 #' This should result in a small number of large files.
 
-#' @importFrom dplyr full_join
 #' @param folder The location of the data
 #' @return One file for each table type is created and written.
 
@@ -16,10 +15,17 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
-#   Christine Laney (2017-07-02)
+#   2017-07-02 (Christine Laney): Original creation
+#   2018-04-03 (Christine Laney):
+#     * Swap read.csv() for data.table::fread() for faster data table loading
+#     * Swap data.table::rbind() for dplyr::join() for faster table joins
+#     * Remove join messages, replace with progress bars
+#     * Provide comparison of number of rows expected per stacked table vs number of row in final table
 ##############################################################################################
 
 stackDataFiles <- function(folder){
+  starttime <- Sys.time()
+
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   data("table_types")
   ttypes <- table_types
@@ -98,51 +104,72 @@ stackDataFiles <- function(folder){
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-all")){
+        writeLines(paste0("Stacking table ", tables[i]))
+        pb <- utils::txtProgressBar(style=3)
+        utils::setTxtProgressBar(pb, 0)
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         sites <- unique(substr(tblnames, 10, 13))
         sites <- sites[order(sites)]
-        d <- read.csv(tblfls[grep(sites[1], tblfls)][1], header = T, stringsAsFactors = F)
+        d <- suppressWarnings(data.table::fread(tblfls[grep(sites[1], tblfls)][1], header = T))
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
+        numRows <- nrow(d)
+        utils::setTxtProgressBar(pb, 1/length(tblfls))
         if(length(sites) > 1){
           for(j in 2:length(sites)){
             sitefls <- tblfls[grep(sites[j], tblfls)]
             sitenames <- tblnames[grep(sites[j], tblnames)]
-            d.next <- read.csv(sitefls[1], header = T, stringsAsFactors = F)
+            d.next <- suppressWarnings(data.table::fread(sitefls[1], header = T))
             d.next <- assignClasses(d.next, variables)
             d.next <- makePosColumns(d.next, sitenames[j])
-            d <- dplyr::full_join(d, d.next)
+            numRows <- sum(numRows, nrow(d.next))
+            d <- rbind(d, d.next, fill = TRUE)
+            utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
           }
         }
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
-        messages <- c(messages, paste("Stacked ", tables[i]))
+        messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
+                                       nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
         if(i > 1){n <- n + 1}
+        utils::setTxtProgressBar(pb, 1)
+        close(pb)
       }
 
 
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-date")){
+        writeLines(paste0("Stacking table ", tables[i]))
+        pb <- utils::txtProgressBar(style=3)
+        utils::setTxtProgressBar(pb, 0)
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
-        d <- read.csv(tblfls[1], header = T, stringsAsFactors = F)
+        d <- suppressWarnings(data.table::fread(tblfls[1], header = T))
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
+        numRows <- nrow(d)
+        utils::setTxtProgressBar(pb, 1/length(tblfls))
         if(length(tblfls) > 1){
           for(j in 2:length(tblfls)){
-            d.next <- read.csv(tblfls[j], header = T, stringsAsFactors = F)
+            d.next <- suppressWarnings(data.table::fread(tblfls[j], header = T))
             d.next <- assignClasses(d.next, variables)
             d.next <- makePosColumns(d.next, tblnames[j])
-            d <- dplyr::full_join(d, d.next)
+            numRows <- sum(numRows, nrow(d.next))
+            d <- rbind(d, d.next, fill = TRUE)
+            utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
           }
         }
         write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
-        messages <- c(messages, paste("Stacked ", tables[i]))
+        messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
+                                      nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
         if(i > 1){n <- n + 1}
+        utils::setTxtProgressBar(pb, 1)
+        close(pb)
       }
     }
   }
 
   writeLines(paste("Finished: All of the data are stacked into ", n, " tables!"))
   writeLines(paste0(messages, collapse = "\n"))
-
+  endtime <- Sys.time()
+  writeLines(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
 }

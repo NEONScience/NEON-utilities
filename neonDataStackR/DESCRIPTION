@@ -1,15 +1,16 @@
 Package: neonDataStackR
-Version: 0.1.1
-Date: 2017-07-02
+Version: 0.1.6
+Date: 2018-04-05
 Title: Unzips and stacks monthly data files from NEON
-Author: Christine Laney <claney@battelleecology.org>
-Maintainer: Christine Laney <claney@battelleecology.org>
+Author: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
+Maintainer: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
 Description: NEON data packages are delivered as monthly zip files packaged within a parent
     zip file. This package unzips all files and provides options to organize the data files
     and merge the monthly data files into different configurations. This includes grouping 
-    data by site or type.
-Depends: R (>= 3.2.0), stats, utils
-Imports: dplyr(>= 0.7.1), gdata(>= 2.18), httr, jsonlite, downloader
+    data by site or type. This package includes other utilities, such as converting files 
+    from CSV to GeoCSV formats, and downloading AOP files using the NEON API.
+Depends: R (>= 3.2.0)
+Imports: dplyr(>= 0.7.1), gdata(>= 2.18), httr, jsonlite, downloader, data.table, RMySQL, utils, stats
 License: AGPL-3 + file LICENSE
 URL: https://github.com/NEONScience/NEON-utilities
 BugReports: https://github.com/NEONScience/NEON-utilities/issues
