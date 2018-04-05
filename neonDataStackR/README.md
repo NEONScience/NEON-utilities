@@ -12,7 +12,7 @@ This provides one basic function, `stackByTable()`.
 library(devtools)
 install_github("NEONScience/NEON-utilities/neonDataStackR", dependencies=TRUE)
 library (neonDataStackR)
-stackByTable("testdata/NEON_size-dust-particulate.zip")
+stackByTable(dpID="DP1.10017.001","testdata/NEON_size-dust-particulate.zip")
 ```
 
 A feeder function, `zipsByProduct()`, can be used to pull data from the NEON API in the correct format to be stacked by `stackByTable()`.
@@ -44,6 +44,13 @@ GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Information and documents contained within this repository are available as-is. Codes or documents, or their use, may not be supported or maintained under any program or service and may not be compatible with data currently available from the NEON Data Portal.
 
 ### Change Log
+#### 2018-04-05 v0.1.6 'brazil'
+-----------------
+* Added function to convert individual NEON csv files to GeoCSV format
+* Added better messaging for progress of data unzipping and stacking
+* Formally added byFileAOP() for downloading large amounts of AOP data using the API; no longer fails if download duration exceeds 24 hours.
+* Added warning messages if stackByTable() is used for remote sensing (AOP), eddy covariance, or digital hemipsheric photos.
+* NOTE: dpID now must be included in call to stackByTable()
 
 ##### 2018-01-24 v0.1.5 'filbert'
 -----------------
