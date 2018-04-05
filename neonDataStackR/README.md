@@ -49,9 +49,9 @@ Information and documents contained within this repository are available as-is. 
 * Added function to convert individual NEON csv files to GeoCSV format
 * Loading csv files and stacking files now use the ```data.table fread()``` and ```rbind()``` functions, respectively. This speeds up the stacking process.
 * Added better messaging for progress of data unzipping and stacking
-* Formally added byFileAOP() for downloading large amounts of AOP data using the API; no longer fails if download duration exceeds 24 hours.
+* Formally added ```byFileAOP()``` for downloading large amounts of AOP data using the API; no longer fails if download duration exceeds 24 hours.
 * Added warning messages if stackByTable() is used for remote sensing (AOP), eddy covariance, or digital hemipsheric photos.
-* NOTE: dpID now must be included in call to stackByTable()
+* NOTE: dpID now must be included in call to ```stackByTable()```
 
 ##### 2018-01-24 v0.1.5 'filbert'
 -----------------
