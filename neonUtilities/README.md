@@ -3,22 +3,35 @@ The `neonUtilities` R package provides utilites for discovering, downloading, an
 
 This package was developed on top of the deprecated `neonDataStackR` package; change logs from that package are included below.
 
+### Starting out
+Install the package into your local environment using the following code:
+```
+library(devtools)
+install_github("NEONScience/NEON-utilities/neonUtilities", dependencies=TRUE)
+library (neonUtilities)
+```
+
 ### Primary functions
 `stackByTable()` unzips monthly packages, finds the CSV data files, and joins them by table (e.g., 2DWSD_2min, 2DWSD_30min for 2D Wind Speed and Direction). For data products from instrumented systems that have multiple sensors placed at various heights (or depths) and/or horizontal positions away from the supporting tower, this function will create 2 columns in addition to the existing columns, one for horizontalPosition and the other for verticalPosition. This function will only work for data products that organize data in CSV files. Other data file types, such as HDF5 files from the eddy covariance system and remote sensing airborne observing platform (AOP) are not supported.
 
 This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
-``` 
-library(devtools)
-install_github("NEONScience/NEON-utilities/neonUtilities", dependencies=TRUE)
-library (neonUtilities)
+```
 stackByTable(dpID="DP1.10017.001", filepath = "testdata/NEON_size-dust-particulate.zip") # modify filepath to your directory
+```
+
+`getPackage()` can be used to pull a single zip file (all the data for a single data product by site by month combination) using the NEON API.
+
+```
+# Plant phenology observations from the Jornada LTER site, May 2017
+getPackage(dpID = "DP1.10055.001", site_code = "JORN", year_month = "2017-05", package = "basic")
 ```
 
 `zipsByProduct()` pulls data from the NEON API in the correct format to be stacked by `stackByTable()`. Depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.
 
 ```
 {
+# Herbaceous clip harvest data, from all sites and months for which it is currently available
 zipsByProduct(dpID="DP1.10023.001", site="all", package="basic", check.size=T)
 stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 }
@@ -27,6 +40,7 @@ stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 `byFileAOP()` pulls data from the NEON API, specifically for remote sensing (AOP) data. This function preserves the file directory hierarchy that AOP files are typically stored in, making it easier to navigate a large number of downloaded files.
 
 ```
+# Lidar slant rangeform data from Santa Rita Experimental Range, 2017 flight
 byFileAOP(dpID = "DP3.30001.001", site = "SRER", year = "2017", check.size = T)
 ```
 
