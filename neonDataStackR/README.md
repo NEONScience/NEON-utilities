@@ -1,3 +1,6 @@
+### Deprecation Notice 2018-04-09
+Due to the evolution of this package from just a 'file stacker' to a more comprehensive toolkit for working with NEON datasets, the name of this package has been changed to neonUtilities. Please see https://github.com/NEONScience/NEON-utilities/tree/master/neonUtilities and update your code and documentation accordingly. neonDataStackR will no longer be maintained.
+
 ### Description
 Provisional NEON data files from instrumented and observation systems are delivered by NEON within zip files organized by site and 
 year-month. `neonDataStackR` is an R package for unzipping and joining the data files within a single downloaded zip package (in a single step using `stackByTable()` - all other functions support this one). Data will be grouped into new files by table name (e.g., 2DWSD_2min, 2DWSD_30min for 2D Wind Speed and Direction). For data products from instrumented systems that have multiple sensors placed at various heights (or depths) and/or horizontal positions away from the supporting tower, neonDataStackR will create 2 columns in addition to the existing columns, one for horizontalPosition and the other for verticalPosition.
