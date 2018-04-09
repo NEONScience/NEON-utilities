@@ -3,6 +3,9 @@ The `neonUtilities` R package provides utilites for discovering, downloading, an
 
 This package was developed on top of the deprecated `neonDataStackR` package; change logs from that package are included below.
 
+This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
+
+
 ### Starting out
 Install the package into your local environment using the following code:
 ```
@@ -14,7 +17,6 @@ library (neonUtilities)
 ### Primary functions
 `stackByTable()` unzips monthly packages, finds the CSV data files, and joins them by table (e.g., 2DWSD_2min, 2DWSD_30min for 2D Wind Speed and Direction). For data products from instrumented systems that have multiple sensors placed at various heights (or depths) and/or horizontal positions away from the supporting tower, this function will create 2 columns in addition to the existing columns, one for horizontalPosition and the other for verticalPosition. This function will only work for data products that organize data in CSV files. Other data file types, such as HDF5 files from the eddy covariance system and remote sensing airborne observing platform (AOP) are not supported.
 
-This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
 ```
 stackByTable(dpID="DP1.10017.001", filepath = "testdata/NEON_size-dust-particulate.zip") # modify filepath to your directory
@@ -48,10 +50,10 @@ byFileAOP(dpID = "DP3.30001.001", site = "SRER", year = "2017", check.size = T)
 
 ### Getting help with this package
  
-For a tutorial explaining how to use the `neonUtilities` package in more detail, view the [*Use the neonUtilities Package to Access NEON Data* tutorial](http://www.neonscience.org/neonUtilities).
+For a tutorial explaining how to use the `neonUtilities` package in more detail, view the [*Use the neonUtilities Package to Access NEON Data* tutorial](http://www.neonscience.org/neonDataStackR).
 
 ### Known issues 
-* `zipsByProduct()` uses the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
+* `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
 
 ### Credits & Acknowledgements
 The National Ecological Observatory Network is a project solely funded by the National Science Foundation and managed under cooperative agreement by Battelle. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
