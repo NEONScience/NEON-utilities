@@ -17,6 +17,8 @@
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
+#' @export
+
 # Changelog and author contributions / copyrights
 #   2018-01-09 (Christine Laney): Created function
 ##############################################################################################

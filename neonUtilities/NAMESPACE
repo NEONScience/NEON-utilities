@@ -2,6 +2,7 @@
 
 export(byFileAOP)
 export(getFilesize)
+export(getPackage)
 export(listFilesInZip)
 export(listZipfiles)
 export(stackByTable)
