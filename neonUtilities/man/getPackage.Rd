@@ -4,7 +4,8 @@
 \alias{getPackage}
 \title{Get NEON data package}
 \usage{
-getPackage(dpID, site_code, year_month, package = "basic")
+getPackage(dpID, site_code, year_month, package = "basic",
+  savepath = getwd())
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
@@ -14,6 +15,8 @@ getPackage(dpID, site_code, year_month, package = "basic")
 \item{year_month}{The year and month of interest, in format YYYY-MM.}
 
 \item{package}{Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.}
+
+\item{savepath}{The location to save the output files to}
 }
 \value{
 A zipped monthly file
