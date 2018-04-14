@@ -35,7 +35,7 @@ getPackage(dpID = "DP1.10055.001", site_code = "JORN", year_month = "2017-05", p
 {
 # Herbaceous clip harvest data, from all sites and months for which it is currently available
 zipsByProduct(dpID="DP1.10023.001", site="all", package="basic", check.size=T)
-stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
+stackByTable(dpID="DP1.10023.001", paste0(getwd(), "/filesToStack10023"), folder=T)
 }
 ```
 
