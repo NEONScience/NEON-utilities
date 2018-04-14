@@ -4,12 +4,12 @@
 \alias{assignClasses}
 \title{Assign correct column classes}
 \usage{
-assignClasses(df, inVars)
+assignClasses(dt, inVars)
 }
 \arguments{
-\item{df}{A data frame}
-
 \item{inVars}{The variables expected in the df}
+
+\item{df}{A data frame}
 }
 \value{
 A data frame with corrected column classes

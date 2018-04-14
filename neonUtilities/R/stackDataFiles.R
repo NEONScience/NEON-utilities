@@ -21,6 +21,8 @@
 #     * Swap data.table::rbind() for dplyr::join() for faster table joins
 #     * Remove join messages, replace with progress bars
 #     * Provide comparison of number of rows expected per stacked table vs number of row in final table
+#   2018-04-13 (Christine Laney):
+#     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format. Adjusted script to stack properly.
 ##############################################################################################
 
 stackDataFiles <- function(folder){
@@ -100,13 +102,15 @@ stackDataFiles <- function(folder){
     n <- 1
 
     for(i in 1:length(tables)){
-      tbltype <- ttypes$tableType[which(ttypes$tableName == tables[i])]
+      tbltype <- ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))]
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
       if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-all")){
         writeLines(paste0("Stacking table ", tables[i]))
         pb <- utils::txtProgressBar(style=3)
         utils::setTxtProgressBar(pb, 0)
+        #tblfls <- filepaths[grep(tables[i], filepaths, fixed=T)]
+        #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         sites <- unique(substr(tblnames, 10, 13))
@@ -122,7 +126,7 @@ stackDataFiles <- function(folder){
             sitenames <- tblnames[grep(sites[j], tblnames)]
             d.next <- suppressWarnings(data.table::fread(sitefls[1], header = T))
             d.next <- assignClasses(d.next, variables)
-            d.next <- makePosColumns(d.next, sitenames[j])
+            d.next <- makePosColumns(d.next, sitenames[1])
             numRows <- sum(numRows, nrow(d.next))
             d <- rbind(d, d.next, fill = TRUE)
             utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
@@ -141,6 +145,8 @@ stackDataFiles <- function(folder){
         writeLines(paste0("Stacking table ", tables[i]))
         pb <- utils::txtProgressBar(style=3)
         utils::setTxtProgressBar(pb, 0)
+        #tblfls <- filepaths[grep(tables[i], filepaths, fixed=T)]
+        #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         d <- suppressWarnings(data.table::fread(tblfls[1], header = T))

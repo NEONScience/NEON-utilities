@@ -7,12 +7,12 @@
 makePosColumns(d, datafl)
 }
 \arguments{
-\item{d}{A data frame}
+\item{d}{A data table}
 
 \item{datafl}{A data file name}
 }
 \value{
-A data frame with new columns
+A data table with new columns
 }
 \description{
 For instrumented meteorological data products, create position (horizontal and vertical) columns based on values
