@@ -20,6 +20,7 @@
 # Changelog and author contributions / copyrights
 #   2018-01-09 (Christine Laney): Created function
 #   2018-04-04 (Christine Laney): Updated function documentation
+#   2018-04-17 (Christine Laney): Added field descriptions under the keyword field_long_name
 ##############################################################################################
 
 transformFileToGeoCSV <- function(infile, varfile, outfile){
@@ -33,6 +34,7 @@ transformFileToGeoCSV <- function(infile, varfile, outfile){
   line_institution <- "# institution: National Ecological Observatory Network (NEON)"
   line_attribution <- "# attribution: http://www.neonscience.org/data-resources/data-usage-citations"
   line_resource <- "# resource: http://data.neonscience.org"
+  line_field_long_name <- "# field_long_name: "
   line_field_unit <- "# field_unit: "
   line_field_type <- "# field_type: "
   line_delimiter <- '# delimiter: ","'
@@ -47,11 +49,15 @@ transformFileToGeoCSV <- function(infile, varfile, outfile){
     unit <- vars$units[which(names(datafile)[i] == vars$fieldName)][1]
     if(is.na(unit) || unit == "NA"){unit = "unitless"}
 
+    long_name <- vars$description[which(names(datafile)[i] == vars$fieldName)][1]
+
     if(i == 1){
+      line_field_long_name <- paste0(line_field_long_name, long_name)
       line_field_unit <- paste0(line_field_unit, unit)
       line_field_type <- paste0(line_field_type, type)
     }
     if(i > 1){
+      line_field_long_name <- paste(line_field_long_name, long_name, sep = ", ")
       line_field_type <- paste(line_field_type, type, sep = ", ")
       line_field_unit <- paste(line_field_unit, unit, sep = ", ")
     }
@@ -65,6 +71,7 @@ transformFileToGeoCSV <- function(infile, varfile, outfile){
   addText(line_institution, outfile)
   addText(line_attribution, outfile)
   addText(line_resource, outfile)
+  addText(line_field_long_name, outfile)
   addText(line_field_type, outfile)
   addText(line_field_unit, outfile)
   write.table(datafile, file = outfile, row.names = FALSE, append = TRUE, sep = ",",
