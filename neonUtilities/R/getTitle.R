@@ -21,18 +21,24 @@
 
 getTitle <- function(filename) {
   splitName <- strsplit(x = filename, split = "\\.")
-  site <- splitName[[1]][3]
-  dpID <- substr(filename, 15, 27)
-  hor <- splitName[[1]][7]
-  ver <- splitName[[1]][8]
-  time <- paste(splitName[[1]][9], " minute resolution") #this will need updating for non met data products
-  ym <- splitName[[1]][11]
-  ym <- as.Date(x = paste0(ym, "-01"), format = "%Y-%m-%d")
-  y <- format(ym, "%Y")
-  m <- format(ym, "%B")
-  uri <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
-  data_info <- jsonlite::fromJSON(txt = uri)
-  dpName <- data_info$data$productName
-  title <- paste("NEON", dpName, "data from", site, m, y, "at horizontal level", hor, "and vertical position", ver, sep = " " )
-  return(title)
+  if(length(splitName[[1]])==2){
+    tableName <- splitName[[1]][1]
+    title <- paste0("NEON ", tableName, " data from multiple sites and/or months")
+  }
+  if(length(splitName[[1]]) > 2){
+    site <- splitName[[1]][3]
+    dpID <- substr(filename, 15, 27)
+    hor <- splitName[[1]][7]
+    ver <- splitName[[1]][8]
+    time <- paste(splitName[[1]][9], " minute resolution") #this will need updating for non met data products
+    ym <- splitName[[1]][11]
+    ym <- as.Date(x = paste0(ym, "-01"), format = "%Y-%m-%d")
+    y <- format(ym, "%Y")
+    m <- format(ym, "%B")
+    uri <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
+    data_info <- jsonlite::fromJSON(txt = uri)
+    dpName <- data_info$data$productName
+    title <- paste("NEON", dpName, "data from", site, m, y, "at horizontal level", hor, "and vertical position", ver, sep = " " )
+  }
+ return(title)
 }
