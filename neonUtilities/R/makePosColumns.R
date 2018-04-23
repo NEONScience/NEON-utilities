@@ -30,21 +30,21 @@ makePosColumns <- function(d, datafl){
   if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){}
 
   nc <- ncol(d)
-  if(length(d.splitName[[1]]) %in% c(12,14)){
-    if(length(d.splitName[[1]]) == 12){
+  if(length(datafl.splitName[[1]]) %in% c(12,14)){
+    if(length(datafl.splitName[[1]]) == 12){
       horPos <- 8
       verPos <- 9
     }
-    if(length(d.splitName[[1]]) == 14){
+    if(length(datafl.splitName[[1]]) == 14){
       horPos <- 7
       verPos <- 8
     }
     if(!("siteID" %in% names(d))){
-      d$domainID <- rep(as.character(d.splitName[[1]][2]), nrow(d))
-      d$siteID <- rep(as.character(d.splitName[[1]][3]), nrow(d))
+      d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
+      d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
     }
-    d$horizontalPosition <- rep(as.character(d.splitName[[1]][horPos]), nrow(d))
-    d$verticalPosition <- rep(as.character(d.splitName[[1]][verPos]), nrow(d))
+    d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
+    d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
     d$horizontalPosition <- as.character(d$horizontalPosition)
     d$verticalPosition <- as.character(d$verticalPosition)
     d <- data.table::setcolorder(d, c((nc+1):(nc+4),1:nc))
