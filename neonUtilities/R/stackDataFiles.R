@@ -29,8 +29,8 @@ stackDataFiles <- function(folder){
   starttime <- Sys.time()
 
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
-  data("table_types")
-  ttypes <- table_types
+  # data("table_types")
+  ttypes <- data(table_types, package = "neonUtilities")
 
   # filenames without full path
   filenames <- findDatatables(folder = folder, fnames = F)
