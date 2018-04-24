@@ -12,7 +12,7 @@ Description: NEON data packages can be accessed through the NEON Data Portal (ht
     formats. This package is still in development and subject to change. For more information, see the readme file
     at https://github.com/NEONScience/NEON-utilities.
 Depends: R (>= 3.2.0)
-Imports: dplyr(>= 0.7.1), gdata(>= 2.18), httr, jsonlite, downloader, data.table, RMySQL, utils, stats, devtools
+Imports: dplyr(>= 0.7.1), gdata(>= 2.18), httr, jsonlite, downloader, data.table, RMySQL, utils, stats
 License: AGPL-3 + file LICENSE
 URL: https://github.com/NEONScience/NEON-utilities
 BugReports: https://github.com/NEONScience/NEON-utilities/issues
