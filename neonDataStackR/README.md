@@ -29,13 +29,11 @@ stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 
 Warning: depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.
 
-For a tutorial explaining how to use the `neonDataStackR` package in more detail, view the [*Use the neonDataStackR Package to Access NEON Data* tutorial](http://www.neonscience.org/neonDataStackR).
-
 ### Known issues that prevent the use of this package with certain data products:
 * Remote sensing data (AOP) are not provided in tabular form, therefore can't be stacked.
 * `zipsByProduct()` uses the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
 
-This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
+This package is **no longer  maintainted**. If you encounter issues, please see https://github.com/NEONScience/NEON-utilities/tree/master/neonUtilities and update your code and documentation accordingly.
 
 ### Credits & Acknowledgements
 The National Ecological Observatory Network is a project solely funded by the National Science Foundation and managed under cooperative agreement by Battelle. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
