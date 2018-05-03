@@ -75,7 +75,11 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
                                     "and month", tmp.files$data$month, sep=" "))
       next
     }
+    
+    # if only one averaging interval, subset to those
+    
 
+    # to get all data, proceed to zip files
     all.zip <- grep(".zip", tmp.files$data$files$name, fixed=T)
 
     # error message if there are no zips in the package
