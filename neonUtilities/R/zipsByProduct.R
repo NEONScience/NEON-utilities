@@ -24,7 +24,7 @@
 #     original creation
 ##############################################################################################
 
-zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
+zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.size=TRUE) {
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -77,9 +77,20 @@ zipsByProduct <- function(dpID, site="all", package="basic", check.size=TRUE) {
     }
     
     # if only one averaging interval, subset to those
-    
+    if(avg!="all") {
+      
+      # check, if this is an OS product, proceed with normal zip download
+      if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS") | 
+         dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001")) {
+        messages <- c(messages, paste(dpID, "is an observational product; 
+                                      averaging interval is not a download option. 
+                                      Downloading all zip files.", sep=" "))
+      } else {
+        # I'm thinking send it to a new function here?
+      }
+    }
 
-    # to get all data, proceed to zip files
+    # to get all data, select the zip files
     all.zip <- grep(".zip", tmp.files$data$files$name, fixed=T)
 
     # error message if there are no zips in the package
