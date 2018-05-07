@@ -4,6 +4,7 @@
 #'
 #' @format A data frame with 4 variables. Number of row changes frequently as more tables are added:
 #' \describe{
+#'   \item{productID}{data product ID}
 #'   \item{tableName}{name of table}
 #'   \item{tableDesc}{description of table}
 #'   \item{tableType}{type of table (important for knowing which tables to stack and which to not stack)}
