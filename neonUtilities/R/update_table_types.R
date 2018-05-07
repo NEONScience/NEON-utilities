@@ -19,7 +19,7 @@
 
 update_table_types <- function(){
   dps_con <-  RMySQL::dbConnect(drv=RMySQL::MySQL(), dbname="dps_database", username="root",password="p@ssw0rd", host="10.206.27.43", root = 3306)
-  table_types <- dbGetQuery(dps_con, "SELECT * from dpTable WHERE dpTable.tableType NOT IN ('ingest', 'L0prime')")
+  table_types <- dbGetQuery(dps_con, "SELECT * from view_product_tables WHERE view_product_tables.tableType NOT IN ('ingest', 'L0prime')")
   table_types$tableName <- gsub(pattern = "_pub", replacement = "", x = table_types$tableName)
   save(table_types, file = "data/table_types.rda")
   RMySQL::dbDisconnect(dps_con)
