@@ -4,17 +4,13 @@
 \alias{stackByTable}
 \title{Join data files in a zipped NEON data package by table type}
 \usage{
-stackByTable(dpID, filepath, savepath = filepath, package = "basic",
-  folder = FALSE, saveUnzippedFiles = FALSE)
+stackByTable(filepath, savepath = filepath, folder = FALSE,
+  saveUnzippedFiles = FALSE)
 }
 \arguments{
-\item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
-
 \item{filepath}{The location of the zip file}
 
 \item{savepath}{The location to save the output files to}
-
-\item{package}{Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.}
 
 \item{folder}{T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.}
 
