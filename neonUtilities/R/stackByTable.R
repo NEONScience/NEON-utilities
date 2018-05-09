@@ -13,6 +13,7 @@
 #' @param savepath The location to save the output files to
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
+#' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
 #' @return All files are unzipped and one file for each table type is created and written.
 
 #' @export
@@ -32,7 +33,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzippedFiles=FALSE){
+stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -48,13 +49,8 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
   }
 
   dpID <- substr(files[1], 15, 27)
-  package <- substr(files[1], 37, 41)
-  if(package == "expan"){package <- "expanded"}
-
-  # error message if package is not basic or expanded
-  if(!package %in% c("basic", "expanded")) {
-    stop(paste(package, "is not a valid package name. Package must be basic or expanded", sep=" "))
-  }
+  package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
+  if(package == "anded"){package <- "expanded"}
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
@@ -87,6 +83,10 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
     if(is.na(savepath)){savepath <- filepath}
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
+    } else {
+      if(length(grep(files, pattern = ".csv"))>0) {
+        filepath <- filepath
+      }
     }
   }
 

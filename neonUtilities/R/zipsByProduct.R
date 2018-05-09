@@ -137,6 +137,12 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
                                         tmp.files$data$files$url[which.file],
                                         tmp.files$data$files$size[which.file]))
       
+      # add url for one copy of variables file
+      which.var <- grep("variables", tmp.files$data$files$name, fixed=T)[1]
+      zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.var],
+                                        tmp.files$data$files$url[which.var],
+                                        tmp.files$data$files$size[which.var]))
+      
     } else {
       
       # to get all data, select the zip files
