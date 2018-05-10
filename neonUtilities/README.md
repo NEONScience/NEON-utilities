@@ -1,10 +1,19 @@
-### Description
+NEON-utilities/neonUtilities
+================
+
+<!-- ****** Description ****** -->
+Description
+-----
+
 The `neonUtilities` R package provides utilites for discovering, downloading, and working with NEON data files. NEON data files can be downloaded from the NEON Data Portal (http://data.neonscience.org) or API (http://data.neonscience.org/data-api). Provisional NEON data files from instrumented and observation systems are delivered by NEON within zip files organized by site and year-month. Provisional NEON data files from the airborne observation platform (AOP) are organized by site and year. 
 
 This package was developed on top of the deprecated `neonDataStackR` package; change logs from that package are included below.
 
 This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
+<!-- ****** Usage ****** -->
+Usage
+-----
 
 ### Starting out
 Install the package into your local environment using the following code:
@@ -55,21 +64,34 @@ For a tutorial explaining how to use the `neonUtilities` package in more detail,
 ### Known issues 
 * `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
 
-### Credits & Acknowledgements
+<!-- ****** Acknowledgements ****** -->
+Credits & Acknowledgements
+--------------------------
+
+<!-- Acknowledgements text -->
 The National Ecological Observatory Network is a project solely funded by the National Science Foundation and managed under cooperative agreement by Battelle. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
 
-### License
-GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+<!-- ****** License ****** -->
+License
+-------
+ GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
-### Disclaimer
-Information and documents contained within this repository are available as-is. Codes or documents, or their use, may not be supported or maintained under any program or service and may not be compatible with data currently available from the NEON Data Portal.
+<!-- ****** Disclaimer ****** -->
+Disclaimer
+----------
+*Information and documents contained within this repository are available as-is. Codes or documents, or their use, may not be supported or maintained under any program or service and may not be compatible with data currently available from the NEON Data Portal.*
 
-### Change Log
+<!-- ****** Change Log ****** -->
+Change Log
+----------
+
 #### 2018-04-05 v0.1.0
 -----------------
 * neonUtilities created from the last version of neonDataStackR
 
-### Change Log For Deprecated neonDataStackR Package
+Change Log For Deprecated neonDataStackR Package
+----------
+
 #### 2018-04-05 v0.1.6 'brazil'
 -----------------
 * Added function to convert individual NEON csv files to GeoCSV format
