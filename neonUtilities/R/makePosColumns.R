@@ -27,7 +27,7 @@
 makePosColumns <- function(d, datafl){
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
-  if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){}
+  if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){return(d)}
 
   nc <- ncol(d)
   if(length(datafl.splitName[[1]]) %in% c(12,14)){
