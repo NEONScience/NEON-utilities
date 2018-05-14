@@ -27,6 +27,8 @@
 
 zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.size=TRUE) {
 
+  messages <- NA
+  
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
     stop(paste(package, "is not a valid package name. Package must be basic or expanded", sep=" "))
@@ -50,11 +52,9 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
   # error message if averaging interval is invalid
   if(avg!="all") {
     # if product is OS, proceed with normal download
-    if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS") | 
+    if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS","AOP") | 
        dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001")) {
-      messages <- c(messages, paste(dpID, "is an observational product; 
-                                    averaging interval is not a download option. 
-                                    Downloading all zip files.", sep=" "))
+      stop(paste(dpID, "is not a streaming sensor (IS) data product; cannot subset by averaging interval.", sep=" "))
   } else {
     # check and make sure the averaging interval is valid for the product
     if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
@@ -82,7 +82,6 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
   
   # get all the file names, and stash the URLs for just the zips in an object
   zip.urls <- c(NA, NA, NA)
-  messages <- NA
   for(i in 1:length(month.urls)) {
     tmp <- httr::GET(month.urls[i])
     tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),

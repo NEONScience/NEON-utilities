@@ -5,7 +5,7 @@
 \title{Join data files in a zipped NEON data package by table type}
 \usage{
 stackByTable(filepath, savepath = filepath, folder = FALSE,
-  saveUnzippedFiles = FALSE)
+  saveUnzippedFiles = FALSE, dpID = NA)
 }
 \arguments{
 \item{filepath}{The location of the zip file}
@@ -15,6 +15,8 @@ stackByTable(filepath, savepath = filepath, folder = FALSE,
 \item{folder}{T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.}
 
 \item{saveUnzippedFiles}{T or F: should the unzipped monthly data folders be retained?}
+
+\item{dpID}{Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility}
 }
 \value{
 All files are unzipped and one file for each table type is created and written.

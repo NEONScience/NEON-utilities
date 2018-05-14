@@ -4,7 +4,8 @@
 \alias{zipsByProduct}
 \title{Get files from NEON API to feed the stackByTable() function}
 \usage{
-zipsByProduct(dpID, site = "all", package = "basic", check.size = TRUE)
+zipsByProduct(dpID, site = "all", package = "basic", avg = "all",
+  check.size = TRUE)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
@@ -12,6 +13,8 @@ zipsByProduct(dpID, site = "all", package = "basic", check.size = TRUE)
 \item{site}{Either the string 'all', or the four-letter code of a single NEON site, e.g. 'CLBJ'. Future versions may allow more options for subsetting than one or all sites. Defaults to all.}
 
 \item{package}{Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.}
+
+\item{avg}{Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
 
 \item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 }
