@@ -20,7 +20,7 @@ Install the package into your local environment using the following code:
 ```
 library(devtools)
 install_github("NEONScience/NEON-utilities/neonUtilities", dependencies=TRUE)
-library (neonUtilities)
+library(neonUtilities)
 ```
 
 ### Primary functions
@@ -28,7 +28,7 @@ library (neonUtilities)
 
 
 ```
-stackByTable(dpID="DP1.10017.001", filepath = "testdata/NEON_size-dust-particulate.zip") # modify filepath to your directory
+stackByTable(filepath = "testdata/NEON_size-dust-particulate.zip") # modify filepath to your directory
 ```
 
 `getPackage()` can be used to pull a single zip file (all the data for a single data product by site by month combination) using the NEON API.
@@ -44,7 +44,7 @@ getPackage(dpID = "DP1.10055.001", site_code = "JORN", year_month = "2017-05", p
 {
 # Herbaceous clip harvest data, from all sites and months for which it is currently available
 zipsByProduct(dpID="DP1.10023.001", site="all", package="basic", check.size=T)
-stackByTable(dpID="DP1.10023.001", paste0(getwd(), "/filesToStack10023"), folder=T)
+stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 }
 ```
 
@@ -59,7 +59,7 @@ byFileAOP(dpID = "DP3.30001.001", site = "SRER", year = "2017", check.size = T)
 
 ### Getting help with this package
  
-For a tutorial explaining how to use the `neonUtilities` package in more detail, view the [*Use the neonUtilities Package to Access NEON Data* tutorial](http://www.neonscience.org/neonDataStackR).
+For a tutorial explaining how to use the `neonUtilities` package in more detail, including additional input options, view the [*Use the neonUtilities Package to Access NEON Data* tutorial](http://www.neonscience.org/neonDataStackR).
 
 ### Known issues 
 * `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
@@ -84,6 +84,11 @@ Disclaimer
 <!-- ****** Change Log ****** -->
 Change Log
 ----------
+
+#### 2018-05-23 v0.1.1 'pine'
+* dpID no longer required as an input to ```stackByTable()```
+* added ```zipsByProduct()``` option to download only one averaging interval (e.g. only 30-minute files) for speedier download and stacking
+* added ```zipsByProduct()``` input option to specify file path to save to
 
 #### 2018-04-05 v0.1.0
 -----------------
