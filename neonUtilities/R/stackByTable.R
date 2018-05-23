@@ -9,12 +9,11 @@
 #' Given a zipped data file, do a full join of all data files, grouped by table type.
 #' This should result in a small number of large files.
 
-#' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param filepath The location of the zip file
 #' @param savepath The location to save the output files to
-#' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
+#' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
 #' @return All files are unzipped and one file for each table type is created and written.
 
 #' @export
@@ -29,20 +28,29 @@
 #     * Add error/warning messages for AOP, eddy covariance, and hemispheric
 #       digital photo data products (and if the latter, don't allow user to remove the unzipped files).
 #     * Allow user to specify the filepath to save to
+#   2018-05-08 (Christine Laney):
+#     * Remove extranous parameters dpID and package (obtain from data package)
+
 ##############################################################################################
 
-stackByTable <- function(dpID, filepath, savepath = filepath, package = 'basic', folder=FALSE, saveUnzippedFiles=FALSE){
+stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
 
   #### Check whether data should be stacked ####
-
-  if(missing(dpID)){
-    stop("Missing a value for dpID")
+  if(folder==FALSE){
+    files <- listFilesInZip(filepath)
+    files <- files$Name[grep(files$Name, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")]
+    if(length(files) == 0){
+      stop("Data files are not present")
+    }
   }
 
-  # error message if package is not basic or expanded
-  if(!package %in% c("basic", "expanded")) {
-    stop(paste(package, "is not a valid package name. Package must be basic or expanded", sep=" "))
+  if(folder==TRUE){
+    files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
   }
+
+  dpID <- substr(files[1], 15, 27)
+  package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
+  if(package == "anded"){package <- "expanded"}
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
@@ -66,13 +74,24 @@ stackByTable <- function(dpID, filepath, savepath = filepath, package = 'basic',
 
   if(folder==FALSE) {
     savepath <- substr(filepath, 1, nchar(filepath)-4)
-    unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
+    if(length(grep(files, pattern = ".zip")) > 0){
+      unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
+    }
   }
+
   if(folder==TRUE) {
     if(is.na(savepath)){savepath <- filepath}
-    unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
+    if(length(grep(files, pattern = ".zip")) > 0){
+      unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
+    } else {
+      if(length(grep(files, pattern = ".csv"))>0) {
+        filepath <- filepath
+      }
+    }
   }
+
   stackDataFiles(savepath)
+
   if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
 
 }
