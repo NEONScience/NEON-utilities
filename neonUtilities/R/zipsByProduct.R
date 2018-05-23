@@ -62,6 +62,10 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
     if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
       stop(paste(avg, " is not a valid averaging interval for ", dpID, 
                  ". Use function getAvg() to find valid averaging intervals.", sep=""))
+    } else {
+      if(dpID %in% c("DP1.20288.001","DP4.00001.001")) {
+        stop(paste("Subsetting by averaging interval is not available for ", dpID, sep=""))
+      }
     }
   }
     }
