@@ -12,8 +12,9 @@
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param savepath The location to save the output files to
 
-#' @return A folder in the working directory, containing all zip files meeting query criteria.
+#' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -25,7 +26,8 @@
 #     original creation
 ##############################################################################################
 
-zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.size=TRUE) {
+zipsByProduct <- function(dpID, site="all", package="basic", avg="all", 
+                          check.size=TRUE, savepath=NA) {
 
   messages <- NA
   
@@ -205,8 +207,12 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
     }
   }
 
-  # create folder in working directory to put files in
-  filepath <- paste(getwd(), "/filesToStack", substr(dpID, 5, 9), sep="")
+  # create folder in working directory or savepath to put files in
+  if(is.na(savepath)) {
+    filepath <- paste(getwd(), "/filesToStack", substr(dpID, 5, 9), sep="")
+  } else {
+    filepath <- paste(savepath, "/filesToStack", substr(dpID, 5, 9), sep="")
+  }
   dir.create(filepath)
 
   # copy zip files into folder
