@@ -63,6 +63,7 @@ For a tutorial explaining how to use the `neonUtilities` package in more detail,
 
 ### Known issues 
 * `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
+* The file cleanup option in `stackByTable()` deletes the unstacked files after stacking, but it doesn't work correctly when used in combination with filtering by averaging interval (`avg=X` option in `zipsByProduct()`). This will be fixed in a future release.
 
 <!-- ****** Acknowledgements ****** -->
 Credits & Acknowledgements
@@ -86,6 +87,7 @@ Change Log
 ----------
 
 #### 2018-05-23 v0.1.1 'pine'
+--------------
 * dpID no longer required as an input to ```stackByTable()```
 * added ```zipsByProduct()``` option to download only one averaging interval (e.g. only 30-minute files) for speedier download and stacking
 * added ```zipsByProduct()``` input option to specify file path to save to
