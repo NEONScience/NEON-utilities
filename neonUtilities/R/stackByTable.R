@@ -40,12 +40,15 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
     files <- listFilesInZip(filepath)
     files <- files$Name[grep(files$Name, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")]
     if(length(files) == 0){
-      stop("Data files are not present")
+      stop("Data files are not present in specified filepath.")
     }
   }
 
   if(folder==TRUE){
     files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
+    if(length(files) == 0){
+      stop("Data files are not present in specified filepath.")
+    }
   }
 
   dpID <- substr(files[1], 15, 27)
@@ -85,7 +88,9 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
       unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
     } else {
       if(length(grep(files, pattern = ".csv"))>0) {
-        filepath <- filepath
+        for(i in files) {
+          file.copy(paste(filepath, i, sep="/"), savepath, recursive=T)
+        }
       }
     }
   }

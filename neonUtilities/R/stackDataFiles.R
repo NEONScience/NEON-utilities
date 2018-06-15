@@ -45,7 +45,7 @@ stackDataFiles <- function(folder){
 
   # if there are no datafiles, exit
   if(length(datafls) == 0){
-    writeLines("No data files are present")
+    stop("No data files are present in specified file path.")
   }
 
   # if there is just one data file (and thus one table name), copy file into stackedFiles folder
