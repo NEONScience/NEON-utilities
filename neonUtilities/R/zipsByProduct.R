@@ -41,6 +41,15 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
   }
   
+  # error message if dpID can't be downloaded by zipsByProduct()
+  if(substring(dpID, 5, 5)==3) {
+    stop(paste(dpID, "is a remote sensing data product. Use the byFileAOP() function.", sep=" "))
+  }
+
+  if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
+    stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
+  }
+  
   # query the products endpoint for the product requested
   productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
   req <- httr::GET(productUrl)
@@ -90,6 +99,12 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
   zip.urls <- c(NA, NA, NA)
   for(i in 1:length(month.urls)) {
     tmp <- httr::GET(month.urls[i])
+    if(tmp$status_code==500) {
+      messages <- c(messages, paste("Query for url ", month.urls[i], 
+                                    " failed. API may be unavailable; check data portal data.neonscience.org for outage alert.", 
+                                    sep=""))
+      next
+    }
     tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
                                     simplifyDataFrame=T, flatten=T)
 
@@ -194,6 +209,15 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
 
   }
 
+  # check for no files
+  if(is.null(nrow(zip.urls))) {
+    writeLines(paste0(messages[-1], collapse = "\n"))
+    stop(paste("No files found. This indicates either the API is temporarily unavailable, or the data available for ", 
+               dpID, 
+               " are all hosted elsewhere. Check the data portal data.neonscience.org for outage alerts, and check the ", 
+               dpID, " data download page for external links.", sep=""))
+  }
+  
   # get size info
   zip.urls <- data.frame(zip.urls, row.names=NULL)
   colnames(zip.urls) <- c("name", "URL", "size")
