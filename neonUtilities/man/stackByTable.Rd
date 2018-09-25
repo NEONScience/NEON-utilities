@@ -15,6 +15,8 @@ stackByTable(filepath, savepath = filepath, folder = FALSE,
 \item{folder}{T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.}
 
 \item{saveUnzippedFiles}{T or F: should the unzipped monthly data folders be retained?}
+
+\item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001 (optional for now)}
 }
 \value{
 All files are unzipped and one file for each table type is created and written.
