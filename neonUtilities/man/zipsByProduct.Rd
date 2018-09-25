@@ -5,7 +5,7 @@
 \title{Get files from NEON API to feed the stackByTable() function}
 \usage{
 zipsByProduct(dpID, site = "all", package = "basic", avg = "all",
-  check.size = TRUE)
+  check.size = TRUE, savepath = NA)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
@@ -17,9 +17,11 @@ zipsByProduct(dpID, site = "all", package = "basic", avg = "all",
 \item{avg}{Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
 
 \item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
+
+\item{savepath}{The location to save the output files to}
 }
 \value{
-A folder in the working directory, containing all zip files meeting query criteria.
+A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 }
 \description{
 Pull files from the NEON API, by data product, in a structure that will allow them to be stacked by the stackByTable() function

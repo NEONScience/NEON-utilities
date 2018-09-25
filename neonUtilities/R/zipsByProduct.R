@@ -12,8 +12,9 @@
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param savepath The location to save the output files to
 
-#' @return A folder in the working directory, containing all zip files meeting query criteria.
+#' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -25,8 +26,11 @@
 #     original creation
 ##############################################################################################
 
-zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.size=TRUE) {
+zipsByProduct <- function(dpID, site="all", package="basic", avg="all", 
+                          check.size=TRUE, savepath=NA) {
 
+  messages <- NA
+  
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
     stop(paste(package, "is not a valid package name. Package must be basic or expanded", sep=" "))
@@ -35,6 +39,15 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
+  }
+  
+  # error message if dpID can't be downloaded by zipsByProduct()
+  if(substring(dpID, 5, 5)==3) {
+    stop(paste(dpID, "is a remote sensing data product. Use the byFileAOP() function.", sep=" "))
+  }
+
+  if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
+    stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
   }
   
   # query the products endpoint for the product requested
@@ -50,16 +63,18 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
   # error message if averaging interval is invalid
   if(avg!="all") {
     # if product is OS, proceed with normal download
-    if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS") | 
+    if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS","AOP") | 
        dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001")) {
-      messages <- c(messages, paste(dpID, "is an observational product; 
-                                    averaging interval is not a download option. 
-                                    Downloading all zip files.", sep=" "))
+      stop(paste(dpID, "is not a streaming sensor (IS) data product; cannot subset by averaging interval.", sep=" "))
   } else {
     # check and make sure the averaging interval is valid for the product
     if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
       stop(paste(avg, " is not a valid averaging interval for ", dpID, 
                  ". Use function getAvg() to find valid averaging intervals.", sep=""))
+    } else {
+      if(dpID %in% c("DP1.20288.001","DP4.00001.001")) {
+        stop(paste("Subsetting by averaging interval is not available for ", dpID, sep=""))
+      }
     }
   }
     }
@@ -82,9 +97,14 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
   
   # get all the file names, and stash the URLs for just the zips in an object
   zip.urls <- c(NA, NA, NA)
-  messages <- NA
   for(i in 1:length(month.urls)) {
     tmp <- httr::GET(month.urls[i])
+    if(tmp$status_code==500) {
+      messages <- c(messages, paste("Query for url ", month.urls[i], 
+                                    " failed. API may be unavailable; check data portal data.neonscience.org for outage alert.", 
+                                    sep=""))
+      next
+    }
     tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
                                     simplifyDataFrame=T, flatten=T)
 
@@ -137,6 +157,12 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
                                         tmp.files$data$files$url[which.file],
                                         tmp.files$data$files$size[which.file]))
       
+      # add url for one copy of variables file
+      which.var <- grep("variables", tmp.files$data$files$name, fixed=T)[1]
+      zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.var],
+                                        tmp.files$data$files$url[which.var],
+                                        tmp.files$data$files$size[which.var]))
+      
     } else {
       
       # to get all data, select the zip files
@@ -183,6 +209,15 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
 
   }
 
+  # check for no files
+  if(is.null(nrow(zip.urls))) {
+    writeLines(paste0(messages[-1], collapse = "\n"))
+    stop(paste("No files found. This indicates either the API is temporarily unavailable, or the data available for ", 
+               dpID, 
+               " are all hosted elsewhere. Check the data portal data.neonscience.org for outage alerts, and check the ", 
+               dpID, " data download page for external links.", sep=""))
+  }
+  
   # get size info
   zip.urls <- data.frame(zip.urls, row.names=NULL)
   colnames(zip.urls) <- c("name", "URL", "size")
@@ -200,8 +235,12 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all", check.si
     }
   }
 
-  # create folder in working directory to put files in
-  filepath <- paste(getwd(), "/filesToStack", substr(dpID, 5, 9), sep="")
+  # create folder in working directory or savepath to put files in
+  if(is.na(savepath)) {
+    filepath <- paste(getwd(), "/filesToStack", substr(dpID, 5, 9), sep="")
+  } else {
+    filepath <- paste(savepath, "/filesToStack", substr(dpID, 5, 9), sep="")
+  }
   dir.create(filepath)
 
   # copy zip files into folder

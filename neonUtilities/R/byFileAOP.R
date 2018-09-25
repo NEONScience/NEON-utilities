@@ -13,6 +13,7 @@
 #' @param site The four-letter code of a single NEON site, e.g. 'CLBJ'.
 #' @param year The four-digit year to search for data. Defaults to 2017.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
 
@@ -27,7 +28,7 @@
 
 ##############################################################################################
 
-byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
+byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE, savepath=NA) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
@@ -107,8 +108,12 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE) {
   }
 
   # create folder in working directory to put files in
-  filepath <- paste(getwd(), "/", dpID, sep="")
-  if(dir.exists(filepath) == F) dir.create(filepath)
+  if(is.na(savepath)) {
+    filepath <- paste(getwd(), "/", dpID, sep="")
+  } else {
+    filepath <- paste(savepath, "/", dpID, sep="")
+  }
+  if(dir.exists(filepath) == F) dir.create(filepath, showWarnings=F)
 
   # copy zip files into folder
   j <- 1

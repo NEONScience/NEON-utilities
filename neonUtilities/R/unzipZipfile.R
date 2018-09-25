@@ -53,7 +53,8 @@ unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4)
     if(length(zps) >= 1){
       for(i in 1:length(zps)){
         p <- paste0(zippath, "/", zps[i])
-        unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
+        o <- paste0(outpath, "/", zps[i])
+        unzip(p, exdir=substr(o, 1, nchar(o)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
         setTxtProgressBar(pb, 1/length(zps))
       }

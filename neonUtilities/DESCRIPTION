@@ -1,12 +1,12 @@
 Package: neonUtilities
-Version: 0.1.0
+Version: 0.1.1
 Date: 2018-04-06
 Title: NEON Utilities R package
 Author: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
 Maintainer: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
 Description: NEON data packages can be accessed through the NEON Data Portal (http://data.neonscience.org)
     or through the NEON Data API (see http://data.neonscience.org/data-api for documentation). Data delivered from
-    the Data Portal are delivered as monthly zip files packaged within a parent zip file, while individual files
+    the Data Portal are provided as monthly zip files packaged within a parent zip file, while individual files
     can be accessed from the API. This package provides tools that aid in discovering, downloading, and reformatting 
     data prior to use in analyses. This includes downloading data via the API, grouping data by type, and converting 
     formats. This package is still in development and subject to change. For more information, see the readme file
