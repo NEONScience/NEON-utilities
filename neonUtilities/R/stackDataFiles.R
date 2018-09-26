@@ -29,7 +29,7 @@ stackDataFiles <- function(folder){
   starttime <- Sys.time()
 
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
-  data("table_types")
+  #data("table_types")
   ttypes <- table_types
 
   # filenames without full path
