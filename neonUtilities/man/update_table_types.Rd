@@ -2,7 +2,7 @@
 % Please edit documentation in R/update_table_types.R
 \name{update_table_types}
 \alias{update_table_types}
-\title{Update table_types.rda}
+\title{Update table_types data frame in sysdata.rda}
 \usage{
 update_table_types()
 }

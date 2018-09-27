@@ -17,7 +17,6 @@ stackByTable(filepath, savepath = filepath, folder = FALSE,
 \item{saveUnzippedFiles}{T or F: should the unzipped monthly data folders be retained?}
 
 \item{dpID}{Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility}
-
 }
 \value{
 All files are unzipped and one file for each table type is created and written.
