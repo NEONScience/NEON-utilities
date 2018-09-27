@@ -24,8 +24,8 @@
 ##############################################################################################
 
 transformFileToGeoCSV <- function(infile, varfile, outfile){
-  datafile <- read.csv(infile, header = TRUE, stringsAsFactors = FALSE)
-  vars <- read.csv(varfile, header = TRUE, stringsAsFactors = FALSE)
+  datafile <- utils::read.csv(infile, header = TRUE, stringsAsFactors = FALSE)
+  vars <- utils::read.csv(varfile, header = TRUE, stringsAsFactors = FALSE)
   dfsplit <- strsplit(infile, "\\/")
   dfname <- dfsplit[[1]][length(dfsplit[[1]])]
 
@@ -74,7 +74,7 @@ transformFileToGeoCSV <- function(infile, varfile, outfile){
   addText(line_field_long_name, outfile)
   addText(line_field_type, outfile)
   addText(line_field_unit, outfile)
-  write.table(datafile, file = outfile, row.names = FALSE, append = TRUE, sep = ",",
+  utils::write.table(datafile, file = outfile, row.names = FALSE, append = TRUE, sep = ",",
               fileEncoding = "UTF-8", quote = FALSE)
 }
 

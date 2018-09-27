@@ -39,7 +39,7 @@ stackDataFiles <- function(folder){
   filepaths <- findDatatables(folder = folder, fnames = T)
 
   # make a list, where filenames are the keys to the filepath values
-  filelist <- setNames(as.list(filepaths), filenames)
+  filelist <- stats::setNames(as.list(filepaths), filenames)
 
   datafls <- filelist
 
@@ -132,7 +132,7 @@ stackDataFiles <- function(folder){
             utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
           }
         }
-        write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+        utils::write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
         messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
                                        nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
         if(i > 1){n <- n + 1}
@@ -164,7 +164,7 @@ stackDataFiles <- function(folder){
             utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
           }
         }
-        write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+        utils::write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
         messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
                                       nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
         if(i > 1){n <- n + 1}
