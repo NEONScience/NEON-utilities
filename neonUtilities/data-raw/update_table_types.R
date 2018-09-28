@@ -22,6 +22,8 @@ update_table_types <- function(){
   table_types <- DBI::dbGetQuery(dps_con, "SELECT * from view_product_tables WHERE view_product_tables.tableType NOT IN ('ingest', 'L0prime')")
   table_types$tableName <- gsub(pattern = "_pub", replacement = "", x = table_types$tableName)
   #save(table_types, file = "data/table_types.rda")
-  devtools::use_data(table_types, internal = TRUE)
+  devtools::use_data(table_types, internal=TRUE, overwrite=TRUE)
   RMySQL::dbDisconnect(dps_con)
 }
+
+update_table_types()
