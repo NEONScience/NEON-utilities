@@ -64,9 +64,12 @@ stackDataFiles <- function(folder){
     # find external lab tables (lab-current, lab-all) and copy the first file from each lab into stackedFiles
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
     if(length(labTables)>0){
-      labFilePaths <- filepaths[grep(labTables, filepaths)]
+      labFilePaths <- character()
       labFiles <- character()
-      labFiles <- unique(filenames[grep(labTables, filenames)])
+      for(m in 1:length(labTables)) {
+        labFilePaths <- c(labFilePaths, filepaths[grep(labTables[m], filepaths)])
+        labFiles <- c(labFiles, unique(filenames[grep(labTables[m], filenames)]))
+      }
       if(length(labFiles)>0){
         for(l in 1:length(labFiles)){
           file.copy(from = labFilePaths[grep(labFiles[l], labFilePaths)][1], to = paste0(folder, "/stackedFiles/"))
