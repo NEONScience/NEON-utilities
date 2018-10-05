@@ -102,7 +102,7 @@ stackDataFiles <- function(folder){
       tables <- c(tables, "validation")
     }
 
-    n <- 1
+    n <- 0
 
     for(i in 1:length(tables)){
       tbltype <- ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))]
@@ -138,7 +138,7 @@ stackDataFiles <- function(folder){
         utils::write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
         messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
                                        nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
-        if(i > 1){n <- n + 1}
+        n <- n + 1
         utils::setTxtProgressBar(pb, 1)
         close(pb)
       }
@@ -170,14 +170,14 @@ stackDataFiles <- function(folder){
         utils::write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
         messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
                                       nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
-        if(i > 1){n <- n + 1}
+        n <- n + 1
         utils::setTxtProgressBar(pb, 1)
         close(pb)
       }
     }
   }
 
-  writeLines(paste("Finished: All of the data are stacked into ", n, " tables!"))
+  writeLines(paste("Finished: All of the data are stacked into", n, "tables!"))
   writeLines(paste0(messages, collapse = "\n"))
   endtime <- Sys.time()
   writeLines(paste0("Stacking took ", format((endtime-starttime), units = "auto")))

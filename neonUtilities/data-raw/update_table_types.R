@@ -14,16 +14,33 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
+#   Claire Lunch (2018-10-05) converted to get tables from PDR via the data service
 #   Christine Laney (2017-10-19)
 ##############################################################################################
 
 update_table_types <- function(){
-  dps_con <-  RMySQL::dbConnect(drv=RMySQL::MySQL(), dbname="dps_database", username="root",password="p@ssw0rd", host="10.206.27.43", root = 3306)
-  table_types <- DBI::dbGetQuery(dps_con, "SELECT * from view_product_tables WHERE view_product_tables.tableType NOT IN ('ingest', 'L0prime')")
-  table_types$tableName <- gsub(pattern = "_pub", replacement = "", x = table_types$tableName)
-  #save(table_types, file = "data/table_types.rda")
+  
+  options(stringsAsFactors=F)
+  
+  req <- httr::GET(Sys.getenv("PUB_TABLES"))
+  rawx <- XML::xmlToList(httr::content(req, as="text"))
+  
+  ids <- substring(unlist(lapply(rawx, '[', "dataProductId")), 15, 27)
+  tables <- unlist(lapply(rawx, '[', "tableName"))
+  tables <- gsub("_pub", "", tables, fixed=T)
+  descs <- unlist(lapply(rawx, '[', "description"))
+  typs <- unlist(lapply(rawx, '[', "tableType"))
+  temp <- unlist(lapply(rawx, '[', "pubField"))
+  tmi <- temp[grep("timeIndex", names(temp))]
+  
+  table_types <- data.frame(cbind(ids[-length(ids)], tables[-length(tables)],
+                                  descs[-length(descs)], typs[-length(typs)], tmi))
+  colnames(table_types) <- c("productID", "tableName", "tableDesc", 
+                             "tableType", "tableTMI")
+  rownames(table_types) <- 1:nrow(table_types)
+  
   devtools::use_data(table_types, internal=TRUE, overwrite=TRUE)
-  RMySQL::dbDisconnect(dps_con)
+  
 }
 
 update_table_types()
