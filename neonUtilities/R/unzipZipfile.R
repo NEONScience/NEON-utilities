@@ -24,23 +24,23 @@
 
 unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
   if(level %in% c("top", "all")){
-    unzip(zipfile = zippath, exdir=outpath)
+    utils::unzip(zipfile = zippath, exdir=outpath)
   }
 
   if(level == "all"){
-    unzip(zipfile = zippath, exdir=outpath)
+    utils::unzip(zipfile = zippath, exdir=outpath)
     zps <- listZipfiles(zippath)
     writeLines("Unpacking zip files")
-    pb <- txtProgressBar(style=3)
-    setTxtProgressBar(pb, 0)
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 0)
     if(length(zps) >= 1){
       for(i in 1:length(zps)){
         p <- paste0(outpath, "/", zps[i])
-        unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
+        utils::unzip(p, exdir=substr(p, 1, nchar(p)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
-        setTxtProgressBar(pb, 1/length(zps))
+        utils::setTxtProgressBar(pb, 1/length(zps))
       }
-      setTxtProgressBar(pb, 1)
+      utils::setTxtProgressBar(pb, 1)
       close(pb)
     } else writeLines("This zip file doesn't contain monthly data packages")
   }
@@ -48,17 +48,17 @@ unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4)
   if(level == "in"){
     zps <- list.files(zippath)
     writeLines("Unpacking zip files")
-    pb <- txtProgressBar(style=3)
-    setTxtProgressBar(pb, 0)
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 0)
     if(length(zps) >= 1){
       for(i in 1:length(zps)){
         p <- paste0(zippath, "/", zps[i])
         o <- paste0(outpath, "/", zps[i])
-        unzip(p, exdir=substr(o, 1, nchar(o)-4), overwrite = T)
+        utils::unzip(p, exdir=substr(o, 1, nchar(o)-4), overwrite = T)
         if (file.exists(p)) file.remove(p)
-        setTxtProgressBar(pb, 1/length(zps))
+        utils::setTxtProgressBar(pb, 1/length(zps))
       }
-      setTxtProgressBar(pb, 1)
+      utils::setTxtProgressBar(pb, 1)
       close(pb)
     } else writeLines("This zip file doesn't contain monthly data packages")
   }

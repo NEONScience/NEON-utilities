@@ -2,7 +2,6 @@
 
 export(byFileAOP)
 export(getAvg)
-export(getDatatable)
 export(getFilesize)
 export(getPackage)
 export(listFilesInZip)

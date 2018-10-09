@@ -9,7 +9,6 @@
 #' Given a zipped data file, do a full join of all data files, grouped by table type.
 #' This should result in a small number of large files.
 
-#' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001 (optional for now)
 #' @param filepath The location of the zip file
 #' @param savepath The location to save the output files to
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.

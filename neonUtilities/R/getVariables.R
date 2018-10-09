@@ -19,7 +19,7 @@
 ##############################################################################################
 
 getVariables <- function(varFile){
-  d <- read.csv(varFile, header = T, stringsAsFactors = F)                     # read in a variables file
+  d <- utils::read.csv(varFile, header = T, stringsAsFactors = F)                     # read in a variables file
   d$colClass <- rep("numeric", nrow(d))                                       # make a new colClass column defaulting to numeric
   d$colClass[which(d$dataType %in% c("string", "date", "dateTime"))] <- "character"   # change to character if string or dateTime
   if("table" %in% names(d)){                                                   # OS variables files have table, IS do not

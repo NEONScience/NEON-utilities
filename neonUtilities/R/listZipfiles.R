@@ -21,7 +21,7 @@
 ##############################################################################################
 
 listZipfiles <- function(zippath){
-  df <- unzip(zipfile = zippath, list = T)
+  df <- utils::unzip(zipfile = zippath, list = T)
   ns <- df[,1]
   fn <- ns[which(substr(ns, nchar(ns)-3, nchar(ns)) == ".zip")]
   return(fn)

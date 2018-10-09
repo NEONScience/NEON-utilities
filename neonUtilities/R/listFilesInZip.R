@@ -21,5 +21,5 @@
 ##############################################################################################
 
 listFilesInZip <- function(zippath){
-  unzip(zipfile = zippath, list = T)
+  utils::unzip(zipfile = zippath, list = T)
 }
