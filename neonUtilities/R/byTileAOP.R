@@ -67,10 +67,13 @@ byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
     stop("There are no data at the selected site and year.")
   }
 
-
+  # get the tile corners for the coordinates - this only works if buffer=0
+  tileEasting <- floor(tile$easting/1000)*1000
+  tileNorthing <- floor(tile$northing/1000)*1000
+  tiles <- cbind(tiles, tileEasting, tileNorthing)
 
   # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
-  getFileUrls <- function(m.urls){
+  getTileUrls <- function(m.urls){
     url.messages <- character()
     file.urls <- c(NA, NA, NA)
     for(i in 1:length(m.urls)) {
@@ -84,6 +87,22 @@ byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
                                       "and year", tmp.files$data$month, sep=" "))
         next
       }
+      
+      # filter to only files for the relevant tiles
+      ind <- numeric()
+      for(j in 1:nrow(tiles)) {
+        ind.j <- intersect(grep(tiles$tileEasting[j], tmp.files$data$files$name),
+                           grep(tiles$tileNorthing[j], tmp.files$data$files$name))
+        if(length(ind.j)>0) {
+          ind <- c(ind, ind.j)
+        } else {
+          url.messages <- c(url.messages, paste("No tiles found for easting ", 
+                                                tiles$easting[j], "and northing ",
+                                                tiles$northing[j]))
+        }
+      }
+      ind <- unique(ind)
+      tmp.files <- tmp.files[ind,]
 
       file.urls <- rbind(file.urls, cbind(tmp.files$data$files$name,
                                           tmp.files$data$files$url,
@@ -101,7 +120,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
     }
   }
 
-  file.urls.current <- getFileUrls(month.urls)
+  file.urls.current <- getTileUrls(month.urls)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
