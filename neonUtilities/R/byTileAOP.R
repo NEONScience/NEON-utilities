@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Download AOP data from specified tiles for a given site, year, and product
+#' @title Download AOP tiles overlapping specified coordinates for a given site, year, and product
 
 #' @author
 #' Claire Lunch \email{clunch@battelleecology.org}
@@ -12,7 +12,8 @@
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param site The four-letter code of a single NEON site, e.g. 'CLBJ'.
 #' @param year The four-digit year to search for data. Defaults to 2017.
-#' @param tiles A data frame containing two columns, 'easting' and 'northing', containing the UTM coordinates of the locations desired.
+#' @param easting A vector containing the easting UTM coordinates of the locations to download.
+#' @param northing A vector containing the northing UTM coordinates of the locations to download.
 #' @param buffer Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
@@ -30,7 +31,7 @@
 
 ##############################################################################################
 
-byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
+byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=0,
                       check.size=TRUE, savepath=NA) {
 
   # error message if dpID isn't formatted as expected
@@ -41,6 +42,13 @@ byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
   # error message if dpID isn't a Level 3 product
   if(substring(dpID, 3, 3)!=3) {
     stop(paste(dpID, "is not a Level 3 data product ID.\nThis function will only work correctly on mosaicked Level 3 data.", sep=" "))
+  }
+  
+  # error message if easting and northing vector lengths don't match
+  easting <- easting[which(!is.na(easting))]
+  northing <- northing[which(!is.na(northing))]
+  if(length(easting)!=length(northing)) {
+    stop("Easting and northing vector lengths do not match, and/or contain null values. Cannot identify paired coordinates.")
   }
   
   # query the products endpoint for the product requested
@@ -68,9 +76,8 @@ byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
   }
 
   # get the tile corners for the coordinates - this only works if buffer=0
-  tileEasting <- floor(tile$easting/1000)*1000
-  tileNorthing <- floor(tile$northing/1000)*1000
-  tiles <- cbind(tiles, tileEasting, tileNorthing)
+  tileEasting <- floor(easting/1000)*1000
+  tileNorthing <- floor(northing/1000)*1000
 
   # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
   getTileUrls <- function(m.urls){
@@ -90,23 +97,23 @@ byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
       
       # filter to only files for the relevant tiles
       ind <- numeric()
-      for(j in 1:nrow(tiles)) {
-        ind.j <- intersect(grep(tiles$tileEasting[j], tmp.files$data$files$name),
-                           grep(tiles$tileNorthing[j], tmp.files$data$files$name))
+      for(j in 1:length(easting)) {
+        ind.j <- intersect(grep(tileEasting[j], tmp.files$data$files$name),
+                           grep(tileNorthing[j], tmp.files$data$files$name))
         if(length(ind.j)>0) {
           ind <- c(ind, ind.j)
         } else {
           url.messages <- c(url.messages, paste("No tiles found for easting ", 
-                                                tiles$easting[j], "and northing ",
-                                                tiles$northing[j]))
+                                                easting[j], "and northing ",
+                                                northing[j]))
         }
       }
       ind <- unique(ind)
-      tmp.files <- tmp.files[ind,]
+      tile.files <- tmp.files$data$files[ind,]
 
-      file.urls <- rbind(file.urls, cbind(tmp.files$data$files$name,
-                                          tmp.files$data$files$url,
-                                          tmp.files$data$files$size))
+      file.urls <- rbind(file.urls, cbind(tile.files$name,
+                                          tile.files$url,
+                                          tile.files$size))
 
       # get size info
       file.urls <- data.frame(file.urls, row.names=NULL)
@@ -158,7 +165,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", tiles, buffer=0,
 
     if(class(t) == "try-error"){
       writeLines("File could not be downloaded. URLs may have expired. Getting new URLs.")
-      file.urls.new <- getFileUrls(month.urls)
+      file.urls.new <- getTileUrls(month.urls)
       file.urls.current <- file.urls.new
       writeLines("Continuing downloads.")}
     if(class(t) != "try-error"){
