@@ -14,7 +14,7 @@
 #' @param year The four-digit year to search for data. Defaults to 2017.
 #' @param easting A vector containing the easting UTM coordinates of the locations to download.
 #' @param northing A vector containing the northing UTM coordinates of the locations to download.
-#' @param buffer Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0.
+#' @param buffer Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0. If easting and northing coordinates are the centroids of NEON TOS plots, use buffer=20.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
 
@@ -45,10 +45,17 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
   }
   
   # error message if easting and northing vector lengths don't match
-  easting <- easting[which(!is.na(easting))]
-  northing <- northing[which(!is.na(northing))]
+  easting <- as.numeric(easting)
+  northing <- as.numeric(northing)
+  easting <- easting[which(!is.na(easting) & !is.null(easting) & easting!="")]
+  northing <- northing[which(!is.na(northing) & !is.null(northing) & northing!="")]
   if(length(easting)!=length(northing)) {
     stop("Easting and northing vector lengths do not match, and/or contain null values. Cannot identify paired coordinates.")
+  }
+  
+  # error message if buffer is bigger than a tile
+  if(buffer>=1000) {
+    stop("Buffer is larger than tile size. Tiles are 1x1 km.")
   }
   
   # query the products endpoint for the product requested
@@ -75,10 +82,85 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
     stop("There are no data at the selected site and year.")
   }
 
-  # get the tile corners for the coordinates - this only works if buffer=0
+  # get the tile corners for the coordinates
   tileEasting <- floor(easting/1000)*1000
   tileNorthing <- floor(northing/1000)*1000
-
+  
+  # apply buffer
+  if(buffer>0) {
+    
+    # add & subtract buffer (buffer is a square)
+    eastingPlus <- floor((easting + buffer)/1000)*1000
+    eastingMinus <- floor((easting - buffer)/1000)*1000
+    northingPlus <- floor((northing + buffer)/1000)*1000
+    northingMinus <- floor((northing - buffer)/1000)*1000
+    
+    # get coordinates where buffer overlaps another tile
+    eastingPlusMatch <- tileEasting==eastingPlus
+    eastingMinusMatch <- tileEasting==eastingMinus
+    northingPlusMatch <- tileNorthing==northingPlus
+    northingMinusMatch <- tileNorthing==northingMinus
+    matchMat <- cbind(eastingMinusMatch, eastingPlusMatch, northingMinusMatch, northingPlusMatch)
+    matchMat <- 1*matchMat
+    
+    # add coordinates for overlapping tiles
+    for(k in 1:length(easting)) {
+      pos <- paste0(matchMat[k,], collapse=".")
+      if(pos=="1.1.1.1") {
+        next
+      } else {
+        if(pos=="0.1.1.1") {
+          tileEasting <- c(tileEasting, eastingMinus[k])
+          tileNorthing <- c(tileNorthing, tileNorthing[k])
+        }
+        if(pos=="1.0.1.1") {
+          tileEasting <- c(tileEasting, eastingPlus[k])
+          tileNorthing <- c(tileNorthing, tileNorthing[k])
+        }
+        if(pos=="0.1.0.1") {
+          tileEasting <- c(tileEasting, eastingMinus[k])
+          tileNorthing <- c(tileNorthing, tileNorthing[k])
+          tileEasting <- c(tileEasting, eastingMinus[k])
+          tileNorthing <- c(tileNorthing, northingMinus[k])
+          tileEasting <- c(tileEasting, tileEasting[k])
+          tileNorthing <- c(tileNorthing, northingMinus[k])
+        }
+        if(pos=="0.1.1.0") {
+          tileEasting <- c(tileEasting, eastingMinus[k])
+          tileNorthing <- c(tileNorthing, tileNorthing[k])
+          tileEasting <- c(tileEasting, eastingMinus[k])
+          tileNorthing <- c(tileNorthing, northingPlus[k])
+          tileEasting <- c(tileEasting, tileEasting[k])
+          tileNorthing <- c(tileNorthing, northingPlus[k])
+        }
+        if(pos=="1.0.0.1") {
+          tileEasting <- c(tileEasting, eastingPlus[k])
+          tileNorthing <- c(tileNorthing, tileNorthing[k])
+          tileEasting <- c(tileEasting, eastingPlus[k])
+          tileNorthing <- c(tileNorthing, northingMinus[k])
+          tileEasting <- c(tileEasting, tileEasting[k])
+          tileNorthing <- c(tileNorthing, northingMinus[k])
+        }
+        if(pos=="1.0.1.0") {
+          tileEasting <- c(tileEasting, eastingPlus[k])
+          tileNorthing <- c(tileNorthing, tileNorthing[k])
+          tileEasting <- c(tileEasting, eastingPlus[k])
+          tileNorthing <- c(tileNorthing, northingPlus[k])
+          tileEasting <- c(tileEasting, tileEasting[k])
+          tileNorthing <- c(tileNorthing, northingPlus[k])
+        }
+        if(pos=="1.1.0.1") {
+          tileEasting <- c(tileEasting, tileEasting[k])
+          tileNorthing <- c(tileNorthing, northingMinus[k])
+        }
+        if(pos=="1.1.1.0") {
+          tileEasting <- c(tileEasting, tileEasting[k])
+          tileNorthing <- c(tileNorthing, northingPlus[k])
+        }
+      }
+    }
+  }
+  
   # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
   getTileUrls <- function(m.urls){
     url.messages <- character()
@@ -97,15 +179,15 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
       
       # filter to only files for the relevant tiles
       ind <- numeric()
-      for(j in 1:length(easting)) {
+      for(j in 1:length(tileEasting)) {
         ind.j <- intersect(grep(tileEasting[j], tmp.files$data$files$name),
                            grep(tileNorthing[j], tmp.files$data$files$name))
         if(length(ind.j)>0) {
           ind <- c(ind, ind.j)
         } else {
           url.messages <- c(url.messages, paste("No tiles found for easting ", 
-                                                easting[j], "and northing ",
-                                                northing[j]))
+                                                tileEasting[j], "and northing ",
+                                                tileNorthing[j]))
         }
       }
       ind <- unique(ind)

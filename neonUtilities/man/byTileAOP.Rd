@@ -2,10 +2,10 @@
 % Please edit documentation in R/byTileAOP.R
 \name{byTileAOP}
 \alias{byTileAOP}
-\title{Download AOP data from specified tiles for a given site, year, and product}
+\title{Download AOP tiles overlapping specified coordinates for a given site, year, and product}
 \usage{
-byTileAOP(dpID, site = "SJER", year = "2017", tiles, buffer = 0,
-  check.size = TRUE, savepath = NA)
+byTileAOP(dpID, site = "SJER", year = "2017", easting, northing,
+  buffer = 0, check.size = TRUE, savepath = NA)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
@@ -14,9 +14,11 @@ byTileAOP(dpID, site = "SJER", year = "2017", tiles, buffer = 0,
 
 \item{year}{The four-digit year to search for data. Defaults to 2017.}
 
-\item{tiles}{A data frame containing two columns, 'easting' and 'northing', containing the UTM coordinates of the locations desired.}
+\item{easting}{A vector containing the easting UTM coordinates of the locations to download.}
 
-\item{buffer}{Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0.}
+\item{northing}{A vector containing the northing UTM coordinates of the locations to download.}
+
+\item{buffer}{Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0. If easting and northing coordinates are the centroids of NEON TOS plots, use buffer=20.}
 
 \item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
