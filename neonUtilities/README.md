@@ -55,6 +55,14 @@ stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 byFileAOP(dpID = "DP3.30001.001", site = "SRER", year = "2017", check.size = T)
 ```
 
+`byTileAOP()` pulls AOP data from the NEON API, for tiles matching the coordinates specified in the function call. A buffer can also be included in the function call, to download tiles within a certain distance of the coordinates (e.g., if the coordinates are the plot centroids of NEON TOS plots, use buffer=20). `byTileAOP()` will only work on the Level 3, mosaicked AOP products.
+
+```
+# Vegetation indices from San Joaquin Experimental Range, 2017
+# easting and northing must be matched vectors of UTM coordinates
+byTileAOP(dpID="DP3.30026.001", site="SJER", year="2017", easting=easting, northing=northing, buffer=20)
+```
+
 `transformFileToGeoCSV()` takes any single NEON csv data file plus its respective variables file, and generates a new CSV with [GeoCSV](http://geows.ds.iris.edu/documents/GeoCSV.pdf) headers. This makes the data similar in format to data provided by organizations such as UNAVCO, and is good for embedding in a repeating script.
 
 ### Getting help with this package
