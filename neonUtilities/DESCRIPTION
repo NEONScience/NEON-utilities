@@ -1,22 +1,20 @@
 Package: neonUtilities
-Version: 0.1.1
-Date: 2018-04-06
+Version: 1.0.0
+Date: 2018-10-19
 Title: NEON Utilities R package
 Author: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
-Maintainer: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
+Maintainer: Claire Lunch <clunch@battelleecology.org>
 Description: NEON data packages can be accessed through the NEON Data Portal (http://data.neonscience.org)
     or through the NEON Data API (see http://data.neonscience.org/data-api for documentation). Data delivered from
     the Data Portal are provided as monthly zip files packaged within a parent zip file, while individual files
     can be accessed from the API. This package provides tools that aid in discovering, downloading, and reformatting 
-    data prior to use in analyses. This includes downloading data via the API, grouping data by type, and converting 
-    formats. This package is still in development and subject to change. For more information, see the readme file
-    at https://github.com/NEONScience/NEON-utilities.
+    data prior to use in analyses. This includes downloading data via the API, merging data tables by type, and 
+    converting formats. For more information, see the readme file at https://github.com/NEONScience/NEON-utilities.
 Depends: R (>= 3.2.0)
-Imports: dplyr(>= 0.7.1), gdata(>= 2.18), httr, jsonlite, downloader, data.table, RMySQL, utils, stats, devtools
+Imports: dplyr(>= 0.7.1), gdata(>= 2.18), httr, jsonlite, downloader, data.table, utils, stats, devtools
 License: AGPL-3 + file LICENSE
 URL: https://github.com/NEONScience/NEON-utilities
 BugReports: https://github.com/NEONScience/NEON-utilities/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
-Suggests: testthat
