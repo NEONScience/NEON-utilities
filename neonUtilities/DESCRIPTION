@@ -1,7 +1,7 @@
 Package: neonUtilities
 Version: 1.0.0
 Date: 2018-10-19
-Title: NEON Utilities R package
+Title: Utilities for working with NEON data
 Author: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
 Maintainer: Claire Lunch <clunch@battelleecology.org>
 Description: NEON data packages can be accessed through the NEON Data Portal (http://data.neonscience.org)
