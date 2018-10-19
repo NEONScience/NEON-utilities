@@ -26,6 +26,11 @@ A folder in the working directory (or in savepath, if specified), containing all
 \description{
 Pull files from the NEON API, by data product, in a structure that will allow them to be stacked by the stackByTable() function
 }
+\examples{
+\dontrun{
+zipsByProduct(dpID="DP1.10026.001", site="all", package="expanded")
+}
+}
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }

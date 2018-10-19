@@ -16,6 +16,11 @@
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
+#' @examples
+#' \dontrun{
+#' zipsByProduct(dpID="DP1.10026.001", site="all", package="expanded")
+#' }
+
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
