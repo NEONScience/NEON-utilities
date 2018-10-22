@@ -17,6 +17,11 @@
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
 
+#' @examples
+#' \dontrun{
+#' byFileAOP(dpID="DP3.30026.001", site="SJER", yea="2017")
+#' }
+
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 

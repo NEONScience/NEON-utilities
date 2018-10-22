@@ -16,6 +16,15 @@
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
 #' @return All files are unzipped and one file for each table type is created and written.
 
+#' @examples
+#' \dontrun{
+#' # for files downloaded from the NEON Data Portal
+#' stackByTable("~/NEON_par.zip")
+#' 
+#' # for files downloaded using zipsByProduct()
+#' stackByTable("~/filesToStack00024", folder=T)
+#' }
+
 #' @export
 
 #' @references

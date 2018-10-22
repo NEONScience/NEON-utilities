@@ -25,6 +25,11 @@ A folder in the working directory, containing all files meeting query criteria.
 Query the API for AOP data by site, year, and product, and download all files found, preserving original
 folder structure. Downloads serially to avoid overload; may take a very long time.
 }
+\examples{
+\dontrun{
+byFileAOP(dpID="DP3.30026.001", site="SJER", yea="2017")
+}
+}
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }

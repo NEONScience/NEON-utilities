@@ -25,6 +25,15 @@ All files are unzipped and one file for each table type is created and written.
 Given a zipped data file, do a full join of all data files, grouped by table type.
 This should result in a small number of large files.
 }
+\examples{
+\dontrun{
+# for files downloaded from the NEON Data Portal
+stackByTable("~/NEON_par.zip")
+
+# for files downloaded using zipsByProduct()
+stackByTable("~/filesToStack00024", folder=T)
+}
+}
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
