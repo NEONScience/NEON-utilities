@@ -9,8 +9,14 @@
 
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr GET
-#' @param dpID The data product id (optional), formated as DP0.00000.000
+#' @param dpID The data product id (optional), formated as DP#.#####.###
 #' @return A data table with product information
+
+#' @examples
+#' # Get documentation and availability of plant foliar properties data product
+#' cfcInfo <- getProductInfo("DP1.10026.001")
+
+#' @export
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

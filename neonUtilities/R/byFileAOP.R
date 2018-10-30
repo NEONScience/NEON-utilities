@@ -19,7 +19,8 @@
 
 #' @examples
 #' \dontrun{
-#' byFileAOP(dpID="DP3.30026.001", site="SJER", yea="2017")
+#' # To download 2017 vegetation index data from San Joaquin Experimental Range:
+#' byFileAOP(dpID="DP3.30026.001", site="SJER", year="2017")
 #' }
 
 #' @references

@@ -18,10 +18,10 @@
 
 #' @examples
 #' \dontrun{
-#' # for files downloaded from the NEON Data Portal
+#' # To unzip and merge files downloaded from the NEON Data Portal
 #' stackByTable("~/NEON_par.zip")
 #' 
-#' # for files downloaded using zipsByProduct()
+#' # To unzip and merge files downloaded using zipsByProduct()
 #' stackByTable("~/filesToStack00024", folder=T)
 #' }
 

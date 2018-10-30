@@ -18,6 +18,7 @@
 
 #' @examples
 #' \dontrun{
+#' # To download plant foliar properties data from all sites, expanded data package:
 #' zipsByProduct(dpID="DP1.10026.001", site="all", package="expanded")
 #' }
 

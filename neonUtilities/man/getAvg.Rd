@@ -15,6 +15,10 @@ A vector of the available averaging intervals, typically in minutes.
 \description{
 Most IS products are available at multiple averaging intervals; get a list of what's available for a given data product
 }
+\examples{
+# Get available averaging intervals for PAR data product
+getAvg("DP1.00024.001")
+}
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
