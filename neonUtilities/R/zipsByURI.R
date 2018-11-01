@@ -10,7 +10,6 @@
 #' @param filepath The location of the zip file
 #' @param savepath The location to save the output files to
 #' @param pick.files T or F, should the user be told the name of each file before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use pick.files=F.
-#' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param unzip T or F, indicates if the downloaded zip files should be unziped into the same directory. Defaults to T.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
@@ -34,7 +33,6 @@
 zipsByURI <- function(filepath, 
                       savepath = filepath, 
                       pick.files=TRUE,
-                      check.size = TRUE,
                       unzip = TRUE) {
 
   
@@ -59,14 +57,7 @@ zipsByURI <- function(filepath,
       URLsPerTable <- names(tableData)[names(tableData)%in%URLs$fieldName]
       
       #Loop through fields
-      
-      # get size info
-      zip.urls <- data.frame(zip.urls, row.names=NULL)
-      colnames(zip.urls) <- c("name", "URL", "size")
-      downld.size <- sum(as.numeric(as.character(zip.urls$size)), na.rm=T)/1e6
-      zip.urls$URL <- as.character(zip.urls$URL)
-      zip.urls$name <- as.character(zip.urls$name)
-      
+      #Ideally, get size info, but for some reason file.info and CUrl::getURL both don't display a size
       for(j in URLsPerTable){
         resp <- readline(paste("Continuing will download",length(tableData[,j]),"files for",
                                j,"in table", allTables[i], "\n Do you want to include y/n: ", sep=" "))
