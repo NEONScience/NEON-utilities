@@ -7,6 +7,8 @@ Description
 
 The `neonUtilities` R package provides utilites for discovering, downloading, and working with NEON data files. NEON data files can be downloaded from the NEON Data Portal (http://data.neonscience.org) or API (http://data.neonscience.org/data-api). Provisional NEON data files from instrumented and observation systems are delivered by NEON within zip files organized by site and year-month. Provisional NEON data files from the airborne observation platform (AOP) are organized by site and year. 
 
+`neonUtilities` is available [on CRAN](https://CRAN.R-project.org/package=neonUtilities) and most users will want to install it from there. If you want to use the current development version, you can install from GitHub, but be warned that the version here may not be stable.
+
 This package was developed on top of the deprecated `neonDataStackR` package; change logs from that package are included below.
 
 This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
@@ -17,9 +19,9 @@ Usage
 
 ### Starting out
 Install the package into your local environment using the following code:
+
 ```
-library(devtools)
-install_github("NEONScience/NEON-utilities/neonUtilities", dependencies=TRUE)
+install.packages('neonUtilities')
 library(neonUtilities)
 ```
 
@@ -93,6 +95,11 @@ Disclaimer
 <!-- ****** Change Log ****** -->
 Change Log
 ----------
+
+#### 2018-11-03 v1.0.0
+------------
+* version for initial CRAN release!
+* added `byTileAOP()` to download only AOP tiles corresponding to certain coordinates
 
 #### 2018-05-23 v0.1.1 'pine'
 --------------
