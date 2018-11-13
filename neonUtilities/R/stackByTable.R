@@ -85,7 +85,7 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
   #### If all checks pass, unzip and stack files ####
 
   if(folder==FALSE) {
-    savepath <- substr(filepath, 1, nchar(filepath)-4)
+    if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
     }
