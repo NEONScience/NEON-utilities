@@ -3,6 +3,7 @@
 export(byFileAOP)
 export(byTileAOP)
 export(getAvg)
+export(getDatatable)
 export(getFilesize)
 export(getPackage)
 export(getProductInfo)
