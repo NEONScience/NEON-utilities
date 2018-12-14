@@ -96,7 +96,7 @@ Disclaimer
 Change Log
 ----------
 
-#### 2018-11-11-13 v1.0.1
+#### 2018-11-13 v1.0.1
 ------------
 * patch to change testing to use temporary directory for test files
 * fixed bug in stackByTable() that deleted URLs for ECS files
