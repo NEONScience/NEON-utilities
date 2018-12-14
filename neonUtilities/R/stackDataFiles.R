@@ -114,8 +114,8 @@ stackDataFiles <- function(folder){
         utils::setTxtProgressBar(pb, 0)
         #tblfls <- filepaths[grep(tables[i], filepaths, fixed=T)]
         #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
-        tblfls <- filepaths[grep(paste(".", tables[i], sep=""), filepaths, fixed=T)]
-        tblnames <- filenames[grep(paste(".", tables[i], sep=""), filenames, fixed=T)]
+        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         sites <- unique(substr(tblnames, 10, 13))
         sites <- sites[order(sites)]
         d <- suppressWarnings(data.table::fread(tblfls[grep(sites[1], tblfls)][1], header = T))
@@ -150,8 +150,8 @@ stackDataFiles <- function(folder){
         utils::setTxtProgressBar(pb, 0)
         #tblfls <- filepaths[grep(tables[i], filepaths, fixed=T)]
         #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
-        tblfls <- filepaths[grep(paste(".", tables[i], sep=""), filepaths, fixed=T)]
-        tblnames <- filenames[grep(paste(".", tables[i], sep=""), filenames, fixed=T)]
+        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         d <- suppressWarnings(data.table::fread(tblfls[1], header = T))
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
