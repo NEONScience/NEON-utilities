@@ -70,7 +70,7 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
   }
 
   if(substr(dpID, 5, 5) == "3"){
-    stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() if you would like to download data.")
+    stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() or byTileAOP() if you would like to download data.")
   }
 
   if(dpID == "DP4.00200.001"){
@@ -96,7 +96,7 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
     } else {
-      if(length(grep(files, pattern = ".csv"))>0) {
+      if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
         for(i in files) {
           file.copy(paste(filepath, i, sep="/"), savepath, recursive=T)
         }

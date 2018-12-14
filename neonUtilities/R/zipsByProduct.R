@@ -121,11 +121,12 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
       next
     }
     
-    # if only one averaging interval is requested, divert to filesByAvg()
+    # if only one averaging interval is requested, filter by file names
     if(avg!="all") {
       
       # select files by averaging interval
-      all.file <- grep(paste(avg, "min", sep=""), tmp.files$data$files$name, fixed=T)
+      all.file <- union(grep(paste(avg, "min", sep=""), tmp.files$data$files$name, fixed=T),
+                        grep(paste(avg, "_min", sep=""), tmp.files$data$files$name, fixed=T))
       
       if(length(all.file)==0) {
         messages <- c(messages, paste("No files found for site", tmp.files$data$siteCode,
@@ -149,7 +150,10 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
       
       # subset to package
       which.file <- intersect(grep(pk, tmp.files$data$files$name, fixed=T),
-                             grep(paste(avg, "min", sep=""), tmp.files$data$files$name, fixed=T))
+                             union(grep(paste(avg, "min", sep=""), 
+                                        tmp.files$data$files$name, fixed=T), 
+                                   grep(paste(avg, "_min", sep=""), 
+                                        tmp.files$data$files$name, fixed=T)))
       
       # check again for no files
       if(length(which.file)==0) {
@@ -163,11 +167,19 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
                                         tmp.files$data$files$url[which.file],
                                         tmp.files$data$files$size[which.file]))
       
-      # add url for one copy of variables file
-      which.var <- grep("variables", tmp.files$data$files$name, fixed=T)[1]
-      zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.var],
-                                        tmp.files$data$files$url[which.var],
-                                        tmp.files$data$files$size[which.var]))
+      # add url for one copy of variables file and readme file
+      if(i==1) {
+        which.var <- grep("variables", tmp.files$data$files$name, fixed=T)[1]
+        zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.var],
+                                          tmp.files$data$files$url[which.var],
+                                          tmp.files$data$files$size[which.var]))
+        
+        # commented out - readme still needs general solution, they are specific to a site-month
+        # which.read <- grep("readme", tmp.files$data$files$name, fixed=T)[1]
+        # zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.read],
+        #                                   tmp.files$data$files$url[which.read],
+        #                                   tmp.files$data$files$size[which.read]))
+      }
       
     } else {
       

@@ -21,5 +21,8 @@ cleanUp <- function(folder) {
   dirs <- list.dirs(folder, recursive = FALSE)
   dirsNotStacked <- dirs[-grep(pattern = "stackedFiles", x = dirs)]
   if(length(dirsNotStacked) > 0) {unlink(dirsNotStacked, recursive = TRUE)}
+  fil <- list.files(folder, recursive = FALSE)
+  csvfil <- fil[grep("csv", fil)]
+  if(length(csvfil) > 0) {unlink(paste(folder, csvfil, sep="/"), recursive = FALSE)}
   writeLines("All unzipped monthly data folders have been removed.")
 }
