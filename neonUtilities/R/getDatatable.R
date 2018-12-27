@@ -38,6 +38,8 @@
 #'  
 #' @export
 
+utils::globalVariables(c("%>%", "."))
+
 getDatatable <- function(
   dpid = "DP1.10086.001", #data product ID
   data_table_name = 'sls_soilCoreCollection', #data table name (with or without the _pub suffix)
@@ -59,13 +61,13 @@ getDatatable <- function(
   require(readr)
   
   floor_date_min <- as.Date(sample_date_min, format = sample_date_format) %>% 
-    floor_date(., unit = 'months') %>% format(., '%Y-%m-%d')
+    lubridate::floor_date(., unit = 'months') %>% format(., '%Y-%m-%d')
   floor_date_max <- as.Date(sample_date_max, format = sample_date_format) %>% 
-    floor_date(., unit = 'months') %>% format(., '%Y-%m-%d')
+    lubridate::floor_date(., unit = 'months') %>% format(., '%Y-%m-%d')
   
   number_months <- (floor_date_min%--%floor_date_max)%/%months(1)
   
-  sample_date_list <- ymd(floor_date_min) + months(1)*c(0:number_months)
+  sample_date_list <- lubridate::ymd(floor_date_min) + base::months(1)*c(0:number_months)
   
   sample_year_month <- as.Date(sample_date_list) %>% format('%Y-%m')
   
@@ -82,6 +84,7 @@ getDatatable <- function(
   
   # step 3 -- pull out urls for 
   df_avail_data <- data.frame(url = unlist(avail_content$data$siteCodes$availableDataUrls)) %>%
+    # is this plyr or dplyr mutate()?
     mutate(url_info = gsub(url_prefix_data,'',url)) %>%
     tidyr::separate(url_info, into = c('dpid',sample_location_type,'year_month'), sep = '/')
   
@@ -150,7 +153,7 @@ getDatatable <- function(
     require(tidyverse)
     suppressWarnings(x_num <- x_in %>% as.double())
     x_char2 <- as.character(x_num)
-    diff_list <- setdiff(x_in, x_char2)
+    diff_list <- base::setdiff(x_in, x_char2)
     
     if(  length(diff_list) == 0 | 
          suppressWarnings(!anyNA(as.double(diff_list)))){
