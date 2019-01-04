@@ -42,7 +42,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -97,8 +97,9 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
       unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
     } else {
       if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
+        if(!dir.exists(savepath)){dir.create(savepath)}
         for(i in files) {
-          file.copy(paste(filepath, i, sep="/"), savepath, recursive=T)
+          file.copy(paste(filepath, i, sep="/"), savepath)
         }
       }
     }
