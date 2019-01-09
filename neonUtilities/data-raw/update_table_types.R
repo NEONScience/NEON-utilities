@@ -39,7 +39,7 @@ update_table_types <- function(){
                              "tableType", "tableTMI")
   rownames(table_types) <- 1:nrow(table_types)
   
-  devtools::use_data(table_types, internal=TRUE, overwrite=TRUE)
+  usethis::use_data(table_types, internal=TRUE, overwrite=TRUE)
   
 }
 
