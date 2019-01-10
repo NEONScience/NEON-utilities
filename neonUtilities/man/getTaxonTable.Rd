@@ -8,12 +8,12 @@ getTaxonTable(taxonType = NA, recordReturnLimit = NA,
   stream = "true")
 }
 \arguments{
-\item{taxonType}{Character string for the taxonTypeCode. Must be one of ALGAE, GEETLE, BIRD,
-FISH, HERPETOLOY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK}
+\item{taxonType}{Character string for the taxonTypeCode. Must be one of ALGAE, BEETLE, BIRD,
+FISH, HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK}
 
 \item{recordReturnLimit}{Integer. The number of items to limit the result set to. If NA, will return all records in table.}
 
-\item{stream}{Character string. Option to obtain the result as a stream. Utilize for large requests.}
+\item{stream}{Character string, true or false. Option to obtain the result as a stream. Utilize for large requests.}
 }
 \value{
 data frame with selected NEON data
@@ -25,7 +25,7 @@ enduser.
 }
 \examples{
 # taxonTypeCode must be one of
-# ALGAE, GEETLE, BIRD, FISH,
+# ALGAE, BEETLE, BIRD, FISH,
 # HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS,
 # SMALL_MAMMAL, PLANT, TICK
 #################################
