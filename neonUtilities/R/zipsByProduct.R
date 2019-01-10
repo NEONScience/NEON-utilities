@@ -261,10 +261,17 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
   }
   dir.create(filepath)
 
+  writeLines(paste("Downloading ", nrow(zip.urls)-1, " files", sep=""))
+  pb <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
   # copy zip files into folder
   for(i in 2:nrow(zip.urls)) {
-    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), mode="wb")
+    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), 
+                         mode="wb", quiet=T)
+    utils::setTxtProgressBar(pb, i/(nrow(zip.urls)-1))
   }
+  utils::setTxtProgressBar(pb, 1)
+  close(pb)
 
   messages <- c(messages, paste(nrow(zip.urls)-1, "files downloaded to",
                                 filepath, sep=" "))
