@@ -4,7 +4,7 @@
 \alias{stackByTable}
 \title{Join data files in a zipped NEON data package by table type}
 \usage{
-stackByTable(filepath, savepath = filepath, folder = FALSE,
+stackByTable(filepath, savepath = NA, folder = FALSE,
   saveUnzippedFiles = FALSE, dpID = NA)
 }
 \arguments{
