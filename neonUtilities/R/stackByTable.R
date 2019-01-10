@@ -89,7 +89,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(folder==FALSE) {
     if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
     if(savepath=="envt") {
-      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S")))
+      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
     }
     if(length(grep(files, pattern = ".zip")) > 0){
@@ -100,7 +100,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(folder==TRUE) {
     if(is.na(savepath)){savepath <- filepath}
     if(savepath=="envt") {
-      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S")))
+      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
     }
     if(length(grep(files, pattern = ".zip")) > 0){
