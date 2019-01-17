@@ -14,7 +14,7 @@
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
-#' @return All files are unzipped and one file for each table type is created and written.
+#' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
 #' @examples
 #' \dontrun{
@@ -84,8 +84,14 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
 
   #### If all checks pass, unzip and stack files ####
 
+  envt <- 0
+  
   if(folder==FALSE) {
     if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
+    if(savepath=="envt") {
+      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+      envt <- 1
+    }
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
     }
@@ -93,6 +99,10 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
 
   if(folder==TRUE) {
     if(is.na(savepath)){savepath <- filepath}
+    if(savepath=="envt") {
+      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+      envt <- 1
+    }
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
     } else {
@@ -106,8 +116,25 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
 
   stackDataFiles(savepath)
-
+  
   if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
+  
+  if(envt==1) {
+    ls <- list.files(paste(savepath, "stackedFiles", sep="/"))
+    fls <- list(length(ls))
+    ind <- 0
+    for(i in unlist(ls)) {
+      ind <- ind+1
+      if(substring(i, nchar(i)-3, nchar(i))!=".csv") {
+        next
+      } else {
+        fls[[ind]] <- utils::read.delim(paste(savepath, "stackedFiles", i, sep="/"), sep=",")
+        names(fls)[ind] <- substring(i, 1, nchar(i)-4)
+      }
+    }
+    return(fls)
+    unlink(paste(savepath, "stackedFiles", sep="/"))
+  }
 
 }
 

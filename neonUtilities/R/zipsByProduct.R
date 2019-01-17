@@ -13,6 +13,7 @@
 #' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
+#' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
@@ -33,7 +34,7 @@
 ##############################################################################################
 
 zipsByProduct <- function(dpID, site="all", package="basic", avg="all", 
-                          check.size=TRUE, savepath=NA) {
+                          check.size=TRUE, savepath=NA, load=F) {
 
   messages <- NA
   
@@ -261,13 +262,22 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
   }
   dir.create(filepath)
 
+  writeLines(paste("Downloading ", nrow(zip.urls)-1, " files", sep=""))
+  pb <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
   # copy zip files into folder
   for(i in 2:nrow(zip.urls)) {
-    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), mode="wb")
+    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), 
+                         mode="wb", quiet=T)
+    utils::setTxtProgressBar(pb, i/(nrow(zip.urls)-1))
   }
+  utils::setTxtProgressBar(pb, 1)
+  close(pb)
 
-  messages <- c(messages, paste(nrow(zip.urls)-1, "files downloaded to",
-                                filepath, sep=" "))
+  if(load==F) {
+    messages <- c(messages, paste(nrow(zip.urls)-1, "files downloaded to",
+                                  filepath, sep=" "))
+  }
   writeLines(paste0(messages[-1], collapse = "\n"))
 
 }
