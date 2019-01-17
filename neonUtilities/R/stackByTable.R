@@ -14,7 +14,7 @@
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
-#' @return All files are unzipped and one file for each table type is created and written.
+#' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
 #' @examples
 #' \dontrun{
@@ -128,7 +128,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       if(substring(i, nchar(i)-3, nchar(i))!=".csv") {
         next
       } else {
-        fls[[ind]] <- read.delim(paste(savepath, "stackedFiles", i, sep="/"), sep=",")
+        fls[[ind]] <- utils::read.delim(paste(savepath, "stackedFiles", i, sep="/"), sep=",")
         names(fls)[ind] <- substring(i, 1, nchar(i)-4)
       }
     }
