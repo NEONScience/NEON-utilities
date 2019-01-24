@@ -112,14 +112,15 @@ Change Log
 #### 2019-01-24 v1.2.0
 -----------
 Bug fixes:
-* fixed bug in stackByTable() that merged tables with overlapping names
-* fixed bug in zipsByProduct() avg= option that only worked for a subset of data products
-* fixed bug in stackByTable() that failed unzipping if savepath=filepath
+* fixed bug in `stackByTable()` that merged tables with overlapping names
+* fixed bug in `zipsByProduct()` `avg=` option that only worked for a subset of data products
+* fixed bug in `stackByTable()` that failed unzipping if savepath=filepath
+
 Enhancements:
-* added getDatatable()
-* added option to stackByTable() to load files into the R environment
-* added progress bar to zipsByProduct()
-* added loadByProduct() to download and load files in one step
+* added `getDatatable()`
+* added option to `stackByTable()` to load files into the R environment
+* added progress bar to `zipsByProduct()`
+* added `loadByProduct()` to download and load files in one step
 
 
 #### 2018-11-13 v1.0.1
