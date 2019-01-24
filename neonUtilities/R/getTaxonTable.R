@@ -24,23 +24,11 @@
 #' # HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS,
 #' # SMALL_MAMMAL, PLANT, TICK
 #' #################################
-#' taxa_table <- getTaxonTable('ALGAE', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('BEETLE', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('BIRD', recordReturnLimit = 10)
+#' # return the first 10 fish records
 #' taxa_table <- getTaxonTable('FISH', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('HERPETOLOGY', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('MACROINVERTEBRATE', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('MOSQUITO', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('MOSQUITO_PATHOGENS', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('SMALL_MAMMAL', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('PLANT', recordReturnLimit = 10)
-#' taxa_table <- getTaxonTable('TICK', recordReturnLimit = 10)
 #'
-#' # return all mosquito pathogen records
-#' taxa_table <- getTaxonTable('MOSQUITO_PATHOGENS')
-#'
-#' # return all fish taxa records
-#' taxa_table <- getTaxonTable('FISH')
+#' # return all mammal taxa records
+#' taxa_table <- getTaxonTable('SMALL_MAMMAL')
 #'
 #'
 #' @references License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
