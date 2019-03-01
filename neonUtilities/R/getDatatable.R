@@ -9,7 +9,8 @@ utils::globalVariables(names = c("%>%", ".", "%--%", "%/%"))
 #'
 #' @description This is a function to retrieve a data table
 #' from the NEON data portal for sites and dates provided by the
-#' enduser.
+#' enduser. NOTE that this function only works for NEON
+#' Observation System (OS) data products
 #'
 #' @param dpid character sting for NEON data product ID
 #' @param data_table_name character sting for name of the data table to download, e.g., 'sls_soilCoreCollection' (with or without the _pub suffix)
@@ -40,8 +41,8 @@ utils::globalVariables(names = c("%>%", ".", "%--%", "%/%"))
 #'
 #' @export
 getDatatable <- function(
-  dpid = "DP1.10086.001", #data product ID
-  data_table_name = 'sls_soilCoreCollection', #data table name (with or without the _pub suffix)
+  dpid = NA, #data product ID
+  data_table_name = NA, #data table name (with or without the _pub suffix)
   sample_location_list = NA, # list of sites, domains, etc.
   sample_location_type = 'siteID', #location type
   sample_date_min = '2012-01-01', #start date -- default is 1-Jan-2012
@@ -49,11 +50,16 @@ getDatatable <- function(
   sample_date_format = '%Y-%m-%d', #date format
   ### more defaults
   data_package_type = 'basic',
-  url_prefix_data = 'http://data.neonscience.org:80/api/v0/data/',
-  url_prefix_products = 'http://data.neonscience.org:80/api/v0/products/'){
+  url_prefix_data = 'https://data.neonscience.org/api/v0/data/',
+  url_prefix_products = 'https://data.neonscience.org/api/v0/products/'){
 
+  # initialize output data frame
+  df_data_from_portal <- data.frame()
+
+  # remove _pub suffix
   data_table_name <- gsub('(?i)_pub', '', data_table_name)
 
+  # required name spaces for this function
   requireNamespace('dplyr')
   requireNamespace('lubridate')
   requireNamespace('readr')
@@ -71,7 +77,8 @@ getDatatable <- function(
   floor_date_max <- as.Date(sample_date_max, format = sample_date_format) %>%
     lubridate::floor_date(., unit = 'months') %>% format(., '%Y-%m-%d')
 
-  number_months <- (floor_date_min%--%floor_date_max)%/%months(1)
+  suppressMessages({
+    number_months <- (floor_date_min %--% floor_date_max) %/% months(1)})
 
   sample_date_list <- lubridate::ymd(floor_date_min) + base::months(1)*c(0:number_months)
 
@@ -116,58 +123,95 @@ getDatatable <- function(
     try({tmp <- httr::GET(url_to_get)}, silent = TRUE)
 
     if(!is.null(tmp)){
-      tmp.files <- jsonlite::fromJSON(httr::content(tmp, as='text'))
-      tmp.files$data$files$name
+      if(tmp$status_code == 200){
+        tmp.files <- jsonlite::fromJSON(httr::content(tmp, as='text'))
+        tmp.files$data$files$name
 
-      # should only be 1 url that has the correct data table name and data package type
-      which_url_to_get <- dplyr::intersect(
-        grep(data_table_name, tmp.files$data$files$name),
-        grep(data_package_type, tmp.files$data$files$name))
+        # should only be 1 url that has the correct data table name and data package type
+        which_url_to_get <- dplyr::intersect(
+          grep(data_table_name, tmp.files$data$files$name),
+          grep(data_package_type, tmp.files$data$files$name))
 
-      # make sure only getting 1 URL
-      if(length(which_url_to_get) == 1){
-        tmp.df <- suppressWarnings(
-          readr::read_delim(
-            tmp.files$data$files$url[which_url_to_get],
-            delim = ",",
-            na = c('', 'NA', NA),
-            trim_ws = TRUE,
-            col_types = readr::cols(.default = 'c') # read everything is as character initially
-          ))
-        if("remarks" %in% colnames(tmp.df) ) {tmp.df$remarks <- as.character(tmp.df$remarks)}
+        # make sure only getting 1 URL
+        if(length(which_url_to_get) == 1){
+          tmp.df <- suppressWarnings(
+            readr::read_delim(
+              tmp.files$data$files$url[which_url_to_get],
+              delim = ",",
+              na = c('', 'NA', NA),
+              trim_ws = TRUE,
+              col_types = readr::cols(.default = 'c') # read everything is as character initially
+            ))
+          if("remarks" %in% colnames(tmp.df) ) {tmp.df$remarks <- as.character(tmp.df$remarks)}
+        }
       }
     }
     return(tmp.df)
   }
 
-  # get data from portal
-  list_data_from_portal <- mapply(FUN = fn_get_available_data,
-                                  data_table_name = data_table_name,
-                                  data_package_type = data_package_type,
-                                  url_to_get = df_avail_data_to_get$url,
-                                  SIMPLIFY = FALSE)
+  # error handling -- no data returned
+  if(nrow(df_avail_data_to_get) == 0){
+    message('No data available for this query')
+  }else{
 
-  # convert list to a tibble using bind_rows
-  df_data_from_portal <- do.call(dplyr::bind_rows, list_data_from_portal)
+    # get data from portal
+    list_data_from_portal <- mapply(FUN = fn_get_available_data,
+                                    url_to_get = df_avail_data_to_get$url,
+                                    MoreArgs = list(
+                                      data_table_name = data_table_name,
+                                      data_package_type = data_package_type),
+                                    SIMPLIFY = FALSE)
 
-  # function to check if a vector should be turned numeric, and then convert to numeric
-  fn_make_numeric <- function(x_in){
-    suppressWarnings(x_num <- x_in %>% as.double())
-    x_char2 <- as.character(x_num)
-    diff_list <- base::setdiff(x_in, x_char2)
+    # convert list to a tibble using bind_rows
+    df_data_from_portal <- do.call(dplyr::bind_rows, list_data_from_portal)
 
-    if(  length(diff_list) == 0 |
-         suppressWarnings(!anyNA(as.double(diff_list)))){
-      return(x_num)
-    } else {
-      return(x_in)
+    # function to check if a vector should be turned numeric, and then convert to numeric
+    fn_make_numeric <- function(x_in){
+      suppressWarnings(x_num <- x_in %>% as.double())
+      x_char2 <- as.character(x_num)
+      diff_list <- base::setdiff(x_in, x_char2)
+
+      if(  length(diff_list) == 0 |
+           suppressWarnings(!anyNA(as.double(diff_list)))){
+        return(x_num)
+      } else {
+        return(x_in)
+      }
     }
+
+    # change char columns to numeric if it makes sense
+    df_data_from_portal <- df_data_from_portal %>% dplyr::mutate_all(fn_make_numeric)
   }
-
-  # change char columns to numeric if it makes sense
-  df_data_from_portal <- df_data_from_portal %>% dplyr::mutate_all(fn_make_numeric)
-
-  ###########
+    ###########
   return(df_data_from_portal)
 }
 
+
+#
+# ## test -- should work
+# dpid = "DP1.10086.001"
+# data_table_name = 'sls_soilCoreCollection'
+# sample_location_list = c('CPER','TALL')
+# sample_date_min = '2014-01-01'
+# sample_date_max = '2014-06-01'
+#
+# sample_location_type = 'siteID' #location type
+# sample_date_format = '%Y-%m-%d' #date format
+# ### more defaults
+# data_package_type = 'basic'
+# url_prefix_data = 'https://data.neonscience.org/api/v0/data/'
+# url_prefix_products = 'https://data.neonscience.org/api/v0/products/'
+#
+# ## -- test -- should not return any data
+# dpid = "DP1.10086.001"
+# data_table_name = 'sls_soilCoreCollection'
+# sample_location_list = c('CPER','TALL')
+# sample_date_min = '2010-01-01'
+# sample_date_max = '2011-06-01'
+#
+# sample_location_type = 'siteID' #location type
+# sample_date_format = '%Y-%m-%d' #date format
+# ### more defaults
+# data_package_type = 'basic'
+# url_prefix_data = 'https://data.neonscience.org/api/v0/data/'
+# url_prefix_products = 'https://data.neonscience.org/api/v0/products/'
