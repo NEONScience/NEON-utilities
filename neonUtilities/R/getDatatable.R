@@ -10,10 +10,10 @@ utils::globalVariables(names = c("%>%", ".", "%--%", "%/%"))
 #' @description This is a function to retrieve a data table
 #' from the NEON data portal for sites and dates provided by the
 #' enduser. NOTE that this function only works for NEON
-#' Observation System (OS) data products
+#' Observation System (OS) data products, and only for select tables
 #'
 #' @param dpid character sting for NEON data product ID
-#' @param data_table_name character sting for name of the data table to download, e.g., 'sls_soilCoreCollection' (with or without the _pub suffix)
+#' @param data_table_name character sting for name of the data table to download, e.g., 'sls_soilCoreCollection'
 #' @param sample_location_list list of sites, domains, etc. If NA, retrieve all data for the given data table / dpid combination.
 #' @param sample_location_type character sting for location type, such as 'siteID'. Must be one of the NEON controlled terms. If you're unsure, use 'siteID'
 #' @param sample_date_min start date for query. Default is 1-Jan-2012, and this should capture the earliest NEON data record.
@@ -42,7 +42,7 @@ utils::globalVariables(names = c("%>%", ".", "%--%", "%/%"))
 #' @export
 getDatatable <- function(
   dpid = NA, #data product ID
-  data_table_name = NA, #data table name (with or without the _pub suffix)
+  data_table_name = NA, #data table name
   sample_location_list = NA, # list of sites, domains, etc.
   sample_location_type = 'siteID', #location type
   sample_date_min = '2012-01-01', #start date -- default is 1-Jan-2012
@@ -65,12 +65,6 @@ getDatatable <- function(
   requireNamespace('readr')
   requireNamespace('httr')
   requireNamespace('jsonlite')
-
-  # require(dplyr)
-  # require(lubridate)
-  # require(readr)
-  # require(httr)
-  # require(jsonlite)
 
   floor_date_min <- as.Date(sample_date_min, format = sample_date_format) %>%
     lubridate::floor_date(., unit = 'months') %>% format(., '%Y-%m-%d')
@@ -186,32 +180,3 @@ getDatatable <- function(
   return(df_data_from_portal)
 }
 
-
-#
-# ## test -- should work
-# dpid = "DP1.10086.001"
-# data_table_name = 'sls_soilCoreCollection'
-# sample_location_list = c('CPER','TALL')
-# sample_date_min = '2014-01-01'
-# sample_date_max = '2014-06-01'
-#
-# sample_location_type = 'siteID' #location type
-# sample_date_format = '%Y-%m-%d' #date format
-# ### more defaults
-# data_package_type = 'basic'
-# url_prefix_data = 'https://data.neonscience.org/api/v0/data/'
-# url_prefix_products = 'https://data.neonscience.org/api/v0/products/'
-#
-# ## -- test -- should not return any data
-# dpid = "DP1.10086.001"
-# data_table_name = 'sls_soilCoreCollection'
-# sample_location_list = c('CPER','TALL')
-# sample_date_min = '2010-01-01'
-# sample_date_max = '2011-06-01'
-#
-# sample_location_type = 'siteID' #location type
-# sample_date_format = '%Y-%m-%d' #date format
-# ### more defaults
-# data_package_type = 'basic'
-# url_prefix_data = 'https://data.neonscience.org/api/v0/data/'
-# url_prefix_products = 'https://data.neonscience.org/api/v0/products/'
