@@ -14,7 +14,7 @@ getDatatable(dpid = NA, data_table_name = NA,
 \arguments{
 \item{dpid}{character sting for NEON data product ID}
 
-\item{data_table_name}{character sting for name of the data table to download, e.g., 'sls_soilCoreCollection' (with or without the _pub suffix)}
+\item{data_table_name}{character sting for name of the data table to download, e.g., 'sls_soilCoreCollection'}
 
 \item{sample_location_list}{list of sites, domains, etc. If NA, retrieve all data for the given data table / dpid combination.}
 
@@ -39,7 +39,7 @@ data frame with selected NEON data
 This is a function to retrieve a data table
 from the NEON data portal for sites and dates provided by the
 enduser. NOTE that this function only works for NEON
-Observation System (OS) data products
+Observation System (OS) data products, and only for select tables
 }
 \examples{
 sls_soilCoreCollection <- getDatatable(

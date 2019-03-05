@@ -4,13 +4,18 @@
 \alias{zipsByProduct}
 \title{Get files from NEON API to feed the stackByTable() function}
 \usage{
-zipsByProduct(dpID, site = "all", package = "basic", avg = "all",
-  check.size = TRUE, savepath = NA, load = F)
+zipsByProduct(dpID, site = "all", startdate = NA, enddate = NA,
+  package = "basic", avg = "all", check.size = TRUE, savepath = NA,
+  load = F)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
 
-\item{site}{Either the string 'all', or the four-letter code of a single NEON site, e.g. 'CLBJ'. Future versions may allow more options for subsetting than one or all sites. Defaults to all.}
+\item{site}{Either the string 'all', meaning all available sites, or a character vector of 4-letter NEON site codes, e.g. c('ONAQ','RMNP'). Defaults to all.}
+
+\item{startdate}{Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.}
+
+\item{enddate}{Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.}
 
 \item{package}{Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.}
 
@@ -27,6 +32,10 @@ A folder in the working directory (or in savepath, if specified), containing all
 }
 \description{
 Pull files from the NEON API, by data product, in a structure that will allow them to be stacked by the stackByTable() function
+}
+\details{
+All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
+Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
 }
 \examples{
 \dontrun{

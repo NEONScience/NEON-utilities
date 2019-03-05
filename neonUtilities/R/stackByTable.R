@@ -92,6 +92,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
     }
+    orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
     }
@@ -103,6 +104,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
     }
+    orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
     } else {
@@ -117,7 +119,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
 
   stackDataFiles(savepath)
   
-  if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
+  if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
   if(envt==1) {
     ls <- list.files(paste(savepath, "stackedFiles", sep="/"))

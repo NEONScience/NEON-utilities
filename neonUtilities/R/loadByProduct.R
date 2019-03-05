@@ -9,9 +9,14 @@
 #'
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param site Either the string 'all', or the four-letter code of a single NEON site, e.g. 'CLBJ'. Future versions may allow more options for subsetting than one or all sites. Defaults to all.
+#' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
+#' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+
+#' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
+#' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
 
 #' @return A named list of all the data tables in the data product downloaded, plus a validation file and a variables file, as available.
 
@@ -31,8 +36,8 @@
 #     original creation
 ##############################################################################################
 
-loadByProduct <- function(dpID, site="all", package="basic", avg="all", 
-                          check.size=TRUE) {
+loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic", 
+                          avg="all", check.size=TRUE) {
   
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -58,8 +63,8 @@ loadByProduct <- function(dpID, site="all", package="basic", avg="all",
   dir.create(temppath)
   
   # pass the request to zipsByProduct() to download
-  zipsByProduct(dpID=dpID, site=site, package=package, avg=avg, check.size=check.size, 
-                savepath=temppath, load=T)
+  zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package, 
+                avg=avg, check.size=check.size, savepath=temppath, load=T)
   
   # stack and load the downloaded files using stackByTable
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""), 

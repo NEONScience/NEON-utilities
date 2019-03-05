@@ -1,6 +1,6 @@
 Package: neonUtilities
-Version: 1.2.0
-Date: 2019-01-24
+Version: 1.2.1
+Date: 2019-03-04
 Title: Utilities for Working with NEON Data
 Author: Christine Laney <claney@battelleecology.org>, Claire Lunch <clunch@battelleecology.org>
 Maintainer: Claire Lunch <clunch@battelleecology.org>

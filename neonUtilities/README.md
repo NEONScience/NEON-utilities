@@ -109,6 +109,16 @@ Disclaimer
 Change Log
 ----------
 
+#### 2019-03-04 v1.2.1
+-----------
+Bug fixes:
+* fixed bug in `stackByTable()` that deleted existing files when using `savepath` argument
+* fixed bug in `getDatatable()` that created incorrect urls
+
+Enhancements:
+* enabled date and site subsetting in `zipsByProduct()`
+
+
 #### 2019-01-24 v1.2.0
 -----------
 Bug fixes:
