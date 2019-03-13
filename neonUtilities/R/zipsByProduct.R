@@ -8,11 +8,17 @@
 #' Pull files from the NEON API, by data product, in a structure that will allow them to be stacked by the stackByTable() function
 #'
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
-#' @param site Either the string 'all', or the four-letter code of a single NEON site, e.g. 'CLBJ'. Future versions may allow more options for subsetting than one or all sites. Defaults to all.
+#' @param site Either the string 'all', meaning all available sites, or a character vector of 4-letter NEON site codes, e.g. c('ONAQ','RMNP'). Defaults to all.
+#' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
+#' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
+#' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
+
+#' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
+#' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
@@ -32,8 +38,8 @@
 #     original creation
 ##############################################################################################
 
-zipsByProduct <- function(dpID, site="all", package="basic", avg="all", 
-                          check.size=TRUE, savepath=NA) {
+zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic", 
+                          avg="all", check.size=TRUE, savepath=NA, load=F) {
 
   messages <- NA
   
@@ -89,16 +95,37 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
   # get the urls for months with data available
   month.urls <- unlist(avail$data$siteCodes$availableDataUrls)
 
-  # subset to site if requested
-  if(site!="all") {
-    month.urls <- month.urls[grep(site, month.urls)]
+  # subset by sites if requested
+  if(!"all" %in% site) {
+    month.urls <- month.urls[sort(unlist(sapply(site, grep, month.urls)))]
   } else {
     month.urls <- month.urls
   }
-
+  
   # error message if nothing is available
   if(length(month.urls)==0) {
-    stop("There are no data at the selected site.")
+    stop("There are no data at the selected site(s).")
+  }
+  
+  # subset by dates if requested
+  if(!is.na(startdate)) {
+    datelist <- substring(month.urls, nchar(month.urls[1])-6, nchar(month.urls[1]))
+    month.urls <- month.urls[which(datelist >= startdate)]
+  }
+  
+  # error message if nothing is available
+  if(length(month.urls)==0) {
+    stop("There are no data at the selected date(s).")
+  }
+  
+  if(!is.na(enddate)) {
+    datelist <- substring(month.urls, nchar(month.urls[1])-6, nchar(month.urls[1]))
+    month.urls <- month.urls[which(datelist <= enddate)]
+  }
+  
+  # error message if nothing is available
+  if(length(month.urls)==0) {
+    stop("There are no data at the selected date(s).")
   }
   
   # get all the file names, and stash the URLs for just the zips in an object
@@ -116,16 +143,17 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
 
     # check for no files
     if(length(tmp.files$data$files)==0) {
-      messages <- c(messages, paste("No files found for site", tmp.files$data$siteCode,
-                                    "and month", tmp.files$data$month, sep=" "))
+      messages <- c(messages, paste("No files found for site", substring(month.urls[i], 58, 61),
+                                    "and month", substring(month.urls[i], 63, 69), sep=" "))
       next
     }
     
-    # if only one averaging interval is requested, divert to filesByAvg()
+    # if only one averaging interval is requested, filter by file names
     if(avg!="all") {
       
       # select files by averaging interval
-      all.file <- grep(paste(avg, "min", sep=""), tmp.files$data$files$name, fixed=T)
+      all.file <- union(grep(paste(avg, "min", sep=""), tmp.files$data$files$name, fixed=T),
+                        grep(paste(avg, "_min", sep=""), tmp.files$data$files$name, fixed=T))
       
       if(length(all.file)==0) {
         messages <- c(messages, paste("No files found for site", tmp.files$data$siteCode,
@@ -149,7 +177,10 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
       
       # subset to package
       which.file <- intersect(grep(pk, tmp.files$data$files$name, fixed=T),
-                             grep(paste(avg, "min", sep=""), tmp.files$data$files$name, fixed=T))
+                             union(grep(paste(avg, "min", sep=""), 
+                                        tmp.files$data$files$name, fixed=T), 
+                                   grep(paste(avg, "_min", sep=""), 
+                                        tmp.files$data$files$name, fixed=T)))
       
       # check again for no files
       if(length(which.file)==0) {
@@ -163,11 +194,19 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
                                         tmp.files$data$files$url[which.file],
                                         tmp.files$data$files$size[which.file]))
       
-      # add url for one copy of variables file
-      which.var <- grep("variables", tmp.files$data$files$name, fixed=T)[1]
-      zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.var],
-                                        tmp.files$data$files$url[which.var],
-                                        tmp.files$data$files$size[which.var]))
+      # add url for one copy of variables file and readme file
+      if(i==1) {
+        which.var <- grep("variables", tmp.files$data$files$name, fixed=T)[1]
+        zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.var],
+                                          tmp.files$data$files$url[which.var],
+                                          tmp.files$data$files$size[which.var]))
+        
+        # commented out - readme still needs general solution, they are specific to a site-month
+        # which.read <- grep("readme", tmp.files$data$files$name, fixed=T)[1]
+        # zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.read],
+        #                                   tmp.files$data$files$url[which.read],
+        #                                   tmp.files$data$files$size[which.read]))
+      }
       
     } else {
       
@@ -249,13 +288,22 @@ zipsByProduct <- function(dpID, site="all", package="basic", avg="all",
   }
   dir.create(filepath)
 
+  writeLines(paste("Downloading ", nrow(zip.urls)-1, " files", sep=""))
+  pb <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
   # copy zip files into folder
   for(i in 2:nrow(zip.urls)) {
-    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), mode="wb")
+    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), 
+                         mode="wb", quiet=T)
+    utils::setTxtProgressBar(pb, i/(nrow(zip.urls)-1))
   }
+  utils::setTxtProgressBar(pb, 1)
+  close(pb)
 
-  messages <- c(messages, paste(nrow(zip.urls)-1, "files downloaded to",
-                                filepath, sep=" "))
+  if(load==F) {
+    messages <- c(messages, paste(nrow(zip.urls)-1, "files downloaded to",
+                                  filepath, sep=" "))
+  }
   writeLines(paste0(messages[-1], collapse = "\n"))
 
 }

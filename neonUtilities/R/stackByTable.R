@@ -14,7 +14,7 @@
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
-#' @return All files are unzipped and one file for each table type is created and written.
+#' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
 #' @examples
 #' \dontrun{
@@ -42,7 +42,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -70,7 +70,7 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
   }
 
   if(substr(dpID, 5, 5) == "3"){
-    stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() if you would like to download data.")
+    stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() or byTileAOP() if you would like to download data.")
   }
 
   if(dpID == "DP4.00200.001"){
@@ -84,8 +84,15 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
 
   #### If all checks pass, unzip and stack files ####
 
+  envt <- 0
+  
   if(folder==FALSE) {
-    savepath <- substr(filepath, 1, nchar(filepath)-4)
+    if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
+    if(savepath=="envt") {
+      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+      envt <- 1
+    }
+    orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
     }
@@ -93,20 +100,43 @@ stackByTable <- function(filepath, savepath = filepath, folder=FALSE, saveUnzipp
 
   if(folder==TRUE) {
     if(is.na(savepath)){savepath <- filepath}
+    if(savepath=="envt") {
+      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+      envt <- 1
+    }
+    orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
     } else {
-      if(length(grep(files, pattern = ".csv"))>0) {
+      if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
+        if(!dir.exists(savepath)){dir.create(savepath)}
         for(i in files) {
-          file.copy(paste(filepath, i, sep="/"), savepath, recursive=T)
+          file.copy(paste(filepath, i, sep="/"), savepath)
         }
       }
     }
   }
 
   stackDataFiles(savepath)
-
-  if(saveUnzippedFiles == FALSE){cleanUp(savepath)}
+  
+  if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
+  
+  if(envt==1) {
+    ls <- list.files(paste(savepath, "stackedFiles", sep="/"))
+    fls <- list(length(ls))
+    ind <- 0
+    for(i in unlist(ls)) {
+      ind <- ind+1
+      if(substring(i, nchar(i)-3, nchar(i))!=".csv") {
+        next
+      } else {
+        fls[[ind]] <- utils::read.delim(paste(savepath, "stackedFiles", i, sep="/"), sep=",")
+        names(fls)[ind] <- substring(i, 1, nchar(i)-4)
+      }
+    }
+    return(fls)
+    unlink(paste(savepath, "stackedFiles", sep="/"))
+  }
 
 }
 

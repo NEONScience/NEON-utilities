@@ -4,7 +4,7 @@
 \alias{stackByTable}
 \title{Join data files in a zipped NEON data package by table type}
 \usage{
-stackByTable(filepath, savepath = filepath, folder = FALSE,
+stackByTable(filepath, savepath = NA, folder = FALSE,
   saveUnzippedFiles = FALSE, dpID = NA)
 }
 \arguments{
@@ -19,7 +19,7 @@ stackByTable(filepath, savepath = filepath, folder = FALSE,
 \item{dpID}{Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility}
 }
 \value{
-All files are unzipped and one file for each table type is created and written.
+All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 }
 \description{
 Given a zipped data file, do a full join of all data files, grouped by table type.

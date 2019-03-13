@@ -4,10 +4,12 @@
 \alias{cleanUp}
 \title{Clean up folder after stacking}
 \usage{
-cleanUp(folder)
+cleanUp(folder, orig)
 }
 \arguments{
 \item{folder}{The file path to the folder that needs to be cleaned up (the root directory of the data package)}
+
+\item{orig}{The list of files that were present in the folder before unzipping and stacking}
 }
 \value{
 Any existing directory except for stackedFiles will be removed. Nothing is returned.

@@ -23,9 +23,9 @@
 ##############################################################################################
 
 unzipZipfile <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
-  if(level %in% c("top", "all")){
-    utils::unzip(zipfile = zippath, exdir=outpath)
-  }
+  # if(level %in% c("top", "all")){
+  #   utils::unzip(zipfile = zippath, exdir=outpath)
+  # }
 
   if(level == "all"){
     utils::unzip(zipfile = zippath, exdir=outpath)
