@@ -234,6 +234,9 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
   # copy zip files into folder
   j <- 1
   messages <- list()
+  writeLines(paste("Downloading ", nrow(file.urls.current), " files", sep=""))
+  pb <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current)-1))
   while(j <= nrow(file.urls.current)) {
     path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
     pathparts <- strsplit(path1, "\\/")
@@ -243,7 +246,7 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
     if(dir.exists(newpath) == F) dir.create(newpath, recursive = T)
     t <- try(downloader::download(file.urls.current$URL[j],
                                   paste(newpath, file.urls.current$name[j], sep="/"),
-                                  mode="wb"), silent = T)
+                                  mode="wb", quiet=T), silent = T)
 
     if(class(t) == "try-error"){
       writeLines("File could not be downloaded. URLs may have expired. Getting new URLs.")
@@ -254,7 +257,11 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
       messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
       j = j + 1
     }
+    utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
   }
+  utils::setTxtProgressBar(pb, 1)
+  close(pb)
+  
   writeLines(paste("Successfully downloaded ", length(messages), " files."))
   writeLines(paste0(messages, collapse = "\n"))
 }
