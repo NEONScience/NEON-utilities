@@ -7,10 +7,10 @@
 #' @description
 #' Read in a set of URLs from stacked data and then download the data from the NEON ECS buckets
 #'
-#' @param filepath The location of the zip file
-#' @param savepath The location to save the output files to
+#' @param filepath The location of the zip file containing NEON data
+#' @param savepath The location to save the output files from the ECS bucket
 #' @param pick.files T or F, should the user be told the name of each file before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use pick.files=F.
-#' @param unzip T or F, indicates if the downloaded zip files should be unziped into the same directory. Defaults to T.
+#' @param unzip T or F, indicates if the downloaded zip files from ECS buckets should be unziped into the same directory. Defaults to T.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
@@ -60,7 +60,7 @@ zipsByURI <- function(filepath,
       #Ideally, get size info, but for some reason file.info and CUrl::getURL both don't display a size
       for(j in URLsPerTable){
         resp <- readline(paste("Continuing will download",length(tableData[,j]),"files for",
-                               j,"in table", allTables[i], "\n Do you want to include y/n: ", sep=" "))
+                               j,"in", allTables[i], "table. Do you want to include y/n: ", sep=" "))
         if(resp %in% c("y","Y")) {
           URLsToDownload <- c(URLsToDownload,tableData[,j])
         }
