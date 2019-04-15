@@ -10,6 +10,7 @@
 #' @param filepath The location of the zip file containing NEON data
 #' @param savepath The location to save the output files from the ECS bucket
 #' @param pick.files T or F, should the user be told the name of each file before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use pick.files=F.
+#' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param unzip T or F, indicates if the downloaded zip files from ECS buckets should be unziped into the same directory. Defaults to T.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
@@ -33,6 +34,7 @@
 zipsByURI <- function(filepath, 
                       savepath = filepath, 
                       pick.files=TRUE,
+                      check.size=TRUE,
                       unzip = TRUE) {
 
   
@@ -94,6 +96,18 @@ zipsByURI <- function(filepath,
     # copy zip files into folder
     numDownloads <- 0
     for(i in URLsToDownload) {
+      # ask user if they want to proceed
+      # can disable this with check.size=F
+      if(check.size==TRUE) {
+        response <- httr::HEAD(i)  # get file metadata
+        fileSize <- round(as.numeric(httr::headers(response)[["Content-Length"]])/1048576, 1)   # grab file size and convert bytes to MB
+        
+        resp <- readline(paste("Continuing will download files totaling approximately",
+                               fileSize, "MB. Do you want to proceed y/n: ", sep=" "))
+        if(!(resp %in% c("y","Y"))) {
+          next
+        }
+      }
       try(dl <- downloader::download(i, paste(filepath, gsub("^.*\\/","",i), sep="/"), mode = "wb"))
       if(!exists("dl")){
         cat("Unable to download data for URL:",i)

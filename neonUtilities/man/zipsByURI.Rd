@@ -5,7 +5,7 @@
 \title{Get files from NEON ECS Bucket using URLs in stacked data function}
 \usage{
 zipsByURI(filepath, savepath = filepath, pick.files = TRUE,
-  unzip = TRUE)
+  check.size = TRUE, unzip = TRUE)
 }
 \arguments{
 \item{filepath}{The location of the zip file containing NEON data}
@@ -13,6 +13,8 @@ zipsByURI(filepath, savepath = filepath, pick.files = TRUE,
 \item{savepath}{The location to save the output files from the ECS bucket}
 
 \item{pick.files}{T or F, should the user be told the name of each file before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use pick.files=F.}
+
+\item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
 \item{unzip}{T or F, indicates if the downloaded zip files from ECS buckets should be unziped into the same directory. Defaults to T.}
 }
