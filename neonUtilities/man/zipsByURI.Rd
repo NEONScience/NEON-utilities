@@ -4,19 +4,23 @@
 \alias{zipsByURI}
 \title{Get files from NEON ECS Bucket using URLs in stacked data function}
 \usage{
-zipsByURI(filepath, savepath = filepath, pick.files = TRUE,
-  check.size = TRUE, unzip = TRUE)
+zipsByURI(filepath, savepath = paste0(filepath, "/ECS_zipFiles"),
+  pick.files = FALSE, check.size = TRUE, unzip = TRUE)
 }
 \arguments{
-\item{filepath}{The location of the zip file containing NEON data}
+\item{filepath}{The location of the stacked NEON data containing URIs}
 
-\item{savepath}{The location to save the output files from the ECS bucket}
+\item{savepath}{The location to save the output files from the ECS bucket, optional. 
+Defaults to creating a "ECS_zipFiles" folder in the filepath directory.}
 
-\item{pick.files}{T or F, should the user be told the name of each file before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use pick.files=F.}
+\item{pick.files}{T or F, should the user be told the name of each file before downloading? 
+Defaults to F. When working in batch mode, or other non-interactive workflow, use pick.files=F.}
 
-\item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
+\item{check.size}{T or F, should the user be told the total file size before downloading? 
+Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
-\item{unzip}{T or F, indicates if the downloaded zip files from ECS buckets should be unziped into the same directory. Defaults to T.}
+\item{unzip}{T or F, indicates if the downloaded zip files from ECS buckets should be 
+unziped into the same directory, defaults to T. Supports .zip and .tar.gz files currently.}
 }
 \value{
 A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
