@@ -31,7 +31,7 @@ Read in a set of URLs from stacked data and then download the data from the NEON
 \examples{
 \dontrun{
 # To download stream morphology data from stacked data:
-zipsByURI(filepath="~/filesToStack00131")
+zipsByURI(filepath="~/filesToStack00131/stackedFiles")
 }
 }
 \references{

@@ -22,7 +22,7 @@
 #' @examples
 #' \dontrun{
 #' # To download stream morphology data from stacked data:
-#' zipsByURI(filepath="~/filesToStack00131")
+#' zipsByURI(filepath="~/filesToStack00131/stackedFiles")
 #' }
 
 #' @references
@@ -59,7 +59,11 @@ zipsByURI <- function(filepath,
   if(pick.files==TRUE){
     #Loop through tables
     for(i in seq(along = allTables)){
-      tableData <- utils::read.csv(paste(filepath,"/",allTables[i],".csv",sep = ""),stringsAsFactors = FALSE)
+      suppressWarnings(tableData <- try(utils::read.csv(paste(filepath,"/",allTables[i],".csv",sep = ""),stringsAsFactors = FALSE),silent = TRUE))
+      if(!is.null(attr(tableData, "class")) && attr(tableData, "class") == "try-error"){
+        cat("Unable to find data for table:",allTables[i],"\n")
+        next
+      }
       URLsPerTable <- names(tableData)[names(tableData)%in%URLs$fieldName]
       
       #Loop through fields
@@ -103,20 +107,24 @@ zipsByURI <- function(filepath,
   }
   
   #Loop to check cumulative size of files
+  cat("checking file sizes...\n")
+  fileSize <- rep(NA,length(URLsToDownload))
+  idx <- 0
   for(i in URLsToDownload) {
+    idx <- idx + 1
     # get file metadata
     response <- httr::HEAD(i)  
     # grab file size and convert bytes to MB
-    fileSize[i] <- round(as.numeric(httr::headers(response)[["Content-Length"]])/1048576, 1)   
+    fileSize[idx] <- round(as.numeric(httr::headers(response)[["Content-Length"]])/1048576, 1)   
   }
-  totalFileSize <- sum(fileSize)
+  totalFileSize <- sum(fileSize, na.rm = TRUE)
   
   if(check.size==TRUE) {
     resp <- readline(paste("Continuing will download",length(URLsToDownload), "files totaling approximately",
                            totalFileSize, "MB. Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) stop()
   }else{
-    cat("Continuing will download",length(URLsToDownload), "files totaling approximately",totalFileSize,"MB.")
+    cat("Continuing will download",length(URLsToDownload), "files totaling approximately",totalFileSize,"MB.\n")
   }
 
   # copy zip files into folder
@@ -124,7 +132,7 @@ zipsByURI <- function(filepath,
   for(i in URLsToDownload) {
     dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), mode = "wb"))
     if(!is.null(attr(dl, "class")) && attr(dl, "class") == "try-error"){
-      cat("Unable to download data for URL:",i)
+      cat("Unable to download data for URL:",i,"\n")
       next
     }
     numDownloads <- numDownloads + 1
@@ -135,12 +143,14 @@ zipsByURI <- function(filepath,
     }else if(unzip == TRUE && grepl("\\.tar\\.gz",i)){
       utils::untar(paste(savepath, gsub("^.*\\/","",i), sep="/"), 
                      exdir=paste(savepath, gsub("^.*\\/|\\..*$","",i), sep="/"))
+    }else if(grepl("\\.csv|\\.CSV",i)){
+      next
     }else if(unzip == TRUE && !(grepl("\\.zip|\\.ZIP",i) | grepl("\\.tar\\.gz",i))){
-      cat("Unable to unzip data for URL:",i)
+      cat("Unable to unzip data for URL:",i,"\n")
     }
   }
 
-  cat(numDownloads, "file(s) successfully downloaded to", savepath, sep=" ")
+  cat(numDownloads, "file(s) successfully downloaded to", savepath, "\n", sep=" ")
 
 }
 
