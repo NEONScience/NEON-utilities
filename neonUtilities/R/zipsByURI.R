@@ -86,7 +86,11 @@ zipsByURI <- function(filepath,
     #Compile all of the possible URLs from all tables that contain uri type fields
     #Loop through tables
     for(i in seq(along = allTables)){
-      tableData <- utils::read.csv(paste(filepath,"/",allTables[i],".csv",sep = ""),stringsAsFactors = FALSE)
+      suppressWarnings(tableData <- try(utils::read.csv(paste(filepath,"/",allTables[i],".csv",sep = ""),stringsAsFactors = FALSE),silent = TRUE))
+      if(!is.null(attr(tableData, "class")) && attr(tableData, "class") == "try-error"){
+        cat("Unable to find data for table:",allTables[i],"\n")
+        next
+      }
       URLsPerTable <- which(names(tableData)%in%URLs$fieldName)
       URLsToDownload <- c(URLsToDownload,unlist(tableData[,URLsPerTable]))
     }
@@ -129,13 +133,16 @@ zipsByURI <- function(filepath,
 
   # copy zip files into folder
   numDownloads <- 0
+  pb <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb, 1/(length(URLsToDownload)-1))
   for(i in URLsToDownload) {
-    dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), mode = "wb"))
+    dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), quiet = TRUE, mode = "wb"))
     if(!is.null(attr(dl, "class")) && attr(dl, "class") == "try-error"){
       cat("Unable to download data for URL:",i,"\n")
       next
     }
     numDownloads <- numDownloads + 1
+    utils::setTxtProgressBar(pb, numDownloads/(length(URLsToDownload)-1))
     if(unzip == TRUE && grepl("\\.zip|\\.ZIP",i)){
       utils::unzip(paste(savepath, gsub("^.*\\/","",i), sep="/"), 
                      exdir=paste(savepath, gsub("^.*\\/|\\..*$","",i), sep="/"), 
@@ -149,7 +156,8 @@ zipsByURI <- function(filepath,
       cat("Unable to unzip data for URL:",i,"\n")
     }
   }
-
+  utils::setTxtProgressBar(pb, 1)
+  close(pb)
   cat(numDownloads, "file(s) successfully downloaded to", savepath, "\n", sep=" ")
 
 }
