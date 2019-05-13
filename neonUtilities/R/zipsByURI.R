@@ -16,6 +16,7 @@
 #' Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param unzip T or F, indicates if the downloaded zip files from ECS buckets should be 
 #' unziped into the same directory, defaults to T. Supports .zip and .tar.gz files currently.
+#' @param saveZippedFiles T or F: should the zip files be retained after unzipping?
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
@@ -38,7 +39,8 @@ zipsByURI <- function(filepath,
                       savepath = paste0(filepath, "/ECS_zipFiles"), 
                       pick.files=FALSE,
                       check.size=TRUE,
-                      unzip = TRUE) {
+                      unzip = TRUE,
+                      saveZippedFiles = FALSE) {
 
   
   #### Check for the variables file in the filepath
@@ -147,9 +149,15 @@ zipsByURI <- function(filepath,
       utils::unzip(paste(savepath, gsub("^.*\\/","",i), sep="/"), 
                      exdir=paste(savepath, gsub("^.*\\/|\\..*$","",i), sep="/"), 
                      overwrite = TRUE)
+      if(!saveZippedFiles){
+        unlink(paste(savepath, gsub("^.*\\/","",i), sep="/"),recursive = FALSE)
+      }
     }else if(unzip == TRUE && grepl("\\.tar\\.gz",i)){
       utils::untar(paste(savepath, gsub("^.*\\/","",i), sep="/"), 
                      exdir=paste(savepath, gsub("^.*\\/|\\..*$","",i), sep="/"))
+      if(!saveZippedFiles){
+        unlink(paste(savepath, gsub("^.*\\/","",i), sep="/"),recursive = FALSE)
+      }
     }else if(grepl("\\.csv|\\.CSV",i)){
       next
     }else if(unzip == TRUE && !(grepl("\\.zip|\\.ZIP",i) | grepl("\\.tar\\.gz",i))){
