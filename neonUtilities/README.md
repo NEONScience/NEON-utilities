@@ -115,6 +115,15 @@ Disclaimer
 Change Log
 ----------
 
+#### 2019-03-04 v1.2.2
+-----------
+Bug fixes:
+* working progress bar in `byFileAOP()` and `byTileAOP()`
+
+Enhancements:
+* initial version of `zipsByURI()` to download via URLs within data
+
+
 #### 2019-03-04 v1.2.1
 -----------
 Bug fixes:

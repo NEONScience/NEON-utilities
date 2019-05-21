@@ -2,14 +2,14 @@
 % Please edit documentation in R/zipsByURI.R
 \name{zipsByURI}
 \alias{zipsByURI}
-\title{Get files from NEON ECS Bucket using URLs in stacked data function}
+\title{Get files from NEON ECS Bucket using URLs in stacked data}
 \usage{
 zipsByURI(filepath, savepath = paste0(filepath, "/ECS_zipFiles"),
   pick.files = FALSE, check.size = TRUE, unzip = TRUE,
   saveZippedFiles = FALSE)
 }
 \arguments{
-\item{filepath}{The location of the stacked NEON data containing URIs}
+\item{filepath}{The location of the NEON data containing URIs}
 
 \item{savepath}{The location to save the output files from the ECS bucket, optional. 
 Defaults to creating a "ECS_zipFiles" folder in the filepath directory.}
@@ -21,15 +21,17 @@ Defaults to F. When working in batch mode, or other non-interactive workflow, us
 Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
 \item{unzip}{T or F, indicates if the downloaded zip files from ECS buckets should be 
-unziped into the same directory, defaults to T. Supports .zip and .tar.gz files currently.}
+unzipped into the same directory, defaults to T. Supports .zip and .tar.gz files currently.}
 
-\item{saveZippedFiles}{T or F: should the zip files be retained after unzipping?}
+\item{saveZippedFiles}{T or F: should the zip files be retained after unzipping? Defaults to F.}
 }
 \value{
-A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
+A folder in the working directory (or in savepath, if specified), containing all files meeting query criteria.
 }
 \description{
-Read in a set of URLs from stacked data and then download the data from the NEON ECS buckets
+Read in a set of URLs from NEON data tables and then download the data from the NEON ECS buckets. 
+Assumes data tables are in the format resulting from merging files using stackByTable().
+File downloads from ECS can be extremely large; be prepared for long download times and large file storage.
 }
 \examples{
 \dontrun{
