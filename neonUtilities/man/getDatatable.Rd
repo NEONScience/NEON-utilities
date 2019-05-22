@@ -45,7 +45,7 @@ Observation System (OS) data products, and only for select tables
 sls_soilCoreCollection <- getDatatable(
   sample_location_list = c('CPER','TALL'),
   sample_date_min = '2014-01-01',
-  sample_date_max = '2014-06-01',
+  sample_date_max = '2014-02-01',
   dpid = "DP1.10086.001",
   data_table_name = 'sls_soilCoreCollection')
 

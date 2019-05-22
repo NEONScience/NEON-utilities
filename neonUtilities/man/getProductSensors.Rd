@@ -13,7 +13,9 @@ A data frame
 Pull all data from the NEON API /products endpoint, create a data frame with data product ID, data product name, and sensor type.
 }
 \examples{
+\dontrun{
 sensors <- getProductSensors()
+}
 }
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

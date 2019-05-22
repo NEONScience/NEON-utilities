@@ -10,7 +10,9 @@
 #' @return A data frame
 
 #' @examples
+#' \dontrun{
 #' sensors <- getProductSensors()
+#' }
 
 #' @export
 
