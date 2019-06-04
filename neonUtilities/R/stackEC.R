@@ -26,7 +26,7 @@
 #     partially adapted from eddy4R.base::def.hdf5.extr() authored by David Durden
 ##############################################################################################
 
-stackEC <- function(filepath, level, var, avg) {
+stackEC <- function(filepath, level="dp04", var=c("nsae","stor","turb"), avg=NA) {
   
   # get list of files
   files <- list.files(filepath, recursive=T)
@@ -41,14 +41,16 @@ stackEC <- function(filepath, level, var, avg) {
   
   files <- files[grep(".h5", files)]
   
+  # make empty, named list for the data tables
+  gp <- vector("list", length(files))
+  names(gp) <- substring(files, 1, nchar(files)-3)
+  
   # set up progress bar
   writeLines(paste0("Extracting data"))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 0)
 
   # extract data from each file
-  gp <- vector("list", length(files))
-  names(gp) <- substring(files, 1, nchar(files)-3)
   for(i in 1:length(files)) {
     
     listObj <- base::try(rhdf5::h5ls(paste(filepath, files[i], sep="/")), silent=T)
@@ -62,21 +64,65 @@ stackEC <- function(filepath, level, var, avg) {
     
     # filter by variable/level selections
     if(!is.na(level)) {
-      listDataName <- listDataName[grep(level, listDataName)]
+      levelInd <- grep(level, listDataName)
+    } else {
+      levelInd <- 1:length(listDataName)
     }
-    if(!is.na(var)) {
-      listDataName <- listDataName[listDataObj$name==var]
+    if(!all(is.na(var))) {
+      varInd <- which(listDataObj$name %in% var)
+    } else {
+      varInd <- 1:length(listDataName)
     }
     if(!is.na(avg)) {
-      listDataName <- listDataName[grep(paste(avg, "m", sep=""), listDataName)]
+      avgInd <- grep(paste(avg, "m", sep=""), listDataName)
+    } else {
+      avgInd <- 1:length(listDataName)
     }
     
+    ind <- intersect(levelInd, intersect(varInd, avgInd))
+    
+    # check that you haven't filtered to nothing
+    if(length(ind)==0) {
+      stop(paste("There are no data meeting the criteria level ", level, 
+                 ", averaging interval ", avg, ", and variables ", var, sep=""))
+    }
+    
+    listDataName <- listDataName[ind]
+    
     gp[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=paste(filepath, files[1], sep="/"))
-    base::names(gp[[i]]) <- listDataName
+                                 file=paste(filepath, files[i], sep="/"))
+    base::names(gp[[i]]) <- substring(listDataName, 2, nchar(listDataName))
     
     utils::setTxtProgressBar(pb, i/length(files))
     
   }
   
+  close(pb)
+  
+  # make empty, named list for the merged data tables
+  tabs <- character()
+  for(k in 1:length(gp)) {
+    tabs <- c(tabs, names(gp[[k]]))
+  }
+  tabs <- unique(tabs)
+  mg <- vector("list", length(tabs))
+  names(mg) <- tabs
+  
+  # set up progress bar
+  writeLines(paste0("Stacking data tables by month"))
+  pb2 <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb2, 0)
+  
+  # concatenate tables
+  for(j in 1:length(mg)) {
+    nm <- names(mg)[j]
+    mg[[j]] <- gp[[1]][[nm]]
+    for(k in 2:length(gp)) {
+      mg[[j]] <- rbind(mg[[j]], gp[[k]][[nm]])
+    }
+    utils::setTxtProgressBar(pb2, j/length(mg))
+  }
+  close(pb2)
+  
+  return(mg)
 }
