@@ -29,29 +29,21 @@
 
 getVarsEC <- function(filepath) {
   
-  # get list of files
-  files <- list.files(filepath, recursive=T)
-  
-  # unzip if necessary
-  if(length(grep(".zip", files))==length(files)) {
-    for(i in 1:length(files)) {
-      utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
-    }
-    files <- list.files(filepath, recursive=T)
-  }
-  
-  files <- files[grep(".h5", files)]
-  if(length(files)>1) {
-    cat("Multiple files were found at the filepath. Only the first will be read.\n")
-  }
-  
-  listObj <- base::try(rhdf5::h5ls(paste(filepath, files[1], sep="/")), silent=T)
+  listObj <- base::try(rhdf5::h5ls(filepath), silent=T)
     
   if(class(listObj)=="try-error") {
     stop(paste("\n", paste(filepath, files[1], sep="/"), " could not be read.", sep=""))
     }
     
   listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
+  
+  listObjSpl <- tidyr::separate(listDataObj, col="group", 
+                         into=c(NA, "site", "level", "category", "system", "horvertmi"), 
+                         sep="/", fill="right")
+  listObjSpl <- tidyr::separate(listObjSpl, col="horvertmi", 
+                                into=c("hor", "ver", "tmi"), 
+                                sep="_", fill="right") # this doesn't work right for some of the storage terms
+  
   return(listDataObj)
   
 }
