@@ -2,23 +2,23 @@
 % Please edit documentation in R/getVarsEC.R
 \name{getVarsEC}
 \alias{getVarsEC}
-\title{Extract list of eddy covariance variables from HDF5 files}
+\title{Extract list of eddy covariance tables from HDF5 files}
 \usage{
 getVarsEC(filepath)
 }
 \arguments{
-\item{filepath}{The folder containing the H5 files [character]}
+\item{filepath}{The folder containing the H5 file [character]}
 }
 \value{
-A data frame of the specified variables
+A data frame of the metadata for each data table in the HDF5 file
 }
 \description{
-Extracts a list of variables contained in a set of HDF5 files. Specific to eddy covariance data product: DP4.00200.001
+Extracts a list of table metadata from a single HDF5 file. Specific to eddy covariance data product: DP4.00200.001. Can inform inputs to stackEC(); variables listed in 'name' are available inputs to the 'var' parameter in stackEC().
 }
 \examples{
 \dontrun{
-# read variables from a file in the working directory
-getVarsEC(filepath=getwd())
+# read variables from a file in a hypothetical filepath
+ec.vars <- getVarsEC(filepath='/data/NEON.D19.BONA.DP4.00200.001.nsae.2017-12.basic.h5')
 }
 }
 \references{

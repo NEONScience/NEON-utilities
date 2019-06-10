@@ -72,12 +72,12 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
     } else {
       levelInd <- 1:length(listDataName)
     }
-    if(level!="dp04" & !all(is.na(var))) {
+    if(level!="dp04" & level!="dp03" & !all(is.na(var))) {
       varInd <- which(listDataObj$name %in% var)
     } else {
       varInd <- 1:length(listDataName)
     }
-    if(level!="dp04" & !is.na(avg)) {
+    if(level!="dp04" & level!="dp03" & !is.na(avg)) {
       avgInd <- grep(paste(avg, "m", sep=""), listDataName)
     } else {
       avgInd <- 1:length(listDataName)
@@ -148,6 +148,7 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # for level=dp04, join the concatenated tables
   # can the same function work for different levels?
+  # now working for dp03 as well
 
   sites <- unique(substring(names(timeMergList), 1, 4))
   varMergList <- vector("list", length(sites))
@@ -164,8 +165,8 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
     
     # initiate merged table with just the time stamps
-    # this only works for dp04
-    varMergTabl <- timeMergPerSite[[grep("nsae", names(timeMergList))[1]]][,c("timeBgn","timeEnd")]
+    # except turbulent flux, bc end times don't match other variables
+    varMergTabl <- timeMergPerSite[[grep("turb", names(timeMergList), invert=T)[1]]][,c("timeBgn","timeEnd")]
     
     # merge individual variable tables into one
     for(l in 1:length(timeMergPerSite)) {

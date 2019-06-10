@@ -1,20 +1,20 @@
 ##############################################################################################
-#' @title Extract list of eddy covariance variables from HDF5 files
+#' @title Extract list of eddy covariance tables from HDF5 files
 
 #' @author
 #' Claire Lunch \email{clunch@battelleecology.org}
 
 #' @description
-#' Extracts a list of variables contained in a set of HDF5 files. Specific to eddy covariance data product: DP4.00200.001
+#' Extracts a list of table metadata from a single HDF5 file. Specific to eddy covariance data product: DP4.00200.001. Can inform inputs to stackEC(); variables listed in 'name' are available inputs to the 'var' parameter in stackEC().
 #'
-#' @param filepath The folder containing the H5 files [character]
+#' @param filepath The folder containing the H5 file [character]
 
-#' @return A data frame of the specified variables
+#' @return A data frame of the metadata for each data table in the HDF5 file
 
 #' @examples
 #' \dontrun{
-#' # read variables from a file in the working directory
-#' getVarsEC(filepath=getwd())
+#' # read variables from a file in a hypothetical filepath
+#' ec.vars <- getVarsEC(filepath='/data/NEON.D19.BONA.DP4.00200.001.nsae.2017-12.basic.h5')
 #' }
 
 #' @references
@@ -42,7 +42,10 @@ getVarsEC <- function(filepath) {
                          sep="/", fill="right")
   listObjSpl <- tidyr::separate(listObjSpl, col="horvertmi", 
                                 into=c("hor", "ver", "tmi"), 
-                                sep="_", fill="right") # this doesn't work right for some of the storage terms
+                                sep="_", fill="left")
+  listObjSpl$oth[which(is.na(suppressWarnings(as.numeric(listObjSpl$ver))))] <- 
+    listObjSpl$ver[which(is.na(suppressWarnings(as.numeric(listObjSpl$ver))))]
+  listObjSpl$ver[which(is.na(suppressWarnings(as.numeric(listObjSpl$ver))))] <- NA
   
   return(listDataObj)
   
