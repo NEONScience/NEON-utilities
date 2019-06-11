@@ -32,10 +32,18 @@
 
 stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
   
-  # get list of files
+  # get list of files, unzipping if necessary
+  if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+    outpath <- gsub(".zip", "", filepath)
+    if(!dir.exists(outpath)) {
+      dir.create(outpath)
+    }
+    utils::unzip(filepath, exdir=outpath)
+    filepath <- outpath
+  }
   files <- list.files(filepath, recursive=T)
   
-  # unzip if necessary
+  # unzip files if necessary
   if(length(grep(".zip", files))==length(files)) {
     for(i in 1:length(files)) {
       utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
@@ -67,23 +75,31 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
     listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
     
     # filter by variable/level selections
-    if(!is.na(level)) {
-      levelInd <- grep(level, listDataName)
-    } else {
-      levelInd <- 1:length(listDataName)
-    }
-    if(level!="dp04" & level!="dp03" & !all(is.na(var))) {
+    levelInd <- grep(level, listDataName)
+    
+    if(level!="dp04" & level!="dp03" & level!="dp02" & !all(is.na(var))) {
       varInd <- which(listDataObj$name %in% var)
     } else {
       varInd <- 1:length(listDataName)
     }
-    if(level!="dp04" & level!="dp03" & !is.na(avg)) {
+    if(level!="dp04" & level!="dp03" & level!="dp02" & !is.na(avg)) {
       avgInd <- grep(paste(avg, "m", sep=""), listDataName)
     } else {
-      avgInd <- 1:length(listDataName)
+      if(level=="dp01") {
+        stop("If level=='dp01', avg is a required input.")
+      } else {
+        avgInd <- 1:length(listDataName)
+      }
     }
     
-    ind <- intersect(levelInd, intersect(varInd, avgInd))
+    # exclude footprint grid data
+    if(length(grep("foot/grid", listDataName))>0) {
+      gridInd <- grep("foot/grid", listDataName, invert=T)
+    } else {
+      gridInd <- 1:length(listDataName)
+    }
+    
+    ind <- intersect(intersect(levelInd, intersect(varInd, avgInd)), gridInd)
     
     # check that you haven't filtered to nothing
     if(length(ind)==0) {
@@ -146,21 +162,20 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   close(pb2)
   
-  # for level=dp04, join the concatenated tables
-  # can the same function work for different levels?
-  # now working for dp03 as well
+  # join the concatenated tables
 
   sites <- unique(substring(names(timeMergList), 1, 4))
-  varMergList <- vector("list", length(sites))
-  names(varMergList) <- sites
+  varMergList <- vector("list", length(sites)+1)
+  names(varMergList) <- c(sites, "variables")
   
   # set up progress bar
   writeLines(paste0("Joining data variables"))
   pb3 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb3, 0)
+  idx <- 0
   
   # make one merged table per site
-  for(m in 1:length(varMergList)) {
+  for(m in 1:I(length(varMergList)-1)) {
     
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
     
@@ -180,12 +195,22 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
       varMergTabl <- merge(varMergTabl, 
                            timeMergPerSite[[l]][,-which(names(timeMergPerSite[[l]])=="timeEnd")],
                            by="timeBgn")
-      utils::setTxtProgressBar(pb3, (l*m)/(length(timeMergPerSite)*length(sites)))
+      idx <- idx + 1
+      utils::setTxtProgressBar(pb3, idx/(length(timeMergPerSite)*length(sites)))
     }
     
     varMergList[[m]] <- varMergTabl
   }
+  utils::setTxtProgressBar(pb3, 1)
   close(pb3)
 
+  # get one objDesc table and add to list
+  variables <- base::try(rhdf5::h5read(paste(filepath, files[1], sep="/"), name="//objDesc"), silent=T)
+  # if processing gets this far without failing, don't fail here, just return data without objDesc table
+  if(class(variables)=="try-error") {
+    variables <- NA
+  }
+  varMergList[["variables"]] <- variables
+  
   return(varMergList)
 }

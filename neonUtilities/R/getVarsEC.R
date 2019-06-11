@@ -32,7 +32,7 @@ getVarsEC <- function(filepath) {
   listObj <- base::try(rhdf5::h5ls(filepath), silent=T)
     
   if(class(listObj)=="try-error") {
-    stop(paste("\n", paste(filepath, files[1], sep="/"), " could not be read.", sep=""))
+    stop(paste(filepath, " could not be read.", sep=""))
     }
     
   listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
@@ -47,6 +47,6 @@ getVarsEC <- function(filepath) {
     listObjSpl$ver[which(is.na(suppressWarnings(as.numeric(listObjSpl$ver))))]
   listObjSpl$ver[which(is.na(suppressWarnings(as.numeric(listObjSpl$ver))))] <- NA
   
-  return(listDataObj)
+  return(listObjSpl)
   
 }
