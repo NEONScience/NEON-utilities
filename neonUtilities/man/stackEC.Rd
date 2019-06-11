@@ -9,17 +9,22 @@ stackEC(filepath, level = "dp04", var = NA, avg = NA)
 \arguments{
 \item{filepath}{The folder containing the H5 files [character]}
 
-\item{level}{The level of data to extract; one of dp01, dp02, dp03, dp04, dp0p [character]}
+\item{level}{The level of data to extract; one of dp01, dp02, dp03, dp04 [character]}
 
 \item{var}{The variable set to extract, e.g. co2Turb [character]}
 
 \item{avg}{The averaging interval to extract, in minutes [numeric]}
 }
 \value{
-A data frame of the specified variables
+A named list of data frames. One data frame per site, plus one data frame containing the variable metadata (objDesc) table.
 }
 \description{
 Convert data of choice from HDF5 to tabular format. Specific to eddy covariance data product: DP4.00200.001
+}
+\details{
+Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
+For data product levels 2-4 (dp02, dp03, dp04), joins all available data, except for the flux footprint data in the expanded package.
+For dp01, an averaging interval and a set of variable names must be provided as inputs.
 }
 \examples{
 \dontrun{
