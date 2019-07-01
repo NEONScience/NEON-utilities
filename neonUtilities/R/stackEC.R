@@ -7,7 +7,7 @@
 #' @description
 #' Convert data of choice from HDF5 to tabular format. Specific to eddy covariance data product: DP4.00200.001
 #'
-#' @param filepath The folder containing the H5 files [character]
+#' @param filepath One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file [character]
 #' @param level The level of data to extract; one of dp01, dp02, dp03, dp04 [character]
 #' @param var The variable set to extract, e.g. co2Turb [character]
 #' @param avg The averaging interval to extract, in minutes [numeric]
@@ -45,7 +45,19 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
     utils::unzip(filepath, exdir=outpath)
     filepath <- outpath
   }
-  files <- list.files(filepath, recursive=T)
+  
+  # allow for a single H5 file
+  if(substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
+    files <- unlist(strsplit(filepath, split="/", 
+                             fixed=T))[length(unlist(strsplit(filepath, 
+                                                              split="/", fixed=T)))]
+    filepath <- paste0(unlist(strsplit(filepath, split="/", 
+                                fixed=T))[1:I(length(unlist(strsplit(filepath, 
+                                                                   split="/", fixed=T)))-1)],
+                       collapse="/")
+  } else {
+    files <- list.files(filepath, recursive=T)
+  }
   
   # unzip files if necessary
   if(length(grep(".zip", files))==length(files)) {
