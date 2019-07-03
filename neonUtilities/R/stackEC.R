@@ -178,6 +178,36 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   close(pb2)
   
+  # for dp01 and dp02, stack tower levels and calibration gases
+  if(level=="dp01" | level=="dp02") {
+    namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)), 
+                       nrow=length(names(timeMergList)), byrow=T))
+    verSpl <- tidyr::separate(namesSpl, col="X5", 
+                              into=c("hor", "ver", "tmi"), 
+                              sep="_", fill="left")
+    
+    # add ver index to tables
+    for(n in 1:length(timeMergList)) {
+      verticalPosition <- rep(verSpl$ver[n], nrow(timeMergList[[n]]))
+      timeMergList[[n]] <- cbind(verticalPosition, timeMergList[[n]])
+    }
+    
+    # next: stack everything with the same name *except* the index
+    # timeMergList becomes list of the stacked, renamed objects
+    # basically need to repeat everything from line 138-179
+    profNames <- apply(verSpl[,grep("X", names(verSpl))], 1, paste0, collapse="/")
+    profTabs <- unique(profNames)
+    
+    # make empty, named list for the merged data tables
+    verMergList <- vector("list", length(profTabs))
+    names(verMergList) <- profTabs
+    
+    for(o in 1:length(verMergList)) {
+      # stopped here! incomplete
+    }
+
+  }
+  
   # join the concatenated tables
 
   sites <- unique(substring(names(timeMergList), 1, 4))
