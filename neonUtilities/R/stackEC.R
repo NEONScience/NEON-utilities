@@ -203,12 +203,37 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
     names(verMergList) <- profTabs
     
     for(o in 1:length(verMergList)) {
-      # stopped here! incomplete
+
+      # table to concatenate
+      nm <- names(verMergList)[o]
+      
+      # get matching tables
+      verListSub <- timeMergList[which(profNames==nm)]
+      
+      # get full set of variable names for the table to concatenate
+      colO <- character()
+      for(k in 1:length(verListSub)) {
+        colO <- c(colO, names(verListSub[[k]]))
+      }
+      colO <- unique(colO)
+      
+      # stack the tables
+      tempDF <- data.frame(rep(NA, length(colO)))
+      tempDF <- t(tempDF)
+      colnames(tempDF) <- colO
+      verMergList[[o]] <- tempDF
+      for(k in 1:length(verListSub)) {
+        verMergList[[o]] <- rbind(verMergList[[o]], verListSub[[k]])
+      }
+      verMergList[[o]] <- verMergList[[o]][-1,]
     }
+    
+    timeMergList <- verMergList
 
   }
   
   # join the concatenated tables
+  # join is keeping all verticalPosition columns & sorting by time stamp
 
   sites <- unique(substring(names(timeMergList), 1, 4))
   varMergList <- vector("list", length(sites)+1)

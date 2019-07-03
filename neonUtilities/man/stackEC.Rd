@@ -7,7 +7,7 @@
 stackEC(filepath, level = "dp04", var = NA, avg = NA)
 }
 \arguments{
-\item{filepath}{The folder containing the H5 files [character]}
+\item{filepath}{One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file [character]}
 
 \item{level}{The level of data to extract; one of dp01, dp02, dp03, dp04 [character]}
 
