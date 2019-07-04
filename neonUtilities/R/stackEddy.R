@@ -16,7 +16,7 @@
 #' For data product levels 2-4 (dp02, dp03, dp04), joins all available data, except for the flux footprint data in the expanded package.
 #' For dp01, an averaging interval and a set of variable names must be provided as inputs.
 
-#' @return A named list of data frames. One data frame per site, plus one data frame containing the variable metadata (objDesc) table.
+#' @return A named list of data frames. One data frame per site, plus one data frame containing the metadata (objDesc) table and one data frame containing units for each variable (variables).
 
 #' @examples
 #' \dontrun{
@@ -69,10 +69,9 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   files <- files[grep(".h5", files)]
   
-  # make empty, named list for the data tables, and one for the variables
+  # make empty, named list for the data tables
   tableList <- vector("list", length(files))
   names(tableList) <- substring(files, 1, nchar(files)-3)
-  variables <- character(2)
   
   # set up progress bar
   writeLines(paste0("Extracting data"))
@@ -135,6 +134,34 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   close(pb)
+  
+  # get variable units
+  variables <- character(4)
+  for(p in 1:length(tableList[[1]])) {
+    if(!is.null(attributes(tableList[[1]][[p]])$unit)) {
+      var.nm <- strsplit(names(tableList[[1]])[p], 
+                         split="/", fixed=T)[[1]][c(3,4,length(strsplit(names(tableList[[1]])[p], 
+                                                             split="/", fixed=T)[[1]]))]
+      if(length(attributes(tableList[[1]][[p]])$unit)>1) {
+        var.nm <- matrix(var.nm[1:2], ncol=2, nrow=length(attributes(tableList[[1]][[p]])$unit), byrow=T)
+        var.nm <- cbind(var.nm, 
+                        attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
+                                                                     %in% c("timeBgn","timeEnd"))])
+        var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$unit)
+        variables <- rbind(variables, var.nm)
+      } else {
+        variables <- rbind(variables, c(var.nm, attributes(tableList[[1]][[p]])$unit))
+      }
+    }
+  }
+  variables <- data.frame(unique(variables))
+  if(nrow(variables)==1) {
+    variables <- NA
+  } else {
+    variables <- variables[-1,]
+    colnames(variables) <- c("category","system","variable","units")
+    rownames(variables) <- 1:nrow(variables)
+  }
   
   # make empty, named list for the merged data tables
   tabs <- character()
@@ -235,8 +262,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   # join the concatenated tables
 
   sites <- unique(substring(names(timeMergList), 1, 4))
-  varMergList <- vector("list", length(sites)+1)
-  names(varMergList) <- c(sites, "variables")
+  varMergList <- vector("list", length(sites)+2)
+  names(varMergList) <- c(sites, "variables", "objDesc")
   
   # set up progress bar
   writeLines(paste0("Joining data variables"))
@@ -245,7 +272,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   idx <- 0
   
   # make one merged table per site
-  for(m in 1:I(length(varMergList)-1)) {
+  for(m in 1:I(length(varMergList)-2)) {
     
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
 
@@ -287,13 +314,14 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   utils::setTxtProgressBar(pb3, 1)
   close(pb3)
 
-  # get one objDesc table and add to list
-  variables <- base::try(rhdf5::h5read(paste(filepath, files[1], sep="/"), name="//objDesc"), silent=T)
+  # get one objDesc table and add it and variables table to list
+  objDesc <- base::try(rhdf5::h5read(paste(filepath, files[1], sep="/"), name="//objDesc"), silent=T)
   # if processing gets this far without failing, don't fail here, just return data without objDesc table
-  if(class(variables)=="try-error") {
-    variables <- NA
+  if(class(objDesc)=="try-error") {
+    objDesc <- NA
   }
   varMergList[["variables"]] <- variables
+  varMergList[["objDesc"]] <- objDesc
   
   return(varMergList)
 }

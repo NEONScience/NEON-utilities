@@ -16,7 +16,7 @@ stackEddy(filepath, level = "dp04", var = NA, avg = NA)
 \item{avg}{The averaging interval to extract, in minutes [numeric]}
 }
 \value{
-A named list of data frames. One data frame per site, plus one data frame containing the variable metadata (objDesc) table.
+A named list of data frames. One data frame per site, plus one data frame containing the metadata (objDesc) table and one data frame containing units for each variable (variables).
 }
 \description{
 Convert data of choice from HDF5 to tabular format. Specific to eddy covariance data product: DP4.00200.001
