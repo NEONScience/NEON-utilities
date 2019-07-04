@@ -21,7 +21,7 @@
 #' @examples
 #' \dontrun{
 #' # To extract and merge Level 4 data tables, where data files are in the working directory
-#' flux <- stackEC(filepath=getwd(), level='dp04', var=NA, avg=NA)
+#' flux <- stackEddy(filepath=getwd(), level='dp04', var=NA, avg=NA)
 #' }
 
 #' @references
@@ -34,7 +34,7 @@
 #     partially adapted from eddy4R.base::def.hdf5.extr() authored by David Durden
 ##############################################################################################
 
-stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
+stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # get list of files, unzipping if necessary
   if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
@@ -192,9 +192,8 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
       timeMergList[[n]] <- cbind(verticalPosition, timeMergList[[n]])
     }
     
-    # next: stack everything with the same name *except* the index
+    # next: stack everything with names that match when index is excluded
     # timeMergList becomes list of the stacked, renamed objects
-    # basically need to repeat everything from line 138-179
     profNames <- apply(verSpl[,grep("X", names(verSpl))], 1, paste0, collapse="/")
     profTabs <- unique(profNames)
     
@@ -233,7 +232,6 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # join the concatenated tables
-  # join is keeping all verticalPosition columns & sorting by time stamp
 
   sites <- unique(substring(names(timeMergList), 1, 4))
   varMergList <- vector("list", length(sites)+1)
@@ -249,27 +247,40 @@ stackEC <- function(filepath, level="dp04", var=NA, avg=NA) {
   for(m in 1:I(length(varMergList)-1)) {
     
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
-    
-    # initiate merged table with just the time stamps
-    # except turbulent flux, bc end times don't match other variables
-    varMergTabl <- timeMergPerSite[[grep("turb", names(timeMergList), invert=T)[1]]][,c("timeBgn","timeEnd")]
+
+    if(level=="dp01" | level=="dp02") {
+      nameSet <- c("timeBgn","timeEnd","verticalPosition")
+    } else {
+      nameSet <- c("timeBgn","timeEnd")
+    }
+
+    # initiate the table with time stamps
+    # turbulent flux end time stamps don't match the others
+    varMergTabl <- timeMergPerSite[[grep("turb", names(timeMergList), invert=T)[1]]][,nameSet]
     
     # merge individual variable tables into one
     for(l in 1:length(timeMergPerSite)) {
-      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% c("timeBgn","timeEnd"))] <- 
-        paste(names(timeMergPerSite)[l], names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% c("timeBgn","timeEnd"))],
+      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <- 
+        paste(names(timeMergPerSite)[l], names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)],
               sep=".")
       names(timeMergPerSite[[l]]) <- gsub("/", ".", names(timeMergPerSite[[l]]), fixed=T)
-      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% c("timeBgn","timeEnd"))] <- 
-        substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% c("timeBgn","timeEnd"))], 
-                  11, nchar(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% c("timeBgn","timeEnd"))]))
+      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <- 
+        substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)], 
+                  11, nchar(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)]))
+
+      if(level=="dp01" | level=="dp02") {
+        mergSet <- c("verticalPosition","timeBgn")
+      } else {
+        mergSet <- "timeBgn"
+      }
+
       varMergTabl <- merge(varMergTabl, 
                            timeMergPerSite[[l]][,-which(names(timeMergPerSite[[l]])=="timeEnd")],
-                           by="timeBgn")
+                           by=mergSet, all=T)
       idx <- idx + 1
       utils::setTxtProgressBar(pb3, idx/(length(timeMergPerSite)*length(sites)))
     }
-    
+    varMergTabl <- varMergTabl[order(varMergTabl$verticalPosition,varMergTabl$timeBgn),]
     varMergList[[m]] <- varMergTabl
   }
   utils::setTxtProgressBar(pb3, 1)
