@@ -69,9 +69,10 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   files <- files[grep(".h5", files)]
   
-  # make empty, named list for the data tables
+  # make empty, named list for the data tables, and one for the variables
   tableList <- vector("list", length(files))
   names(tableList) <- substring(files, 1, nchar(files)-3)
+  variables <- character(2)
   
   # set up progress bar
   writeLines(paste0("Extracting data"))
@@ -108,7 +109,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
       }
     }
     
-    # exclude footprint grid data
+    # exclude footprint grid data from expanded packages
     if(length(grep("foot/grid", listDataName))>0) {
       gridInd <- grep("foot/grid", listDataName, invert=T)
     } else {
@@ -126,7 +127,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     listDataName <- listDataName[ind]
     
     tableList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=paste(filepath, files[i], sep="/"))
+                                 file=paste(filepath, files[i], sep="/"), read.attributes=T)
     base::names(tableList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
     
     utils::setTxtProgressBar(pb, i/length(files))
@@ -250,8 +251,10 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
 
     if(level=="dp01" | level=="dp02") {
       nameSet <- c("timeBgn","timeEnd","verticalPosition")
+      mergSet <- c("verticalPosition","timeBgn")
     } else {
       nameSet <- c("timeBgn","timeEnd")
+      mergSet <- "timeBgn"
     }
 
     # initiate the table with time stamps
@@ -268,19 +271,17 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
         substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)], 
                   11, nchar(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)]))
 
-      if(level=="dp01" | level=="dp02") {
-        mergSet <- c("verticalPosition","timeBgn")
-      } else {
-        mergSet <- "timeBgn"
-      }
-
       varMergTabl <- merge(varMergTabl, 
                            timeMergPerSite[[l]][,-which(names(timeMergPerSite[[l]])=="timeEnd")],
                            by=mergSet, all=T)
       idx <- idx + 1
       utils::setTxtProgressBar(pb3, idx/(length(timeMergPerSite)*length(sites)))
     }
-    varMergTabl <- varMergTabl[order(varMergTabl$verticalPosition,varMergTabl$timeBgn),]
+    if(level=="dp01" | level=="dp02") {
+      varMergTabl <- varMergTabl[order(varMergTabl$verticalPosition, varMergTabl$timeBgn),]
+    } else {
+      varMergTabl <- varMergTabl[order(varMergTabl$timeBgn),]
+    }
     varMergList[[m]] <- varMergTabl
   }
   utils::setTxtProgressBar(pb3, 1)

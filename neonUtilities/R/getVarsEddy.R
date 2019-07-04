@@ -5,7 +5,7 @@
 #' Claire Lunch \email{clunch@battelleecology.org}
 
 #' @description
-#' Extracts a list of table metadata from a single HDF5 file. Specific to eddy covariance data product: DP4.00200.001. Can inform inputs to stackEC(); variables listed in 'name' are available inputs to the 'var' parameter in stackEC().
+#' Extracts a list of table metadata from a single HDF5 file. Specific to eddy covariance data product: DP4.00200.001. Can inform inputs to stackEddy(); variables listed in 'name' are available inputs to the 'var' parameter in stackEddy().
 #'
 #' @param filepath The folder containing the H5 file [character]
 
@@ -14,7 +14,7 @@
 #' @examples
 #' \dontrun{
 #' # read variables from a file in a hypothetical filepath
-#' ec.vars <- getVarsEC(filepath='/data/NEON.D19.BONA.DP4.00200.001.nsae.2017-12.basic.h5')
+#' ec.vars <- getVarsEddy(filepath='/data/NEON.D19.BONA.DP4.00200.001.nsae.2017-12.basic.h5')
 #' }
 
 #' @references
@@ -27,7 +27,7 @@
 #     partially adapted from eddy4R.base::def.hdf5.extr() authored by David Durden
 ##############################################################################################
 
-getVarsEC <- function(filepath) {
+getVarsEddy <- function(filepath) {
   
   listObj <- base::try(rhdf5::h5ls(filepath), silent=T)
     
