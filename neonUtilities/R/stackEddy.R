@@ -132,7 +132,6 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     utils::setTxtProgressBar(pb, i/length(files))
     
   }
-  
   close(pb)
   
   # get variable units
