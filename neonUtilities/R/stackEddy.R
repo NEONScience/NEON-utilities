@@ -135,21 +135,25 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   close(pb)
   
   # get variable units
-  variables <- character(4)
+  variables <- character(5)
   for(p in 1:length(tableList[[1]])) {
     if(!is.null(attributes(tableList[[1]][[p]])$unit)) {
       var.nm <- strsplit(names(tableList[[1]])[p], 
                          split="/", fixed=T)[[1]][c(3,4,length(strsplit(names(tableList[[1]])[p], 
                                                              split="/", fixed=T)[[1]]))]
       if(length(attributes(tableList[[1]][[p]])$unit)>1) {
-        var.nm <- matrix(var.nm[1:2], ncol=2, nrow=length(attributes(tableList[[1]][[p]])$unit), byrow=T)
-        var.nm <- cbind(var.nm, 
-                        attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
-                                                                     %in% c("timeBgn","timeEnd"))])
+        var.nm <- matrix(var.nm, ncol=3, nrow=length(attributes(tableList[[1]][[p]])$unit), byrow=T)
+        if(length(attributes(tableList[[1]][[p]])$unit)==length(attributes(tableList[[1]][[p]])$names)) {
+          var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$names)
+        } else {
+          var.nm <- cbind(var.nm, 
+                          attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
+                                                                       %in% c("timeBgn","timeEnd"))])
+        }
         var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$unit)
         variables <- rbind(variables, var.nm)
       } else {
-        variables <- rbind(variables, c(var.nm, attributes(tableList[[1]][[p]])$unit))
+        variables <- rbind(variables, c(var.nm, "", attributes(tableList[[1]][[p]])$unit))
       }
     }
   }
@@ -158,7 +162,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     variables <- NA
   } else {
     variables <- variables[-1,]
-    colnames(variables) <- c("category","system","variable","units")
+    colnames(variables) <- c("category","system","variable","stat","units")
     rownames(variables) <- 1:nrow(variables)
   }
   
