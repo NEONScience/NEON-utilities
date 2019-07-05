@@ -115,7 +115,12 @@ Disclaimer
 Change Log
 ----------
 
-#### 2019-03-04 v1.2.2
+#### 2019-07-05 v1.3.0
+-----------
+Enhancements:
+* added `stackEddy()` to extract and merge data from flux data HDF5 files (DP4.00200.001)
+
+#### 2019-05-21 v1.2.2
 -----------
 Bug fixes:
 * working progress bar in `byFileAOP()` and `byTileAOP()`
