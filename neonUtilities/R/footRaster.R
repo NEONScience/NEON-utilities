@@ -126,4 +126,6 @@ footRaster <- function(filepath) {
   masterRaster <- raster::addLayer(summaryRaster, masterRaster)
   names(masterRaster)[1] <- paste(site, "summary")
   
+  return(masterRaster)
+  
 }
