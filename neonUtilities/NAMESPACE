@@ -2,7 +2,6 @@
 
 export(byFileAOP)
 export(byTileAOP)
-export(footRaster)
 export(getAvg)
 export(getDatatable)
 export(getFilesize)
