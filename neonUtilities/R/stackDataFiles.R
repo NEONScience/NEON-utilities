@@ -118,7 +118,7 @@ stackDataFiles <- function(folder){
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         sites <- unique(substr(tblnames, 10, 13))
         sites <- sites[order(sites)]
-        d <- suppressWarnings(data.table::fread(tblfls[grep(sites[1], tblfls)][1], header = T))
+        d <- suppressWarnings(data.table::fread(tblfls[grep(sites[1], tblfls)][1], header=T, encoding="UTF-8"))
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
         numRows <- nrow(d)
@@ -127,7 +127,7 @@ stackDataFiles <- function(folder){
           for(j in 2:length(sites)){
             sitefls <- tblfls[grep(sites[j], tblfls)]
             sitenames <- tblnames[grep(sites[j], tblnames)]
-            d.next <- suppressWarnings(data.table::fread(sitefls[1], header = T))
+            d.next <- suppressWarnings(data.table::fread(sitefls[1], header=T, encoding="UTF-8"))
             d.next <- assignClasses(d.next, variables)
             d.next <- makePosColumns(d.next, sitenames[1])
             numRows <- sum(numRows, nrow(d.next))
@@ -152,14 +152,14 @@ stackDataFiles <- function(folder){
         #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
-        d <- suppressWarnings(data.table::fread(tblfls[1], header = T))
+        d <- suppressWarnings(data.table::fread(tblfls[1], header=T, encoding="UTF-8"))
         d <- assignClasses(d, variables)
         d <- makePosColumns(d, tblnames[1])
         numRows <- nrow(d)
         utils::setTxtProgressBar(pb, 1/length(tblfls))
         if(length(tblfls) > 1){
           for(j in 2:length(tblfls)){
-            d.next <- suppressWarnings(data.table::fread(tblfls[j], header = T))
+            d.next <- suppressWarnings(data.table::fread(tblfls[j], header=T, encoding="UTF-8"))
             d.next <- assignClasses(d.next, variables)
             d.next <- makePosColumns(d.next, tblnames[j])
             numRows <- sum(numRows, nrow(d.next))

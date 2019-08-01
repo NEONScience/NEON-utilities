@@ -36,6 +36,12 @@
 
 stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
+  # first check for rhdf5 package
+  if(!requireNamespace("rhdf5", quietly=T)) {
+    stop("Package rhdf5 is required for this function to work.
+         \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
+  }
+  
   # get list of files, unzipping if necessary
   if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
     outpath <- gsub(".zip", "", filepath)
