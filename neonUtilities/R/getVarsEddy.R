@@ -29,6 +29,12 @@
 
 getVarsEddy <- function(filepath) {
   
+  # first check for rhdf5 package
+  if(!requireNamespace("rhdf5", quietly=T)) {
+    stop("Package rhdf5 is required for this function to work.
+         \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
+  }
+  
   listObj <- base::try(rhdf5::h5ls(filepath), silent=T)
     
   if(class(listObj)=="try-error") {
