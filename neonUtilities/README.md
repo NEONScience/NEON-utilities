@@ -115,10 +115,18 @@ Disclaimer
 Change Log
 ----------
 
+#### 2019-08-02 v1.3.1
+-----------
+Bug fixes:
+* moved `rhdf5` from Imports to Suggests for smoother installation
+* fixed expected encoding in `stackByTable()` to UTF-8
+
+
 #### 2019-07-05 v1.3.0
 -----------
 Enhancements:
 * added `stackEddy()` to extract and merge data from flux data HDF5 files (DP4.00200.001)
+
 
 #### 2019-05-21 v1.2.2
 -----------
