@@ -10,7 +10,7 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr GET
 #' @param dpID The data product id (optional), formated as DP#.#####.###
-#' @return A data table with product information
+#' @return A named list of metadata and availability information for a single data product. If the dpID argument is omitted, a table of information for all data products in the NEON catalog. 
 
 #' @examples
 #' # Get documentation and availability of plant foliar properties data product
@@ -24,7 +24,7 @@
 # Changelog and author contributions / copyrights
 #   Christine Laney (2017-10-01)
 ##############################################################################################
-getProductInfo <- function(dpID){
+getProductInfo <- function(dpID=""){
   productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
   req <- httr::GET(productUrl)
   avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)

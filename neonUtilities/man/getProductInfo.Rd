@@ -4,13 +4,13 @@
 \alias{getProductInfo}
 \title{Get NEON data product information}
 \usage{
-getProductInfo(dpID)
+getProductInfo(dpID = "")
 }
 \arguments{
 \item{dpID}{The data product id (optional), formated as DP#.#####.###}
 }
 \value{
-A data table with product information
+A named list of metadata and availability information for a single data product. If the dpID argument is omitted, a table of information for all data products in the NEON catalog.
 }
 \description{
 Use the NEON API to get data product information such as availability, science team, etc.
