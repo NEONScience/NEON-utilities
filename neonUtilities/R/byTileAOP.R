@@ -41,7 +41,7 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
 
   # error message if dpID isn't a Level 3 product
   if(substring(dpID, 3, 3)!=3 & dpID!="DP1.30003.001") {
-    stop(paste(dpID, "is not a Level 3 data product ID.\nThis function will only work correctly on mosaicked Level 3 data.", sep=" "))
+    stop(paste(dpID, "is not a Level 3 data product ID.\nThis function will only work correctly on mosaicked data.", sep=" "))
   }
   
   # error message if easting and northing vector lengths don't match

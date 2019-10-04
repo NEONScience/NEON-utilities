@@ -30,6 +30,11 @@
 
 footRaster <- function(filepath) {
   
+  # first check for raster package
+  if(!requireNamespace("raster", quietly=T)) {
+    stop("Package raster is required for this function to work. Install and re-try.")
+  }
+  
   # get list of files, unzipping if necessary
   if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
     outpath <- gsub(".zip", "", filepath)
