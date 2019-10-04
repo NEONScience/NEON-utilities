@@ -77,20 +77,22 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     # if product is OS, proceed with normal download
     if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS","AOP") | 
        dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001")) {
-      stop(paste(dpID, "is not a streaming sensor (IS) data product; cannot subset by averaging interval.", sep=" "))
+      cat(paste(dpID, " is not a streaming sensor (IS) data product; cannot subset by averaging interval. Proceeding to download all available data.\n", 
+                sep=""))
   } else {
-    # check and make sure the averaging interval is valid for the product
-    if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
-      stop(paste(avg, " is not a valid averaging interval for ", dpID, 
-                 ". Use function getAvg() to find valid averaging intervals.", sep=""))
+    # exceptions for water quality, SAE, summary weather statistics
+    if(dpID %in% c("DP1.20288.001","DP4.00001.001","DP4.00200.001")) {
+      cat(paste("Subsetting by averaging interval is not available for ", dpID, 
+                ". Proceeding to download all available data.\n", sep=""))
     } else {
-      if(dpID %in% c("DP1.20288.001","DP4.00001.001")) {
-        stop(paste("Subsetting by averaging interval is not available for ", dpID, sep=""))
-      }
+      # check and make sure the averaging interval is valid for the product
+      if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
+        stop(paste(avg, " is not a valid averaging interval for ", dpID, 
+                   ". Use function getAvg() to find valid averaging intervals.", sep=""))
+    }
+    }
     }
   }
-    }
-  
   
   # get the urls for months with data available
   month.urls <- unlist(avail$data$siteCodes$availableDataUrls)
