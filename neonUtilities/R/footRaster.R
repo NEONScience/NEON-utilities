@@ -11,7 +11,7 @@
 
 #' @details Given a filepath containing H5 files of expanded package DP4.00200.001 data, extracts flux footprint data and creates a raster.
 
-#' @return A rasterStack object containing all the footprints in the input files, plus one layer (the first in the stack) of the mean footprint.
+#' @return A rasterStack object containing all the footprints in the input files, plus one layer (the first in the stack) containing the mean footprint.
 
 #' @examples
 #' \dontrun{
