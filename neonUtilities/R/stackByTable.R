@@ -74,7 +74,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
 
   if(dpID == "DP4.00200.001"){
-    stop("This eddy covariance data product is in HDF5 format and cannot be stacked.")
+    stop("This eddy covariance data product is in HDF5 format. It can't be stacked by this function, use stackEddy().")
   }
 
   if(dpID == "DP1.10017.001" && package != 'basic'){
