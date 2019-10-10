@@ -20,7 +20,7 @@ byTileAOP(dpID, site = "SJER", year = "2017", easting, northing,
 
 \item{buffer}{Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0. If easting and northing coordinates are the centroids of NEON TOS plots, use buffer=20.}
 
-\item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
+\item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
 \item{savepath}{The file path to download to. Defaults to NA, in which case the working directory is used.}
 }

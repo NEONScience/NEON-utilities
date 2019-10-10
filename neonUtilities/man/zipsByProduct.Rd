@@ -21,7 +21,7 @@ zipsByProduct(dpID, site = "all", startdate = NA, enddate = NA,
 
 \item{avg}{Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
 
-\item{check.size}{T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
+\item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
 \item{savepath}{The location to save the output files to}
 

@@ -13,7 +13,7 @@
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
-#' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
 
@@ -259,7 +259,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   # check for no files
   if(is.null(nrow(zip.urls))) {
     writeLines(paste0(messages[-1], collapse = "\n"))
-    stop(paste("No files found. This indicates either the API is temporarily unavailable, or the data available for ", 
+    stop(paste("No files found. This indicates either your internet connection failed, or the API is temporarily unavailable, or the data available for ", 
                dpID, 
                " are all hosted elsewhere. Check the data portal data.neonscience.org for outage alerts, and check the ", 
                dpID, " data download page for external links.", sep=""))
@@ -280,6 +280,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
     }
+  } else {
+    cat(paste("Downloading files totaling approximately", downld.size, "MB\n", sep=" "))
   }
 
   # create folder in working directory or savepath to put files in

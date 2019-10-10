@@ -12,7 +12,7 @@
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param site The four-letter code of a single NEON site, e.g. 'CLBJ'.
 #' @param year The four-digit year to search for data. Defaults to 2017.
-#' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
@@ -111,6 +111,8 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE, savepath=
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
     }
+  } else {
+    cat(paste("Downloading files totaling approximately", downld.size.read, "MB\n", sep=" "))
   }
 
   # create folder in working directory to put files in

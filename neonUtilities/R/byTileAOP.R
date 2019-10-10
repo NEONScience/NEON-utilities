@@ -15,7 +15,7 @@
 #' @param easting A vector containing the easting UTM coordinates of the locations to download.
 #' @param northing A vector containing the northing UTM coordinates of the locations to download.
 #' @param buffer Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0. If easting and northing coordinates are the centroids of NEON TOS plots, use buffer=20.
-#' @param check.size T or F, should the user be told the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
@@ -221,6 +221,8 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
     }
+  } else {
+    cat(paste("Downloading files totaling approximately", downld.size.read, "MB\n", sep=" "))
   }
 
   # create folder in working directory to put files in
