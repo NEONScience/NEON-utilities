@@ -22,15 +22,20 @@
 #     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format, and the HOR.VER
 #       values given (100.100) are always the same. New HOR and VER columns are not needed in the
 #       stacked product.
+#   2019-10-17 (Nathan Mietkiewicz): Add domainID, siteID, and collection YYYY-MM columns for sensor position files
 ##############################################################################################
 
-makePosColumns <- function(d, datafl){
+makePosColumns <- function(d, datafl, spFolder){
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
+  datafl.splitFolder <- strsplit(x = basename(spFolder)[length( basename(spFolder))], split = "\\.")
+  
+  sensor_positions <- grepl('sensor_positions', datafl.splitName)
+  
   if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){return(d)}
-
+  
   nc <- ncol(d)
-  if(length(datafl.splitName[[1]]) %in% c(12,14)){
+  if(length(datafl.splitName[[1]]) %in% c(12,14) || (TRUE %in% sensor_positions)){
     if(length(datafl.splitName[[1]]) == 12){
       horPos <- 8
       verPos <- 9
@@ -43,13 +48,18 @@ makePosColumns <- function(d, datafl){
       d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
       d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
     }
-    d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
-    d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
-    d$horizontalPosition <- as.character(d$horizontalPosition)
-    d$verticalPosition <- as.character(d$verticalPosition)
-    d <- data.table::setcolorder(d, c((nc+1):(nc+4),1:nc))
+    if(TRUE %in% sensor_positions) {
+      d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
+      d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
+      d$collectionDate <- rep(as.character(datafl.splitFolder[[1]][7]), nrow(d))
+      d <- data.table::setcolorder(d, c((nc+1):(nc+3),1:nc))
+    } else {
+      d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
+      d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
+      d$horizontalPosition <- as.character(d$horizontalPosition)
+      d$verticalPosition <- as.character(d$verticalPosition)
+      d <- data.table::setcolorder(d, c((nc+1):(nc+4),1:nc))
+    }
   }
-
   return(d)
 }
-
