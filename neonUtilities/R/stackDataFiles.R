@@ -26,7 +26,6 @@
 ##############################################################################################
 
 stackDataFiles <- function(folder){
-  folder <- savepath
   
   starttime <- Sys.time()
   
@@ -114,24 +113,27 @@ stackDataFiles <- function(folder){
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
       
-      if((tables[i] %in% c("sensor_positions"))){
+      if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || 
+         (length(tbltype) > 0 && tbltype == "site-all")){
         writeLines(paste0("Stacking table ", tables[i]))
         pb <- utils::txtProgressBar(style=3)
         utils::setTxtProgressBar(pb, 0)
-        #tblfls <- filepaths[grep(tables[i], filepaths, fixed=T)]
-        #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
-        d <- suppressWarnings(data.table::fread(tblfls[1], header=T, encoding="UTF-8"))
+        sites <- unique(substr(tblnames, 10, 13))
+        sites <- sites[order(sites)]
+        d <- suppressWarnings(data.table::fread(tblfls[grep(sites[1], tblfls)][1], header=T, encoding="UTF-8"))
         d <- assignClasses(d, variables)
-        d <- makePosColumns(d, tblnames[1], spFolder=folder)
+        d <- makePosColumns(d, tblnames[1], spFolder=tblfls[1])
         numRows <- nrow(d)
         utils::setTxtProgressBar(pb, 1/length(tblfls))
-        if(length(tblfls) > 1){
-          for(j in 2:length(tblfls)){
-            d.next <- suppressWarnings(data.table::fread(tblfls[j], header=T, encoding="UTF-8"))
+        if(length(sites) > 1){
+          for(j in 2:length(sites)){
+            sitefls <- tblfls[grep(sites[j], tblfls)]
+            sitenames <- tblnames[grep(sites[j], tblnames)]
+            d.next <- suppressWarnings(data.table::fread(sitefls[1], header=T, encoding="UTF-8"))
             d.next <- assignClasses(d.next, variables)
-            d.next <- makePosColumns(d.next, tblnames[j], spFolder=folder)
+            d.next <- makePosColumns(d.next, sitenames[1], spFolder=tblfls[j])
             numRows <- sum(numRows, nrow(d.next))
             d <- rbind(d, d.next, fill = TRUE)
             utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
@@ -143,73 +145,38 @@ stackDataFiles <- function(folder){
         n <- n + 1
         utils::setTxtProgressBar(pb, 1)
         close(pb)
-      } else {
-        if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-all")){
-          writeLines(paste0("Stacking table ", tables[i]))
-          pb <- utils::txtProgressBar(style=3)
-          utils::setTxtProgressBar(pb, 0)
-          #tblfls <- filepaths[grep(tables[i], filepaths, fixed=T)]
-          #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
-          tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
-          tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
-          sites <- unique(substr(tblnames, 10, 13))
-          sites <- sites[order(sites)]
-          d <- suppressWarnings(data.table::fread(tblfls[grep(sites[1], tblfls)][1], header=T, encoding="UTF-8"))
-          d <- assignClasses(d, variables)
-          d <- makePosColumns(d, tblnames[1], spFolder=folder)
-          numRows <- nrow(d)
-          utils::setTxtProgressBar(pb, 1/length(tblfls))
-          if(length(sites) > 1){
-            for(j in 2:length(sites)){
-              sitefls <- tblfls[grep(sites[j], tblfls)]
-              sitenames <- tblnames[grep(sites[j], tblnames)]
-              d.next <- suppressWarnings(data.table::fread(sitefls[1], header=T, encoding="UTF-8"))
-              d.next <- assignClasses(d.next, variables)
-              d.next <- makePosColumns(d.next, sitenames[1], spFolder=folder)
-              numRows <- sum(numRows, nrow(d.next))
-              d <- rbind(d, d.next, fill = TRUE)
-              utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
-            }
-          }
-          utils::write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
-          messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
-                                         nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
-          n <- n + 1
-          utils::setTxtProgressBar(pb, 1)
-          close(pb)
-        }
+      }
+      
+      if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || 
+         (length(tbltype) > 0 && tbltype == "site-date") || 
+         (tables[i] %in% c("sensor_positions"))){
         
-        
-        if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || (length(tbltype) > 0 && tbltype == "site-date")){
-          writeLines(paste0("Stacking table ", tables[i]))
-          pb <- utils::txtProgressBar(style=3)
-          utils::setTxtProgressBar(pb, 0)
-          #tblfls <- filepaths[grep(tables[i], filepaths, fixed=T)]
-          #tblnames <- filenames[grep(tables[i], filenames, fixed=T)]
-          tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
-          tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
-          d <- suppressWarnings(data.table::fread(tblfls[1], header=T, encoding="UTF-8"))
-          d <- assignClasses(d, variables)
-          d <- makePosColumns(d, tblnames[1], spFolder=folder)
-          numRows <- nrow(d)
-          utils::setTxtProgressBar(pb, 1/length(tblfls))
-          if(length(tblfls) > 1){
-            for(j in 2:length(tblfls)){
-              d.next <- suppressWarnings(data.table::fread(tblfls[j], header=T, encoding="UTF-8"))
-              d.next <- assignClasses(d.next, variables)
-              d.next <- makePosColumns(d.next, tblnames[j], spFolder=folder)
-              numRows <- sum(numRows, nrow(d.next))
-              d <- rbind(d, d.next, fill = TRUE)
-              utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
-            }
+        writeLines(paste0("Stacking table ", tables[i]))
+        pb <- utils::txtProgressBar(style=3)
+        utils::setTxtProgressBar(pb, 0)
+        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
+        d <- suppressWarnings(data.table::fread(tblfls[1], header=T, encoding="UTF-8"))
+        d <- assignClasses(d, variables)
+        d <- makePosColumns(d, tblnames[1], spFolder=tblfls[1])
+        numRows <- nrow(d)
+        utils::setTxtProgressBar(pb, 1/length(tblfls))
+        if(length(tblfls) > 1){
+          for(j in 2:length(tblfls)){
+            d.next <- suppressWarnings(data.table::fread(tblfls[j], header=T, encoding="UTF-8"))
+            d.next <- assignClasses(d.next, variables)
+            d.next <- makePosColumns(d.next, tblnames[j], spFolder=tblfls[j])
+            numRows <- sum(numRows, nrow(d.next))
+            d <- rbind(d, d.next, fill = TRUE)
+            utils::setTxtProgressBar(pb, (i*j)/length(tblfls))
           }
-          utils::write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
-          messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
-                                         nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
-          n <- n + 1
-          utils::setTxtProgressBar(pb, 1)
-          close(pb)
         }
+        utils::write.csv(d, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+        messages <- c(messages, paste0("Stacked ", tables[i], " which has ", numRows, " out of the expected ",
+                                       nrow(d), " rows (", (numRows/nrow(d))*100, "%)."))
+        n <- n + 1
+        utils::setTxtProgressBar(pb, 1)
+        close(pb)
       }
     }
   }
