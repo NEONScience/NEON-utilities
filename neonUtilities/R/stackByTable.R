@@ -118,7 +118,9 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   }
   stackDataFiles(savepath)
-
+  getReadmePublicationDate(savepath, 
+                           out_filepath = paste(savepath, "stackedFiles", sep="/"))
+  
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
   if(envt==1) {
