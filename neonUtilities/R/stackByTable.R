@@ -43,7 +43,9 @@
 ##############################################################################################
 
 stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
-
+  folder=TRUE
+  filepath <- 'data/filesToStack00094/NEON.D13.NIWO.DP1.00094.001.2018-05.basic.20190304T082738Z'
+  
   #### Check whether data should be stacked ####
   if(folder==FALSE){
     files <- listFilesInZip(filepath)
@@ -52,42 +54,43 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       stop("Data files are not present in specified filepath.")
     }
   }
-
+  
   if(folder==TRUE){
     files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
     if(length(files) == 0){
       stop("Data files are not present in specified filepath.")
     }
   }
-
-  dpID <- substr(files[1], 15, 27)
+  
+  dpID <- substr(basename(files[1]), 15, 27)  ########### ---> Claire, the addition of basename solves the error
   package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
   if(package == "anded"){package <- "expanded"}
-
+  
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001, where the first placeholder must be between 1 and 4.", sep=" "))
   }
-
+  
   if(substr(dpID, 5, 5) == "3"){
     stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() or byTileAOP() if you would like to download data.")
   }
-
+  
   if(dpID == "DP4.00200.001"){
-    stop("This eddy covariance data product is in HDF5 format. It can't be stacked by this function, use stackEddy().")
+    stop("This eddy covariance data product is in HDF5 format and cannot be stacked.")
   }
-
+  
   if(dpID == "DP1.10017.001" && package != 'basic'){
     saveUnzippedFiles = TRUE
     writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.")
   }
-
+  
   #### If all checks pass, unzip and stack files ####
-
+  
   envt <- 0
+  root_directory <- substr(filepath, 1, nchar(filepath)-4)
   
   if(folder==FALSE) {
-    if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
+    if(is.na(savepath)){savepath <- root_directory} # Changed the language to 'root_directory' bc this object is reused
     if(savepath=="envt") {
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
@@ -97,7 +100,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
     }
   }
-
+  
   if(folder==TRUE) {
     if(is.na(savepath)){savepath <- filepath}
     if(savepath=="envt") {
@@ -116,8 +119,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       }
     }
   }
-
   stackDataFiles(savepath)
+  getReadmePublicationDate(savepath, out_filepath = root_directory)
   
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
@@ -137,6 +140,5 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     return(fls)
     unlink(paste(savepath, "stackedFiles", sep="/"))
   }
-
+  
 }
-
