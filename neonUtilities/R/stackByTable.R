@@ -43,9 +43,7 @@
 ##############################################################################################
 
 stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
-  folder=TRUE
-  filepath <- 'data/filesToStack00094/NEON.D13.NIWO.DP1.00094.001.2018-05.basic.20190304T082738Z'
-  
+
   #### Check whether data should be stacked ####
   if(folder==FALSE){
     files <- listFilesInZip(filepath)
@@ -120,8 +118,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   }
   stackDataFiles(savepath)
-  getReadmePublicationDate(savepath, out_filepath = root_directory)
-  
+
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
   if(envt==1) {
