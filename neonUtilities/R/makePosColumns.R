@@ -28,7 +28,7 @@
 makePosColumns <- function(d, datafl, spFolder){
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
-  datafl.splitFolder <- strsplit(x = basename(spFolder)[length( basename(spFolder))], split = "\\.")
+  datafl.splitFolder <- strsplit(x = basename(dirname(spFolder))[length(basename(dirname(spFolder)))], split = "\\.")
   
   sensor_positions <- grepl('sensor_positions', datafl.splitName)
   
@@ -48,6 +48,7 @@ makePosColumns <- function(d, datafl, spFolder){
       d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
       d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
     }
+    
     if(TRUE %in% sensor_positions) {
       d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
       d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
