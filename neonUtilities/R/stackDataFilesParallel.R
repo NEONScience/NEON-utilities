@@ -25,9 +25,7 @@
 #     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format. Adjusted script to stack properly.
 ##############################################################################################
 
-stackDataFiles <- function(folder){
-  
-  starttime <- Sys.time()
+stackDataFilesParallel <- function(folder, nCores){
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
@@ -98,7 +96,7 @@ stackDataFiles <- function(folder){
     }
     
     # Spin-up for parallel processing
-    cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+    cl <- parallel::makeCluster(getOption("cl.cores", nCores))
     # If error or crash, closes all clusters
     on.exit(parallel::stopCluster(cl))
     
@@ -107,53 +105,39 @@ stackDataFiles <- function(folder){
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
       
       writeLines(paste0("Stacking table ", tables[i]))
+      tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+      tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
       
-      pbapply::pblapply(tables[i], function(x, filepaths, variables, filenames, assignClasses, 
+      df <- do.call(rbind, pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
                                          makePosColumns, folder, tbltype, messages) {
-        
-        tblfls <- filepaths[grep(paste(".", x, ".", sep=""), filepaths, fixed=T)]
-        tblnames <- filenames[grep(paste(".", x, ".", sep=""), filenames, fixed=T)]
+        require(tidyverse)
+        require(data.table)
         
         if((length(tbltype) > 0 && tbltype == "site-all")){
           sites <- unique(substr(tblnames, 10, 13))
           sites <- sites[order(sites)]
           
-          d <- NULL
-          for(j in 1:length(sites)){
-            sitefls <- tblfls[grep(sites[j], tblfls)]
-            sitenames <- tblnames[grep(sites[j], tblnames)]
-            d.next <- suppressWarnings(data.table::fread(sitefls[1], header=T, encoding="UTF-8"))
-            d.next <- assignClasses(d.next, variables)
-            d.next <- makePosColumns(d.next, sitenames[1], spFolder=tblfls[j])
-            d <- rbind(d, d.next, fill = TRUE)
-        }
-          utils::write.csv(d, paste0(folder, "/stackedFiles/", x, ".csv"), row.names = F)
-        }
-        
-        if((length(tbltype)==0 && x %in% "sensor_positions") ||
-           (length(tbltype) > 0 && tbltype == "site-date")){
-          
-          d <- NULL
-          for(j in 1:length(tblfls)){
-            d.next <- suppressWarnings(data.table::fread(tblfls[j], header=T, encoding="UTF-8"))
-            d.next <- assignClasses(d.next, variables)
-            d.next <- makePosColumns(d.next, tblnames[j], spFolder=tblfls[j])
-            d <- rbind(d, d.next, fill = TRUE)
-            }
-          utils::write.csv(d, paste0(folder, "/stackedFiles/", x, ".csv"), row.names = F)
+          sitefls <- x[grep(sites, x)]
+          sitenames <- tblnames[grep(sites, tblnames)]
+          df <- suppressWarnings(data.table::fread(sitefls[1], header=T, encoding="UTF-8")) %>%
+            assignClasses(., variables) %>%
+            makePosColumns(., sitenames[1], spFolder=x)
           }
+        
+        if((length(tbltype)==0 && tables_i %in% "sensor_positions") || (length(tbltype) > 0 && tbltype == "site-date")){
+
+          df <- suppressWarnings(data.table::fread(x, header=T, encoding="UTF-8")) %>%
+            assignClasses(., variables) %>%
+            makePosColumns(., tblnames, spFolder=x)
+          }
+          return(df)
         },
-        filepaths=filepaths, variables=variables,
-        filenames=filenames, assignClasses=assignClasses,
+        tables_i=tables[i], variables=variables, tblfls=tblfls,
+        tblnames=tblnames, assignClasses=assignClasses,
         makePosColumns=makePosColumns, folder=folder,
         messages=messages, tbltype=tbltype, cl=cl
-        )
+        ))
+      utils::write.csv(df, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
       }
     }
-  
-  parallel::stopCluster(cl)
-  writeLines(paste("Finished: All of the data are stacked into", n, "tables!"))
-  writeLines(paste0(messages, collapse = "\n"))
-  endtime <- Sys.time()
-  writeLines(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
 }
