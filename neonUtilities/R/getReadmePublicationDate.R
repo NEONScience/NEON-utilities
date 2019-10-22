@@ -31,11 +31,11 @@
 ##############################################################################################
 
 getReadmePublicationDate <- function(savepath, out_filepath) {
-    
+
   readme_list <- list.files(savepath, pattern = 'readme',
                             recursive = TRUE, full.names = TRUE)
   
-  pub_date_df <- do.call(rbind, pblapply(readme_list, function(x) {
+  pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
     split <- x %>%
       stringr::str_split(., '/') %>%
       unlist() %>%
