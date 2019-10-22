@@ -83,27 +83,20 @@ stackDataFiles <- function(folder){
       }
     }
     
-    # copy first variables and validation files to /stackedFiles
-    varpath <- filepaths[grep("variables.20", filepaths)[1]]
-    if(is.na(varpath)){
-      varpath <- filepaths[grep("variables", filepaths)[1]]
-    }
-    if(!is.na(varpath)){
+    # copy variables and validation files to /stackedFiles using the most recent collection date 
+    if(TRUE %in% stringr::str_detect(filepaths,'variables.20')){
+      varpath <- filepaths[grep("variables.20", filepaths)[max(length(filepaths[grep("variables.20", filepaths)]))]]
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
       messages <- c(messages, "Copied the first available variable definition file to /stackedFiles and renamed as variables.csv")
+      tables <- c(tables, "variables")
+      
     }
     
-    valpath <- filepaths[grep("validation", filepaths)[1]]
-    if(!is.na(valpath)){
+    if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
+      valpath <- filepaths[grep("validation", filepaths)[max(length(filepaths[grep("validation", filepaths)]))]]
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
       messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as validation.csv")
-    }
-    
-    if(!is.na(varpath)){
-      tables <- c(tables, "variables")
-    }
-    if(!is.na(valpath)){
       tables <- c(tables, "validation")
     }
     
