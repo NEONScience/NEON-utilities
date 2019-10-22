@@ -110,8 +110,8 @@ stackDataFilesParallel <- function(folder, nCores){
       
       df <- do.call(rbind, pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
                                          makePosColumns, folder, tbltype, messages) {
-        require(tidyverse)
-        require(data.table)
+        suppressPackageStartupMessages(require(tidyverse))
+        suppressPackageStartupMessages(require(data.table))
         
         if((length(tbltype) > 0 && tbltype == "site-all")){
           sites <- unique(substr(tblnames, 10, 13))
@@ -138,6 +138,8 @@ stackDataFilesParallel <- function(folder, nCores){
         messages=messages, tbltype=tbltype, cl=cl
         ))
       utils::write.csv(df, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+      invisible(rm(df))
+      invisible(gc())
       }
     }
 }
