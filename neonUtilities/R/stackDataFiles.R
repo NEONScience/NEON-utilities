@@ -89,15 +89,12 @@ stackDataFiles <- function(folder){
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
       messages <- c(messages, "Copied the first available variable definition file to /stackedFiles and renamed as variables.csv")
-      tables <- c(tables, "variables")
-      
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
       valpath <- filepaths[grep("validation", filepaths)[max(length(filepaths[grep("validation", filepaths)]))]]
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
       messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as validation.csv")
-      tables <- c(tables, "validation")
     }
     
     n <- 0
@@ -106,8 +103,7 @@ stackDataFiles <- function(folder){
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
       
-      if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || 
-         (length(tbltype) > 0 && tbltype == "site-all")){
+      if((length(tbltype) > 0 && tbltype == "site-all")){
         writeLines(paste0("Stacking table ", tables[i]))
         pb <- utils::txtProgressBar(style=3)
         utils::setTxtProgressBar(pb, 0)
@@ -140,9 +136,8 @@ stackDataFiles <- function(folder){
         close(pb)
       }
       
-      if((length(tbltype)==0 && !(tables[i] %in% c("variables","validation"))) || 
-         (length(tbltype) > 0 && tbltype == "site-date") || 
-         (tables[i] %in% c("sensor_positions"))){
+      if((length(tbltype)==0 && tables[i] %in% "sensor_positions") ||
+         (length(tbltype) > 0 && tbltype == "site-date")){
         
         writeLines(paste0("Stacking table ", tables[i]))
         pb <- utils::txtProgressBar(style=3)
