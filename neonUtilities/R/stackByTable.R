@@ -42,7 +42,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -117,7 +117,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       }
     }
   }
-  stackDataFiles(savepath)
+  
+  stackDataFilesParallel(savepath, nCores)
   getReadmePublicationDate(savepath, 
                            out_filepath = paste(savepath, "stackedFiles", sep="/"))
   
