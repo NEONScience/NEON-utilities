@@ -25,7 +25,7 @@
 #     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format. Adjusted script to stack properly.
 ##############################################################################################
 
-stackDataFilesParallel <- function(folder, nCores){
+stackDataFilesParallel <- function(folder, nCores, force_nCores = FALSE){
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
@@ -51,7 +51,7 @@ stackDataFilesParallel <- function(folder, nCores){
   if(length(datafls) == 1){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     file.copy(from = datafls[1][[1]], to = "/stackedFiles")
-  }
+    }
   
   # if there is more than one data file, stack files
   if(length(datafls) > 1){
@@ -101,22 +101,25 @@ stackDataFilesParallel <- function(folder, nCores){
     
     # Make a decision on parallel processing based on the total size of directories or whether there are lots of 1_minute files
     # All of this is overruled if force_nCores = TRUE
-    if(force_nCores == TRUE{
-      cl <- parallel::makeCluster(getOption("cl.cores", nCores)) {
+    if(force_nCores == TRUE) {
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
+    } else {
+      directories <- grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", inv=TRUE, value=TRUE)
+      directories_size <- sum(file.info(directories)$size)
+      contains_1minute <- grepl(list.files(directories, recursive = TRUE), pattern = "1_minute")
+      
+      if(directories_size >= 100 || length(which(contains_1minute == TRUE)) >= 50) {
+        cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+        writeLines(paste0("Parallelizing stacking operation across ", parallel::detectCores(), " cores."))
       } else {
-        directories <- grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", inv=TRUE, value=TRUE)
-        directories_size <- sum(file.info(directories)$size)
-        contains_1minute <- grepl(list.files(directories, recursive = TRUE), pattern = "1_minute")
-        
-        if(directories_size >= 25000 || length(which(contains_1minute == TRUE)) >= 50) {
-          cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
-        } else {
-          cl <- parallel::makeCluster(getOption("cl.cores", nCores)) 
-        }
+        cl <- parallel::makeCluster(getOption("cl.cores", nCores)) 
+        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization, please see force_nCores to run stacking operation across multiple cores./n Running on single core."))
       }
-
-    # If error or crash, closes all clusters
+    }
+    
+    # If error, crash, or completion , closes all clusters
     on.exit(parallel::stopCluster(cl))  
+    
     for(i in 1:length(tables)){
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
@@ -126,7 +129,7 @@ stackDataFilesParallel <- function(folder, nCores){
       tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
       
       df <- do.call(rbind, pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
-                                         makePosColumns, folder, tbltype, messages) {
+                                                              makePosColumns, folder, tbltype, messages) {
         suppressPackageStartupMessages(require(tidyverse))
         suppressPackageStartupMessages(require(data.table))
         
@@ -139,24 +142,23 @@ stackDataFilesParallel <- function(folder, nCores){
           df <- suppressWarnings(data.table::fread(sitefls[1], header=T, encoding="UTF-8")) %>%
             assignClasses(., variables) %>%
             makePosColumns(., sitenames[1], spFolder=x)
-          }
+        }
         
         if((length(tbltype)==0 && tables_i %in% "sensor_positions") || (length(tbltype) > 0 && tbltype == "site-date")){
-
+          
           df <- suppressWarnings(data.table::fread(x, header=T, encoding="UTF-8")) %>%
             assignClasses(., variables) %>%
             makePosColumns(., tblnames, spFolder=x)
-          }
-          return(df)
-        },
-        tables_i=tables[i], variables=variables, tblfls=tblfls,
-        tblnames=tblnames, assignClasses=assignClasses,
-        makePosColumns=makePosColumns, folder=folder,
-        messages=messages, tbltype=tbltype, cl=cl
-        ))
+        }
+        return(df)
+      },
+      tables_i=tables[i], variables=variables, tblfls=tblfls,
+      tblnames=tblnames, assignClasses=assignClasses,
+      makePosColumns=makePosColumns, folder=folder,
+      messages=messages, tbltype=tbltype, cl=cl
+      ))
       utils::write.csv(df, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
-      invisible(rm(df))
-      invisible(gc())
-      }
+      invisible(rm(df))    
     }
+  }
 }
