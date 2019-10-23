@@ -53,7 +53,26 @@ makePosColumns <- function(d, datafl, spFolder){
       d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
       d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
       d$collectionDate <- rep(as.character(datafl.splitFolder[[1]][7]), nrow(d))
-      d <- data.table::setcolorder(d, c((nc+1):(nc+3),1:nc))
+      
+      # Make sure there is a start/end column, if not create one with NAs
+      if("start" %in% names(d) & "end" %in% names(d)) {
+        d <- d 
+      } else { 
+        d$start <- rep(NA, nrow(d))
+        d$end <- rep(NA, nrow(d))
+      }
+      
+      # Make sure there is a referenceStart/end column, if not create one with NAs
+      if("referenceStart" %in% names(d) & "referenceEnd" %in% names(d)) {
+        d <- d 
+      } else { 
+        d$referenceStart <- rep(NA, nrow(d))
+        d$referenceEnd <- rep(NA, nrow(d))
+      }
+      d <- d %>%
+        dplyr::select(domainID, siteID, collectionDate, `HOR.VER`, start, end,
+                      referenceStart, referenceEnd, xOffset, yOffset, zOffset, 
+                      pitch, roll, azimuth, referenceLatitude, referenceLongitude, referenceElevation)
     } else {
       d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
       d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
