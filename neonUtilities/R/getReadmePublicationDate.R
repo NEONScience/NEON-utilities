@@ -32,7 +32,7 @@
 
 getReadmePublicationDate <- function(savepath, out_filepath) {
 
-  readme_list <- list.files(savepath, pattern = 'readme',
+  readme_list <- list.files(savepath, pattern = '.readme.20',
                             recursive = TRUE, full.names = TRUE)
   
   pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
@@ -59,11 +59,20 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
     return(tmp_pub_date_df)
   }))
   
-  txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]]) %>%
-    gsub('Date-Time for Data Publication: [[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}[[:space:]]{1}[[:digit:]]{2}:[[:digit:]]{2} ', 
-         'Date-Time for Data Publication: Because this is the compiled version, you will find these dates at the end of the document.', .)
-
-  out_filepath_name <- paste0(out_filepath, '/stacked_compiled_readme_', format(Sys.time(), "%Y%m%d%H%M%S"), '.txt')
+  txt_file <- tibble::enframe(readr::read_lines(readme_list[[max(length(readme_list))]])) %>% 
+    dplyr::select(-name) %>%
+    filter(!str_detect(value, 'Date-Time for Data Publication:'),
+           !str_detect(value, 'This zip package was generated'),
+           !str_detect(value, 'NEON.*'),
+           !str_detect(value, 'This zip package contains the following '),
+           !str_detect(value, 'Other related documents'),
+           !str_detect(value, 'Additional documentation'),
+           !str_detect(value, 'This zip package also contains'),
+           !str_detect(value, 'Basic download package definition'),
+           !str_detect(value, 'Expanded download package definition')) %>%
+    as.matrix()
+  
+  out_filepath_name <- paste0(out_filepath, '/readme.txt')
   
   write_lines(txt_file, out_filepath_name)
   cat("\n", file = out_filepath_name, append=TRUE)
