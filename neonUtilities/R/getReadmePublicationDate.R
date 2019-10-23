@@ -30,59 +30,66 @@
 
 ##############################################################################################
 
-getReadmePublicationDate <- function(savepath, out_filepath) {
-
-  readme_list <- list.files(savepath, pattern = '.readme.20',
-                            recursive = TRUE, full.names = TRUE)
-  
-  pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
-    split <- x %>%
-      stringr::str_split(., '/') %>%
-      unlist() %>%
-      .[max(length(unlist(.)))] 
-    splitter <- split %>%
-      stringr::str_split(., '\\.') %>%
-      unlist()
-    
-    pub_date_str <- suppressWarnings(
-      suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')) %>%
-                         dplyr::filter(str_detect(X1, 'Date-Time for Data Publication'))))
-    
-    tmp_pub_date_df <- pub_date_str %>%
-      dplyr::mutate(publication_date = lubridate::ymd_hm(stringr::str_remove(.$X1, 'Date-Time for Data Publication: ')),
-                    domain= as_factor(splitter[2]),
-                    site = as_factor(splitter[3]),
-                    dp_id = as_factor(paste(splitter[4:6], collapse = '.')), 
-                    readme_filename = as_factor(split)) %>%
-      dplyr::select(-X1, -X2)
-
-    return(tmp_pub_date_df)
-  }))
-  
-  txt_file <- tibble::enframe(readr::read_lines(readme_list[[max(length(readme_list))]])) %>% 
-    dplyr::select(-name) %>%
-    filter(!str_detect(value, 'Date-Time for Data Publication:'),
-           !str_detect(value, 'This zip package was generated'),
-           !str_detect(value, 'NEON.*'),
-           !str_detect(value, 'This zip package contains the following '),
-           !str_detect(value, 'Other related documents'),
-           !str_detect(value, 'Additional documentation'),
-           !str_detect(value, 'This zip package also contains'),
-           !str_detect(value, 'Basic download package definition'),
-           !str_detect(value, 'Expanded download package definition')) %>%
-    as.matrix()
-  
+getReadmePublicationDate <- function(savepath, out_filepath, forceStack) {
   out_filepath_name <- paste0(out_filepath, '/readme.txt')
-  
-  write_lines(txt_file, out_filepath_name)
-  cat("\n", file = out_filepath_name, append=TRUE)
-  cat("\n", file = out_filepath_name, append=TRUE)
-  cat("POST STACKING README DOCUMENTATION\n", file = out_filepath_name, append=TRUE)
-  cat("----------------------------------\n", file = out_filepath_name, append=TRUE)
-  cat("\n", file = out_filepath_name, append=TRUE)
-  cat("Compiled list of the data publication record of the files stacked.\nEach row contains information specific to a layer in the stack.\n\nFrom left to right, the publication date, domain, site, data product ID, and original readme filenames are listed.\n\n", 
-      file = out_filepath_name, append=TRUE)
-  write.table(pub_date_df, file=out_filepath_name, 
-              sep=",", append=TRUE, row.names=FALSE, col.names=FALSE, quote = FALSE)
-  
+  if(!file.exists(out_filepath_name) && forceStack == FALSE ||
+     file.exists(out_filepath_name) && forceStack == TRUE) {
+    
+    if(file.exists(out_filepath_name)) {
+      unlin(out_filepath_name)
+    }
+    writeLines("Stacking ReadMe documentation")
+    readme_list <- list.files(savepath, pattern = '.readme.20',
+                              recursive = TRUE, full.names = TRUE)
+    
+    pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
+      split <- x %>%
+        stringr::str_split(., '/') %>%
+        unlist() %>%
+        .[max(length(unlist(.)))] 
+      splitter <- split %>%
+        stringr::str_split(., '\\.') %>%
+        unlist()
+      
+      pub_date_str <- suppressWarnings(
+        suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')) %>%
+                           dplyr::filter(str_detect(X1, 'Date-Time for Data Publication'))))
+      
+      tmp_pub_date_df <- pub_date_str %>%
+        dplyr::mutate(publication_date = lubridate::ymd_hm(stringr::str_remove(.$X1, 'Date-Time for Data Publication: ')),
+                      domain= as_factor(splitter[2]),
+                      site = as_factor(splitter[3]),
+                      dp_id = as_factor(paste(splitter[4:6], collapse = '.')), 
+                      readme_filename = as_factor(split)) %>%
+        dplyr::select(-X1, -X2)
+      
+      return(tmp_pub_date_df)
+    }))
+    
+    txt_file <- tibble::enframe(readr::read_lines(readme_list[[max(length(readme_list))]])) %>% 
+      dplyr::select(-name) %>%
+      filter(!str_detect(value, 'Date-Time for Data Publication:'),
+             !str_detect(value, 'This zip package was generated'),
+             !str_detect(value, 'NEON.*'),
+             !str_detect(value, 'This zip package contains the following '),
+             !str_detect(value, 'Other related documents'),
+             !str_detect(value, 'Additional documentation'),
+             !str_detect(value, 'This zip package also contains'),
+             !str_detect(value, 'Basic download package definition'),
+             !str_detect(value, 'Expanded download package definition')) %>%
+      as.matrix()
+    
+    write_lines(txt_file, out_filepath_name)
+    cat("\n", file = out_filepath_name, append=TRUE)
+    cat("\n", file = out_filepath_name, append=TRUE)
+    cat("POST STACKING README DOCUMENTATION\n", file = out_filepath_name, append=TRUE)
+    cat("----------------------------------\n", file = out_filepath_name, append=TRUE)
+    cat("\n", file = out_filepath_name, append=TRUE)
+    cat("Compiled list of the data publication record of the files stacked.\nEach row contains information specific to a layer in the stack.\n\nFrom left to right, the publication date, domain, site, data product ID, and original readme filenames are listed.\n\n", 
+        file = out_filepath_name, append=TRUE)
+    write.table(pub_date_df, file=out_filepath_name, 
+                sep=",", append=TRUE, row.names=FALSE, col.names=FALSE, quote = FALSE)
+  } else {
+    writeLines("Skipping ReadMe documentation")
+  }
 }
