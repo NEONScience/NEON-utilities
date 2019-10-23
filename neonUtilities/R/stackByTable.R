@@ -42,7 +42,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores, force_nCores = FALSE){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores, forceParallel=FALSE, forceStack=FALSE){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -127,10 +127,9 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   envt <- 0
   root_directory <- substr(filepath, 1, nchar(filepath)-4)
   
-  stackDataFilesParallel(savepath, nCores, force_nCores)
-  writeLines("Stacking ReadMe documentation")
-  getReadmePublicationDate(savepath,
-                           out_filepath = paste(savepath, "stackedFiles", sep="/"))
+  stackDataFilesParallel(savepath, nCores, forceParallel, forceStack)
+  getReadmePublicationDate(savepath, 
+                           out_filepath = paste(savepath, "stackedFiles", sep="/"), forceStack)
   
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
