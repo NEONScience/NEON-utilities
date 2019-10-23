@@ -95,11 +95,28 @@ stackDataFilesParallel <- function(folder, nCores){
       messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as validation.csv")
     }
     
-    # Spin-up for parallel processing
-    cl <- parallel::makeCluster(getOption("cl.cores", nCores))
-    # If error or crash, closes all clusters
-    on.exit(parallel::stopCluster(cl))
+    if(nCores > parallel::detectCores()) {
+      stop(paste("The number of cores selected exceeds the available cores on your machine.  The maximum number of cores allowed is", parallel::detectCores(), "not", nCores))
+    }
     
+    # Make a decision on parallel processing based on the total size of directories or whether there are lots of 1_minute files
+    # All of this is overruled if force_nCores = TRUE
+    if(force_nCores == TRUE{
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores)) {
+      } else {
+        directories <- grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", inv=TRUE, value=TRUE)
+        directories_size <- sum(file.info(directories)$size)
+        contains_1minute <- grepl(list.files(directories, recursive = TRUE), pattern = "1_minute")
+        
+        if(directories_size >= 25000 || length(which(contains_1minute == TRUE)) >= 50) {
+          cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+        } else {
+          cl <- parallel::makeCluster(getOption("cl.cores", nCores)) 
+        }
+      }
+
+    # If error or crash, closes all clusters
+    on.exit(parallel::stopCluster(cl))  
     for(i in 1:length(tables)){
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
