@@ -110,6 +110,7 @@ stackDataFilesParallel <- function(folder, nCores, force_nCores = FALSE){
       
       if(directories_size >= 100 || length(which(contains_1minute == TRUE)) >= 50) {
         cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+        nCores <- parallel::detectCores()
         writeLines(paste0("Parallelizing stacking operation across ", parallel::detectCores(), " cores."))
       } else {
         cl <- parallel::makeCluster(getOption("cl.cores", nCores)) 
@@ -157,7 +158,7 @@ stackDataFilesParallel <- function(folder, nCores, force_nCores = FALSE){
       makePosColumns=makePosColumns, folder=folder,
       messages=messages, tbltype=tbltype, cl=cl
       ))
-      utils::write.csv(df, paste0(folder, "/stackedFiles/", tables[i], ".csv"), row.names = F)
+      data.table::fwrite(df, paste0(folder, "/stackedFiles/", tables[i], ".csv"), nThread = nCores)
       invisible(rm(df))    
     }
   }
