@@ -42,7 +42,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores, force_nCores = FALSE){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -83,10 +83,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
   
   #### If all checks pass, unzip and stack files ####
-  
-  envt <- 0
-  root_directory <- substr(filepath, 1, nchar(filepath)-4)
-  
+  zips_exist <- identical(substr(grep(list.files(filepath), pattern = '*.zip', value=TRUE), 1, nchar(grep(list.files(filepath), pattern = '*.zip', value=TRUE))-4), 
+                          grep(list.files(filepath), pattern = 'stack|*.zip', inv=TRUE, value=TRUE))
   if(folder==FALSE) {
     if(is.na(savepath)){savepath <- root_directory} # Changed the language to 'root_directory' bc this object is reused
     if(savepath=="envt") {
@@ -94,8 +92,12 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       envt <- 1
     }
     orig <- list.files(savepath)
-    if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
+    if(FALSE %in% zips_exist) {
+      if(length(grep(files, pattern = ".zip")) > 0){
+        unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
+      }
+    } else {
+      writeLines("Skipping the unzipping procedure because these files have already been unpacked.")
     }
   }
   
@@ -106,20 +108,28 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       envt <- 1
     }
     orig <- list.files(savepath)
-    if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
-    } else {
-      if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
-        if(!dir.exists(savepath)){dir.create(savepath)}
-        for(i in files) {
-          file.copy(paste(filepath, i, sep="/"), savepath)
+    if(FALSE %in% zips_exist) {
+      if(length(grep(files, pattern = ".zip")) > 0){
+        unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
+      } else {
+        if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
+          if(!dir.exists(savepath)){dir.create(savepath)}
+          for(i in files) {
+            file.copy(paste(filepath, i, sep="/"), savepath)
+          }
         }
       }
+    } else {
+      writeLines("Skipping the unzipping procedure because these files have already been unpacked.")
+      }
     }
-  }
+
+  envt <- 0
+  root_directory <- substr(filepath, 1, nchar(filepath)-4)
   
-  stackDataFilesParallel(savepath, nCores)
-  getReadmePublicationDate(savepath, 
+  stackDataFilesParallel(savepath, nCores, force_nCores)
+  writeLines("Stacking ReadMe documentation")
+  getReadmePublicationDate(savepath,
                            out_filepath = paste(savepath, "stackedFiles", sep="/"))
   
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
