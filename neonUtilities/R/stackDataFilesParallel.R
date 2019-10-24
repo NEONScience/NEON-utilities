@@ -169,7 +169,7 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
         messages=messages, tbltype=tbltype, cl=cl
         ))
         
-        data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"), nThread = nCores)
+        data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"), nThread = nCores, showProgress=TRUE)
         invisible(rm(stackedDf))
       } else {
         writeLines(paste0("Skipping ", tables[i], " because ", paste0(folder, "/stackedFiles/", tables[i], ".csv"), " already exists."))
