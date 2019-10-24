@@ -142,14 +142,21 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
             
             sitefls <- x[grep(sites, x)]
             sitenames <- tblnames[grep(sites, tblnames)]
-            df <- suppressWarnings(data.table::fread(sitefls[1], header=T, encoding="UTF-8")) %>%
+            df <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8")) %>%
               assignClasses(., variables) %>%
               makePosColumns(., sitenames[1], spFolder=x)
           }
           
-          if((length(tbltype)==0 && tables_i %in% "sensor_positions") || (length(tbltype) > 0 && tbltype == "site-date")){
+          if((length(tbltype)==0 && tables_i %in% "sensor_positions")){
             
-            df <- suppressWarnings(data.table::fread(x, header=T, encoding="UTF-8")) %>%
+            df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8",
+                                                     colClasses = c("HOV.VER" = "character"))) %>%
+              assignClasses(., variables) %>%
+              makePosColumns(., tblnames, spFolder=x)
+          }
+          if((length(tbltype) > 0 && tbltype == "site-date")){
+            
+            df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8")) %>%
               assignClasses(., variables) %>%
               makePosColumns(., tblnames, spFolder=x)
           }
