@@ -65,19 +65,7 @@ getReadmePublicationDate <- function(savepath, out_filepath, forceStack) {
       
       return(tmp_pub_date_df)
     }))
-    
-    txt_file <- tibble::enframe(readr::read_lines(readme_list[[max(length(readme_list))]])) %>% 
-      dplyr::select(-name) %>%
-      filter(!str_detect(value, 'Date-Time for Data Publication:'),
-             !str_detect(value, 'This zip package was generated'),
-             !str_detect(value, 'NEON.*'),
-             !str_detect(value, 'This zip package contains the following '),
-             !str_detect(value, 'Other related documents'),
-             !str_detect(value, 'Additional documentation'),
-             !str_detect(value, 'This zip package also contains'),
-             !str_detect(value, 'Basic download package definition'),
-             !str_detect(value, 'Expanded download package definition')) %>%
-      as.matrix()
+    txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]])
     
     write_lines(txt_file, out_filepath_name)
     cat("\n", file = out_filepath_name, append=TRUE)
