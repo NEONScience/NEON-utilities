@@ -44,16 +44,8 @@ makePosColumns <- function(d, datafl, spFolder){
       horPos <- 7
       verPos <- 8
     }
-    if(!("siteID" %in% names(d))){
-      d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
-      d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
-    }
-    
+
     if(TRUE %in% sensor_positions) {
-      d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
-      d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
-      d$collectionDate <- rep(as.character(datafl.splitFolder[[1]][7]), nrow(d))
-      
       # Make sure there is a start/end column, if not create one with NAs
       if("start" %in% names(d) & "end" %in% names(d)) {
         d <- d 
@@ -70,10 +62,18 @@ makePosColumns <- function(d, datafl, spFolder){
         d$referenceEnd <- rep(NA, nrow(d))
       }
       d <- d %>%
+        dplyr::mutate(domainID = as.character(unlist(datafl.splitFolder)[2]),
+                      siteID = as.character(unlist(datafl.splitFolder)[3]),
+                      collectionDate = as.character(unlist(datafl.splitFolder)[7])) %>%
         dplyr::select(domainID, siteID, collectionDate, `HOR.VER`, start, end,
                       referenceStart, referenceEnd, xOffset, yOffset, zOffset, 
                       pitch, roll, azimuth, referenceLatitude, referenceLongitude, referenceElevation)
     } else {
+      
+      if(!("siteID" %in% names(d))){
+        d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
+        d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
+      }
       d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
       d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
       d$horizontalPosition <- as.character(d$horizontalPosition)
