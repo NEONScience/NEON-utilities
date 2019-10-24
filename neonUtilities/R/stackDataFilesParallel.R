@@ -51,7 +51,7 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
   if(length(datafls) == 1){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     file.copy(from = datafls[1][[1]], to = "/stackedFiles")
-    }
+  }
   
   # if there is more than one data file, stack files
   if(length(datafls) > 1){
@@ -108,13 +108,13 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
       directories_size <- sum(file.info(directories)$size)
       contains_1minute <- grepl(list.files(directories, recursive = TRUE), pattern = "1_minute")
       
-      if(directories_size >= 100 || length(which(contains_1minute == TRUE)) >= 50) {
+      if(directories_size >= 25000 || length(which(contains_1minute == TRUE)) >= 50) {
         cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
         nCores <- parallel::detectCores()
         writeLines(paste0("Parallelizing stacking operation across ", parallel::detectCores(), " cores."))
       } else {
         cl <- parallel::makeCluster(getOption("cl.cores", nCores)) 
-        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization, please see forceParallel to run stacking operation across multiple cores./n Running on single core."))
+        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization, please see forceParallel to run stacking operation across multiple cores. Running on single core."))
       }
     }
     
@@ -124,6 +124,7 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
     for(i in 1:length(tables)){
       if(!file.exists(paste0(folder, "/stackedFiles/", tables[i], ".csv")) && forceStack == FALSE  ||
          file.exists(paste0(folder, "/stackedFiles/", tables[i], ".csv")) && forceStack == TRUE) {
+        
         tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
         variables <- getVariables(varpath)  # get the variables from the chosen variables file
         
@@ -136,30 +137,35 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
           suppressPackageStartupMessages(require(tidyverse))
           suppressPackageStartupMessages(require(data.table))
           
-          if((length(tbltype) > 0 && tbltype == "site-all")){
+          if(length(tbltype) > 0 && tbltype == "site-all"){
             sites <- unique(substr(tblnames, 10, 13))
             sites <- sites[order(sites)]
             
             sitefls <- x[grep(sites, x)]
             sitenames <- tblnames[grep(sites, tblnames)]
-            df <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8")) %>%
+            
+            if(length(tbltype)>0 && tables_i %in% "sensor_positions") {
+              df <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
+                                                     colClasses = list(character = c('HOR.VER'))))
+              } else {
+                df <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE))
+                }
+              df <- df %>%
               assignClasses(., variables) %>%
               makePosColumns(., sitenames[1], spFolder=x)
-          }
+              }
           
-          if((length(tbltype)==0 && tables_i %in% "sensor_positions")){
-            
-            df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8",
-                                                     colClasses = c("HOV.VER" = "character"))) %>%
+          if(length(tbltype) > 0 && tbltype == "site-date") { 
+            if(length(tbltype)==0 && tables_i %in% "sensor_positions") {
+              df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
+                                                     colClasses = list(character = c('HOR.VER'))))
+            } else {
+              df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE))
+            }
+            df <- df %>%
               assignClasses(., variables) %>%
               makePosColumns(., tblnames, spFolder=x)
-          }
-          if((length(tbltype) > 0 && tbltype == "site-date")){
-            
-            df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8")) %>%
-              assignClasses(., variables) %>%
-              makePosColumns(., tblnames, spFolder=x)
-          }
+            }
           return(df)
         },
         tables_i=tables[i], variables=variables, tblfls=tblfls,
@@ -167,12 +173,14 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
         makePosColumns=makePosColumns, folder=folder,
         messages=messages, tbltype=tbltype, cl=cl
         ))
-        
         data.table::fwrite(df, paste0(folder, "/stackedFiles/", tables[i], ".csv"), nThread = nCores)
-        invisible(rm(df))    
+
+        invisible(rm(df))
+        
       } else {
         writeLines(paste0("Skipping ", tables[i], " because ", paste0(folder, "/stackedFiles/", tables[i], ".csv"), " already exists."))
       }
     }
   }
+  return(nCores)
 }
