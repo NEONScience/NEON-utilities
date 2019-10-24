@@ -85,9 +85,6 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   
   #### If all checks pass, unzip and stack files ####
   envt <- 0
-  
-  zips_exist <- identical(substr(grep(list.files(filepath), pattern = '*.zip', value=TRUE), 1, nchar(grep(list.files(filepath), pattern = '*.zip', value=TRUE))-4), 
-                          grep(list.files(filepath), pattern = 'stack|*.zip', inv=TRUE, value=TRUE))
   if(folder==FALSE) {
     if(is.na(savepath)){savepath <- root_directory} # Changed the language to 'root_directory' bc this object is reused
     if(savepath=="envt") {
@@ -95,12 +92,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       envt <- 1
     }
     orig <- list.files(savepath)
-    if(FALSE %in% zips_exist) {
-      if(length(grep(files, pattern = ".zip")) > 0){
-        unzipZipfile(zippath = filepath, outpath = savepath, level = "all")
-      }
-    } else {
-      writeLines("Skipping the unzipping procedure because these files have already been unpacked.")
+    if(length(grep(files, pattern = ".zip")) > 0){
+      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all")
     }
   }
   
@@ -111,21 +104,17 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       envt <- 1
     }
     orig <- list.files(savepath)
-    if(FALSE %in% zips_exist) {
-      if(length(grep(files, pattern = ".zip")) > 0){
-        unzipZipfile(zippath = filepath, outpath = savepath, level = "in")
-      } else {
-        if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
-          if(!dir.exists(savepath)){dir.create(savepath)}
-          for(i in files) {
-            file.copy(paste(filepath, i, sep="/"), savepath)
-          }
+    if(length(grep(files, pattern = ".zip")) > 0){
+      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in")
+    } else {
+      if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
+        if(!dir.exists(savepath)){dir.create(savepath)}
+        for(i in files) {
+          file.copy(paste(filepath, i, sep="/"), savepath)
         }
       }
-    } else {
-      writeLines("Skipping the unzipping procedure because these files have already been unpacked.")
-      }
     }
+  } 
 
   stackDataFilesParallel(savepath, nCores, forceParallel, forceStack)
   getReadmePublicationDate(savepath,
