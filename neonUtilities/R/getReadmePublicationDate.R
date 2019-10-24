@@ -53,21 +53,21 @@ getReadmePublicationDate <- function(savepath, out_filepath, forceStack) {
       
       pub_date_str <- suppressWarnings(
         suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')) %>%
-                           dplyr::filter(str_detect(X1, 'Date-Time for Data Publication'))))
+                           dplyr::filter(stringr::str_detect(X1, 'Date-Time for Data Publication'))))
       
       tmp_pub_date_df <- pub_date_str %>%
         dplyr::mutate(publication_date = lubridate::ymd_hm(stringr::str_remove(.$X1, 'Date-Time for Data Publication: ')),
-                      domain= as_factor(splitter[2]),
-                      site = as_factor(splitter[3]),
-                      dp_id = as_factor(paste(splitter[4:6], collapse = '.')), 
-                      readme_filename = as_factor(split)) %>%
+                      domain= as.factor(splitter[2]),
+                      site = as.factor(splitter[3]),
+                      dp_id = as.factor(paste(splitter[4:6], collapse = '.')), 
+                      readme_filename = as.factor(split)) %>%
         dplyr::select(-X1, -X2)
       
       return(tmp_pub_date_df)
     }))
     txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]])
     
-    write_lines(txt_file, out_filepath_name)
+    readr::write_lines(txt_file, out_filepath_name)
     cat("\n", file = out_filepath_name, append=TRUE)
     cat("\n", file = out_filepath_name, append=TRUE)
     cat("POST STACKING README DOCUMENTATION\n", file = out_filepath_name, append=TRUE)
@@ -75,7 +75,7 @@ getReadmePublicationDate <- function(savepath, out_filepath, forceStack) {
     cat("\n", file = out_filepath_name, append=TRUE)
     cat("Compiled list of the data publication record of the files stacked.\nEach row contains information specific to a layer in the stack.\n\nFrom left to right, the publication date, domain, site, data product ID, and original readme filenames are listed.\n\n", 
         file = out_filepath_name, append=TRUE)
-    write.table(pub_date_df, file=out_filepath_name, 
+    utils::write.table(pub_date_df, file=out_filepath_name, 
                 sep=",", append=TRUE, row.names=FALSE, col.names=FALSE, quote = FALSE)
   } else {
     writeLines("Skipping ReadMe documentation")
