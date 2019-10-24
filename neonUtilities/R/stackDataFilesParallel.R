@@ -119,7 +119,7 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
     }
     
     # If error, crash, or completion , closes all clusters
-    on.exit(parallel::stopCluster(cl))  
+   suppressWarnings(on.exit(parallel::stopCluster(cl)))
     
     for(i in 1:length(tables)){
       if(!file.exists(paste0(folder, "/stackedFiles/", tables[i], ".csv")) && forceStack == FALSE  ||
@@ -132,55 +132,48 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
         tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
         tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
         
-        df <- do.call(rbind, pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
+        stackedDf <- do.call(rbind, pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
                                                                 makePosColumns, folder, tbltype, messages) {
           suppressPackageStartupMessages(require(tidyverse))
           suppressPackageStartupMessages(require(data.table))
           
-          if(length(tbltype) > 0 && tbltype == "site-all"){
-            sites <- unique(substr(tblnames, 10, 13))
-            sites <- sites[order(sites)]
-            
-            sitefls <- x[grep(sites, x)]
-            sitenames <- tblnames[grep(sites, tblnames)]
-            
-            if(length(tbltype)>0 && tables_i %in% "sensor_positions") {
-              df <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                                     colClasses = list(character = c('HOR.VER'))))
-              } else {
-                df <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE))
-                }
-              df <- df %>%
-              assignClasses(., variables) %>%
-              makePosColumns(., sitenames[1], spFolder=x)
-              }
+          if(length(tbltype) > 0) {
+            if(tbltype == "site-all") {
+              sites <- unique(substr(tblnames, 10, 13))
+              sites <- sites[order(sites)]
+              
+              sitefls <- x[grep(sites, x)]
+              sitenames <- tblnames[grep(sites, tblnames)]
+              
+              stackedDf <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8")) %>%
+                assignClasses(., variables) %>%
+                makePosColumns(., sitenames[1], spFolder=x)
+            }
+            if(tbltype == "site-date") {
+              stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
+                assignClasses(., variables) %>%
+                makePosColumns(., tblnames, spFolder=x)
+            }
+          }
           
-          if(length(tbltype) > 0 && tbltype == "site-date") { 
-            if(length(tbltype)==0 && tables_i %in% "sensor_positions") {
-              df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                                     colClasses = list(character = c('HOR.VER'))))
-            } else {
-              df <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE))
-            }
-            df <- df %>%
-              assignClasses(., variables) %>%
-              makePosColumns(., tblnames, spFolder=x)
-            }
-          return(df)
+          if((length(tbltype)==0) || tables_i %in% "sensor_positions") {
+              stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
+                                                     colClasses = list(character = c('HOR.VER')))) %>%
+                makePosColumns(., tblnames, spFolder=x)
+          }
+          return(stackedDf)
         },
         tables_i=tables[i], variables=variables, tblfls=tblfls,
         tblnames=tblnames, assignClasses=assignClasses,
         makePosColumns=makePosColumns, folder=folder,
         messages=messages, tbltype=tbltype, cl=cl
         ))
-        data.table::fwrite(df, paste0(folder, "/stackedFiles/", tables[i], ".csv"), nThread = nCores)
-
-        invisible(rm(df))
         
+        data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"), nThread = nCores)
+        invisible(rm(stackedDf))
       } else {
         writeLines(paste0("Skipping ", tables[i], " because ", paste0(folder, "/stackedFiles/", tables[i], ".csv"), " already exists."))
       }
     }
   }
-  return(nCores)
 }
