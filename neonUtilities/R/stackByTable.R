@@ -42,7 +42,8 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1, forceParallel=FALSE, forceStack=FALSE){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, 
+                         nCores=1, forceParallel=FALSE, forceStack=FALSE){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -83,6 +84,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
   
   #### If all checks pass, unzip and stack files ####
+  envt <- 0
+  
   zips_exist <- identical(substr(grep(list.files(filepath), pattern = '*.zip', value=TRUE), 1, nchar(grep(list.files(filepath), pattern = '*.zip', value=TRUE))-4), 
                           grep(list.files(filepath), pattern = 'stack|*.zip', inv=TRUE, value=TRUE))
   if(folder==FALSE) {
@@ -124,10 +127,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       }
     }
 
-  envt <- 0
-  root_directory <- substr(filepath, 1, nchar(filepath)-4)
-  
-  stackDataFilesParallel(savepath, nCores, forceParallel, forceStack)
+  nCores <- stackDataFilesParallel(savepath, nCores, forceParallel, forceStack)
   getReadmePublicationDate(savepath, 
                            out_filepath = paste(savepath, "stackedFiles", sep="/"), forceStack)
   
@@ -142,12 +142,20 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       if(substring(i, nchar(i)-3, nchar(i))!=".csv") {
         next
       } else {
-        fls[[ind]] <- utils::read.delim(paste(savepath, "stackedFiles", i, sep="/"), sep=",")
-        names(fls)[ind] <- substring(i, 1, nchar(i)-4)
+        if(i == "sensor_positions.csv") {
+          fls[[ind]] <- suppressWarnings(data.table::fread(paste(savepath, "stackedFiles", i, sep="/"), header=TRUE, 
+                                                           encoding="UTF-8", keepLeadingZeros = TRUE,
+                                                           colClasses = list(character = c('HOR.VER'))))
+          names(fls)[ind] <- substring(i, 1, nchar(i)-4)
+        } else {
+          fls[[ind]] <- suppressWarnings(data.table::fread(paste(savepath, "stackedFiles", i, sep="/"),
+                                                           header=TRUE, encoding="UTF-8"))
+          names(fls)[ind] <- substring(i, 1, nchar(i)-4)
+        }
       }
     }
     return(fls)
     unlink(paste(savepath, "stackedFiles", sep="/"))
   }
-  
+
 }
