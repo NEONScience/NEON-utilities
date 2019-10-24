@@ -1,0 +1,69 @@
+##############################################################################################
+#' @title Unzip a zip file either at just the top level or recursively through the file
+
+#' @author
+#' Christine Laney \email{claney@battelleecology.org}
+#' Claire Lunch \email{clunch@battelleecology.org}
+
+#' @description
+#' Unzip a zip file either at just the top level or recursively through the file
+#'
+#' @param zippath The filepath of the input file
+#' @param outpath The name of the folder to save unpacked files to
+#' @param level Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively,
+#' or only files 'in' the folder specified
+
+#' @references
+#' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+
+# Changelog and author contributions / copyrights
+#   2017-07-02 (Christine Laney): Original creation of function
+#   2017-09-28 (Claire Lunch): Addition of option for files downloaded using API (via zipsByProduct())
+#   2018-04-03 (Christine Laney): Replacement of line-by-line message of unzipping files with a progress bar
+##############################################################################################
+
+unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
+
+  if(level == "all"){
+    utils::unzip(zipfile = zippath, exdir=outpath)
+    zps <- listZipfiles(zippath)
+    writeLines(paste0("Unpacking zip files using ", parallel::detectCores(), " cores."))
+    
+    if(length(zps) >= 1){
+      
+      cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+      suppressWarnings(on.exit(parallel::stopCluster(cl)))
+      
+      pbapply::pblapply(zps, function(z, outpath) {
+        o <- paste0(outpath, "/", basename(unlist(z)))
+        utils::unzip(o, exdir=substr(o, 1, nchar(o)-4))
+        if (file.exists(o)) file.remove(o)
+      },
+      outpath=outpath, cl=cl)
+    } else writeLines("This zip file doesn't contain monthly data packages")
+  }
+
+  if(level == "in"){
+    zps <- as.list(grep(list.files(zippath, full.names=TRUE), pattern = '*.zip', value=TRUE))
+    writeLines(paste0("Unpacking zip files using ", parallel::detectCores(), " cores."))
+    
+    if(length(zps) >= 1){
+      
+      cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+      suppressWarnings(on.exit(parallel::stopCluster(cl)))
+      
+      pbapply::pblapply(zps, function(z, outpath) {
+        o <- paste0(outpath, "/", basename(unlist(z)))
+        if(!file.exists(substr(o, 1, nchar(o)-4))) {
+          utils::unzip(z, exdir=substr(o, 1, nchar(o)-4))
+          if (file.exists(z)) file.remove(z)
+        } else {
+          writeLines(paste0("Skipping ",  z, " because these files have already been unpacked."))
+          }
+        },
+        outpath=outpath, cl=cl)
+      } else {
+        writeLines("This zip file doesn't contain monthly data packages")
+    }
+  }
+}
