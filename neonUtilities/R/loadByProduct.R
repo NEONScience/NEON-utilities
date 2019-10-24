@@ -37,7 +37,7 @@
 ##############################################################################################
 
 loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic", 
-                          avg="all", check.size=TRUE) {
+                          avg="all", check.size=TRUE, nCores=1, forceParallel=FALSE, forceStack=FALSE) {
   
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -68,7 +68,7 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   
   # stack and load the downloaded files using stackByTable
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""), 
-                      savepath="envt", folder=T)
+                      savepath="envt", folder=TRUE, nCores, forceParallel, forceStack)
   return(out)
 
 }
