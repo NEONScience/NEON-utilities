@@ -25,7 +25,7 @@
 #     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format. Adjusted script to stack properly.
 ##############################################################################################
 
-stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
+stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
@@ -59,9 +59,6 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
     tables <- findTablesUnique(names(datafls), ttypes)
-    if(TRUE %in% grepl('sensor_positions', names(datafls))) {
-      tables <- c(tables, 'sensor_positions')
-    }
     messages <- character()
     
     # find external lab tables (lab-current, lab-all) and copy the first file from each lab into stackedFiles
@@ -83,16 +80,39 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
     
     # copy variables and validation files to /stackedFiles using the most recent collection date 
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')){
-      varpath <- filepaths[grep("variables.20", filepaths)[max(length(filepaths[grep("variables.20", filepaths)]))]]
+      varpath <- filepaths[grep("variables.20", filepaths)] %>%
+        .[max(length(.))]
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
       messages <- c(messages, "Copied the first available variable definition file to /stackedFiles and renamed as variables.csv")
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
-      valpath <- filepaths[grep("validation", filepaths)[max(length(filepaths[grep("validation", filepaths)]))]]
+      valpath <- filepaths[grep("validation", filepaths)] %>%
+        .[max(length(.))]
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
       messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as validation.csv")
+    }
+    
+    if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
+      sppath <- filepaths[grep("sensor_position", filepaths)]
+      site_name <- unique(stringr::str_extract(basename(sppath), "[[:alpha:]]{4}.[[:alpha:]]{2}")) %>%
+        substring(., 1, nchar(.)-3)
+      
+      stackedDf <- do.call(rbind, pbapply::pblapply(as.list(site_name), function(x, sppath, makePosColumns) {
+        sites <- sppath[grep(x, sppath)[max(length(sppath[grep(x, sppath)]))]]
+        tblnames <- basename(sites)
+        stackedDf <- suppressWarnings(data.table::fread(sites, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
+                                                        colClasses = list(character = c('HOR.VER')))) %>%
+          makePosColumns(., tblnames, spFolder=sites)
+        return(stackedDf)
+      },
+      sppath=sppath,
+      makePosColumns=makePosColumns))
+      
+      data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/sensor_positions.csv"))
+      invisible(rm(stackedDf))
+      messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as sensor_positions.csv")
     }
     
     if(nCores > parallel::detectCores()) {
@@ -104,76 +124,48 @@ stackDataFilesParallel <- function(folder, nCores, forceParallel, forceStack){
     if(forceParallel == TRUE) {
       cl <- parallel::makeCluster(getOption("cl.cores", nCores))
     } else {
-      directories <- grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", inv=TRUE, value=TRUE)
-      directories_size <- sum(file.info(directories)$size)
-      contains_1minute <- grepl(list.files(directories, recursive = TRUE), pattern = "1_minute")
-      
-      if(directories_size >= 25000 || length(which(contains_1minute == TRUE)) >= 50) {
+      directories <- sum(file.info(grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", inv=TRUE, value=TRUE))$size)
+      if(directories >= 25000) {
         cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
         nCores <- parallel::detectCores()
         writeLines(paste0("Parallelizing stacking operation across ", parallel::detectCores(), " cores."))
       } else {
-        cl <- parallel::makeCluster(getOption("cl.cores", nCores)) 
+        cl <- parallel::makeCluster(getOption("cl.cores", nCores))
         writeLines(paste0("File requirements do not meet the threshold for automatic parallelization, please see forceParallel to run stacking operation across multiple cores. Running on single core."))
       }
     }
     
     # If error, crash, or completion , closes all clusters
-   suppressWarnings(on.exit(parallel::stopCluster(cl)))
+    suppressWarnings(on.exit(parallel::stopCluster(cl)))
     
     for(i in 1:length(tables)){
-      if(!file.exists(paste0(folder, "/stackedFiles/", tables[i], ".csv")) && forceStack == FALSE  ||
-         file.exists(paste0(folder, "/stackedFiles/", tables[i], ".csv")) && forceStack == TRUE) {
+      tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
+      variables <- getVariables(varpath)  # get the variables from the chosen variables file
+      
+      writeLines(paste0("Stacking table ", tables[i]))
+      tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+      tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
+      
+      stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
+                                                      makePosColumns, folder, tbltype, messages) {
+        suppressPackageStartupMessages(require(tidyverse))
+        suppressPackageStartupMessages(require(data.table))
         
-        tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
-        variables <- getVariables(varpath)  # get the variables from the chosen variables file
+        stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
+          assignClasses(., variables) %>%
+          makePosColumns(., tblnames, spFolder=x)
         
-        writeLines(paste0("Stacking table ", tables[i]))
-        tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
-        tblnames <- filenames[grep(paste(".", tables[i], ".", sep=""), filenames, fixed=T)]
-        
-        stackedDf <- do.call(rbind, pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
-                                                                makePosColumns, folder, tbltype, messages) {
-          suppressPackageStartupMessages(require(tidyverse))
-          suppressPackageStartupMessages(require(data.table))
-          
-          if(length(tbltype) > 0) {
-            if(tbltype == "site-all") {
-              sites <- unique(substr(tblnames, 10, 13))
-              sites <- sites[order(sites)]
-              
-              sitefls <- x[grep(sites, x)]
-              sitenames <- tblnames[grep(sites, tblnames)]
-              
-              stackedDf <- suppressWarnings(data.table::fread(sitefls[1], header=TRUE, encoding="UTF-8")) %>%
-                assignClasses(., variables) %>%
-                makePosColumns(., sitenames[1], spFolder=x)
-            }
-            if(tbltype == "site-date") {
-              stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
-                assignClasses(., variables) %>%
-                makePosColumns(., tblnames, spFolder=x)
-            }
-          }
-          
-          if((length(tbltype)==0) || tables_i %in% "sensor_positions") {
-              stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                                     colClasses = list(character = c('HOR.VER')))) %>%
-                makePosColumns(., tblnames, spFolder=x)
-          }
-          return(stackedDf)
-        },
-        tables_i=tables[i], variables=variables, tblfls=tblfls,
-        tblnames=tblnames, assignClasses=assignClasses,
-        makePosColumns=makePosColumns, folder=folder,
-        messages=messages, tbltype=tbltype, cl=cl
-        ))
-        
-        data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"), nThread = nCores, showProgress=TRUE)
-        invisible(rm(stackedDf))
-      } else {
-        writeLines(paste0("Skipping ", tables[i], " because ", paste0(folder, "/stackedFiles/", tables[i], ".csv"), " already exists."))
-      }
+        return(stackedDf)
+      },
+      tables_i=tables[i], variables=variables, tblfls=tblfls,
+      tblnames=tblnames, assignClasses=assignClasses,
+      makePosColumns=makePosColumns, folder=folder,
+      messages=messages, tbltype=tbltype
+      , cl=cl
+      )
+      data.table::fwrite(do.call(rbind, stackedDf), paste0(folder, "/stackedFiles/", tables[i], ".csv"),
+                         nThread = nCores)
+      invisible(rm(stackedDf))
     }
   }
 }
