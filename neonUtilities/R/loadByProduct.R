@@ -37,7 +37,7 @@
 ##############################################################################################
 
 loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic", 
-                          avg="all", check.size=TRUE, nCores=1, forceParallel=FALSE, forceStack=FALSE) {
+                          avg="all", check.size=TRUE, nCores=1, forceParallel=FALSE) {
   
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -45,7 +45,7 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
+  if(regexpr("DP[1-4]{1}.[0-9]{5}.001", dpID)!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
   }
   
@@ -64,13 +64,10 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   
   # pass the request to zipsByProduct() to download
   zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package, 
-                avg=avg, check.size=check.size, savepath=temppath, load=T)
+                avg=avg, check.size=check.size, savepath=temppath, load=TRUE)
   
   # stack and load the downloaded files using stackByTable
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""), 
-                      savepath="envt", folder=TRUE, nCores, forceParallel, forceStack)
+                      savepath="envt", folder=TRUE, nCores, forceParallel)
   return(out)
-
-}
-
-
+  }
