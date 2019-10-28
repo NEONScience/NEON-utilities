@@ -89,8 +89,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
         stop(paste(avg, " is not a valid averaging interval for ", dpID, 
                    ". Use function getAvg() to find valid averaging intervals.", sep=""))
-    }
-    }
+        }
+      }
     }
   }
   
