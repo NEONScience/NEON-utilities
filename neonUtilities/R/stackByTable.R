@@ -42,8 +42,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, 
-                         nCores=1, forceParallel=FALSE, forceStack=FALSE){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1, forceParallel=FALSE, forceStack=FALSE){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -116,9 +115,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   } 
 
-  stackDataFilesParallel(savepath, nCores, forceParallel, forceStack)
-  getReadmePublicationDate(savepath,
-                           out_filepath = paste(savepath, "stackedFiles", sep="/"), forceStack)
+  stackDataFilesParallel(savepath, nCores, forceParallel)
+  getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"))
   
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
@@ -134,11 +132,10 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
         if(i == "sensor_positions.csv") {
           fls[[ind]] <- suppressWarnings(data.table::fread(paste(savepath, "stackedFiles", i, sep="/"), sep=',', 
                                                            keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
-          names(fls)[ind] <- substring(i, 1, nchar(i)-4)
         } else {
           fls[[ind]] <- suppressWarnings(data.table::fread(paste(savepath, "stackedFiles", i, sep="/"), sep=','))
-          names(fls)[ind] <- substring(i, 1, nchar(i)-4)
         }
+        names(fls)[ind] <- substring(i, 1, nchar(i)-4)
       }
     }
     return(fls)
