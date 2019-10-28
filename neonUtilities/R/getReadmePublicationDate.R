@@ -30,11 +30,9 @@
 
 ##############################################################################################
 
-getReadmePublicationDate <- function(savepath, out_filepath, forceStack) {
+getReadmePublicationDate <- function(savepath, out_filepath) {
   out_filepath_name <- paste0(out_filepath, '/readme.txt')
-  if(!file.exists(out_filepath_name) && forceStack == FALSE ||
-     file.exists(out_filepath_name) && forceStack == TRUE) {
-    
+
     if(file.exists(out_filepath_name)) {
       unlin(out_filepath_name)
     }
@@ -77,7 +75,4 @@ getReadmePublicationDate <- function(savepath, out_filepath, forceStack) {
         file = out_filepath_name, append=TRUE)
     utils::write.table(pub_date_df, file=out_filepath_name, 
                 sep=",", append=TRUE, row.names=FALSE, col.names=FALSE, quote = FALSE)
-  } else {
-    writeLines("Skipping ReadMe documentation")
-  }
 }
