@@ -24,7 +24,7 @@
 
 unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
 
-  if(level == "all"){
+  if(level == "all") {
     utils::unzip(zipfile = zippath, exdir=outpath)
     zps <- listZipfiles(zippath)
     writeLines(paste0("Unpacking zip files using ", parallel::detectCores(), " cores."))
@@ -43,11 +43,11 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
     } else writeLines("This zip file doesn't contain monthly data packages")
   }
 
-  if(level == "in"){
+  if(level == "in") {
     zps <- as.list(grep(list.files(zippath, full.names=TRUE), pattern = '*.zip', value=TRUE))
     writeLines(paste0("Unpacking zip files using ", parallel::detectCores(), " cores."))
     
-    if(length(zps) >= 1){
+    if(length(zps) >= 1) {
       
       cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
