@@ -79,7 +79,7 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     if(length(labTables)>0){
       test <- pbapply::pblapply(as.list(labTables), function(x) {
         labpath <- get_recent_publication(filepaths[grep(x, filepaths)])
-        file.copy(labpath, paste0(folder, "/stackedFiles/", x, ".csv"))
+        file.copy(labpath, paste0(folder, "/stackedFiles/"))
         messages <- c(messages, paste("Copied the most recent publication of", labFiles[l], "to /stackedFiles"))
       })
     }
