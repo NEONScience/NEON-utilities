@@ -31,7 +31,7 @@
 ##############################################################################################
 
 getReadmePublicationDate <- function(savepath, out_filepath) {
-  out_filepath_name <- paste0(out_filepath, '/readme.txt')
+  out_filepath_name <- paste0(out_filepath, '/readme.txts')
 
     if(file.exists(out_filepath_name)) {
       unlink(out_filepath_name)
@@ -51,7 +51,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
       
       pub_date_str <- suppressWarnings(
         suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')) %>%
-                           dplyr::filter(stringr::str_detect(X1, 'Date-Time for Data Publication'))))
+                           dplyr::filter(stringr::str_detect(.$X1, 'Date-Time for Data Publication'))))
 
       tmp_pub_date_df <- pub_date_str %>%
         dplyr::mutate(publication_date = lubridate::ymd_hm(stringr::str_remove(.$X1, 'Date-Time for Data Publication: ')),
@@ -59,7 +59,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
                       site = as.factor(splitter[3]),
                       dp_id = as.factor(paste(splitter[4:6], collapse = '.')), 
                       readme_filename = as.factor(split)) %>%
-        dplyr::select(-X1, -X2)
+        dplyr::select(-.$X1, -.$X2)
       
       return(tmp_pub_date_df)
     }))
