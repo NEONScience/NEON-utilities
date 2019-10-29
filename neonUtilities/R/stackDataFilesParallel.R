@@ -152,7 +152,7 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
         
         stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
           assignClasses(., variables) %>%
-          makePosColumns(., tblnames, spFolder=x)
+          makePosColumns(., tblnames)
         
         return(stackedDf)
       },
