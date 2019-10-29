@@ -31,13 +31,13 @@
 ##############################################################################################
 
 getReadmePublicationDate <- function(savepath, out_filepath) {
-  out_filepath_name <- paste0(out_filepath, '/readme.txts')
+  out_filepath_name <- paste0(out_filepath, '/readme.txt')
 
     if(file.exists(out_filepath_name)) {
       unlink(out_filepath_name)
     }
     writeLines("Stacking ReadMe documentation")
-    readme_list <- list.files(savepath, pattern = '.readme.20',
+    readme_list <- list.files(savepath, pattern = '.readme.',
                               recursive = TRUE, full.names = TRUE)
     
     pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
