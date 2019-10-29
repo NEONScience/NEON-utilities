@@ -298,7 +298,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   # copy zip files into folder
   for(i in 2:nrow(zip.urls)) {
     zip_out <- paste(filepath, zip.urls$name[i], sep="/")
-    if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out))s {
+    if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out)) {
       downloader::download(zip.urls$URL[i], zip_out, 
                            mode="wb", quiet=T)
       utils::setTxtProgressBar(pb, i/(nrow(zip.urls)-1))
