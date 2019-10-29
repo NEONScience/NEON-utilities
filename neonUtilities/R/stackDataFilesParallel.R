@@ -61,23 +61,6 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     tables <- findTablesUnique(names(datafls), ttypes)
     messages <- character()
     
-    # find external lab tables (lab-current, lab-all) and copy the first file from each lab into stackedFiles
-    labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
-    if(length(labTables)>0){
-      labFilePaths <- character()
-      labFiles <- character()
-      for(m in 1:length(labTables)) {
-        labFilePaths <- c(labFilePaths, filepaths[grep(labTables[m], filepaths)])
-        labFiles <- c(labFiles, unique(filenames[grep(labTables[m], filenames)]))
-      }
-      if(length(labFiles)>0){
-        for(l in 1:length(labFiles)){
-          file.copy(from = labFilePaths[grep(labFiles[l], labFilePaths)][1], to = paste0(folder, "/stackedFiles/"))
-          messages <- c(messages, paste("Copied the first available", labFiles[l], "to /stackedFiles"))
-        }
-      }
-    }
-    
     get_recent_publication <- function(in_list) {
       path_dates <-  lapply(in_list, function(x) {
         var_recent <- basename(dirname(x)) %>%
@@ -91,6 +74,20 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       return(out_list)
     }
     
+    # find external lab tables (lab-current, lab-all) and copy the first file from each lab into stackedFiles
+    labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
+    if(length(labTables)>0){
+      test <- pbapply::pblapply(as.list(labTables), function(x) {
+        labpath <- get_recent_publication(filepaths[grep(x, filepaths)])
+        file.copy(labpath, paste0(folder, "/stackedFiles/", x, ".csv"))
+        messages <- c(messages, paste("Copied the most recent publication of", labFiles[l], "to /stackedFiles"))
+      })
+    }
+    
+    if(length(labTables)>0) {
+      tables <- setdiff(tables, labTables)
+    }
+
     # copy variables and validation files to /stackedFiles using the most recent collection date 
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
       varpath <- get_recent_publication(filepaths[grep("variables.20", filepaths)])
