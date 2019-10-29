@@ -26,8 +26,7 @@
 ##############################################################################################
 
 makePosColumns <- function(d, datafl){
-  globalVariables(names(d))
-  
+
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
 

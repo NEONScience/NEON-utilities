@@ -52,8 +52,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
       pub_date_str <- suppressWarnings(
         suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')) %>%
                            dplyr::filter(stringr::str_detect(X1, 'Date-Time for Data Publication'))))
-      globalVariables(c("X1", "X2"))
-      
+
       tmp_pub_date_df <- pub_date_str %>%
         dplyr::mutate(publication_date = lubridate::ymd_hm(stringr::str_remove(.$X1, 'Date-Time for Data Publication: ')),
                       domain= as.factor(splitter[2]),
