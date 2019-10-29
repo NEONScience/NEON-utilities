@@ -34,7 +34,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
   out_filepath_name <- paste0(out_filepath, '/readme.txt')
 
     if(file.exists(out_filepath_name)) {
-      unlin(out_filepath_name)
+      unlink(out_filepath_name)
     }
     writeLines("Stacking ReadMe documentation")
     readme_list <- list.files(savepath, pattern = '.readme.20',
