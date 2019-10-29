@@ -146,8 +146,8 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       
       stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
                                                       makePosColumns) {
-        suppressPackageStartupMessages(require(tidyverse))
-        suppressPackageStartupMessages(require(data.table))
+        requireNamespace(tidyverse)
+        requireNamespace(data.table)
         
         stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
           assignClasses(., variables) %>%
