@@ -82,7 +82,7 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       path_dates <-  lapply(in_list, function(x) {
         var_recent <- basename(dirname(x)) %>%
           gsub(pattern = "\\.csv$", "", .) %>%
-          str_split(., '\\.|T') %>%
+          stringr::str_split(., '\\.|T') %>%
           unlist(.) %>%
           .[max(length(.))-1]
       }) 
@@ -146,8 +146,9 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       
       stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
                                                       makePosColumns) {
-        requireNamespace(tidyverse)
-        requireNamespace(data.table)
+        requireNamespace('dplyr')
+        requireNamespace("magrittr")
+        requireNamespace('data.table')
         
         stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
           assignClasses(., variables) %>%
