@@ -144,8 +144,8 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       writeLines(paste0("Stacking table ", tables[i]))
       tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
       
-      stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, tblfls, tblnames, assignClasses, 
-                                                      makePosColumns, folder, tbltype, messages) {
+      stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
+                                                      makePosColumns) {
         suppressPackageStartupMessages(require(tidyverse))
         suppressPackageStartupMessages(require(data.table))
         
@@ -155,11 +155,10 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
         
         return(stackedDf)
       },
-      tables_i=tables[i], variables=variables, tblfls=tblfls,
-      tblnames=tblnames, assignClasses=assignClasses,
-      makePosColumns=makePosColumns, folder=folder,
-      messages=messages, tbltype=tbltype
-      , cl=cl
+      tables_i=tables[i], variables=variables,
+      assignClasses=assignClasses,
+      makePosColumns=makePosColumns, 
+      cl=cl
       )
       data.table::fwrite(do.call(rbind, stackedDf), paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
