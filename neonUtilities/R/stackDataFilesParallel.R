@@ -123,7 +123,7 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     if(forceParallel == TRUE) {
       cl <- parallel::makeCluster(getOption("cl.cores", nCores))
     } else {
-      directories <- sum(file.info(grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", inv=TRUE, value=TRUE))$size)
+      directories <- sum(file.info(grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", invert=TRUE, value=TRUE))$size)
       if(directories >= 25000) {
         cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
         nCores <- parallel::detectCores()
