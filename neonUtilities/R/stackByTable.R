@@ -1,3 +1,5 @@
+utils::globalVariables(names = c("root_directory"))
+
 ##############################################################################################
 #' @title Join data files in a zipped NEON data package by table type
 
