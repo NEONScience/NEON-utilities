@@ -78,41 +78,40 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       }
     }
     
+    get_recent_publication <- function(in_list) {
+      path_dates <-  lapply(in_list, function(x) {
+        var_recent <- basename(dirname(x)) %>%
+          gsub(pattern = "\\.csv$", "", .) %>%
+          str_split(., '\\.|T') %>%
+          unlist(.) %>%
+          .[max(length(.))-1]
+      }) 
+      out_list <- in_list[grep(max(unlist(path_dates)), in_list)] %>%
+        .[max(length(.))] 
+      return(out_list)
+    }
+    
     # copy variables and validation files to /stackedFiles using the most recent collection date 
-    if(TRUE %in% stringr::str_detect(filepaths,'variables.20')){
-      varpath <- filepaths[grep("variables.20", filepaths)] %>%
-        .[max(length(.))]
+    if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
+      varpath <- get_recent_publication(filepaths[grep("variables.20", filepaths)])
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
-      messages <- c(messages, "Copied the first available variable definition file to /stackedFiles and renamed as variables.csv")
+      messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles and renamed as variables.csv")
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
-      valpath <- filepaths[grep("validation", filepaths)] %>%
-        .[max(length(.))]
+      valpath <- get_recent_publication(filepaths[grep("validation", filepaths)])
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
-      messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as validation.csv")
+      messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles and renamed as validation.csv")
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
-      sppath <- filepaths[grep("sensor_position", filepaths)]
-      site_name <- unique(stringr::str_extract(basename(sppath), "[[:alpha:]]{4}.[[:alpha:]]{2}")) %>%
-        substring(., 1, nchar(.)-3)
-      
-      stackedDf <- do.call(rbind, pbapply::pblapply(as.list(site_name), function(x, sppath, makePosColumns) {
-        sites <- sppath[grep(x, sppath)[max(length(sppath[grep(x, sppath)]))]]
-        tblnames <- basename(sites)
-        stackedDf <- suppressWarnings(data.table::fread(sites, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                                        colClasses = list(character = c('HOR.VER')))) %>%
-          makePosColumns(., tblnames, spFolder=sites)
-        return(stackedDf)
-      },
-      sppath=sppath,
-      makePosColumns=makePosColumns))
-      
-      data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/sensor_positions.csv"))
-      invisible(rm(stackedDf))
-      messages <- c(messages, "Copied the first available validation file to /stackedFiles and renamed as sensor_positions.csv")
+      sppath <- get_recent_publication(filepaths[grep("sensor_position", filepaths)])
+      sppath <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
+                                  colClasses = list(character = c('HOR.VER'))) %>%
+        makePosColumns(., sppath) %>%
+        data.table::fwrite(., paste0(folder, "/stackedFiles/sensor_positions.csv"))
+      messages <- c(messages, "Copied the most recent publication of sensor position file to /stackedFiles and renamed as sensor_positions.csv")
     }
     
     if(nCores > parallel::detectCores()) {
