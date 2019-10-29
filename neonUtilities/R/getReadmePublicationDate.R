@@ -54,7 +54,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
                            dplyr::filter(stringr::str_detect(.$X1, 'Date-Time for Data Publication'))))
 
       tmp_pub_date_df <- pub_date_str %>%
-        dplyr::mutate(publication_date = lubridate::ymd_hm(stringr::str_remove(.$X1, 'Date-Time for Data Publication: ')),
+        dplyr::mutate(publication_date = lubridate::ymd_hm(stringr::str_remove(X1, 'Date-Time for Data Publication: ')),
                       domain= as.factor(splitter[2]),
                       site = as.factor(splitter[3]),
                       dp_id = as.factor(paste(splitter[4:6], collapse = '.')), 
