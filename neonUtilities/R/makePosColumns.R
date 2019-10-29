@@ -25,11 +25,10 @@
 #   2019-10-17 (Nathan Mietkiewicz): Add domainID, siteID, and collection YYYY-MM columns for sensor position files
 ##############################################################################################
 
-makePosColumns <- function(d, datafl, spFolder){
+makePosColumns <- function(d, datafl){
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
-  datafl.splitFolder <- strsplit(x = basename(dirname(spFolder))[length(basename(dirname(spFolder)))], split = "\\.")
-  
+
   sensor_positions <- grepl('sensor_positions', datafl.splitName)
   
   if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){return(d)}
@@ -43,11 +42,6 @@ makePosColumns <- function(d, datafl, spFolder){
     if(length(datafl.splitName[[1]]) == 14){
       horPos <- 7
       verPos <- 8
-    }
-    if(!("siteID" %in% names(d))){
-      d <- d %>%
-        dplyr::mutate(domainID = as.character(unlist(datafl.splitFolder)[2]),
-                      siteID = as.character(unlist(datafl.splitFolder)[3]))
     }
     if(TRUE %in% sensor_positions) {
       # Make sure there is a start/end column, if not create one with NAs
@@ -66,12 +60,15 @@ makePosColumns <- function(d, datafl, spFolder){
         d$referenceEnd <- rep(NA, nrow(d))
       }
       d <- d %>%
-        dplyr::mutate(collectionDate = as.character(unlist(datafl.splitFolder)[7])) %>%
-        dplyr::select(domainID, siteID, collectionDate, `HOR.VER`, start, end,
+        dplyr::select(`HOR.VER`, start, end,
                       referenceStart, referenceEnd, xOffset, yOffset, zOffset, 
                       pitch, roll, azimuth, referenceLatitude, referenceLongitude, referenceElevation)
     } else {
-    
+      if(!("siteID" %in% names(d))){
+        d <- d %>%
+          dplyr::mutate(domainID = as.character(unlist(datafl.splitName)[2]),
+                        siteID = as.character(unlist(datafl.splitName)[3]))
+      }
       d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
       d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
       d$horizontalPosition <- as.character(d$horizontalPosition)
