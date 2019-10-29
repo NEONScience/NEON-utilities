@@ -69,10 +69,8 @@ makePosColumns <- function(d, datafl){
           dplyr::mutate(domainID = as.character(unlist(datafl.splitName)[2]),
                         siteID = as.character(unlist(datafl.splitName)[3]))
       }
-      d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
-      d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
-      d$horizontalPosition <- as.character(d$horizontalPosition)
-      d$verticalPosition <- as.character(d$verticalPosition)
+      d$horizontalPosition <- as.character(rep(as.character(datafl.splitName[[1]][horPos]), nrow(d)))
+      d$verticalPosition <- as.character(rep(as.character(datafl.splitName[[1]][verPos]), nrow(d)))
       d <- data.table::setcolorder(d, c((nc+1):(nc+4),1:nc))
     }
   }
