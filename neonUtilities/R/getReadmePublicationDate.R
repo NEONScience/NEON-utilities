@@ -63,7 +63,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
                       site = as.factor(splitter[3]),
                       dp_id = as.factor(paste(splitter[4:6], collapse = '.')), 
                       readme_filename = as.factor(split)) %>%
-        dplyr::select(-.$X1, -.$X2)
+        dplyr::select(-X1, -X2)
       
       return(tmp_pub_date_df)
     }))
