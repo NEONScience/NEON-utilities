@@ -82,9 +82,6 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
         file.copy(labpath, paste0(folder, "/stackedFiles/"))
         messages <- c(messages, paste("Copied the most recent publication of", basename(labpath), "to /stackedFiles"))
       })
-    }
-    
-    if(length(labTables)>0) {
       tables <- setdiff(tables, labTables)
     }
 
