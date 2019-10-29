@@ -1,5 +1,3 @@
-utils::globalVariables(names = c("root_directory"))
-
 ##############################################################################################
 #' @title Join data files in a zipped NEON data package by table type
 
@@ -87,7 +85,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   #### If all checks pass, unzip and stack files ####
   envt <- 0
   if(folder==FALSE) {
-    if(is.na(savepath)){savepath <- root_directory} # Changed the language to 'root_directory' bc this object is reused
+    if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
     if(savepath=="envt") {
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
