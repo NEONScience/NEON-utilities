@@ -136,7 +136,21 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
       
       writeLines(paste0("Stacking table ", tables[i]))
-      tblfls <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+      fflist <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+
+      if(tbltype == "site-all") {
+        sites <- as.list(unique(substr(basename(fflist), 10, 13)))
+      
+        tblfls <- lapply(sites, function(j, fflist) {
+          tbl_list <- basename(fflist)[grep(j, basename(fflist))] %>%
+            .[order(.)] %>%
+            last()
+          out_list <- fflist[grep(tbl_list, fflist)]
+        }, fflist=fflist) 
+      } 
+      if(tbltype == "site-date") {
+        tblfls <- fflist
+      }
       
       stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
                                                       makePosColumns) {
