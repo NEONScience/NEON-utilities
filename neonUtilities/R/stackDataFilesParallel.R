@@ -27,6 +27,10 @@
 
 stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
   
+  requireNamespace('dplyr', quietly = TRUE)
+  requireNamespace("magrittr", quietly = TRUE)
+  requireNamespace('data.table', quietly = TRUE)
+  
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
   ttypes <- table_types
@@ -78,12 +82,13 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
     if(length(labTables)>0){
       test <- pbapply::pblapply(as.list(labTables), function(x) {
-        labpath <- get_recent_publication(filepaths[grep(x, filepaths)])
+          labpath <- get_recent_publication(filepaths[grep(x, filepaths)])
         file.copy(labpath, paste0(folder, "/stackedFiles/"))
         messages <- c(messages, paste("Copied the most recent publication of", basename(labpath), "to /stackedFiles"))
       })
       tables <- setdiff(tables, labTables)
     }
+
 
     # copy variables and validation files to /stackedFiles using the most recent collection date 
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
@@ -116,14 +121,17 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     # All of this is overruled if forceParallel = TRUE
     if(forceParallel == TRUE) {
       cl <- parallel::makeCluster(getOption("cl.cores", nCores))
-    } else {
+      parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
+          } else {
       directories <- sum(file.info(grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", invert=TRUE, value=TRUE))$size)
       if(directories >= 25000) {
         cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+        parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
         nCores <- parallel::detectCores()
         writeLines(paste0("Parallelizing stacking operation across ", parallel::detectCores(), " cores."))
       } else {
-        cl <- parallel::makeCluster(getOption("cl.cores", nCores))
+        parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
+        parallel::clusterExport(cl, library("dplyr", "magrittr", "data.table"))
         writeLines(paste0("File requirements do not meet the threshold for automatic parallelization, please see forceParallel to run stacking operation across multiple cores. Running on single core."))
       }
     }
@@ -156,10 +164,7 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       
       stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
                                                       makePosColumns) {
-        requireNamespace('dplyr', quietly = TRUE)
-        requireNamespace("magrittr", quietly = TRUE)
-        requireNamespace('data.table', quietly = TRUE)
-        
+
         stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
           assignClasses(., variables) %>%
           makePosColumns(., basename(x))
@@ -168,10 +173,10 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       },
       tables_i=tables[i], variables=variables,
       assignClasses=assignClasses,
-      makePosColumns=makePosColumns, 
-      cl=cl
+      makePosColumns=makePosColumns, cl=cl
       )
-      data.table::fwrite(do.call(rbind, stackedDf), paste0(folder, "/stackedFiles/", tables[i], ".csv"),
+
+      data.table::fwrite(do.call(plyr::rbind.fill, stackedDf), paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
       invisible(rm(stackedDf))
     }
