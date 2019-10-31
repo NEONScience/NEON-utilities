@@ -162,7 +162,7 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
         tblfls <- file_list
       }
       
-      stackedDf <- pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
+      stackedDf <- do.call(plyr::rbind.fill, pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
                                                       makePosColumns) {
 
         stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
@@ -174,9 +174,9 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       tables_i=tables[i], variables=variables,
       assignClasses=assignClasses,
       makePosColumns=makePosColumns, cl=cl
-      )
+      ))
 
-      data.table::fwrite(do.call(plyr::rbind.fill, stackedDf), paste0(folder, "/stackedFiles/", tables[i], ".csv"),
+      data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
       invisible(rm(stackedDf))
     }
