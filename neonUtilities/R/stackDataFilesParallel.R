@@ -130,8 +130,8 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
         nCores <- parallel::detectCores()
         writeLines(paste0("Parallelizing stacking operation across ", parallel::detectCores(), " cores."))
       } else {
+        cl <- parallel::makeCluster(getOption("cl.cores", nCores))
         parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
-        parallel::clusterExport(cl, library("dplyr", "magrittr", "data.table"))
         writeLines(paste0("File requirements do not meet the threshold for automatic parallelization, please see forceParallel to run stacking operation across multiple cores. Running on single core."))
       }
     }
