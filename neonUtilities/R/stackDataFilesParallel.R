@@ -145,7 +145,8 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
           base_filename <- basename(file_list)
           tbl_list <- base_filename[grep(j, base_filename)] %>%
             .[order(.)] %>%
-            dplyr::last()
+            .[max(length(.))] 
+          
           out_list <- file_list[grep(tbl_list, file_list)]
         }, file_list=file_list) 
       } 
