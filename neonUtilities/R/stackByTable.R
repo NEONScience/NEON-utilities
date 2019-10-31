@@ -42,7 +42,7 @@
 
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1, forceParallel=FALSE, forceStack=FALSE){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1, forceParallel=FALSE){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -60,7 +60,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   }
   
-  dpID <- substr(basename(files[1]), 15, 27)  ########### ---> Claire, the addition of basename solves the error
+  dpID <- substr(basename(files[1]), 15, 27)  
   package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
   if(package == "anded"){package <- "expanded"}
   
@@ -121,25 +121,21 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
   if(envt==1) {
-    ls <- list.files(paste(savepath, "stackedFiles", sep="/"))
-    fls <- list(length(ls))
-    ind <- 0
-    for(i in unlist(ls)) {
-      ind <- ind+1
-      if(substring(i, nchar(i)-3, nchar(i))!=".csv") {
-        next
-      } else {
-        if(i == "sensor_positions.csv") {
-          fls[[ind]] <- suppressWarnings(data.table::fread(paste(savepath, "stackedFiles", i, sep="/"), sep=',', 
-                                                           keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
+    
+    stacked_files <- list.files(paste(savepath, "stackedFiles", sep="/"), full.names = TRUE)
+
+    stacked_list <- lapply(stacked_files, function(x) {
+      if(basename(x) == "sensor_positions.csv") {
+        fls <- suppressWarnings(data.table::fread(x, sep=',', keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
+      } else if (basename(x) == "readme.txt") {
+        fls <- suppressMessages(readr::read_table(x, col_names = FALSE))
         } else {
-          fls[[ind]] <- suppressWarnings(data.table::fread(paste(savepath, "stackedFiles", i, sep="/"), sep=','))
-        }
-        names(fls)[ind] <- substring(i, 1, nchar(i)-4)
+        fls <- suppressWarnings(data.table::fread(x, sep=','))
       }
-    }
-    return(fls)
-    unlink(paste(savepath, "stackedFiles", sep="/"))
+    })
+    names(stacked_list) <- substring(basename(stacked_files), 1, nchar(basename(stacked_files))-4)
+    return(stacked_list)
+    unlink(stacked_files)
   }
 
 }
