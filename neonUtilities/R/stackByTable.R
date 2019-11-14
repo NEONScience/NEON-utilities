@@ -14,6 +14,8 @@
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
+#' @param nCores The number of cores to parallelize the stacking procedure. By default it is set to a single core.
+#' @param forceParallel If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.
 #' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
 #' @examples
@@ -39,7 +41,8 @@
 #     * Allow user to specify the filepath to save to
 #   2018-05-08 (Christine Laney):
 #     * Remove extranous parameters dpID and package (obtain from data package)
-
+#   2019-11-14 (Nathan Mietkiewicz)
+#     * Parallelized the function
 ##############################################################################################
 
 stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1, forceParallel=FALSE){
