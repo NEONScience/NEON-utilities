@@ -9,6 +9,8 @@
 #' This should result in a small number of large files.
 
 #' @param folder The location of the data
+#' @param nCores The number of cores to parallelize the stacking procedure. By default it is set to a single core.
+#' @param forceParallel If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.
 #' @return One file for each table type is created and written.
 
 #' @references
@@ -23,6 +25,8 @@
 #     * Provide comparison of number of rows expected per stacked table vs number of row in final table
 #   2018-04-13 (Christine Laney):
 #     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format. Adjusted script to stack properly.
+#   2019-11-14 (Nathan Mietkiewicz)
+#     * Parallelized the function
 ##############################################################################################
 
 stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
@@ -64,26 +68,13 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     
     tables <- findTablesUnique(names(datafls), ttypes)
     messages <- character()
-    
-    get_recent_publication <- function(in_list) {
-      path_dates <-  lapply(in_list, function(x) {
-        var_recent <- basename(dirname(x)) %>%
-          gsub(pattern = "\\.csv$", "", .) %>%
-          stringr::str_split(., '\\.|T') %>%
-          unlist(.) %>%
-          .[max(length(.))-1]
-      }) 
-      out_list <- in_list[grep(max(unlist(path_dates)), in_list)] %>%
-        .[max(length(.))] 
-      return(out_list)
-    }
-    
+
     # find external lab tables (lab-current, lab-all) and copy the first file from each lab into stackedFiles
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
     if(length(labTables)>0){
       externalLabs <- unique(basename(list.files(savepath, pattern = labTables, recursive = TRUE)))
       test <- pbapply::pblapply(as.list(externalLabs), function(x) {
-          labpath <- get_recent_publication(filepaths[grep(x, filepaths)])
+        labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
         file.copy(labpath, paste0(folder, "/stackedFiles/"))
         messages <- c(messages, paste("Copied the most recent publication of", basename(labpath), "to /stackedFiles"))
       })
@@ -93,20 +84,20 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
 
     # copy variables and validation files to /stackedFiles using the most recent collection date 
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
-      varpath <- get_recent_publication(filepaths[grep("variables.20", filepaths)])
+      varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
       messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles and renamed as variables.csv")
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
-      valpath <- get_recent_publication(filepaths[grep("validation", filepaths)])
+      valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
       messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles and renamed as validation.csv")
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
-      sppath <- get_recent_publication(filepaths[grep("sensor_position", filepaths)])
+      sppath <- getRecentPublication(filepaths[grep("sensor_position", filepaths)])
       sppath <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
                                   colClasses = list(character = c('HOR.VER'))) %>%
         makePosColumns(., sppath) %>%
