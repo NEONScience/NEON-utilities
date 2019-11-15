@@ -5,7 +5,8 @@
 \title{Get files from NEON API, stack tables, and load into the current environment}
 \usage{
 loadByProduct(dpID, site = "all", startdate = NA, enddate = NA,
-  package = "basic", avg = "all", check.size = TRUE)
+  package = "basic", avg = "all", check.size = TRUE, nCores = 1,
+  forceParallel = FALSE)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
