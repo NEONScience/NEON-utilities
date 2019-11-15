@@ -22,15 +22,20 @@
 #     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format, and the HOR.VER
 #       values given (100.100) are always the same. New HOR and VER columns are not needed in the
 #       stacked product.
+#   2019-10-17 (Nathan Mietkiewicz): Add domainID, siteID, and collection YYYY-MM columns for sensor position files
 ##############################################################################################
 
 makePosColumns <- function(d, datafl){
+
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
-  if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){return(d)}
 
+  sensor_positions <- grepl('sensor_positions', datafl.splitName)
+  
+  if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){return(d)}
+  
   nc <- ncol(d)
-  if(length(datafl.splitName[[1]]) %in% c(12,14)){
+  if(length(datafl.splitName[[1]]) %in% c(12,14) || (TRUE %in% sensor_positions)){
     if(length(datafl.splitName[[1]]) == 12){
       horPos <- 8
       verPos <- 9
@@ -39,17 +44,36 @@ makePosColumns <- function(d, datafl){
       horPos <- 7
       verPos <- 8
     }
-    if(!("siteID" %in% names(d))){
-      d$domainID <- rep(as.character(datafl.splitName[[1]][2]), nrow(d))
-      d$siteID <- rep(as.character(datafl.splitName[[1]][3]), nrow(d))
+    if(TRUE %in% sensor_positions) {
+      # Make sure there is a start/end column, if not create one with NAs
+      if("start" %in% names(d) & "end" %in% names(d)) {
+        d <- d 
+      } else { 
+        d$start <- rep(NA, nrow(d))
+        d$end <- rep(NA, nrow(d))
+      }
+      
+      # Make sure there is a referenceStart/end column, if not create one with NAs
+      if("referenceStart" %in% names(d) & "referenceEnd" %in% names(d)) {
+        d <- d 
+      } else { 
+        d$referenceStart <- rep(NA, nrow(d))
+        d$referenceEnd <- rep(NA, nrow(d))
+      }
+      d <- d %>%
+        dplyr::select(`HOR.VER`, start, end,
+                      referenceStart, referenceEnd, xOffset, yOffset, zOffset, 
+                      pitch, roll, azimuth, referenceLatitude, referenceLongitude, referenceElevation)
+    } else {
+      if(!("siteID" %in% names(d))){
+        d <- d %>%
+          dplyr::mutate(domainID = as.character(unlist(datafl.splitName)[2]),
+                        siteID = as.character(unlist(datafl.splitName)[3]))
+      }
+      d$horizontalPosition <- as.character(rep(as.character(datafl.splitName[[1]][horPos]), nrow(d)))
+      d$verticalPosition <- as.character(rep(as.character(datafl.splitName[[1]][verPos]), nrow(d)))
+      d <- data.table::setcolorder(d, c((nc+1):(nc+4),1:nc))
     }
-    d$horizontalPosition <- rep(as.character(datafl.splitName[[1]][horPos]), nrow(d))
-    d$verticalPosition <- rep(as.character(datafl.splitName[[1]][verPos]), nrow(d))
-    d$horizontalPosition <- as.character(d$horizontalPosition)
-    d$verticalPosition <- as.character(d$verticalPosition)
-    d <- data.table::setcolorder(d, c((nc+1):(nc+4),1:nc))
   }
-
   return(d)
 }
-
