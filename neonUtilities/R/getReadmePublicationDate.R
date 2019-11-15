@@ -9,18 +9,7 @@
 #' This should result in a single text file with a list of all of the publication dates from the ReadMe file.
 
 #' @param savepath The root folder directory where the ReadMe files are located.
-#' @param out_filepath_name The output directory and filename.  
-
-#' @examples
-#' \dontrun{
-#' # To unzip and merge files downloaded from the NEON Data Portal
-#' stackByTable("~/NEON_par.zip")
-#' 
-#' # To unzip and merge files downloaded using zipsByProduct()
-#' stackByTable("~/filesToStack00024", folder=T)
-#' }
-
-#' @export
+#' @param out_filepath The output directory and filename.  
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -40,24 +29,24 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
     if(file.exists(out_filepath_name)) {
       unlink(out_filepath_name)
     }
-    writeLines("Stacking ReadMe documentation")
+    #writeLines("Stacking ReadMe documentation")
     readme_list <- list.files(savepath, pattern = '.readme.',
                               recursive = TRUE, full.names = TRUE)
     
-    pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
-      split <- x %>%
-        stringr::str_split(., '/') %>%
-        unlist() %>%
-        .[max(length(unlist(.)))] 
-      
-      pub_date_str <- suppressWarnings(
-        suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')) %>%
-                           dplyr::filter(stringr::str_detect(X1, 'Date-Time for Data Publication')))) %>%
-        dplyr::mutate(readme_filename = as.factor(split)) %>%
-        dplyr::select(-X1, -X2)
-      
-      return(pub_date_str)
-    }))
+    # pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
+    #   split <- x %>%
+    #     stringr::str_split(., '/') %>%
+    #     unlist() %>%
+    #     .[max(length(unlist(.)))] 
+    #   
+    #   pub_date_str <- suppressWarnings(
+    #     suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')) %>%
+    #                        dplyr::filter(stringr::str_detect(X1, 'Date-Time for Data Publication')))) %>%
+    #     dplyr::mutate(readme_filename = as.factor(split)) %>%
+    #     dplyr::select(-X1, -X2)
+    #   
+    #   return(pub_date_str)
+    # }))
     txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]])
     
     cat("##################################\n", file = out_filepath_name)
@@ -69,8 +58,8 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
     cat("\n", file = out_filepath_name, append=TRUE)
     cat("POST STACKING README DOCUMENTATION\n", file = out_filepath_name, append=TRUE)
     cat("----------------------------------\n", file = out_filepath_name, append=TRUE)
-    cat("\n", file = out_filepath_name, append=TRUE)
-    cat("Each row contains the readme filename used during stackByTable\n", file = out_filepath_name, append=TRUE)
-    cat("\n", file = out_filepath_name, append=TRUE)
-    utils::write.table(pub_date_df, file=out_filepath_name, sep=",", append=TRUE, row.names=FALSE, col.names=FALSE, quote = FALSE)
+    # cat("\n", file = out_filepath_name, append=TRUE)
+    # cat("Each row contains the readme filename used during stackByTable\n", file = out_filepath_name, append=TRUE)
+    # cat("\n", file = out_filepath_name, append=TRUE)
+    # utils::write.table(pub_date_df, file=out_filepath_name, sep=",", append=TRUE, row.names=FALSE, col.names=FALSE, quote = FALSE)
 }

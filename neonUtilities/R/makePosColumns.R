@@ -60,10 +60,10 @@ makePosColumns <- function(d, datafl){
         d$referenceStart <- rep(NA, nrow(d))
         d$referenceEnd <- rep(NA, nrow(d))
       }
-      d <- d %>%
-        dplyr::select(`HOR.VER`, start, end,
-                      referenceStart, referenceEnd, xOffset, yOffset, zOffset, 
-                      pitch, roll, azimuth, referenceLatitude, referenceLongitude, referenceElevation)
+      d <- d[,which(names(d) %in% c('HOR.VER', 'start', 'end', 'referenceStart', 
+                                   'referenceEnd', 'xOffset', 'yOffset', 'zOffset', 
+                                   'pitch', 'roll', 'azimuth', 'referenceLatitude', 
+                                   'referenceLongitude', 'referenceElevation'))]
     } else {
       if(!("siteID" %in% names(d))){
         d <- d %>%
