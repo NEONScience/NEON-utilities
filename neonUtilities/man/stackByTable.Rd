@@ -5,7 +5,8 @@
 \title{Join data files in a zipped NEON data package by table type}
 \usage{
 stackByTable(filepath, savepath = NA, folder = FALSE,
-  saveUnzippedFiles = FALSE, dpID = NA)
+  saveUnzippedFiles = FALSE, dpID = NA, nCores = 1,
+  forceParallel = FALSE)
 }
 \arguments{
 \item{filepath}{The location of the zip file}
@@ -17,6 +18,10 @@ stackByTable(filepath, savepath = NA, folder = FALSE,
 \item{saveUnzippedFiles}{T or F: should the unzipped monthly data folders be retained?}
 
 \item{dpID}{Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility}
+
+\item{nCores}{The number of cores to parallelize the stacking procedure. By default it is set to a single core.}
+
+\item{forceParallel}{If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.}
 }
 \value{
 All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.

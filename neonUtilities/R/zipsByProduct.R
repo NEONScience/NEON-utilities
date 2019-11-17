@@ -89,8 +89,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
         stop(paste(avg, " is not a valid averaging interval for ", dpID, 
                    ". Use function getAvg() to find valid averaging intervals.", sep=""))
-    }
-    }
+        }
+      }
     }
   }
   
@@ -297,9 +297,12 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
   # copy zip files into folder
   for(i in 2:nrow(zip.urls)) {
-    downloader::download(zip.urls$URL[i], paste(filepath, zip.urls$name[i], sep="/"), 
-                         mode="wb", quiet=T)
-    utils::setTxtProgressBar(pb, i/(nrow(zip.urls)-1))
+    zip_out <- paste(filepath, zip.urls$name[i], sep="/")
+    if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out)) {
+      downloader::download(zip.urls$URL[i], zip_out, 
+                           mode="wb", quiet=T)
+      utils::setTxtProgressBar(pb, i/(nrow(zip.urls)-1))
+    }
   }
   utils::setTxtProgressBar(pb, 1)
   close(pb)
