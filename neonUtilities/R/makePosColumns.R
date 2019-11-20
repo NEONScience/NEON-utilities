@@ -75,5 +75,6 @@ makePosColumns <- function(d, datafl){
       d <- data.table::setcolorder(d, c((nc+1):(nc+4),1:nc))
     }
   }
+  d$publicationDate <- as.character(rep(datafl.splitName[[1]][length(datafl.splitName[[1]])-1]), nrow(d))
   return(d)
 }
