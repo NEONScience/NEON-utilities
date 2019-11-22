@@ -126,14 +126,21 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(envt==1) {
     
     stacked_files <- list.files(paste(savepath, "stackedFiles", sep="/"), full.names = TRUE)
+    v <- utils::read.csv(stacked_files[grep('variables', stacked_files)], header=T, stringsAsFactors=F)
 
     stacked_list <- lapply(stacked_files, function(x) {
       if(basename(x) == "sensor_positions.csv") {
         fls <- suppressWarnings(data.table::fread(x, sep=',', keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
-      } else if (basename(x) == "readme.txt") {
+      } else if(basename(x) == "readme.txt") {
         fls <- suppressMessages(readr::read_table(x, col_names = FALSE))
+        } else if(basename(x) %in% c('variables.csv', 'validation.csv')) {
+          fls <- suppressWarnings(data.table::fread(x, sep=','))
         } else {
-        fls <- suppressWarnings(data.table::fread(x, sep=','))
+          fls <- try(readTableNEON(x, v), silent=T)
+          if(class(fls)=='try-error') {
+            fls <- suppressWarnings(data.table::fread(x, sep=','))
+          }
+          return(fls)
       }
     })
     names(stacked_list) <- substring(basename(stacked_files), 1, nchar(basename(stacked_files))-4)

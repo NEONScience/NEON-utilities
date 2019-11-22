@@ -31,6 +31,8 @@
 
 stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
   
+  starttime <- Sys.time()
+  
   requireNamespace('dplyr', quietly = TRUE)
   requireNamespace("magrittr", quietly = TRUE)
   requireNamespace('data.table', quietly = TRUE)
@@ -67,22 +69,23 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
     tables <- findTablesUnique(names(datafls), ttypes)
+    n <- length(tables)
     messages <- character()
 
-    # find external lab tables (lab-current, lab-all) and copy the first file from each lab into stackedFiles
+    # find external lab tables (lab-current, lab-all) and copy the most recently published file from each lab into stackedFiles
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
     if(length(labTables)>0){
-      externalLabs <- unique(basename(list.files(savepath, pattern = labTables, recursive = TRUE)))
+      externalLabs <- unique(names(datafls)[grep(paste(labTables, collapse='|'), names(datafls))])
       test <- pbapply::pblapply(as.list(externalLabs), function(x) {
         labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
         file.copy(labpath, paste0(folder, "/stackedFiles/"))
-        messages <- c(messages, paste("Copied the most recent publication of", basename(labpath), "to /stackedFiles"))
       })
+      messages <- c(messages, paste("Copied the most recent publication of", externalLabs, "to /stackedFiles"))
       tables <- setdiff(tables, labTables)
     }
 
 
-    # copy variables and validation files to /stackedFiles using the most recent collection date 
+    # copy variables and validation files to /stackedFiles using the most recent publication date 
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
@@ -173,4 +176,10 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
       invisible(rm(stackedDf))
     }
   }
+  
+  writeLines(paste("Finished: All of the data are stacked into", n, "tables!"))
+  writeLines(paste0(messages, collapse = "\n"))
+  endtime <- Sys.time()
+  writeLines(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
+  
 }
