@@ -76,14 +76,14 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
     if(length(labTables)>0){
       externalLabs <- unique(names(datafls)[grep(paste(labTables, collapse='|'), names(datafls))])
-      test <- pbapply::pblapply(as.list(externalLabs), function(x) {
+      
+      pbapply::pblapply(as.list(externalLabs), function(x) {
         labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
         file.copy(labpath, paste0(folder, "/stackedFiles/"))
       })
       messages <- c(messages, paste("Copied the most recent publication of", externalLabs, "to /stackedFiles"))
       tables <- setdiff(tables, labTables)
     }
-
 
     # copy variables and validation files to /stackedFiles using the most recent publication date 
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
@@ -100,11 +100,23 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
-      sppath <- getRecentPublication(filepaths[grep("sensor_position", filepaths)])
-      sppath <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                  colClasses = list(character = c('HOR.VER'))) %>%
-        makePosColumns(., sppath) %>%
-        data.table::fwrite(., paste0(folder, "/stackedFiles/sensor_positions.csv"))
+      sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
+      uniqueSites <- unique(basename(sensorPositionList)) %>%
+        str_split('\\.') %>%
+        lapply(`[`, 3) %>%
+        unlist() %>% 
+        unique(.)
+
+      outputSensorPositions <- do.call(rbind, pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
+        
+        sppath <- getRecentPublication(sensorPositionList[grep(x, sensorPositionList)])
+        outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
+                                    colClasses = list(character = c('HOR.VER'))) %>%
+          makePosColumns(., sppath, x)
+        return(outTbl)
+      }, sensorPositionList=sensorPositionList))
+      
+      data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions.csv"))
       messages <- c(messages, "Copied the most recent publication of sensor position file to /stackedFiles and renamed as sensor_positions.csv")
     }
     
@@ -137,21 +149,18 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     for(i in 1:length(tables)){
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
-      
+
       writeLines(paste0("Stacking table ", tables[i]))
       file_list <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
 
       if(tbltype == "site-all") {
         sites <- as.list(unique(substr(basename(file_list), 10, 13)))
-      
+
         tblfls <- lapply(sites, function(j, file_list) {
-          base_filename <- basename(file_list)
-          tbl_list <- base_filename[grep(j, base_filename)] %>%
+          tbl_list <- file_list[grep(j, file_list)] %>%
             .[order(.)] %>%
             .[max(length(.))] 
-          
-          out_list <- file_list[grep(tbl_list, file_list)]
-        }, file_list=file_list) 
+          }, file_list=file_list) 
       } 
       if(tbltype == "site-date") {
         tblfls <- file_list
