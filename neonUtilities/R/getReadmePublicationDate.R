@@ -51,9 +51,9 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
   txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]]) %>%
     .[!stringr::str_detect(., pattern="Date-Time")]
   
-  cat("##################################\n", file = out_filepath_name)
-  cat("########### Attention ############\n", file = out_filepath_name, append=TRUE)
-  cat('Disclaimer: this is a compiled version and may have some information from specific site-dates based on readme files used during stackByTable.\n', file = out_filepath_name, append=TRUE)
+  cat("###################################\n", file = out_filepath_name)
+  cat("########### Disclaimer ############\n", file = out_filepath_name, append=TRUE)
+  cat('This is the most recent readme publication based on all site-date combinations used during stackByTable.\nSome information may be date-site specific, but all general details reflect metadata for the data product.\nAll files used during stacking are listed at the bottom of this document, which includes the data publication dates.\n', file = out_filepath_name, append=TRUE)
   cat("##################################\n", file = out_filepath_name, append=TRUE)
   cat("\n", file = out_filepath_name, append=TRUE)
   readr::write_lines(txt_file, out_filepath_name, append=TRUE)
