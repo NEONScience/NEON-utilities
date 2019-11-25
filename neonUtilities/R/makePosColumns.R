@@ -25,8 +25,10 @@
 #   2019-10-17 (Nathan Mietkiewicz): Add domainID, siteID, and collection YYYY-MM columns for sensor position files
 ##############################################################################################
 
-makePosColumns <- function(d, datafl){
-
+makePosColumns <- function(d, datafl, site){
+  requireNamespace('dplyr', quietly = TRUE)
+  requireNamespace("magrittr", quietly = TRUE)
+  
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
 
@@ -60,10 +62,11 @@ makePosColumns <- function(d, datafl){
         d$referenceStart <- rep(NA, nrow(d))
         d$referenceEnd <- rep(NA, nrow(d))
       }
-      d <- d[,which(names(d) %in% c('HOR.VER', 'start', 'end', 'referenceStart', 
-                                   'referenceEnd', 'xOffset', 'yOffset', 'zOffset', 
-                                   'pitch', 'roll', 'azimuth', 'referenceLatitude', 
-                                   'referenceLongitude', 'referenceElevation'))]
+      d <- d %>%
+        dplyr::mutate(siteID = site) %>%
+        dplyr::select('siteID', 'HOR.VER', 'start', 'end',
+                      'referenceStart', 'referenceEnd', 'xOffset', 'yOffset', 'zOffset', 
+                      'pitch', 'roll', 'azimuth', 'referenceLatitude', 'referenceLongitude', 'referenceElevation')
     } else {
       if(!("siteID" %in% names(d))){
         d <- d %>%
