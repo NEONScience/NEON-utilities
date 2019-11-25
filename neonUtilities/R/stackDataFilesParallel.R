@@ -32,7 +32,7 @@
 stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
   
   starttime <- Sys.time()
-  
+  requireNamespace('stringr', quietly = TRUE)
   requireNamespace('dplyr', quietly = TRUE)
   requireNamespace("magrittr", quietly = TRUE)
   requireNamespace('data.table', quietly = TRUE)
@@ -102,7 +102,7 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
       uniqueSites <- unique(basename(sensorPositionList)) %>%
-        str_split('\\.') %>%
+        stringr::str_split('\\.') %>%
         lapply(`[`, 3) %>%
         unlist() %>% 
         unique(.)

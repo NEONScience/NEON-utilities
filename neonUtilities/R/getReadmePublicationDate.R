@@ -20,6 +20,7 @@
 ##############################################################################################
 
 getReadmePublicationDate <- function(savepath, out_filepath) {
+  requireNamespace('stringr', quietly = TRUE)
   requireNamespace('dplyr', quiet=TRUE)
   requireNamespace('magrittr', quiet=TRUE)
   requireNamespace('stringr', quiet=TRUE)
@@ -48,7 +49,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
     }))
   
   txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]]) %>%
-    .[!str_detect(., pattern="Date-Time")]
+    .[!stringr::str_detect(., pattern="Date-Time")]
   
   cat("##################################\n", file = out_filepath_name)
   cat("########### Attention ############\n", file = out_filepath_name, append=TRUE)
