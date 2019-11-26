@@ -9,7 +9,7 @@
 #' This should result in a small number of large files.
 
 #' @param folder The location of the data
-#' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
+#' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting 'nCores=parallel::detectCores()'. By default it is set to a single core. If the files are less than 25000 bytes the userdefined nCores will be overridden to a single core.
 #' @return One file for each table type is created and written.
 
 #' @references
@@ -124,17 +124,21 @@ stackDataFilesParallel <- function(folder, nCores=1){
     }
     
     # Make a decision on parallel processing based on the total size of directories or whether there are lots of 1_minute files
-    cl <- parallel::makeCluster(getOption("cl.cores", nCores))
-    parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
-    if(nCores == 1) {
-      writeLines(paste0("Stacking operation across a single core."))
-      
+    directories <- sum(file.info(grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", invert=TRUE, value=TRUE))$size)
+    if(directories <= 25000 | nCores == 1) {
+      cl <- 1
+      if(directories <= 25000) {
+        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization. Running on single core."))
+      } else {
+        writeLines(paste0("Stacking operation across a single core."))
+      }
     } else {
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
+      parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
       writeLines(paste0("Parallelizing stacking operation across ", nCores, " cores."))
-    }
-    
-    # If error, crash, or completion , closes all clusters
-    suppressWarnings(on.exit(parallel::stopCluster(cl)))
+      # If error, crash, or completion , closes all clusters
+      suppressWarnings(on.exit(parallel::stopCluster(cl)))
+      }
     
     for(i in 1:length(tables)){
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
