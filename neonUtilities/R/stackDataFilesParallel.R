@@ -9,8 +9,7 @@
 #' This should result in a small number of large files.
 
 #' @param folder The location of the data
-#' @param nCores The number of cores to parallelize the stacking procedure. By default it is set to a single core.
-#' @param forceParallel If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.
+#' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
 #' @return One file for each table type is created and written.
 
 #' @references
@@ -29,7 +28,7 @@
 #     * Parallelized the function
 ##############################################################################################
 
-stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
+stackDataFilesParallel <- function(folder, nCores=1){
   
   starttime <- Sys.time()
   requireNamespace('stringr', quietly = TRUE)
@@ -125,22 +124,13 @@ stackDataFilesParallel <- function(folder, nCores=1, forceParallel=FALSE){
     }
     
     # Make a decision on parallel processing based on the total size of directories or whether there are lots of 1_minute files
-    # All of this is overruled if forceParallel = TRUE
-    if(forceParallel == TRUE) {
-      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
-      parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
-          } else {
-      directories <- sum(file.info(grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", invert=TRUE, value=TRUE))$size)
-      if(directories >= 25000) {
-        cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
-        parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
-        nCores <- parallel::detectCores()
-        writeLines(paste0("Parallelizing stacking operation across ", parallel::detectCores(), " cores."))
-      } else {
-        cl <- parallel::makeCluster(getOption("cl.cores", nCores))
-        parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
-        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization, please see forceParallel to run stacking operation across multiple cores. Running on single core."))
-      }
+    cl <- parallel::makeCluster(getOption("cl.cores", nCores))
+    parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
+    if(nCores == 1) {
+      writeLines(paste0("Stacking operation across a single core."))
+      
+    } else {
+      writeLines(paste0("Parallelizing stacking operation across ", nCores, " cores."))
     }
     
     # If error, crash, or completion , closes all clusters
