@@ -94,7 +94,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
     orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all")
+      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
     }
   }
   
@@ -106,7 +106,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
     orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in")
+      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
     } else {
       if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
         if(!dir.exists(savepath)){dir.create(savepath)}

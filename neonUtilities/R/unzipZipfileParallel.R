@@ -22,16 +22,16 @@
 #   2018-04-03 (Christine Laney): Replacement of line-by-line message of unzipping files with a progress bar
 ##############################################################################################
 
-unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all"){
+unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all", nCores=1){
 
   if(level == "all") {
     utils::unzip(zipfile = zippath, exdir=outpath)
     zps <- listZipfiles(zippath)
-    writeLines(paste0("Unpacking zip files using ", parallel::detectCores(), " cores."))
+    writeLines(paste0("Unpacking zip files using ", nCores, " cores."))
     
     if(length(zps) >= 1){
       
-      cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
       
       pbapply::pblapply(zps, function(z, outpath) {
@@ -45,11 +45,11 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
 
   if(level == "in") {
     zps <- as.list(grep(list.files(zippath, full.names=TRUE), pattern = '*.zip', value=TRUE))
-    writeLines(paste0("Unpacking zip files using ", parallel::detectCores(), " cores."))
+    writeLines(paste0("Unpacking zip files using ", nCores, " cores."))
     
     if(length(zps) >= 1) {
       
-      cl <- parallel::makeCluster(getOption("cl.cores", parallel::detectCores()))
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
       
       pbapply::pblapply(zps, function(z, outpath) {
