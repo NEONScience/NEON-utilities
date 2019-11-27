@@ -34,6 +34,8 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
   readme_list <- list.files(savepath, pattern = '.readme.',
                             recursive = TRUE, full.names = TRUE)
 
+  op <- pbapply::pboptions()
+  pbapply::pboptions(type='none')
   pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
     split <- x %>%
       stringr::str_split(., '/') %>%
@@ -47,6 +49,7 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
 
     return(pub_date_str)
     }))
+  pbapply::pboptions(op)
 
   txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]]) %>%
     .[!stringr::str_detect(., pattern="Date-Time")]
