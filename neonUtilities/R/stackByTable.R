@@ -62,7 +62,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   }
   
-  dpID <- substr(basename(files[1]), 15, 27)  
+  dpID <- substr(basename(files[1]), 15, 27)
   package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
   if(package == "anded"){package <- "expanded"}
   
