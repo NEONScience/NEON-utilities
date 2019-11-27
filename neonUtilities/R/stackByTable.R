@@ -14,8 +14,7 @@
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
-#' @param nCores The number of cores to parallelize the stacking procedure. By default it is set to a single core.
-#' @param forceParallel If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.
+#' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
 #' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
 #' @examples
@@ -45,7 +44,7 @@
 #     * Parallelized the function
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1, forceParallel=FALSE){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1){
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -95,7 +94,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
     orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all")
+      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
     }
   }
   
@@ -107,7 +106,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
     orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in")
+      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
     } else {
       if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
         if(!dir.exists(savepath)){dir.create(savepath)}
@@ -118,7 +117,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   } 
 
-  stackDataFilesParallel(savepath, nCores, forceParallel)
+  stackDataFilesParallel(savepath, nCores)
   getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"))
   
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
