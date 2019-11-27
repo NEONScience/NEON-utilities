@@ -5,15 +5,16 @@
 \title{Unzip a zip file either at just the top level or recursively through the file}
 \usage{
 unzipZipfileParallel(zippath, outpath = substr(zippath, 1, nchar(zippath)
-  - 4), level = "all")
+  - 4), level = "all", nCores = 1)
 }
 \arguments{
 \item{zippath}{The filepath of the input file}
 
 \item{outpath}{The name of the folder to save unpacked files to}
 
-\item{level}{Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively,
-or only files 'in' the folder specified}
+\item{level}{Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively, or only files 'in' the folder specified}
+
+\item{nCores}{Number of cores to use for parallelization}
 }
 \description{
 Unzip a zip file either at just the top level or recursively through the file
