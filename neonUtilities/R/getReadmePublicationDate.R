@@ -64,8 +64,8 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
   
   txt_file[I(dPackInd+3)] <- paste('This data product contains up to', nrow(tables), 'data tables:')
   txt_file[I(dPackInd+5):I(dPackInd+4+nrow(tables))] <- paste(tables$tableName, tables$tableDesc, sep=' - ')
-  txt_file[I(dPackInd+5+nrow(tables))] <- 'If data are unavailable for paticular query parameters, some tables may be absent.'
-  txt_file <- txt_file[-c(qInd:I(dPackInd-2), I(dPackInd+7+nrow(tables)):I(downPackInd-1))]
+  txt_file[I(dPackInd+5+nrow(tables))] <- 'If data are unavailable for the particular sites and dates queried, some tables may be absent.'
+  txt_file <- txt_file[-c(qInd:I(dPackInd-2), I(dPackInd+6+nrow(tables)):I(downPackInd-1))]
 
   cat("###################################\n", file = out_filepath_name)
   cat("########### Disclaimer ############\n", file = out_filepath_name, append=TRUE)

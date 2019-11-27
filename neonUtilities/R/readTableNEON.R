@@ -33,10 +33,14 @@ readTableNEON <- function(dataFile, varFile){
   }
   
   # check this is a valid variables file
-  if(any(!c('table','fieldName','dataType') %in% names(v))) {
-    stop('varFile is not a variables file, or is missing critical values.\n')
+  if(any(c('category','system','stat') %in% names(v))) {
+    stop('varFile appears to match DP4.00200.001. Automated matching of data types to variables is not available for this data product; we hope to add this in a future release.')
+  } else {
+    if(any(!c('table','fieldName','dataType') %in% names(v))) {
+      stop('varFile is not a variables file, or is missing critical values.\n')
+    }
   }
-  
+
   # make a new colClass column defaulting to numeric
   # modify to character for strings and urls
   v$colClass <- rep("numeric", nrow(v))
