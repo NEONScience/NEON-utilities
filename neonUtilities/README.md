@@ -115,6 +115,16 @@ Disclaimer
 Change Log
 ----------
 
+#### 2019-12-02 v1.3.2
+----------
+Enhancements:
+* `stackByTable()` optionally uses parallel processing
+* `stackByTable()` preserves readme and sensor_positions files
+* `stackByTable()` appends a new column containing the publication time stamp
+* `stackByTable()` no longer requires `folder` input
+* `loadByProduct()` detects data types (numeric, character, date) based on variables file
+
+
 #### 2019-08-02 v1.3.1
 -----------
 Bug fixes:
