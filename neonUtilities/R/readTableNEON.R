@@ -51,10 +51,11 @@ readTableNEON <- function(dataFile, varFile){
   
   # read in data file
   if(class(dataFile)=='character') {
-    d <- suppressWarnings(utils::read.csv(dataFile, header=T, stringsAsFactors=F, 
-                         colClasses=c(horizontalPosition='character', verticalPosition='character')))
+    d <- suppressWarnings(utils::read.csv(dataFile, header=T, stringsAsFactors=F,
+                         colClasses=c(horizontalPosition='character', verticalPosition='character'),
+                         na.strings=c('NA','')))
   } else {
-    d <- try(as.data.frame(dataFile), silent=T)
+    d <- try(as.data.frame(dataFile, stringsAsFactors=F), silent=T)
     if(class(d)=='try-error') {
       stop('dataFile must be either a NEON data table or a file path to a NEON data table.\n')
     }
