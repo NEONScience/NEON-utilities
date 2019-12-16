@@ -68,7 +68,8 @@ stackDataFilesParallel <- function(folder, nCores=1){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
     tables <- findTablesUnique(names(datafls), ttypes)
-    n <- length(tables)
+    n <- 0
+    m <- 0
     messages <- character()
 
     # find external lab tables (lab-current, lab-all) and copy the most recently published file from each lab into stackedFiles
@@ -82,6 +83,7 @@ stackDataFilesParallel <- function(folder, nCores=1){
       })
       messages <- c(messages, paste("Copied the most recent publication of", externalLabs, "to /stackedFiles"))
       tables <- setdiff(tables, labTables)
+      n <- n + length(externalLabs)
     }
 
     # copy variables and validation files to /stackedFiles using the most recent publication date 
@@ -90,12 +92,14 @@ stackDataFilesParallel <- function(folder, nCores=1){
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
       messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles and renamed as variables.csv")
+      m <- m + 1
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
       valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
       messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles and renamed as validation.csv")
+      m <- m + 1
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
@@ -116,7 +120,8 @@ stackDataFilesParallel <- function(folder, nCores=1){
       }, sensorPositionList=sensorPositionList))
       
       data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions.csv"))
-      messages <- c(messages, "Copied the most recent publication of sensor position file to /stackedFiles and renamed as sensor_positions.csv")
+      messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
+      m <- m + 1
     }
     
     if(nCores > parallel::detectCores()) {
@@ -127,10 +132,10 @@ stackDataFilesParallel <- function(folder, nCores=1){
     directories <- sum(file.info(grep(list.files(folder, full.names=TRUE, pattern = 'NEON'), pattern = "stacked|*.zip", invert=TRUE, value=TRUE))$size)
     if(directories <= 25000 | nCores == 1) {
       cl <- 1
-      if(directories <= 25000) {
-        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization. Running on single core."))
-      } else {
+      if(nCores == 1) {
         writeLines(paste0("Stacking operation across a single core."))
+      } else {
+        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization. Running on single core."))
       }
     } else {
       cl <- parallel::makeCluster(getOption("cl.cores", nCores))
@@ -177,11 +182,12 @@ stackDataFilesParallel <- function(folder, nCores=1){
       data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
       invisible(rm(stackedDf))
+      n <- n + 1
     }
   }
   
-  writeLines(paste("Finished: All of the data are stacked into", n, "tables!"))
   writeLines(paste0(messages, collapse = "\n"))
+  writeLines(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
   endtime <- Sys.time()
   writeLines(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
   

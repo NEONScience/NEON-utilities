@@ -4,7 +4,7 @@
 \alias{makePosColumns}
 \title{Create position (horizontal and vertical) columns}
 \usage{
-makePosColumns(d, datafl)
+makePosColumns(d, datafl, site)
 }
 \arguments{
 \item{d}{A data table}

@@ -11,7 +11,7 @@
 
 #' @param filepath The location of the zip file
 #' @param savepath The location to save the output files to
-#' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F.
+#' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatilibity.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
 #' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
@@ -23,7 +23,7 @@
 #' stackByTable("~/NEON_par.zip")
 #' 
 #' # To unzip and merge files downloaded using zipsByProduct()
-#' stackByTable("~/filesToStack00024", folder=T)
+#' stackByTable("~/filesToStack00024")
 #' }
 
 #' @export
@@ -46,6 +46,12 @@
 
 stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1){
 
+  if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+    folder <- FALSE
+  } else {
+    folder <- TRUE
+  }
+  
   #### Check whether data should be stacked ####
   if(folder==FALSE){
     files <- listFilesInZip(filepath)
@@ -62,7 +68,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   }
   
-  dpID <- substr(basename(files[1]), 15, 27)  
+  dpID <- substr(basename(files[1]), 15, 27)
   package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
   if(package == "anded"){package <- "expanded"}
   

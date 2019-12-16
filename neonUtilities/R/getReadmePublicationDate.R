@@ -34,6 +34,8 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
   readme_list <- list.files(savepath, pattern = '.readme.',
                             recursive = TRUE, full.names = TRUE)
 
+  op <- pbapply::pboptions()
+  pbapply::pboptions(type='none')
   pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
     split <- x %>%
       stringr::str_split(., '/') %>%
@@ -47,13 +49,27 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
 
     return(pub_date_str)
     }))
+  pbapply::pboptions(op)
 
   txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]]) %>%
     .[!stringr::str_detect(., pattern="Date-Time")]
+  
+  qInd <- grep('QUERY', txt_file)
+  dPackInd <- grep('PACKAGE CONTENTS', txt_file)
+  downPackInd <- grep('Basic download package', txt_file)
+  
+  files <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
+  dpID <- substr(basename(files[1]), 15, 27)
+  tables <- table_types[which(table_types$productID==dpID),]
+  
+  txt_file[I(dPackInd+3)] <- paste('This data product contains up to', nrow(tables), 'data tables:')
+  txt_file[I(dPackInd+5):I(dPackInd+4+nrow(tables))] <- paste(tables$tableName, tables$tableDesc, sep=' - ')
+  txt_file[I(dPackInd+5+nrow(tables))] <- 'If data are unavailable for the particular sites and dates queried, some tables may be absent.'
+  txt_file <- txt_file[-c(qInd:I(dPackInd-2), I(dPackInd+6+nrow(tables)):I(downPackInd-1))]
 
   cat("###################################\n", file = out_filepath_name)
   cat("########### Disclaimer ############\n", file = out_filepath_name, append=TRUE)
-  cat('This is the most recent readme publication based on all site-date combinations used during stackByTable.\nSome information may be date-site specific, but all general details reflect metadata for the data product.\nAll files used during stacking are listed at the bottom of this document, which includes the data publication dates.\n', file = out_filepath_name, append=TRUE)
+  cat('This is the most recent readme publication based on all site-date combinations used during stackByTable.\nInformation specific to the query, including sites and dates, has been removed. The remaining content reflects general metadata for the data product.\nAll files used during stacking are listed at the bottom of this document, which includes the data publication dates.\n', file = out_filepath_name, append=TRUE)
   cat("##################################\n", file = out_filepath_name, append=TRUE)
   cat("\n", file = out_filepath_name, append=TRUE)
   readr::write_lines(txt_file, out_filepath_name, append=TRUE)
