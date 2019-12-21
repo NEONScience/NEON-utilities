@@ -130,21 +130,50 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("There are no data at the selected date(s).")
   }
   
-  # get all the file names, and stash the URLs for just the zips in an object
-  zip.urls <- c(NA, NA, NA)
-  for(i in 1:length(month.urls)) {
-    tmp <- httr::GET(month.urls[i])
-    if(tmp$status_code==500) {
-      messages <- c(messages, paste("Query for url ", month.urls[i], 
+  # get all the file names
+  tmp.files <- list(length(month.urls))
+  for(j in 1:length(month.urls)) {
+    tmp.files[[j]] <- httr::GET(month.urls[j])
+    if(tmp.files[[j]]$status_code==500) {
+      messages <- c(messages, paste("Query for url ", month.urls[j], 
                                     " failed. API may be unavailable; check data portal data.neonscience.org for outage alert.", 
                                     sep=""))
       next
     }
-    tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
+    tmp.files[[j]] <- jsonlite::fromJSON(httr::content(tmp.files[[j]], as="text"),
                                     simplifyDataFrame=T, flatten=T)
+  }
+  
+  # identify index of most recent publication date, and most recent publication date by site
+  rdme.nm <- character(length(tmp.files))
+  site.nm <- character(length(tmp.files))
+  for(k in 1:length(tmp.files)) {
+    rdme.nm[k] <- tmp.files[[k]]$data$files$name[grep("readme", tmp.files[[k]]$data$files$name)[1]]
+    if(nchar(rdme.nm[k])==0) {
+      next
+    }
+    site.nm[k] <- substring(rdme.nm[k], 10, 13)
+    rdme.nm[k] <- substring(rdme.nm[k], nchar(rdme.nm[k])-19, nchar(rdme.nm[k])-4)
+  }
+  max.pub <- which(rdme.nm==max(rdme.nm))[1]
+  if(length(unique(site.nm))==1) {
+    max.pub.site <- max.pub
+  } else {
+    max.pub.site <- numeric(length(unique(site.nm)))
+    max.site.val <- tapply(rdme.nm, site.nm, max, na.rm=T)
+    ind <- 0
+    for(m in unique(site.nm)) {
+      ind <- ind + 1
+      max.pub.site[ind] <- which(rdme.nm==max.site.val[m] & site.nm==m)[1]
+    }
+  }
+  
+  # stash the URLs for just the zips in an object
+  zip.urls <- c(NA, NA, NA)
+  for(i in 1:length(tmp.files)) {
 
     # check for no files
-    if(length(tmp.files$data$files)==0) {
+    if(length(tmp.files[[i]]$data$files)==0) {
       messages <- c(messages, paste("No files found for site", substring(month.urls[i], 58, 61),
                                     "and month", substring(month.urls[i], 63, 69), sep=" "))
       next
@@ -154,12 +183,12 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     if(avg!="all") {
       
       # select files by averaging interval
-      all.file <- union(grep(paste(avg, "min", sep=""), tmp.files$data$files$name, fixed=T),
-                        grep(paste(avg, "_min", sep=""), tmp.files$data$files$name, fixed=T))
+      all.file <- union(grep(paste(avg, "min", sep=""), tmp.files[[i]]$data$files$name, fixed=T),
+                        grep(paste(avg, "_min", sep=""), tmp.files[[i]]$data$files$name, fixed=T))
       
       if(length(all.file)==0) {
-        messages <- c(messages, paste("No files found for site", tmp.files$data$siteCode,
-                                      "and month", tmp.files$data$month, sep=" "))
+        messages <- c(messages, paste("No files found for site", tmp.files[[i]]$data$siteCode,
+                                      "and month", tmp.files[[i]]$data$month, sep=" "))
         next
       }
       
@@ -167,58 +196,68 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       # if it doesn't, download basic package
       pk <- package
       if(pk=="expanded") {
-        if(length(grep(pk, tmp.files$data$files$name))==0) {
+        if(length(grep(pk, tmp.files[[i]]$data$files$name))==0) {
           pk <- "basic"
           messages <- c(messages, paste("No expanded package found for site ",
-                                        tmp.files$data$siteCode, " and month ",
-                                        tmp.files$data$month,
+                                        tmp.files[[i]]$data$siteCode, " and month ",
+                                        tmp.files[[i]]$data$month,
                                         ". Basic package downloaded instead.",
                                         sep=""))
         }
       }
       
       # subset to package
-      which.file <- intersect(grep(pk, tmp.files$data$files$name, fixed=T),
+      which.file <- intersect(grep(pk, tmp.files[[i]]$data$files$name, fixed=T),
                              union(grep(paste(avg, "min", sep=""), 
-                                        tmp.files$data$files$name, fixed=T), 
+                                        tmp.files[[i]]$data$files$name, fixed=T), 
                                    grep(paste(avg, "_min", sep=""), 
-                                        tmp.files$data$files$name, fixed=T)))
+                                        tmp.files[[i]]$data$files$name, fixed=T)))
       
       # check again for no files
       if(length(which.file)==0) {
         messages <- c(messages, paste("No basic package files found for site",
-                                      tmp.files$data$siteCode,
-                                      "and month", tmp.files$data$month, sep=" "))
+                                      tmp.files[[i]]$data$siteCode,
+                                      "and month", tmp.files[[i]]$data$month, sep=" "))
         next
       }
       
-      zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.file],
-                                        tmp.files$data$files$url[which.file],
-                                        tmp.files$data$files$size[which.file]))
+      zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.file],
+                                        tmp.files[[i]]$data$files$url[which.file],
+                                        tmp.files[[i]]$data$files$size[which.file]))
       
-      # add url for one copy of variables file and readme file
-      if(i==1) {
-        which.var <- grep("variables", tmp.files$data$files$name, fixed=T)[1]
-        zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.var],
-                                          tmp.files$data$files$url[which.var],
-                                          tmp.files$data$files$size[which.var]))
+      # add url for most recent variables & readme
+      if(i==max.pub) {
+        which.var <- grep("variables", tmp.files[[i]]$data$files$name, fixed=T)[1]
+        zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.var],
+                                          tmp.files[[i]]$data$files$url[which.var],
+                                          tmp.files[[i]]$data$files$size[which.var]))
         
-        # commented out - readme still needs general solution, they are specific to a site-month
-        # which.read <- grep("readme", tmp.files$data$files$name, fixed=T)[1]
-        # zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.read],
-        #                                   tmp.files$data$files$url[which.read],
-        #                                   tmp.files$data$files$size[which.read]))
+        which.read <- grep("readme", tmp.files[[i]]$data$files$name, fixed=T)[1]
+        zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.read],
+                                          tmp.files[[i]]$data$files$url[which.read],
+                                          tmp.files[[i]]$data$files$size[which.read]))
+        
       }
-      
+        
+      # add url for most recent sensor position file for each site
+      if(i %in% max.pub.site) {
+        
+        which.sens <- grep("sensor_position", tmp.files[[i]]$data$files$name, fixed=T)[1]
+        zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.sens],
+                                          tmp.files[[i]]$data$files$url[which.sens],
+                                          tmp.files[[i]]$data$files$size[which.sens]))
+        
+      }
+        
     } else {
       
       # to get all data, select the zip files
-      all.zip <- grep(".zip", tmp.files$data$files$name, fixed=T)
+      all.zip <- grep(".zip", tmp.files[[i]]$data$files$name, fixed=T)
       
       # error message if there are no zips in the package
       if(length(all.zip)==0) {
-        messages <- c(messages, paste("No zip files found for site", tmp.files$data$siteCode,
-                                      "and month", tmp.files$data$month, sep=" "))
+        messages <- c(messages, paste("No zip files found for site", tmp.files[[i]]$data$siteCode,
+                                      "and month", tmp.files[[i]]$data$month, sep=" "))
         next
       }
       
@@ -226,31 +265,31 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       # if it doesn't, download basic package
       pk <- package
       if(pk=="expanded") {
-        if(length(grep(pk, tmp.files$data$files$name))==0) {
+        if(length(grep(pk, tmp.files[[i]]$data$files$name))==0) {
           pk <- "basic"
           messages <- c(messages, paste("No expanded package found for site ",
-                                        tmp.files$data$siteCode, " and month ",
-                                        tmp.files$data$month,
+                                        tmp.files[[i]]$data$siteCode, " and month ",
+                                        tmp.files[[i]]$data$month,
                                         ". Basic package downloaded instead.",
                                         sep=""))
         }
       }
       
       # subset to package
-      which.zip <- intersect(grep(pk, tmp.files$data$files$name, fixed=T),
-                             grep(".zip", tmp.files$data$files$name, fixed=T))
+      which.zip <- intersect(grep(pk, tmp.files[[i]]$data$files$name, fixed=T),
+                             grep(".zip", tmp.files[[i]]$data$files$name, fixed=T))
       
       # check again for no files
       if(length(which.zip)==0) {
         messages <- c(messages, paste("No basic package files found for site",
-                                      tmp.files$data$siteCode,
-                                      "and month", tmp.files$data$month, sep=" "))
+                                      tmp.files[[i]]$data$siteCode,
+                                      "and month", tmp.files[[i]]$data$month, sep=" "))
         next
       }
       
-      zip.urls <- rbind(zip.urls, cbind(tmp.files$data$files$name[which.zip],
-                                        tmp.files$data$files$url[which.zip],
-                                        tmp.files$data$files$size[which.zip]))
+      zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.zip],
+                                        tmp.files[[i]]$data$files$url[which.zip],
+                                        tmp.files[[i]]$data$files$size[which.zip]))
       
     }
 

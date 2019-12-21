@@ -33,6 +33,9 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
   #writeLines("Stacking ReadMe documentation")
   readme_list <- list.files(savepath, pattern = '.readme.',
                             recursive = TRUE, full.names = TRUE)
+  if(length(readme_list)==0) {
+    writeLines("No readme file found.\n")
+  } else {
 
   op <- pbapply::pboptions()
   pbapply::pboptions(type='none')
@@ -80,4 +83,5 @@ getReadmePublicationDate <- function(savepath, out_filepath) {
   cat("Each row contains the readme filename used during stackByTable\n", file = out_filepath_name, append=TRUE)
   cat("\n", file = out_filepath_name, append=TRUE)
   utils::write.table(pub_date_df, file=out_filepath_name, sep=",", append=TRUE, row.names=FALSE, col.names=FALSE, quote = FALSE)
+  }
 }

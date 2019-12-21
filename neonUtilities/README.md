@@ -13,6 +13,8 @@ This package was developed on top of the deprecated `neonDataStackR` package; ch
 
 This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
+To get citation details for citing the `neonUtilities` package in a publication, run `citation("neonUtilities")` in R.
+
 <!-- ****** Usage ****** -->
 Usage
 -----
@@ -52,7 +54,7 @@ getPackage(dpID = "DP1.10055.001", site_code = "JORN", year_month = "2017-05", p
 {
 # Herbaceous clip harvest data, from all sites and months for which it is currently available
 zipsByProduct(dpID="DP1.10023.001", site="all", package="basic", check.size=T)
-stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
+stackByTable(paste0(getwd(), "/filesToStack10023"))
 }
 ```
 
@@ -61,6 +63,9 @@ stackByTable(paste0(getwd(), "/filesToStack10023"), folder=T)
 ```
 bird <- loadByProduct(dpID="DP1.10003.001", site="all", package="expanded")
 names(bird)
+
+# To get each table in the list as an independent object, outside of the list:
+list2env(bird, .GlobalEnv)
 ```
 
 Both `zipsByProduct()` and `loadByProduct()` can also subset by sites and date range:
