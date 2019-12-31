@@ -10,6 +10,7 @@
 
 #' @param savepath The root folder directory where the ReadMe files are located.
 #' @param out_filepath The output directory and filename.
+#' @param dpID The data product identifier
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -19,13 +20,14 @@
 
 ##############################################################################################
 
-getReadmePublicationDate <- function(savepath, out_filepath) {
+getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
   requireNamespace('stringr', quietly = TRUE)
   requireNamespace('dplyr', quiet=TRUE)
   requireNamespace('magrittr', quiet=TRUE)
   requireNamespace('stringr', quiet=TRUE)
 
-  out_filepath_name <- paste0(out_filepath, '/readme.txt')
+  dpnum <- substring(dpID, 5, 9)
+  out_filepath_name <- paste0(out_filepath, '/readme_', dpnum, '.txt')
 
   if(file.exists(out_filepath_name)) {
     unlink(out_filepath_name)

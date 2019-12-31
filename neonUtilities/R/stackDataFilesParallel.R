@@ -10,6 +10,7 @@
 
 #' @param folder The location of the data
 #' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting 'nCores=parallel::detectCores()'. By default it is set to a single core. If the files are less than 25000 bytes the userdefined nCores will be overridden to a single core.
+#' @param dpID The data product identifier
 #' @return One file for each table type is created and written.
 
 #' @references
@@ -28,7 +29,7 @@
 #     * Parallelized the function
 ##############################################################################################
 
-stackDataFilesParallel <- function(folder, nCores=1){
+stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   starttime <- Sys.time()
   requireNamespace('stringr', quietly = TRUE)
@@ -39,6 +40,7 @@ stackDataFilesParallel <- function(folder, nCores=1){
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
   ttypes <- table_types
+  dpnum <- substring(dpID, 5, 9)
   
   # filenames without full path
   filenames <- findDatatables(folder = folder, fnames = F)
@@ -90,14 +92,14 @@ stackDataFilesParallel <- function(folder, nCores=1){
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
-      file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables.csv"))
+      file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables_", dpnum, ".csv"))
       messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles and renamed as variables.csv")
       m <- m + 1
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
       valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])
-      file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation.csv"))
+      file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation_", dpnum, ".csv"))
       messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles and renamed as validation.csv")
       m <- m + 1
     }
@@ -119,7 +121,7 @@ stackDataFilesParallel <- function(folder, nCores=1){
         return(outTbl)
       }, sensorPositionList=sensorPositionList))
       
-      data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions.csv"))
+      data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
       messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
       m <- m + 1
     }
@@ -158,7 +160,7 @@ stackDataFilesParallel <- function(folder, nCores=1){
         tblfls <- lapply(sites, function(j, file_list) {
           tbl_list <- file_list[grep(j, file_list)] %>%
             .[order(.)] %>%
-            .[max(length(.))] 
+            .[length(.)] 
           }, file_list=file_list) 
       } 
       if(tbltype == "site-date") {

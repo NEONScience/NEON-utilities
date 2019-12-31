@@ -123,8 +123,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   } 
 
-  stackDataFilesParallel(savepath, nCores)
-  getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"))
+  stackDataFilesParallel(savepath, nCores, dpID)
+  getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
   
   if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
   
@@ -134,11 +134,11 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     v <- utils::read.csv(stacked_files[grep('variables', stacked_files)], header=T, stringsAsFactors=F)
 
     stacked_list <- lapply(stacked_files, function(x) {
-      if(basename(x) == "sensor_positions.csv") {
+      if(length(grep("sensor_position", basename(x)))>0) {
         fls <- suppressWarnings(data.table::fread(x, sep=',', keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
-      } else if(basename(x) == "readme.txt") {
+      } else if(length(grep("readme", basename(x)))>0) {
         fls <- suppressMessages(readr::read_table(x, col_names = FALSE))
-        } else if(basename(x) %in% c('variables.csv', 'validation.csv')) {
+        } else if(length(grep("variables", basename(x)))>0 | length(grep("validation", basename(x)))>0) {
           fls <- suppressWarnings(data.table::fread(x, sep=','))
         } else {
           fls <- try(readTableNEON(x, v), silent=T)

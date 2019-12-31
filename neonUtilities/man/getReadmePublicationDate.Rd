@@ -4,12 +4,14 @@
 \alias{getReadmePublicationDate}
 \title{Scrape the publication date from each ReadMe file}
 \usage{
-getReadmePublicationDate(savepath, out_filepath)
+getReadmePublicationDate(savepath, out_filepath, dpID)
 }
 \arguments{
 \item{savepath}{The root folder directory where the ReadMe files are located.}
 
 \item{out_filepath}{The output directory and filename.}
+
+\item{dpID}{The data product identifier}
 }
 \description{
 Given a directory, this will recursively list all of the ReadMe files that were unzipped.

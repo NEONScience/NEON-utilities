@@ -4,12 +4,14 @@
 \alias{stackDataFilesParallel}
 \title{Join data files in a unzipped NEON data package by table type}
 \usage{
-stackDataFilesParallel(folder, nCores = 1)
+stackDataFilesParallel(folder, nCores = 1, dpID)
 }
 \arguments{
 \item{folder}{The location of the data}
 
 \item{nCores}{The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting 'nCores=parallel::detectCores()'. By default it is set to a single core. If the files are less than 25000 bytes the userdefined nCores will be overridden to a single core.}
+
+\item{dpID}{The data product identifier}
 }
 \value{
 One file for each table type is created and written.
