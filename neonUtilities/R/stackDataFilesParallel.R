@@ -183,6 +183,10 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
 
       data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
+      #if("horizontalPosition" %in% names(stackedDf) & !is.null(varpath)) {
+      #  v <- suppressWarnings(data.table::fread(varpath, sep=','))
+      #  v <- rbind()
+      #}
       invisible(rm(stackedDf))
       n <- n + 1
     }
