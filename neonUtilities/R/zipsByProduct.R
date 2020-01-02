@@ -148,14 +148,16 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   rdme.nm <- character(length(tmp.files))
   site.nm <- character(length(tmp.files))
   for(k in 1:length(tmp.files)) {
-    rdme.nm[k] <- tmp.files[[k]]$data$files$name[grep("readme", tmp.files[[k]]$data$files$name)[1]]
-    if(nchar(rdme.nm[k])==0) {
-      next
+    if(length(tmp.files[[k]]$data$files)!=0) {
+      rdme.nm[k] <- tmp.files[[k]]$data$files$name[grep("readme", tmp.files[[k]]$data$files$name)[1]]
+      if(nchar(rdme.nm[k])==0) {
+        next
+      }
+      site.nm[k] <- substring(rdme.nm[k], 10, 13)
+      rdme.nm[k] <- substring(rdme.nm[k], nchar(rdme.nm[k])-19, nchar(rdme.nm[k])-4)
     }
-    site.nm[k] <- substring(rdme.nm[k], 10, 13)
-    rdme.nm[k] <- substring(rdme.nm[k], nchar(rdme.nm[k])-19, nchar(rdme.nm[k])-4)
   }
-  max.pub <- which(rdme.nm==max(rdme.nm))[1]
+  max.pub <- which(rdme.nm==max(rdme.nm, na.rm=T))[1]
   if(length(unique(site.nm))==1) {
     max.pub.site <- max.pub
   } else {
