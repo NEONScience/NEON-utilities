@@ -22,6 +22,7 @@ update_table_types <- function(){
   
   options(stringsAsFactors=F)
   
+  # get publication tables from PDR
   req <- httr::GET(Sys.getenv("PUB_TABLES"))
   rawx <- XML::xmlToList(httr::content(req, as="text"))
   
@@ -39,7 +40,19 @@ update_table_types <- function(){
                              "tableType", "tableTMI")
   rownames(table_types) <- 1:nrow(table_types)
   
-  usethis::use_data(table_types, internal=TRUE, overwrite=TRUE)
+  # term definitions for fields added by stackByTable
+  added_fields <- data.frame(cbind(fieldName=c('domainID','siteID','horizontalPosition',
+                                               'verticalPosition','publicationDate'),
+                                   description=c('Unique identifier of the NEON domain',
+                                                 'NEON site code',
+                                                 'Index of horizontal location at a NEON site',
+                                                 'Index of vertical location at a NEON site',
+                                                 'Date of data publication on the NEON data portal'),
+                                   dataType=c(rep('string',4),'dateTime'),
+                                   units=rep(NA,5),
+                                   downloadPkg=rep('appended by stackByTable',5)))
+  
+  usethis::use_data(table_types, added_fields, internal=TRUE, overwrite=TRUE)
   
 }
 

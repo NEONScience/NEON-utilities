@@ -92,15 +92,14 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
-      file.copy(from = varpath, to = paste0(folder, "/stackedFiles/variables_", dpnum, ".csv"))
-      messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles and renamed as variables.csv")
-      m <- m + 1
+      v <- suppressWarnings(data.table::fread(varpath, sep=','))
+      vlist <- base::split(v, v$table)
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
       valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation_", dpnum, ".csv"))
-      messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles and renamed as validation.csv")
+      messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles")
       m <- m + 1
     }
     
@@ -183,13 +182,31 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
 
       data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
-      #if("horizontalPosition" %in% names(stackedDf) & !is.null(varpath)) {
-      #  v <- suppressWarnings(data.table::fread(varpath, sep=','))
-      #  v <- rbind()
-      #}
+      
+      # add location and publication field names to variables file
+      if(!is.null(vlist)) {
+        vtable <- which(names(vlist)==tables[i])
+        if(length(vtable==1)) {
+          if("horizontalPosition" %in% names(stackedDf)) {
+            vlist[[vtable]] <- base::rbind(base::cbind(table=rep(tables[i],4), added_fields[1:4,]), 
+                                           vlist[[vtable]], fill=T)
+          }
+          if("publicationDate" %in% names(stackedDf)) {
+            vlist[[vtable]] <- base::rbind(vlist[[vtable]], 
+                                           c(table=tables[i], added_fields[5,]), fill=T)
+          }
+        }
+      }
       invisible(rm(stackedDf))
       n <- n + 1
     }
+    
+    # write out complete variables file
+    vfull <- data.table::rbindlist(vlist)
+    utils::write.csv(vfull, paste0(folder, "/stackedFiles/variables_", dpnum, ".csv"), row.names=F)
+    messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles")
+    m <- m + 1
+    
   }
   
   writeLines(paste0(messages, collapse = "\n"))
