@@ -176,8 +176,13 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
     # check for no files
     if(length(tmp.files[[i]]$data$files)==0) {
-      messages <- c(messages, paste("No files found for site", substring(month.urls[i], 56, 59),
-                                    "and month", substring(month.urls[i], 61, 69), sep=" "))
+      messages <- c(messages, paste("No files found for site", 
+                                    substring(month.urls[i], 
+                                              nchar(month.urls[i])-11, 
+                                              nchar(month.urls[i])-8),
+                                    "and month", substring(month.urls[i], 
+                                                           nchar(month.urls[i])-6, 
+                                                           nchar(month.urls[i])), sep=" "))
       next
     }
     
