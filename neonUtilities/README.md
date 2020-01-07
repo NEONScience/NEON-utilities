@@ -120,6 +120,17 @@ Disclaimer
 Change Log
 ----------
 
+#### 2019-01-07 v1.3.3
+----------
+Bug fixes:
+* readme file retention now works with `avg` input in `zipsByProduct()`
+* fields added by `stackByTable()` now appear in variables file
+* regularized package citation
+
+Enhancements:
+* variables, validation, readme, and sensor_positions file names now include data product number
+
+
 #### 2019-12-02 v1.3.2
 ----------
 Enhancements:
