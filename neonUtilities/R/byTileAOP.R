@@ -232,6 +232,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
         file.urls.new <- getTileUrls(month.urls)
         file.urls.current <- file.urls.new
 
+
       } else {
         messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
         j = j + 1
