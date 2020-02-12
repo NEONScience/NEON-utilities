@@ -75,40 +75,6 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
     stop("There are no data at the selected site and year.")
   }
 
-
-
-  # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
-  getFileUrls <- function(m.urls){
-    url.messages <- character()
-    file.urls <- c(NA, NA, NA)
-    for(i in 1:length(m.urls)) {
-      tmp <- httr::GET(m.urls[i])
-      tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
-                                      simplifyDataFrame=T, flatten=T)
-
-      # check for no files
-      if(length(tmp.files$data$files)==0) {
-        url.messages <- c(url.messages, paste("No files found for site", tmp.files$data$siteCode,
-                                      "and year", tmp.files$data$month, sep=" "))
-        next
-      }
-
-      file.urls <- rbind(file.urls, cbind(tmp.files$data$files$name,
-                                          tmp.files$data$files$url,
-                                          tmp.files$data$files$size))
-
-      # get size info
-      file.urls <- data.frame(file.urls, row.names=NULL)
-      colnames(file.urls) <- c("name", "URL", "size")
-      file.urls$URL <- as.character(file.urls$URL)
-      file.urls$name <- as.character(file.urls$name)
-
-      if(length(url.messages) > 0){writeLines(url.messages)}
-      file.urls <- file.urls[-1, ]
-      return(file.urls)
-    }
-  }
-
   file.urls.current <- getFileUrls(month.urls)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
