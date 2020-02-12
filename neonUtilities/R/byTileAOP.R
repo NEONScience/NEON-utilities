@@ -24,6 +24,9 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 #' @export
+#'
+#' byTileAOP(dpID = "DP3.30006.001", site = "ORNL", year = "2016",
+#' easting = 744000, northing = 983000, check.size = FALSE)
 
 # Changelog and author contributions / copyrights
 #   Claire Lunch (2018-02-19): original creation
@@ -31,7 +34,7 @@
 
 ##############################################################################################
 
-byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=0,
+byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
                       check.size=TRUE, savepath=NA) {
 
   # error message if dpID isn't formatted as expected
@@ -43,7 +46,17 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
   if(substring(dpID, 3, 3)!=3 & dpID!="DP1.30003.001") {
     stop(paste(dpID, "is not a Level 3 data product ID.\nThis function will only work correctly on mosaicked data.", sep=" "))
   }
-  
+
+  # error message if site is left blank
+  if(regexpr('[[:alpha:]]{4}', site)!=1) {
+    stop("An abbreviated, four letter site name is required to run this function. If you are unsure of the correct site name abbreviation, please see a complete site list here: https://www.neonscience.org/field-sites/field-sites-map/list")
+  }
+
+  # error message if year is left blank
+  if(regexpr('[[:alpha:]]{4}', site)!=1) {
+    stop("An year of interest is required to run this function (i.e., '2017').")
+  }
+
   # error message if easting and northing vector lengths don't match
   easting <- as.numeric(easting)
   northing <- as.numeric(northing)
@@ -52,12 +65,12 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
   if(length(easting)!=length(northing)) {
     stop("Easting and northing vector lengths do not match, and/or contain null values. Cannot identify paired coordinates.")
   }
-  
+
   # error message if buffer is bigger than a tile
   if(buffer>=1000) {
     stop("Buffer is larger than tile size. Tiles are 1x1 km.")
   }
-  
+
   # query the products endpoint for the product requested
   productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
   req <- httr::GET(productUrl)
@@ -85,16 +98,16 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
   # get the tile corners for the coordinates
   tileEasting <- floor(easting/1000)*1000
   tileNorthing <- floor(northing/1000)*1000
-  
+
   # apply buffer
   if(buffer>0) {
-    
+
     # add & subtract buffer (buffer is a square)
     eastingPlus <- floor((easting + buffer)/1000)*1000
     eastingMinus <- floor((easting - buffer)/1000)*1000
     northingPlus <- floor((northing + buffer)/1000)*1000
     northingMinus <- floor((northing - buffer)/1000)*1000
-    
+
     # get coordinates where buffer overlaps another tile
     eastingPlusMatch <- tileEasting==eastingPlus
     eastingMinusMatch <- tileEasting==eastingMinus
@@ -102,7 +115,7 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
     northingMinusMatch <- tileNorthing==northingMinus
     matchMat <- cbind(eastingMinusMatch, eastingPlusMatch, northingMinusMatch, northingPlusMatch)
     matchMat <- 1*matchMat
-    
+
     # add coordinates for overlapping tiles
     for(k in 1:length(easting)) {
       pos <- paste0(matchMat[k,], collapse=".")
@@ -160,7 +173,7 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
       }
     }
   }
-  
+
   # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
   getTileUrls <- function(m.urls){
     url.messages <- character()
@@ -176,7 +189,7 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
                                       "and year", tmp.files$data$month, sep=" "))
         next
       }
-      
+
       # filter to only files for the relevant tiles
       ind <- numeric()
       for(j in 1:length(tileEasting)) {
@@ -185,7 +198,7 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
         if(length(ind.j)>0) {
           ind <- c(ind, ind.j)
         } else {
-          url.messages <- c(url.messages, paste("No tiles found for easting ", 
+          url.messages <- c(url.messages, paste("No tiles found for easting ",
                                                 tileEasting[j], "and northing ",
                                                 tileNorthing[j]))
         }
@@ -263,7 +276,7 @@ byTileAOP <- function(dpID, site="SJER", year="2017", easting, northing, buffer=
   }
   utils::setTxtProgressBar(pb, 1)
   close(pb)
-  
+
   writeLines(paste("Successfully downloaded ", length(messages), " files."))
   writeLines(paste0(messages, collapse = "\n"))
 }
