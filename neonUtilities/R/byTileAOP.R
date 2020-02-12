@@ -24,9 +24,6 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 #' @export
-#'
-#' byTileAOP(dpID = "DP3.30006.001", site = "ORNL", year = "2016",
-#' easting = 744000, northing = 983000, check.size = FALSE)
 
 # Changelog and author contributions / copyrights
 #   Claire Lunch (2018-02-19): original creation
@@ -196,7 +193,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   } else {
     filepath <- paste(savepath, "/", dpID, sep="")
   }
-  if(dir.exists(filepath) == F) dir.create(filepath, showWarnings=F)
+  if(dir.exists(filepath) == F) {dir.create(filepath, showWarnings=F)}
 
   # copy zip files into folder
   j <- 1
@@ -204,26 +201,33 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   writeLines(paste("Downloading ", nrow(file.urls.current), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current)-1))
-  while(j <= nrow(file.urls.current)) {
+
+  for(j in 1:nrow(file.urls.current)) {
+
     path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
     pathparts <- strsplit(path1, "\\/")
     path2 <- paste(pathparts[[1]][4:(length(pathparts[[1]])-1)], collapse="/")
     newpath <- paste0(filepath, "/", path2)
 
-    if(dir.exists(newpath) == F) dir.create(newpath, recursive = T)
-    t <- try(downloader::download(file.urls.current$URL[j],
-                                  paste(newpath, file.urls.current$name[j], sep="/"),
-                                  mode="wb", quiet=T), silent = T)
-
-    if(class(t) == "try-error"){
-      writeLines("File could not be downloaded. URLs may have expired. Getting new URLs.")
-      file.urls.new <- getTileUrls(month.urls)
-      file.urls.current <- file.urls.new
-      writeLines("Continuing downloads.")}
-    if(class(t) != "try-error"){
-      messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
-      j = j + 1
+    if(dir.exists(newpath) == F) {
+      dir.create(newpath, recursive = T)
     }
+
+    t <- tryCatch(
+      {
+        suppressWarnings(downloader::download(file.urls.current$URL[j],
+                                  paste(newpath, file.urls.current$name[j], sep="/"),
+                                  mode="wb", quiet=T))
+      }, error = function(e) { e } )
+
+      if(inherits(t, "error")) {
+       message(paste0("\nURL query for site (", site, ') and year (', year,
+                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+      } else {
+        messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
+        j = j + 1
+      }
+
     utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
   }
   utils::setTxtProgressBar(pb, 1)
