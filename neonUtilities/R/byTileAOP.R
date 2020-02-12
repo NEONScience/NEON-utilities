@@ -202,33 +202,44 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current)-1))
 
-  for(j in 1:nrow(file.urls.current)) {
+  counter<- 1
 
-    path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
-    pathparts <- strsplit(path1, "\\/")
-    path2 <- paste(pathparts[[1]][4:(length(pathparts[[1]])-1)], collapse="/")
-    newpath <- paste0(filepath, "/", path2)
+  while(j <= nrow(file.urls.current)) {
+    counter<- counter + 1
 
-    if(dir.exists(newpath) == F) {
-      dir.create(newpath, recursive = T)
-    }
+    if (counter > 2) {
+      stop(paste0("\nURL query for site (", site, ') and year (', year,
+                  ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+    } else {
+      path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
+      pathparts <- strsplit(path1, "\\/")
+      path2 <- paste(pathparts[[1]][4:(length(pathparts[[1]])-1)], collapse="/")
+      newpath <- paste0(filepath, "/", path2)
 
-    t <- tryCatch(
-      {
-        suppressWarnings(downloader::download(file.urls.current$URL[j],
-                                  paste(newpath, file.urls.current$name[j], sep="/"),
-                                  mode="wb", quiet=T))
-      }, error = function(e) { e } )
+      if(dir.exists(newpath) == FALSE) {
+        dir.create(newpath, recursive = TRUE)
+      }
+
+      t <- tryCatch(
+        {
+          suppressWarnings(downloader::download(file.urls.current$URL[j],
+                                                paste(newpath, file.urls.current$name[j], sep="/"),
+                                                mode="wb", quiet=T))
+        }, error = function(e) { e } )
 
       if(inherits(t, "error")) {
-       message(paste0("\nURL query for site (", site, ') and year (', year,
-                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+        writeLines("File could not be downloaded. URLs may have expired. Trying new URLs.")
+        file.urls.new <- getTileUrls(month.urls)
+        file.urls.current <- file.urls.new
+
       } else {
         messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
         j = j + 1
+        counter <- 1
       }
 
-    utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
+      utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
+    }
   }
   utils::setTxtProgressBar(pb, 1)
   close(pb)
