@@ -34,11 +34,21 @@
 
 ##############################################################################################
 
-byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE, savepath=NA) {
+byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
+  }
+
+  # error message if site is left blank
+  if(regexpr('[[:alpha:]]{4}', site)!=1) {
+    stop("An abbreviated, four letter site name is required to run this function. If you are unsure of the correct site name abbreviation, please see a complete site list here: https://www.neonscience.org/field-sites/field-sites-map/list")
+  }
+
+  # error message if year is left blank
+  if(regexpr('[[:digit:]]{4}', year)!=1) {
+    stop("An year of interest is required to run this function (i.e., '2017').")
   }
 
   # query the products endpoint for the product requested
@@ -153,7 +163,7 @@ byFileAOP <- function(dpID, site="SJER", year="2017", check.size=TRUE, savepath=
   }
   utils::setTxtProgressBar(pb, 1)
   close(pb)
-  
+
   writeLines(paste("Successfully downloaded ", length(messages), " files."))
   writeLines(paste0(messages, collapse = "\n"))
 }
