@@ -53,7 +53,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
 
   # error message if year is left blank
-  if(regexpr('[[:alpha:]]{4}', site)!=1) {
+  if(regexpr('[[:digit:]]{4}', year)!=1) {
     stop("An year of interest is required to run this function (i.e., '2017').")
   }
 
@@ -171,54 +171,6 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
           tileNorthing <- c(tileNorthing, northingPlus[k])
         }
       }
-    }
-  }
-
-  # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
-  getTileUrls <- function(m.urls){
-    url.messages <- character()
-    file.urls <- c(NA, NA, NA)
-    for(i in 1:length(m.urls)) {
-      tmp <- httr::GET(m.urls[i])
-      tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
-                                      simplifyDataFrame=T, flatten=T)
-
-      # check for no files
-      if(length(tmp.files$data$files)==0) {
-        url.messages <- c(url.messages, paste("No files found for site", tmp.files$data$siteCode,
-                                      "and year", tmp.files$data$month, sep=" "))
-        next
-      }
-
-      # filter to only files for the relevant tiles
-      ind <- numeric()
-      for(j in 1:length(tileEasting)) {
-        ind.j <- intersect(grep(tileEasting[j], tmp.files$data$files$name),
-                           grep(tileNorthing[j], tmp.files$data$files$name))
-        if(length(ind.j)>0) {
-          ind <- c(ind, ind.j)
-        } else {
-          url.messages <- c(url.messages, paste("No tiles found for easting ",
-                                                tileEasting[j], "and northing ",
-                                                tileNorthing[j]))
-        }
-      }
-      ind <- unique(ind)
-      tile.files <- tmp.files$data$files[ind,]
-
-      file.urls <- rbind(file.urls, cbind(tile.files$name,
-                                          tile.files$url,
-                                          tile.files$size))
-
-      # get size info
-      file.urls <- data.frame(file.urls, row.names=NULL)
-      colnames(file.urls) <- c("name", "URL", "size")
-      file.urls$URL <- as.character(file.urls$URL)
-      file.urls$name <- as.character(file.urls$name)
-
-      if(length(url.messages) > 0){writeLines(url.messages)}
-      file.urls <- file.urls[-1, ]
-      return(file.urls)
     }
   }
 
