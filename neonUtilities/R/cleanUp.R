@@ -21,7 +21,7 @@
 ##############################################################################################
 cleanUp <- function(folder, orig) {
 
-  zipPattern <- paste(zipList, collapse = '|')
+  zipPattern <- paste(orig, collapse = '|')
   currentFileList <- list.files(folder, full.names = TRUE, pattern = zipPattern)
 
   if(length(currentFileList) > 0) {
