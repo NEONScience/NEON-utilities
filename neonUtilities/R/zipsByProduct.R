@@ -202,8 +202,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   while(i <= nrow(zip.urls)) {
     counter<- counter + 1
 
-    if (counter > 2) {
-      stop(paste0("\nURL query ", zip.urls$name[i],
+    if (counter > 3) {
+      cat(paste0("\nURL query ", zip.urls$name[i],
                   " failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
     } else {
       zip_out <- paste(filepath, zip.urls$name[i], sep="/")
