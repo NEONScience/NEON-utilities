@@ -46,12 +46,12 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
 
   # error message if site is left blank
   if(regexpr('[[:alpha:]]{4}', site)!=1) {
-    stop("An abbreviated, four letter site name is required to run this function. If you are unsure of the correct site name abbreviation, please see a complete site list here: https://www.neonscience.org/field-sites/field-sites-map/list")
+    stop("A four-letter site code is required. NEON sites codes can be found here: https://www.neonscience.org/field-sites/field-sites-map/list")
   }
 
   # error message if year is left blank
   if(regexpr('[[:digit:]]{4}', year)!=1) {
-    stop("An year of interest is required to run this function (i.e., '2017').")
+    stop("Year is required (e.g. '2017').")
   }
 
   # error message if easting and northing vector lengths don't match
@@ -207,8 +207,8 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   while(j <= nrow(file.urls.current)) {
     counter<- counter + 1
 
-    if (counter > 2) {
-      stop(paste0("\nURL query for site (", site, ') and year (', year,
+    if (counter > 3) {
+      cat(paste0("\nURL query for site (", site, ') and year (', year,
                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
     } else {
       path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
@@ -235,7 +235,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
 
       } else {
         messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
-        j = j + 1
+        j <- j + 1
         counter <- 1
       }
 
