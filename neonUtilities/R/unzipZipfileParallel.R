@@ -41,10 +41,10 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
           file.remove(o) }
       },
       outpath=outpath, cl=cl)
-      return(zps)
 
     } else {
       writeLines("This zip file doesn't contain monthly data packages") }
+    return(zps)
   }
 
   if(level == "in") {
@@ -60,16 +60,17 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
         o <- paste0(outpath, "/", basename(unlist(z)))
         if(!file.exists(substr(o, 1, nchar(o)-4))) {
           utils::unzip(z, exdir=substr(o, 1, nchar(o)-4))
-          if (file.exists(z)) {
-            file.remove(z) }
         } else {
           writeLines(paste0("Skipping ",  z, " because these files have already been unpacked."))
+        }
+        if (file.exists(z)) {
+            file.remove(z)
           }
         },
         outpath=outpath, cl=cl)
-      return(zps)
     } else {
         writeLines("This zip file doesn't contain monthly data packages")
-      }
+    }
+    return(zps)
   }
 }
