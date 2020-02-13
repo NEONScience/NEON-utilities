@@ -21,11 +21,11 @@
 ##############################################################################################
 cleanUp <- function(folder, orig) {
 
-  dirs <- orig[grep('.zip', orig)]
-  dirs <- gsub('.zip', '', dirs)
+  zipPattern <- paste(zipList, collapse = '|')
+  currentFileList <- list.files(folder, full.names = TRUE, pattern = zipPattern)
 
-  if(length(dirs) > 0) {
-    unlink(dirs, recursive = TRUE)
+  if(length(currentFileList) > 0) {
+    unlink(currentFileList, recursive = TRUE)
     }
 
   writeLines("All unzipped monthly data folders have been removed.")
