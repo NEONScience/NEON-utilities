@@ -114,8 +114,10 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
     counter<- counter + 1
 
     if (counter > 3) {
-      stop(paste0("\nRefresh did not solve the isse. URL query for site (", site, ') and year (', year,
+      cat(paste0("\nRefresh did not solve the isse. URL query for site (", site, ') and year (', year,
                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+
+      j <- j + 1
     } else {
       path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
       pathparts <- strsplit(path1, "\\/")
