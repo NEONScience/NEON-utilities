@@ -75,7 +75,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
     stop("There are no data at the selected site and year.")
   }
 
-  file.urls.current <- getFileUrls(month.urls, tileEasting, tileNorthing)
+  file.urls.current <- getFileUrls(month.urls)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
@@ -135,7 +135,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
 
       if(inherits(t, "error")) {
         writeLines("File could not be downloaded. URLs may have expired. Refreshing URLs list.")
-        file.urls.new <- getFileUrls(month.urls, tileEasting, tileNorthing)
+        file.urls.new <- getFileUrls(month.urls)
         file.urls.current <- file.urls.new
 
       } else {
