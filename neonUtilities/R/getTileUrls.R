@@ -23,7 +23,7 @@
 ##############################################################################################
 
 # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
-getTileUrls <- function(m.urls){
+getTileUrls <- function(m.urls, tileEasting, tileNorthing){
 
   url.messages <- character()
   file.urls <- c(NA, NA, NA)

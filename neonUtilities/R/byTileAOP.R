@@ -171,7 +171,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     }
   }
 
-  file.urls.current <- getTileUrls(month.urls)
+  file.urls.current <- getTileUrls(month.urls, tileEasting, tileNorthing)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
@@ -208,7 +208,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     counter<- counter + 1
 
     if (counter > 3) {
-      cat(paste0("\nURL query for site (", site, ') and year (', year,
+      stop(paste0("\nURL query for site (", site, ') and year (', year,
                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
     } else {
       path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
@@ -229,7 +229,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
 
       if(inherits(t, "error")) {
         writeLines("File could not be downloaded. URLs may have expired. Trying new URLs.")
-        file.urls.new <- getTileUrls(month.urls)
+        file.urls.new <- getTileUrls(month.urls, tileEasting, tileNorthing)
         file.urls.current <- file.urls.new
 
 
