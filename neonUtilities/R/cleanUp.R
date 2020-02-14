@@ -28,5 +28,6 @@ cleanUp <- function(folder, orig) {
   csvfil <- fil[grep("csv", fil)]
   csvfil <- csvfil[!csvfil %in% orig]
   if(length(csvfil) > 0) {unlink(paste(folder, csvfil, sep="/"), recursive = FALSE)}
+  
   writeLines("All unzipped monthly data folders have been removed.")
 }
