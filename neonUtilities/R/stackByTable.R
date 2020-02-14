@@ -98,9 +98,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
     }
-    orig <- list.files(savepath)
     if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
+      zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
     }
   }
 
@@ -110,7 +109,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
       envt <- 1
     }
-    orig <- list.files(savepath, full.names = TRUE)
+    zipList <- files
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
     } else {
@@ -126,7 +125,14 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   stackDataFilesParallel(savepath, nCores, dpID)
   getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
 
-  if(saveUnzippedFiles == FALSE){cleanUp(savepath, orig)}
+  if(saveUnzippedFiles == FALSE){
+    zipList <- zipList %>%
+      unlist() %>%
+      basename() %>%
+      gsub('.zip', '', .)
+
+    cleanUp(savepath, zipList)
+    }
 
   if(envt==1) {
 
