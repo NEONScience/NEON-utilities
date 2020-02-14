@@ -75,7 +75,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
     stop("There are no data at the selected site and year.")
   }
 
-  file.urls.current <- getFileUrls(month.urls)
+  file.urls.current <- getFileUrls(month.urls, tileEasting, tileNorthing)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
@@ -114,7 +114,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
     counter<- counter + 1
 
     if (counter > 3) {
-      cat(paste0("\nRefresh did not solve the isse. URL query for site (", site, ') and year (', year,
+      stop(paste0("\nRefresh did not solve the isse. URL query for site (", site, ') and year (', year,
                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
     } else {
       path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
@@ -135,7 +135,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
 
       if(inherits(t, "error")) {
         writeLines("File could not be downloaded. URLs may have expired. Refreshing URLs list.")
-        file.urls.new <- getFileUrls(month.urls)
+        file.urls.new <- getFileUrls(month.urls, tileEasting, tileNorthing)
         file.urls.current <- file.urls.new
 
       } else {
