@@ -12,7 +12,7 @@ cleanUp(folder, orig)
 \item{orig}{The list of files that were present in the folder before unzipping and stacking}
 }
 \value{
-Any existing directory except for stackedFiles will be removed. Nothing is returned.
+Only the folders created during unzip will be deleted. All custom folders/files and the stackedFiles output folder will be retained.
 }
 \description{
 Remove unzipped monthly data folders
