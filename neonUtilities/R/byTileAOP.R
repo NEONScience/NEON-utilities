@@ -23,6 +23,8 @@
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
+#' @export
+
 # Changelog and author contributions / copyrights
 #   Claire Lunch (2018-02-19): original creation
 #   Christine Laney (2018-03-05): Added functionality to get new list of URLs if the old ones expire, during the download stream.
