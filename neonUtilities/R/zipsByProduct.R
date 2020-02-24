@@ -205,6 +205,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     if (counter > 3) {
       cat(paste0("\nURL query ", zip.urls$name[i],
                   " failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+      i = i + 1
     } else {
       zip_out <- paste(filepath, zip.urls$name[i], sep="/")
       if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out)) {
