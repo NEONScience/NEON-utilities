@@ -5,7 +5,7 @@
 #' Claire Lunch \email{clunch@battelleecology.org}
 #' Christine Laney \email{claney@battelleecology.org}
 
-#' @description
+#' @description Used to generate a data frame of available AOP files.
 #'
 #' @param m.urls The monthly API URL for the AOP files
 
