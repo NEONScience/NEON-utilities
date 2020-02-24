@@ -5,16 +5,16 @@
 #' Claire Lunch \email{clunch@battelleecology.org}
 #' Christine Laney \email{claney@battelleecology.org}
 
-#' @description
+#' @description Produces a data frame that is populated by available tiles for the AOP product.
 #'
 #' @param m.urls The monthly API URL for the AOP tile.
-
+#' @param tileEasting A vector containing the easting UTM coordinates of the locations to download.
+#' @param tileNorthing A vector containing the northing UTM coordinates of the locations to download.
+#'
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
-
-#' @export
 
 # Changelog and author contributions / copyrights
 #   Claire Lunch (2018-02-19): original creation
