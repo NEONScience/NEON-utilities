@@ -170,7 +170,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     }
   }
 
-  zip.urls <- getZipUrls(tmp.files) %>%
+  zip.urls <- getZipUrls(tmp.files, avg=avg, package=package) %>%
     tidyr::drop_na()
 
   downld.size <- sum(as.numeric(zip.urls$size), na.rm=T)/1e6
@@ -220,7 +220,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
         if(inherits(t, "error")) {
           writeLines("File could not be downloaded. URLs may have expired. Trying new URLs.")
-          zip.urls <- getZipUrls(tmp.files) %>%
+          zip.urls <- getZipUrls(tmp.files, avg=avg, package=package) %>%
             tidyr::drop_na()
         } else {
 
