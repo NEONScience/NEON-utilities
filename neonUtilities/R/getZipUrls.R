@@ -169,6 +169,7 @@ getZipUrls <- function(tmp.files, month.urls=month.urls, avg="all", package="bas
   # get size info
   zip.urls <- data.frame(zip.urls, row.names=NULL)
   colnames(zip.urls) <- c("name", "URL", "size")
+  zip.urls$size <- as.character(zip.urls$size)
   zip.urls$URL <- as.character(zip.urls$URL)
   zip.urls$name <- as.character(zip.urls$name)
 
