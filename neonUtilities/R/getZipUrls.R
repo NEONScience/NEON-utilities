@@ -5,17 +5,20 @@
 #' Claire Lunch \email{clunch@battelleecology.org}
 #' Christine Laney \email{claney@battelleecology.org}
 
-#' @description
+#' @description Used to generate a data frame of available zipfile URLs.
 #'
 #' @param tmp.files The monthly API URL for the AOP files
 #' @param month.urls The monthly API URL for the AOP files
+#' @param avg Global variable for averaging interval
+#' @param package Global varaible for package type (basic or expanded)
+#' @param max.pub Global variable for the most recent URL publication date
+#' @param max.pub.site Global variable for the most recent site  from publication date
+#' @param dpID Global variable for data product ID
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
-
-#' @export
 
 # Changelog and author contributions / copyrights
 #   Claire Lunch (2018-02-19): original creation
@@ -23,7 +26,7 @@
 
 ##############################################################################################
 
-getZipUrls <- function(tmp.files, month.urls=month.urls) {
+getZipUrls <- function(tmp.files, month.urls=month.urls, avg, package, max.pub, max.pub.site, dpID) {
   # stash the URLs for just the zips in an object
   zip.urls <- c(NA, NA, NA)
   for(i in 1:length(tmp.files)) {
@@ -166,7 +169,6 @@ getZipUrls <- function(tmp.files, month.urls=month.urls) {
   # get size info
   zip.urls <- data.frame(zip.urls, row.names=NULL)
   colnames(zip.urls) <- c("name", "URL", "size")
-  downld.size <- sum(as.numeric(as.character(zip.urls$size)), na.rm=T)/1e6
   zip.urls$URL <- as.character(zip.urls$URL)
   zip.urls$name <- as.character(zip.urls$name)
 
