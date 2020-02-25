@@ -6,8 +6,8 @@
 \usage{
 byTileAOP(
   dpID,
-  site = "SJER",
-  year = "2017",
+  site,
+  year,
   easting,
   northing,
   buffer = 0,
