@@ -7,8 +7,8 @@
 getZipUrls(
   tmp.files,
   month.urls = month.urls,
-  avg,
-  package,
+  avg = "all",
+  package = "basic",
   max.pub,
   max.pub.site,
   dpID

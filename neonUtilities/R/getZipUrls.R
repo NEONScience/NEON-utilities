@@ -26,7 +26,7 @@
 
 ##############################################################################################
 
-getZipUrls <- function(tmp.files, month.urls=month.urls, avg, package, max.pub, max.pub.site, dpID) {
+getZipUrls <- function(tmp.files, month.urls=month.urls, avg="all", package="basic", max.pub, max.pub.site, dpID) {
   # stash the URLs for just the zips in an object
   zip.urls <- c(NA, NA, NA)
   for(i in 1:length(tmp.files)) {
