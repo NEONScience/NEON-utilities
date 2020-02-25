@@ -170,9 +170,14 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     }
   }
 
+  zip.urls <- getZipUrls(tmp.files) %>%
+    tidyr::drop_na()
+
   # ask user if they want to proceed
   # can disable this with check.size=F
   if(check.size==TRUE) {
+    downld.size <- sum(as.numeric(as.character(zip.urls$size)), na.rm=T)/1e6
+
     resp <- readline(paste("Continuing will download files totaling approximately",
                            downld.size, "MB. Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) {
@@ -189,9 +194,6 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     filepath <- paste(savepath, "/filesToStack", substr(dpID, 5, 9), sep="")
   }
   dir.create(filepath)
-
-  zip.urls <- getZipUrls(tmp.files) %>%
-    tidyr::drop_na()
 
   writeLines(paste("Downloading ", nrow(zip.urls), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
