@@ -7,13 +7,14 @@
 
 #' @description Used to generate a data frame of available zipfile URLs.
 #'
-#' @param tmp.files The monthly API URL for the AOP files
-#' @param month.urls The monthly API URL for the AOP files
+#' @param tmp.files The monthly API URL for the URL files
+#' @param month.urls The monthly API URL for the URL files
 #' @param avg Global variable for averaging interval
 #' @param package Global varaible for package type (basic or expanded)
 #' @param max.pub Global variable for the most recent URL publication date
 #' @param max.pub.site Global variable for the most recent site  from publication date
 #' @param dpID Global variable for data product ID
+#' @param messages Error/warning messages from previous steps
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
@@ -26,7 +27,7 @@
 
 ##############################################################################################
 
-getZipUrls <- function(tmp.files, month.urls=month.urls, avg, package, max.pub, max.pub.site, dpID) {
+getZipUrls <- function(tmp.files, month.urls, avg, package, max.pub, max.pub.site, dpID, messages) {
   # stash the URLs for just the zips in an object
   zip.urls <- c(NA, NA, NA)
   for(i in 1:length(tmp.files)) {
@@ -172,6 +173,8 @@ getZipUrls <- function(tmp.files, month.urls=month.urls, avg, package, max.pub, 
   zip.urls$URL <- as.character(zip.urls$URL)
   zip.urls$name <- as.character(zip.urls$name)
   zip.urls$size <- as.character(zip.urls$size)
+
+  writeLines(paste0(messages[-1], collapse = "\n"))
 
   return(zip.urls)
 }

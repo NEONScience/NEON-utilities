@@ -6,18 +6,19 @@
 \usage{
 getZipUrls(
   tmp.files,
-  month.urls = month.urls,
-  avg = "all",
-  package = "basic",
+  month.urls,
+  avg,
+  package,
   max.pub,
   max.pub.site,
-  dpID
+  dpID,
+  messages
 )
 }
 \arguments{
-\item{tmp.files}{The monthly API URL for the AOP files}
+\item{tmp.files}{The monthly API URL for the URL files}
 
-\item{month.urls}{The monthly API URL for the AOP files}
+\item{month.urls}{The monthly API URL for the URL files}
 
 \item{avg}{Global variable for averaging interval}
 
@@ -28,6 +29,8 @@ getZipUrls(
 \item{max.pub.site}{Global variable for the most recent site  from publication date}
 
 \item{dpID}{Global variable for data product ID}
+
+\item{messages}{Error/warning messages from previous steps}
 }
 \value{
 A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
