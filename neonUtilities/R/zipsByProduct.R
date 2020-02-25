@@ -173,11 +173,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   zip.urls <- getZipUrls(tmp.files) %>%
     tidyr::drop_na()
 
+  downld.size <- sum(as.numeric(zip.urls$size), na.rm=T)/1e6
+
   # ask user if they want to proceed
   # can disable this with check.size=F
   if(check.size==TRUE) {
-    downld.size <- sum(as.numeric(as.character(zip.urls$size)), na.rm=T)/1e6
-
     resp <- readline(paste("Continuing will download files totaling approximately",
                            downld.size, "MB. Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) {
@@ -199,21 +199,22 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
 
+  j <- 1
   counter<- 1
 
-  while(i <= nrow(zip.urls)) {
-    counter<- counter + 1
+  while(j <= nrow(zip.urls)) {
+    counter <- counter + 1
 
     if (counter > 3) {
-      cat(paste0("\nURL query ", zip.urls$name[i],
+      cat(paste0("\nURL query ", zip.urls$name[j],
                   " failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
-      i = i + 1
+      j <- j + 1
     } else {
-      zip_out <- paste(filepath, zip.urls$name[i], sep="/")
+      zip_out <- paste(filepath, zip.urls$name[j], sep="/")
       if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out)) {
         t <- tryCatch(
           {
-            downloader::download(zip.urls$URL[i], zip_out,
+            downloader::download(zip.urls$URL[j], zip_out,
                                  mode="wb", quiet=T)
           }, error = function(e) { e } )
 
@@ -221,14 +222,14 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           writeLines("File could not be downloaded. URLs may have expired. Trying new URLs.")
           zip.urls <- getZipUrls(tmp.files) %>%
             tidyr::drop_na()
-
         } else {
-          messages[i] <- paste(zip.urls$name[i], "downloaded to", zip_out, sep=" ")
-          i = i + 1
+
+          messages[j] <- paste(zip.urls$name[j], "downloaded to", zip_out, sep=" ")
+          j = j + 1
           counter <- 1
         }
       }
-      utils::setTxtProgressBar(pb, i/(nrow(zip.urls)-1))
+      utils::setTxtProgressBar(pb, j/(nrow(zip.urls)-1))
     }
   }
 
