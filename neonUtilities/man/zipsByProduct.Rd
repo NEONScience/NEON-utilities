@@ -4,9 +4,17 @@
 \alias{zipsByProduct}
 \title{Get files from NEON API to feed the stackByTable() function}
 \usage{
-zipsByProduct(dpID, site = "all", startdate = NA, enddate = NA,
-  package = "basic", avg = "all", check.size = TRUE, savepath = NA,
-  load = F)
+zipsByProduct(
+  dpID,
+  site = "all",
+  startdate = NA,
+  enddate = NA,
+  package = "basic",
+  avg = "all",
+  check.size = TRUE,
+  savepath = NA,
+  load = F
+)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}

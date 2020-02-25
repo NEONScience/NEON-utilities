@@ -4,8 +4,7 @@
 \alias{getTaxonTable}
 \title{Get NEON taxon table}
 \usage{
-getTaxonTable(taxonType = NA, recordReturnLimit = NA,
-  stream = "true")
+getTaxonTable(taxonType = NA, recordReturnLimit = NA, stream = "true")
 }
 \arguments{
 \item{taxonType}{Character string for the taxonTypeCode. Must be one of ALGAE, BEETLE, BIRD,

@@ -4,9 +4,14 @@
 \alias{zipsByURI}
 \title{Get files from NEON ECS Bucket using URLs in stacked data}
 \usage{
-zipsByURI(filepath, savepath = paste0(filepath, "/ECS_zipFiles"),
-  pick.files = FALSE, check.size = TRUE, unzip = TRUE,
-  saveZippedFiles = FALSE)
+zipsByURI(
+  filepath,
+  savepath = paste0(filepath, "/ECS_zipFiles"),
+  pick.files = FALSE,
+  check.size = TRUE,
+  unzip = TRUE,
+  saveZippedFiles = FALSE
+)
 }
 \arguments{
 \item{filepath}{The location of the NEON data containing URIs}

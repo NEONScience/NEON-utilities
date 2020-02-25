@@ -4,12 +4,18 @@
 \alias{getDatatable}
 \title{Get NEON data table}
 \usage{
-getDatatable(dpid = NA, data_table_name = NA,
-  sample_location_list = NA, sample_location_type = "siteID",
-  sample_date_min = "2012-01-01", sample_date_max = Sys.Date(),
-  sample_date_format = "\%Y-\%m-\%d", data_package_type = "basic",
+getDatatable(
+  dpid = NA,
+  data_table_name = NA,
+  sample_location_list = NA,
+  sample_location_type = "siteID",
+  sample_date_min = "2012-01-01",
+  sample_date_max = Sys.Date(),
+  sample_date_format = "\%Y-\%m-\%d",
+  data_package_type = "basic",
   url_prefix_data = "https://data.neonscience.org/api/v0/data/",
-  url_prefix_products = "https://data.neonscience.org/api/v0/products/")
+  url_prefix_products = "https://data.neonscience.org/api/v0/products/"
+)
 }
 \arguments{
 \item{dpid}{character sting for NEON data product ID}
