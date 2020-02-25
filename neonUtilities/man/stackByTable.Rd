@@ -4,8 +4,14 @@
 \alias{stackByTable}
 \title{Join data files in a zipped NEON data package by table type}
 \usage{
-stackByTable(filepath, savepath = NA, folder = FALSE,
-  saveUnzippedFiles = FALSE, dpID = NA, nCores = 1)
+stackByTable(
+  filepath,
+  savepath = NA,
+  folder = FALSE,
+  saveUnzippedFiles = FALSE,
+  dpID = NA,
+  nCores = 1
+)
 }
 \arguments{
 \item{filepath}{The location of the zip file}

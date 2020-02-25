@@ -20,13 +20,14 @@
 #   Nathan Mietkiewicz (2020-02-12)
 ##############################################################################################
 cleanUp <- function(folder, orig) {
-
-  zipPattern <- paste(orig, collapse = '|')
-  currentFileList <- list.files(folder, full.names = TRUE, pattern = zipPattern)
-
-  if(length(currentFileList) > 0) {
-    unlink(currentFileList, recursive = TRUE)
-    }
-
+  dirs <- list.dirs(folder, recursive = FALSE)
+  dirsNotStacked <- dirs[-grep(pattern = "stackedFiles", x = dirs)]
+  dirsNotStacked <- dirsNotStacked[!dirsNotStacked %in% orig]
+  if(length(dirsNotStacked) > 0) {unlink(dirsNotStacked, recursive = TRUE)}
+  fil <- list.files(folder, recursive = FALSE)
+  csvfil <- fil[grep("csv", fil)]
+  csvfil <- csvfil[!csvfil %in% orig]
+  if(length(csvfil) > 0) {unlink(paste(folder, csvfil, sep="/"), recursive = FALSE)}
+  
   writeLines("All unzipped monthly data folders have been removed.")
 }

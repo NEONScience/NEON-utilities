@@ -4,8 +4,12 @@
 \alias{unzipZipfileParallel}
 \title{Unzip a zip file either at just the top level or recursively through the file}
 \usage{
-unzipZipfileParallel(zippath, outpath = substr(zippath, 1, nchar(zippath)
-  - 4), level = "all", nCores = 1)
+unzipZipfileParallel(
+  zippath,
+  outpath = substr(zippath, 1, nchar(zippath) - 4),
+  level = "all",
+  nCores = 1
+)
 }
 \arguments{
 \item{zippath}{The filepath of the input file}
