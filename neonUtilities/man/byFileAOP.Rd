@@ -4,8 +4,7 @@
 \alias{byFileAOP}
 \title{Serially download all AOP files for a given site, year, and product}
 \usage{
-byFileAOP(dpID, site = "SJER", year = "2017", check.size = TRUE,
-  savepath = NA)
+byFileAOP(dpID, site, year, check.size = TRUE, savepath = NA)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}

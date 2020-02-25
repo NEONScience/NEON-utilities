@@ -4,8 +4,7 @@
 \alias{getPackage}
 \title{Get NEON data package}
 \usage{
-getPackage(dpID, site_code, year_month, package = "basic",
-  savepath = getwd())
+getPackage(dpID, site_code, year_month, package = "basic", savepath = getwd())
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}

@@ -4,8 +4,16 @@
 \alias{byTileAOP}
 \title{Download AOP tiles overlapping specified coordinates for a given site, year, and product}
 \usage{
-byTileAOP(dpID, site = "SJER", year = "2017", easting, northing,
-  buffer = 0, check.size = TRUE, savepath = NA)
+byTileAOP(
+  dpID,
+  site = "SJER",
+  year = "2017",
+  easting,
+  northing,
+  buffer = 0,
+  check.size = TRUE,
+  savepath = NA
+)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
