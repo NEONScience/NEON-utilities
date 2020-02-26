@@ -174,18 +174,18 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                          max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
     tidyr::drop_na()
 
-  downld.size <- sum(as.numeric(zip.urls$size), na.rm=T)/1e6
+  downld.size <- humanReadable(sum(as.numeric(zip.urls$size), na.rm=T))
 
   # ask user if they want to proceed
   # can disable this with check.size=F
   if(check.size==TRUE) {
-    resp <- readline(paste("Continuing will download files totaling approximately",
-                           downld.size, "MB. Do you want to proceed y/n: ", sep=" "))
+    resp <- readline(paste0("Continuing will download files totaling approximately ",
+                           downld.size, ". Do you want to proceed y/n: "))
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
     }
   } else {
-    cat(paste("Downloading files totaling approximately", downld.size, "MB\n", sep=" "))
+    cat(paste0("Downloading files totaling approximately ", downld.size, "\n"))
   }
 
   # create folder in working directory or savepath to put files in
@@ -225,8 +225,6 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                                  max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
             tidyr::drop_na()
         } else {
-
-          messages[j] <- paste(zip.urls$name[j], "downloaded to", zip_out, sep=" ")
           j = j + 1
           counter <- 1
         }
@@ -237,6 +235,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   utils::setTxtProgressBar(pb, 1)
   close(pb)
+
+  if(load==F) {
+    messages <- c(messages, paste(nrow(zip.urls)-1, "files downloaded to",
+                                  filepath, sep=" "))
+  }
 
   writeLines(paste0(messages[-1], collapse = "\n"))
 }
