@@ -210,13 +210,14 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       cat(paste0("\nURL query ", zip.urls$name[j],
                   " failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
       j <- j + 1
+      counter <- 1
     } else {
       zip_out <- paste(filepath, zip.urls$name[j], sep="/")
       if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out)) {
         t <- tryCatch(
           {
-            downloader::download(zip.urls$URL[j], zip_out,
-                                 mode="wb", quiet=T)
+            suppressWarnings(downloader::download(zip.urls$URL[j], zip_out,
+                                 mode="wb", quiet=T))
           }, error = function(e) { e } )
 
         if(inherits(t, "error")) {
