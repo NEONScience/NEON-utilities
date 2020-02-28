@@ -55,7 +55,7 @@ footRaster <- function(filepath) {
                                                                    split="/", fixed=T)))-1)],
                        collapse="/")
   } else {
-    files <- list.files(filepath, recursive=T)
+    files <- list.files(filepath, recursive=F)
   }
   
   # unzip files if necessary
@@ -63,7 +63,7 @@ footRaster <- function(filepath) {
     for(i in 1:length(files)) {
       utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
     }
-    files <- list.files(filepath, recursive=T)
+    files <- list.files(filepath, recursive=F)
   }
   
   files <- files[grep(".h5", files)]
