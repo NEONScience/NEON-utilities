@@ -204,11 +204,10 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   counter<- 1
 
   while(j <= nrow(zip.urls)) {
-    counter <- counter + 1
 
     if (counter > 3) {
       cat(paste0("\nURL query ", zip.urls$name[j],
-                  " failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+                 " failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
       j <- j + 1
       counter <- 1
     } else {
@@ -217,19 +216,30 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         t <- tryCatch(
           {
             suppressWarnings(downloader::download(zip.urls$URL[j], zip_out,
-                                 mode="wb", quiet=T))
+                                                  mode="wb", quiet=T))
           }, error = function(e) { e } )
 
         if(inherits(t, "error")) {
-          writeLines("File could not be downloaded. URLs may have expired. Trying new URLs.")
-          zip.urls <- getZipUrls(tmp.files, month.urls=month.urls, avg=avg, package=package,
-                                 max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
-            tidyr::drop_na()
+          writeLines(paste0(zip.urls$name[j], " could not be downloaded. URLs may have expired. Trying new URLs."))
+
+          quiet <- function(x) {
+            sink(tempfile())
+            on.exit(sink())
+            invisible(force(x))
+          }
+
+          zip.urls <- quiet(getZipUrls(tmp.files.new, month.urls=month.urls, avg=avg, package=package,
+                                       max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
+                              tidyr::drop_na())
+
+          counter <- counter + 1
+
         } else {
-          j = j + 1
+          j <- j + 1
           counter <- 1
         }
       }
+
       utils::setTxtProgressBar(pb, j/(nrow(zip.urls)-1))
     }
   }
@@ -238,8 +248,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   close(pb)
 
   if(load==F) {
-    messages <- c(messages, paste(nrow(zip.urls)-1, "files downloaded to",
-                                  filepath, sep=" "))
+    messages <- c(messages, paste0(nrow(zip.urls), " files successfully downloaded to ", filepath))
   }
 
   writeLines(paste0(messages[-1], collapse = "\n"))
