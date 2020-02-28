@@ -16,12 +16,6 @@ getZipUrls(month.urls, avg, package, dpID, messages)
 \item{dpID}{Global variable for data product ID}
 
 \item{messages}{Error/warning messages from previous steps}
-
-\item{tmp.files}{The monthly API URL for the URL files}
-
-\item{max.pub}{Global variable for the most recent URL publication date}
-
-\item{max.pub.site}{Global variable for the most recent site  from publication date}
 }
 \value{
 A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
