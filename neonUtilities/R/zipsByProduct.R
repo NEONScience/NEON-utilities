@@ -188,8 +188,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
             invisible(force(x))
           }
 
-          zip.urls <- quiet(getZipUrls(month.urls, avg=avg, package=package,
-                                       max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
+          zip.urls <- quiet(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages) %>%
                               tidyr::drop_na())
 
           counter <- counter + 1

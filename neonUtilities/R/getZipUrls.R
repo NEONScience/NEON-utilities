@@ -27,7 +27,7 @@
 
 ##############################################################################################
 
-getZipUrls <- function(month.urls, avg, package, max.pub, max.pub.site, dpID, messages) {
+getZipUrls <- function(month.urls, avg, package, dpID, messages) {
 
   # get all the file names
   tmp.files <- list(length(month.urls))
