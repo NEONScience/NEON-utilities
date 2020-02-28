@@ -244,7 +244,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
       verListSub <- timeMergList[which(profNames==nm)]
       
       # stack contents
-      verMergList[[o]] <- data.table::rbindlist(verListSub, fill=T)
+      verMergList[[o]] <- data.frame(data.table::rbindlist(verListSub, fill=T))
     }
     
     timeMergList <- verMergList
