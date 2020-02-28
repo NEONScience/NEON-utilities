@@ -130,8 +130,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("There are no data at the selected date(s).")
   }
 
-  zip.urls <- getZipUrls(month.urls, avg=avg, package=package,
-                         max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
+  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages) %>%
     tidyr::drop_na()
 
   downld.size <- humanReadable(sum(as.numeric(zip.urls$size), na.rm=T))
@@ -188,8 +187,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
             invisible(force(x))
           }
 
-          zip.urls <- quiet(getZipUrls(month.urls, avg=avg, package=package,
-                                       max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
+          zip.urls <- quiet(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages) %>%
                               tidyr::drop_na())
 
           counter <- counter + 1

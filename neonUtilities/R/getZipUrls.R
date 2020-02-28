@@ -7,12 +7,9 @@
 
 #' @description Used to generate a data frame of available zipfile URLs.
 #'
-#' @param tmp.files The monthly API URL for the URL files
 #' @param month.urls The monthly API URL for the URL files
 #' @param avg Global variable for averaging interval
 #' @param package Global varaible for package type (basic or expanded)
-#' @param max.pub Global variable for the most recent URL publication date
-#' @param max.pub.site Global variable for the most recent site  from publication date
 #' @param dpID Global variable for data product ID
 #' @param messages Error/warning messages from previous steps
 
@@ -27,7 +24,7 @@
 
 ##############################################################################################
 
-getZipUrls <- function(month.urls, avg, package, max.pub, max.pub.site, dpID, messages) {
+getZipUrls <- function(month.urls, avg, package, dpID, messages) {
 
   # get all the file names
   tmp.files <- list(length(month.urls))

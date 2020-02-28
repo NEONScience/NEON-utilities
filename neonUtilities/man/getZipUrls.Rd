@@ -4,7 +4,7 @@
 \alias{getZipUrls}
 \title{Get and store the file names, S3 URLs, file size, and download status (default = 0) in a data frame}
 \usage{
-getZipUrls(month.urls, avg, package, max.pub, max.pub.site, dpID, messages)
+getZipUrls(month.urls, avg, package, dpID, messages)
 }
 \arguments{
 \item{month.urls}{The monthly API URL for the URL files}
@@ -13,15 +13,15 @@ getZipUrls(month.urls, avg, package, max.pub, max.pub.site, dpID, messages)
 
 \item{package}{Global varaible for package type (basic or expanded)}
 
-\item{max.pub}{Global variable for the most recent URL publication date}
-
-\item{max.pub.site}{Global variable for the most recent site  from publication date}
-
 \item{dpID}{Global variable for data product ID}
 
 \item{messages}{Error/warning messages from previous steps}
 
 \item{tmp.files}{The monthly API URL for the URL files}
+
+\item{max.pub}{Global variable for the most recent URL publication date}
+
+\item{max.pub.site}{Global variable for the most recent site  from publication date}
 }
 \value{
 A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
