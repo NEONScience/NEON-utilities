@@ -130,47 +130,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("There are no data at the selected date(s).")
   }
 
-  # get all the file names
-  tmp.files <- list(length(month.urls))
-  for(j in 1:length(month.urls)) {
-    tmp.files[[j]] <- httr::GET(month.urls[j])
-    if(tmp.files[[j]]$status_code==500) {
-      messages <- c(messages, paste("Query for url ", month.urls[j],
-                                    " failed. API may be unavailable; check data portal data.neonscience.org for outage alert.",
-                                    sep=""))
-      next
-    }
-    tmp.files[[j]] <- jsonlite::fromJSON(httr::content(tmp.files[[j]], as="text"),
-                                    simplifyDataFrame=T, flatten=T)
-  }
-
-  # identify index of most recent publication date, and most recent publication date by site
-  rdme.nm <- character(length(tmp.files))
-  site.nm <- character(length(tmp.files))
-  for(k in 1:length(tmp.files)) {
-    if(length(tmp.files[[k]]$data$files)!=0) {
-      rdme.nm[k] <- tmp.files[[k]]$data$files$name[grep("readme", tmp.files[[k]]$data$files$name)[1]]
-      if(nchar(rdme.nm[k])==0) {
-        next
-      }
-      site.nm[k] <- substring(rdme.nm[k], 10, 13)
-      rdme.nm[k] <- substring(rdme.nm[k], nchar(rdme.nm[k])-19, nchar(rdme.nm[k])-4)
-    }
-  }
-  max.pub <- which(rdme.nm==max(rdme.nm, na.rm=T))[1]
-  if(length(unique(site.nm))==1) {
-    max.pub.site <- max.pub
-  } else {
-    max.pub.site <- numeric(length(unique(site.nm)))
-    max.site.val <- tapply(rdme.nm, site.nm, max, na.rm=T)
-    ind <- 0
-    for(m in unique(site.nm)) {
-      ind <- ind + 1
-      max.pub.site[ind] <- which(rdme.nm==max.site.val[m] & site.nm==m)[1]
-    }
-  }
-
-  zip.urls <- getZipUrls(tmp.files, month.urls=month.urls, avg=avg, package=package,
+  zip.urls <- getZipUrls(month.urls, avg=avg, package=package,
                          max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
     tidyr::drop_na()
 
@@ -228,7 +188,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
             invisible(force(x))
           }
 
-          zip.urls <- quiet(getZipUrls(tmp.files.new, month.urls=month.urls, avg=avg, package=package,
+          zip.urls <- quiet(getZipUrls(month.urls, avg=avg, package=package,
                                        max.pub=max.pub, max.pub.site=max.pub.site, dpID=dpID, messages=messages) %>%
                               tidyr::drop_na())
 
