@@ -131,14 +131,22 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages) {
       # add url for most recent variables & readme
       if(i==max.pub) {
         which.var <- grep("variables", tmp.files[[i]]$data$files$name, fixed=T)[1]
-        zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.var],
-                                          tmp.files[[i]]$data$files$url[which.var],
-                                          tmp.files[[i]]$data$files$size[which.var]))
+        if(is.na(which.var)) {
+          zip.urls <- zip.urls
+        } else {
+          zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.var],
+                                            tmp.files[[i]]$data$files$url[which.var],
+                                            tmp.files[[i]]$data$files$size[which.var]))
+        }
 
         which.read <- grep("readme", tmp.files[[i]]$data$files$name, fixed=T)[1]
-        zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.read],
-                                          tmp.files[[i]]$data$files$url[which.read],
-                                          tmp.files[[i]]$data$files$size[which.read]))
+        if(is.na(which.read)) {
+          zip.urls <- zip.urls
+        } else {
+          zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.read],
+                                            tmp.files[[i]]$data$files$url[which.read],
+                                            tmp.files[[i]]$data$files$size[which.read]))
+        }
 
       }
 
@@ -146,9 +154,13 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages) {
       if(i %in% max.pub.site) {
 
         which.sens <- grep("sensor_position", tmp.files[[i]]$data$files$name, fixed=T)[1]
-        zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.sens],
-                                          tmp.files[[i]]$data$files$url[which.sens],
-                                          tmp.files[[i]]$data$files$size[which.sens]))
+        if(is.na(which.sens)) {
+          zip.urls <- zip.urls
+        } else {
+          zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.sens],
+                                            tmp.files[[i]]$data$files$url[which.sens],
+                                            tmp.files[[i]]$data$files$size[which.sens]))
+        }
 
       }
 
