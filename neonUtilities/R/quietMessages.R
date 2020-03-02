@@ -2,11 +2,11 @@
 #' @title Will suppress all output messages, while retaining the output dataframe
 
 #' @author
-#' Nate Mietkiewicz
+#' Nate Mietkiewicz \email{mietkiewicz@battelleecology.org}
 
 #' @description Used to quiet all output messages
 #'
-#' @param fileToBeQuieted Input to be quieted
+#' @param toBeQuieted Input to be quieted
 
 #' @return The expected output without associated messages/warnings.
 
@@ -18,8 +18,8 @@
 
 ##############################################################################################
 
-quietMessages <- function(fileToBeQuieted) {
+quietMessages <- function(toBeQuieted) {
   sink(tempfile())
   on.exit(sink())
-  invisible(force(x))
+  invisible(force(toBeQuieted))
 }
