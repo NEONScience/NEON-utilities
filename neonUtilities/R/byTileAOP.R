@@ -212,6 +212,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
 
       j <- j + 1
+      counter <- 1
     } else {
       path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
       pathparts <- strsplit(path1, "\\/")
