@@ -60,6 +60,11 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
   }
+  
+  # error message if field spectra data are attempted
+  if(dpID=='DP1.30012.001') {
+    stop('DP1.30012.001 is the Field spectral data product, which is published as tabular data. Use zipsByProduct() or loadByProduct() to download these data.')
+  }
 
   # error message if data are not from AOP
   if(avail$data$productScienceTeamAbbr!="AOP") {

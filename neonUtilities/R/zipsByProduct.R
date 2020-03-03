@@ -54,7 +54,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   # error message if dpID can't be downloaded by zipsByProduct()
-  if(substring(dpID, 5, 5)==3) {
+  if(substring(dpID, 5, 5)==3 & dpID!='DP1.30012.001') {
     stop(paste(dpID, "is a remote sensing data product. Use the byFileAOP() function.", sep=" "))
   }
 
