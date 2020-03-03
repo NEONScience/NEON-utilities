@@ -42,14 +42,14 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing){
     # filter to only files for the relevant tiles
     ind <- numeric()
     for(j in 1:length(tileEasting)) {
-      ind.j <- intersect(grep(tileEasting[j], tmp.files$data$files$name),
-                         grep(tileNorthing[j], tmp.files$data$files$name))
+      ind.j <- intersect(grep(paste('_', tileEasting[j], '_', sep=''), tmp.files$data$files$name),
+                         grep(paste('_', tileNorthing[j], '_', sep=''), tmp.files$data$files$name))
       if(length(ind.j)>0) {
         ind <- c(ind, ind.j)
       } else {
         url.messages <- c(url.messages, paste("No tiles found for easting ",
                                               tileEasting[j], "and northing ",
-                                              tileNorthing[j]))
+                                              tileNorthing[j], sep=""))
       }
     }
     ind <- unique(ind)
