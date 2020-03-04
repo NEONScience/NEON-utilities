@@ -60,6 +60,11 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
   }
+  
+  # error message if field spectra data are attempted
+  if(dpID=='DP1.30012.001') {
+    stop('DP1.30012.001 is the Field spectral data product, which is published as tabular data. Use zipsByProduct() or loadByProduct() to download these data.')
+  }
 
   # error message if data are not from AOP
   if(avail$data$productScienceTeamAbbr!="AOP") {
@@ -118,6 +123,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
                   ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
 
       j <- j + 1
+      counter <- 1
     } else {
       path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
       pathparts <- strsplit(path1, "\\/")

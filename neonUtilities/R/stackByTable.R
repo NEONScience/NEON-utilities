@@ -77,10 +77,12 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001, where the first placeholder must be between 1 and 4.", sep=" "))
   }
 
-  if(substr(dpID, 5, 5) == "3"){
+  # error message for AOP data
+  if(substr(dpID, 5, 5) == "3" & dpID!="DP1.30012.001"){
     stop("This is an AOP data product, files cannot be stacked. Use byFileAOP() or byTileAOP() if you would like to download data.")
   }
 
+  # error message for SAE data
   if(dpID == "DP4.00200.001"){
     stop("This eddy covariance data product is in HDF5 format and cannot be stacked.")
   }

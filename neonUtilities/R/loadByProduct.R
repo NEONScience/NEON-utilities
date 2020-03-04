@@ -51,13 +51,19 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
   }
   
-  # error message if dpID can't be downloaded by zipsByProduct()
-  if(substring(dpID, 5, 5)==3) {
+  # error message if for AOP data
+  if(substring(dpID, 5, 5)==3 & dpID!="DP1.30012.001") {
     stop(paste(dpID, "is a remote sensing data product and cannot be loaded directly to R with this function. Use the byFileAOP() function to download locally.", sep=" "))
   }
 
+  # error message for phenocam data
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
+  }
+  
+  # error message for SAE data
+  if(dpID == "DP4.00200.001"){
+    stop("The bundled eddy covariance data product cannot be stacked and loaded directly from download.\nTo use these data, download with zipsByProduct() and then stack with stackEddy().")
   }
   
   # create a temporary directory to save to
