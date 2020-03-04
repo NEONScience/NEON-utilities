@@ -55,11 +55,20 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   # error message if dpID can't be downloaded by zipsByProduct()
   if(substring(dpID, 5, 5)==3 & dpID!='DP1.30012.001') {
-    stop(paste(dpID, "is a remote sensing data product. Use the byFileAOP() function.", sep=" "))
+    stop(paste(dpID, "is a remote sensing data product. Use the byFileAOP() or byTileAOP() function.", sep=" "))
   }
 
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
+  }
+  
+  # error message for individual SAE products
+  if(dpID %in% c('DP1.00007.001','DP1.00010.001','DP1.00034.001','DP1.00035.001',
+                 'DP1.00036.001','DP1.00037.001','DP1.00099.001','DP1.00100.001',
+                 'DP2.00008.001','DP2.00009.001','DP2.00024.001','DP3.00008.001',
+                 'DP3.00009.001','DP3.00010.001','DP4.00002.001','DP4.00007.001',
+                 'DP4.00067.001','DP4.00137.001','DP4.00201.001')) {
+    stop(paste(dpID, 'is only available in the bundled eddy covariance data product. Download DP4.00200.001 to access these data.', sep=' '))
   }
 
   # query the products endpoint for the product requested
