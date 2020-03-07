@@ -62,7 +62,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
                                                                    split="/", fixed=T)))-1)],
                        collapse="/")
   } else {
-    files <- list.files(filepath, recursive=T)
+    files <- list.files(filepath, recursive=F)
   }
   
   # unzip files if necessary
@@ -70,9 +70,10 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     for(i in 1:length(files)) {
       utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
     }
-    files <- list.files(filepath, recursive=T)
+    files <- list.files(filepath, recursive=F)
   }
   
+  # only need to H5 files for data extraction
   files <- files[grep(".h5", files)]
   
   # make empty, named list for the data tables
@@ -90,7 +91,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     listObj <- base::try(rhdf5::h5ls(paste(filepath, files[i], sep="/")), silent=T)
     
     if(class(listObj)=="try-error") {
-      stop(paste("\n", paste(filepath, files[i], sep="/"), " could not be read.", sep=""))
+      cat(paste("\n", paste(filepath, files[i], sep="/"), " could not be read.", sep=""))
+      next
     }
     
     listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
@@ -121,6 +123,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
       gridInd <- 1:length(listDataName)
     }
     
+    # index that includes all filtering criteria
     ind <- intersect(intersect(levelInd, intersect(varInd, avgInd)), gridInd)
     
     # check that you haven't filtered to nothing
@@ -131,6 +134,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     
     listDataName <- listDataName[ind]
     
+    # add extracted data to the list
     tableList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
                                  file=paste(filepath, files[i], sep="/"), read.attributes=T)
     base::names(tableList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
@@ -190,27 +194,20 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   for(j in 1:length(timeMergList)) {
     
     # table to concatenate
-    nm <- names(timeMergList)[j]
+    nm <- base::names(timeMergList)[j]
     
     # subset to one site at a time
-    tableListSub <- tableList[grep(substring(nm, 1, 4), names(tableList))]
-    
-    # get full set of variable names for the table to concatenate
-    colN <- character()
+    tableListSub <- tableList[base::grep(substring(nm, 1, 4), base::names(tableList))]
+
+    # go through list of tables for the site, extract the table that matches current table name
+    tableListToMerge <- vector('list', length(tableListSub))
     for(k in 1:length(tableListSub)) {
-      colN <- c(colN, names(tableListSub[[k]][[nm]]))
+      tableListToMerge[[k]] <- tableListSub[[k]][[nm]]
     }
-    colN <- unique(colN)
     
-    # stack the tables
-    tempDF <- data.frame(rep(NA, length(colN)))
-    tempDF <- t(tempDF)
-    colnames(tempDF) <- colN
-    timeMergList[[j]] <- tempDF
-    for(k in 1:length(tableListSub)) {
-      timeMergList[[j]] <- rbind(timeMergList[[j]], tableListSub[[k]][[nm]])
-    }
-    timeMergList[[j]] <- timeMergList[[j]][-1,]
+    # stack list of tables with matching table name
+    timeMergList[[j]] <- data.frame(data.table::rbindlist(tableListToMerge, fill=T))
+    
     utils::setTxtProgressBar(pb2, j/length(timeMergList))
   }
   close(pb2)
@@ -246,22 +243,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
       # get matching tables
       verListSub <- timeMergList[which(profNames==nm)]
       
-      # get full set of variable names for the table to concatenate
-      colO <- character()
-      for(k in 1:length(verListSub)) {
-        colO <- c(colO, names(verListSub[[k]]))
-      }
-      colO <- unique(colO)
-      
-      # stack the tables
-      tempDF <- data.frame(rep(NA, length(colO)))
-      tempDF <- t(tempDF)
-      colnames(tempDF) <- colO
-      verMergList[[o]] <- tempDF
-      for(k in 1:length(verListSub)) {
-        verMergList[[o]] <- rbind(verMergList[[o]], verListSub[[k]])
-      }
-      verMergList[[o]] <- verMergList[[o]][-1,]
+      # stack contents
+      verMergList[[o]] <- data.frame(data.table::rbindlist(verListSub, fill=T))
     }
     
     timeMergList <- verMergList
@@ -307,7 +290,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
         substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)], 
                   11, nchar(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)]))
 
-      varMergTabl <- merge(varMergTabl, 
+      varMergTabl <- base::merge(varMergTabl, 
                            timeMergPerSite[[l]][,-which(names(timeMergPerSite[[l]])=="timeEnd")],
                            by=mergSet, all=T)
       idx <- idx + 1
