@@ -92,6 +92,31 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     stop("There are no data at the selected site and year.")
   }
 
+  # convert easting & northing coordinates for Blandy (BLAN)
+  # Blandy contains plots in 18N and plots in 17N; flight data are all in 17N
+  if(site=='BLAN' & length(which(easting<=250000))>0) {
+    easting17 <- easting[which(easting>250000)]
+    northing17 <- northing[which(easting>250000)]
+    
+    easting18 <- easting[which(easting<=250000)]
+    northing18 <- northing[which(easting<=250000)]
+    
+    df18 <- cbind(easting18, northing18)
+    df18 <- data.frame(df18)
+    names(df18) <- c('easting','northing')
+    
+    sp::coordinates(df18) <- c('easting', 'northing')
+    sp::proj4string(df18) <- sp::CRS('+proj=utm +zone=18N ellps=WGS84')
+    df18conv <- sp::spTransform(df18, sp::CRS('+proj=utm +zone=17N ellps=WGS84'))
+    
+    easting <- c(easting17, df18conv$easting)
+    northing <- c(northing17, df18conv$northing)
+    
+    cat('Blandy (BLAN) plots include two UTM zones, flight data are all in 17N. 
+        Coordinates in UTM zone 18N have been converted to 17N to download the correct tiles. 
+        You will need to make the same conversion to connect airborne to ground data.')
+  }
+  
   # get the tile corners for the coordinates
   tileEasting <- floor(easting/1000)*1000
   tileNorthing <- floor(northing/1000)*1000
@@ -171,7 +196,9 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     }
   }
 
-  file.urls.current <- getTileUrls(month.urls, tileEasting, tileNorthing)
+  file.urls.current <- getTileUrls(month.urls, 
+                                   format(tileEasting, scientific=F, justified='none'), 
+                                   format(tileNorthing, scientific=F, justified='none'))
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
