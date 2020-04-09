@@ -120,7 +120,25 @@ Disclaimer
 Change Log
 ----------
 
-#### 2019-01-07 v1.3.3
+#### 2020-04-09 v1.3.4
+----------
+Bug fixes:
+* `byFileAOP()` and `byTileAOP()` escape from infinite loops if availability is in error
+* file cleanup after `stackByTable()` deletes only files that went into the stacking
+* water quality (DP1.20288.001) error handling fixed
+* field spectra (DP1.30012.001) handling enabled - AOP functions error cleanly, OS/IS functions proceed
+* `stackEddy()` works on expanded package data again
+* `byTileAOP()` prevents conversion of coordinates to unreadable formats
+* `byTileAOP()` correctly handles sites that cross UTM zones
+* `byFileAOP()` and `byTileAOP()` handle download for sites that are included in other sites' flight boxes
+* `loadByProduct()` handles missing sensor_positions and readme files
+
+Enhancements:
+* `footRaster()` scales raster of flux footprint to geographical coordinates
+* `zipsByProduct()` regenerates URLs if they expire
+
+
+#### 2020-01-07 v1.3.3
 ----------
 Bug fixes:
 * readme file retention now works with `avg` input in `zipsByProduct()`

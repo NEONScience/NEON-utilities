@@ -31,7 +31,13 @@
 
 footRaster <- function(filepath) {
   
-  # first check for raster package
+  # first check for rhdf5 package
+  if(!requireNamespace("rhdf5", quietly=T)) {
+    stop("Package rhdf5 is required for this function to work.
+         \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
+  }
+  
+  # also check for raster package
   if(!requireNamespace("raster", quietly=T)) {
     stop("Package raster is required for this function to work. Install and re-try.")
   }

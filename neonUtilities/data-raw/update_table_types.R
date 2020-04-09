@@ -52,7 +52,7 @@ update_table_types <- function(){
                                    units=rep(NA,5),
                                    downloadPkg=rep('appended by stackByTable',5)))
   
-  usethis::use_data(table_types, added_fields, internal=TRUE, overwrite=TRUE)
+  usethis::use_data(table_types, added_fields, shared_flights, internal=TRUE, overwrite=TRUE)
   
 }
 

@@ -82,6 +82,20 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   if(avail$data$productScienceTeamAbbr!="AOP") {
     stop(paste(dpID, "is not a remote sensing product. Use zipsByProduct()"))
   }
+  
+  # check for sites that are flown under the flight box of a different site
+  if(site %in% shared_flights$site) {
+    flightSite <- shared_flights$flightSite[which(shared_flights$site==site)]
+    if(site %in% c('TREE','CHEQ','KONA')) {
+      cat(paste(site, ' is part of the flight box for ', flightSite, 
+                '. Downloading data from ', flightSite, '.\n', sep=''))
+    } else {
+      cat(paste(site, ' is an aquatic site and is sometimes included in the flight box for ', flightSite, 
+                '. Aquatic sites are not always included in flight coverage every year.\nDownloading data from ', 
+                flightSite, '. Check data to confirm coverage of ', site, '.\n', sep=''))
+    }
+    site <- flightSite
+  }
 
   # get the urls for months with data available, and subset to site
   month.urls <- unlist(avail$data$siteCodes$availableDataUrls)
@@ -211,7 +225,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
       stop("Download halted.")
     }
   } else {
-    cat(paste("Downloading files totaling approximately", downld.size.read, "MB\n", sep=" "))
+    cat(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
   }
 
   # create folder in working directory to put files in
