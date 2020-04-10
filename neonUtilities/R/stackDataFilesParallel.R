@@ -77,7 +77,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # find external lab tables (lab-current, lab-all) and copy the most recently published file from each lab into stackedFiles
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
     if(length(labTables)>0){
-      externalLabs <- unique(names(datafls)[grep(paste(labTables, collapse='|'), names(datafls))])
+      externalLabs <- unique(names(datafls)[grep(paste(paste('.', labTables, '.', sep=''), 
+                                                       collapse='|'), names(datafls))])
       
       pbapply::pblapply(as.list(externalLabs), function(x) {
         labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
@@ -151,7 +152,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
       writeLines(paste0("Stacking table ", tables[i]))
-      file_list <- filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]
+      file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
+                         filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
 
       if(tbltype == "site-all") {
         sites <- as.list(unique(substr(basename(file_list), 10, 13)))
