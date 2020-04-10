@@ -132,6 +132,7 @@ Bug fixes:
 * `byTileAOP()` correctly handles sites that cross UTM zones
 * `byFileAOP()` and `byTileAOP()` handle download for sites that are included in other sites' flight boxes
 * `loadByProduct()` handles missing sensor_positions and readme files
+* encoding specified in `readTableNEON()`
 
 Enhancements:
 * `footRaster()` scales raster of flux footprint to geographical coordinates

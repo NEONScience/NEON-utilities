@@ -53,7 +53,7 @@ readTableNEON <- function(dataFile, varFile){
   if(class(dataFile)=='character') {
     d <- suppressWarnings(utils::read.csv(dataFile, header=T, stringsAsFactors=F,
                          colClasses=c(horizontalPosition='character', verticalPosition='character'),
-                         na.strings=c('NA','')))
+                         na.strings=c('NA',''), encoding='UTF-8'))
   } else {
     d <- try(as.data.frame(dataFile, stringsAsFactors=F), silent=T)
     if(class(d)=='try-error') {
