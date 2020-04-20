@@ -14,6 +14,7 @@
 #' FISH, HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
 #' @param recordReturnLimit Integer. The number of items to limit the result set to. If NA, will return all records in table.
 #' @param stream Character string, true or false. Option to obtain the result as a stream. Utilize for large requests.
+#'#' @param token User specific API token (generated within neon.datascience user accounts)
 #'
 #' @return data frame with selected NEON data
 #'
@@ -39,7 +40,8 @@
 getTaxonTable <- function(
   taxonType = NA, #string, taxonTypeCode, one of ALGAE, GEETLE, BIRD, FISH, HERPETOLOY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
   recordReturnLimit = NA, #integer, The number of items to limit the result set to. If NA, will return all records in table.
-  stream = 'true' #string, Option to obtain the result as a stream. Utilize for large requests.
+  stream = 'true', #string, Option to obtain the result as a stream. Utilize for large requests.
+  token = NA
   ){
 
   # set options
@@ -65,7 +67,7 @@ getTaxonTable <- function(
   req.df <- data.frame()
   req <- NULL
 
-  try({req <- httr::GET(url_to_get)}, silent = TRUE)
+  try({req <- getAPI(apiURL = 'http://data.neonscience.org/api/v0/taxonomy?taxonTypeCode=', dpID = taxonType, token = token)}, silent = TRUE)
 
   # request code error handling
   if (req$status_code == 204) {

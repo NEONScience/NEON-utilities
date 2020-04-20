@@ -21,13 +21,12 @@
 ##############################################################################################
 
 # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
-getFileUrls <- function(m.urls){
+getFileUrls <- function(m.urls, token =NA){
   url.messages <- character()
   file.urls <- c(NA, NA, NA)
   for(i in 1:length(m.urls)) {
-    tmp <- httr::GET(m.urls[i])
-    tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
-                                    simplifyDataFrame=T, flatten=T)
+
+    tmp.files <- getAPI(apiURL = m.urls[i], dpID = NA, token = token)
 
     # check for no files
     if(length(tmp.files$data$files)==0) {
