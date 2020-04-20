@@ -17,6 +17,7 @@
 #' @param buffer Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0. If easting and northing coordinates are the centroids of NEON TOS plots, use buffer=20.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
+#' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
 
@@ -32,7 +33,7 @@
 ##############################################################################################
 
 byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
-                      check.size=TRUE, savepath=NA) {
+                      check.size=TRUE, savepath=NA, token = NA) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
@@ -69,9 +70,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
 
   # query the products endpoint for the product requested
-  productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
-  req <- httr::GET(productUrl)
-  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
+  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
 
   # error message if product not found
   if(!is.null(avail$error$status)) {
@@ -81,20 +80,6 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   # error message if data are not from AOP
   if(avail$data$productScienceTeamAbbr!="AOP") {
     stop(paste(dpID, "is not a remote sensing product. Use zipsByProduct()"))
-  }
-  
-  # check for sites that are flown under the flight box of a different site
-  if(site %in% shared_flights$site) {
-    flightSite <- shared_flights$flightSite[which(shared_flights$site==site)]
-    if(site %in% c('TREE','CHEQ','KONA')) {
-      cat(paste(site, ' is part of the flight box for ', flightSite, 
-                '. Downloading data from ', flightSite, '.\n', sep=''))
-    } else {
-      cat(paste(site, ' is an aquatic site and is sometimes included in the flight box for ', flightSite, 
-                '. Aquatic sites are not always included in flight coverage every year.\nDownloading data from ', 
-                flightSite, '. Check data to confirm coverage of ', site, '.\n', sep=''))
-    }
-    site <- flightSite
   }
 
   # get the urls for months with data available, and subset to site
@@ -106,31 +91,6 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     stop("There are no data at the selected site and year.")
   }
 
-  # convert easting & northing coordinates for Blandy (BLAN)
-  # Blandy contains plots in 18N and plots in 17N; flight data are all in 17N
-  if(site=='BLAN' & length(which(easting<=250000))>0) {
-    easting17 <- easting[which(easting>250000)]
-    northing17 <- northing[which(easting>250000)]
-    
-    easting18 <- easting[which(easting<=250000)]
-    northing18 <- northing[which(easting<=250000)]
-    
-    df18 <- cbind(easting18, northing18)
-    df18 <- data.frame(df18)
-    names(df18) <- c('easting','northing')
-    
-    sp::coordinates(df18) <- c('easting', 'northing')
-    sp::proj4string(df18) <- sp::CRS('+proj=utm +zone=18N ellps=WGS84')
-    df18conv <- sp::spTransform(df18, sp::CRS('+proj=utm +zone=17N ellps=WGS84'))
-    
-    easting <- c(easting17, df18conv$easting)
-    northing <- c(northing17, df18conv$northing)
-    
-    cat('Blandy (BLAN) plots include two UTM zones, flight data are all in 17N. 
-        Coordinates in UTM zone 18N have been converted to 17N to download the correct tiles. 
-        You will need to make the same conversion to connect airborne to ground data.')
-  }
-  
   # get the tile corners for the coordinates
   tileEasting <- floor(easting/1000)*1000
   tileNorthing <- floor(northing/1000)*1000
@@ -210,9 +170,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     }
   }
 
-  file.urls.current <- getTileUrls(month.urls, 
-                                   format(tileEasting, scientific=F, justified='none'), 
-                                   format(tileNorthing, scientific=F, justified='none'))
+  file.urls.current <- getTileUrls(month.urls, tileEasting, tileNorthing)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
@@ -225,7 +183,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
       stop("Download halted.")
     }
   } else {
-    cat(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
+    cat(paste("Downloading files totaling approximately", downld.size.read, "MB\n", sep=" "))
   }
 
   # create folder in working directory to put files in

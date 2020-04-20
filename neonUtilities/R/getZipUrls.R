@@ -26,6 +26,8 @@
 
 getZipUrls <- function(month.urls, avg, package, dpID, messages) {
 
+  require(tidyverse)
+  
   # get all the file names
   tmp.files <- list(length(month.urls))
   for(j in 1:length(month.urls)) {
