@@ -5,7 +5,7 @@
 #' Nate Mietkiewicz \email{mietkiewicz@battelleecology.org}
 
 #' @description
-#' 
+#'
 #'
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param apiURL The four-letter code of a single NEON site, e.g. 'CLBJ'.
@@ -18,23 +18,30 @@
 #   2020-03-21 (Nate Mietkiewicz): Created original function
 ##############################################################################################
 
-getAPI <- function(apiURL, dpID, token=NA){
-  
+getAPI <- function(apiURL, dpID = NA, token=NA){
+
   # query the products endpoint for the product requested
-  productUrl <- paste0(apiURL, dpID)
-  
-  if(is.na(token)) {
-    
-    req <- httr::GET(productUrl)
-    avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
-    
+  if(is.na(dpID)) {
+
+    productUrl <- apiURL
+
   } else {
-    req <- httr::GET(productUrl, 
+    productUrl <- paste0(apiURL, dpID)
+
+  }
+
+  if(is.na(token)) {
+
+    req <- httr::GET(productUrl)
+
+  } else {
+    req <- httr::GET(productUrl,
                      add_headers(.headers = c('X-API-Token'= token,
                                               'accept' = 'application/json')))
-    avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
   }
-  
+
+  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
+
   return(avail)
-  
+
 }
