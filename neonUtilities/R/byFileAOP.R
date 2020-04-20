@@ -59,7 +59,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
   }
-  
+
   # error message if field spectra data are attempted
   if(dpID=='DP1.30012.001') {
     stop('DP1.30012.001 is the Field spectral data product, which is published as tabular data. Use zipsByProduct() or loadByProduct() to download these data.')
@@ -79,7 +79,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
     stop("There are no data at the selected site and year.")
   }
 
-  file.urls.current <- getFileUrls(month.urls)
+  file.urls.current <- getFileUrls(month.urls, token = token)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
@@ -142,7 +142,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
 
       if(inherits(t, "error")) {
         writeLines("File could not be downloaded. URLs may have expired. Refreshing URLs list.")
-        file.urls.new <- getFileUrls(month.urls)
+        file.urls.new <- getFileUrls(month.urls, token = token)
         file.urls.current <- file.urls.new
 
       } else {
