@@ -53,7 +53,9 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
   }
 
   # query the products endpoint for the product requested
-  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
+  productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
+  req <- httr::GET(productUrl)
+  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
 
   # error message if product not found
   if(!is.null(avail$error$status)) {
@@ -68,6 +70,20 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
   # error message if data are not from AOP
   if(avail$data$productScienceTeamAbbr!="AOP") {
     stop(paste(dpID, "is not a remote sensing product. Use zipsByProduct()"))
+  }
+
+  # check for sites that are flown under the flight box of a different site
+  if(site %in% shared_flights$site) {
+    flightSite <- shared_flights$flightSite[which(shared_flights$site==site)]
+    if(site %in% c('TREE','CHEQ','KONA')) {
+      cat(paste(site, ' is part of the flight box for ', flightSite,
+                '. Downloading data from ', flightSite, '.\n', sep=''))
+    } else {
+      cat(paste(site, ' is an aquatic site and is sometimes included in the flight box for ', flightSite,
+                '. Aquatic sites are not always included in flight coverage every year.\nDownloading data from ',
+                flightSite, '. Check data to confirm coverage of ', site, '.\n', sep=''))
+    }
+    site <- flightSite
   }
 
   # get the urls for months with data available, and subset to site
@@ -92,8 +108,8 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
       stop("Download halted.")
     }
   } else {
-    cat(paste("Downloading files totaling approximately", downld.size.read, "MB\n", sep=" "))
-  }
+    cat(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
+    }
 
   # create folder in working directory to put files in
   if(is.na(savepath)) {
