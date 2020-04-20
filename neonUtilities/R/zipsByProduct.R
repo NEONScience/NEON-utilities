@@ -62,7 +62,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
   }
-  
+
   # error message for individual SAE products
   if(dpID %in% c('DP1.00007.001','DP1.00010.001','DP1.00034.001','DP1.00035.001',
                  'DP1.00036.001','DP1.00037.001','DP1.00099.001','DP1.00100.001',
@@ -139,7 +139,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("There are no data at the selected date(s).")
   }
 
-  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages) %>%
+  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
     tidyr::drop_na()
 
   downld.size <- humanReadable(sum(as.numeric(zip.urls$size), na.rm=T))
@@ -190,7 +190,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         if(inherits(t, "error")) {
           writeLines(paste0(zip.urls$name[j], " could not be downloaded. URLs may have expired. Trying new URLs."))
 
-          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages) %>%
+          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
                               tidyr::drop_na())
 
           counter <- counter + 1
