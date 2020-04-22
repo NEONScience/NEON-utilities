@@ -12,6 +12,7 @@
 #' @param package Global varaible for package type (basic or expanded)
 #' @param dpID Global variable for data product ID
 #' @param messages Error/warning messages from previous steps
+#' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
@@ -25,8 +26,6 @@
 ##############################################################################################
 
 getZipUrls <- function(month.urls, avg, package, dpID, messages, token = NA) {
-
-  require(tidyverse)
 
   # get all the file names
   tmp.files <- list(length(month.urls))
