@@ -19,26 +19,13 @@
 #' @return data frame with selected NEON data
 #'
 #'
-#' @examples
-#' # taxonTypeCode must be one of
-#' # ALGAE, BEETLE, BIRD, FISH,
-#' # HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS,
-#' # SMALL_MAMMAL, PLANT, TICK
-#' #################################
-#' # return the first 4 fish records
-#' taxa_table <- getTaxonTable('FISH', recordReturnLimit = 4)
-#'
-#' # return all mammal taxa records
-#' taxa_table <- getTaxonTable('SMALL_MAMMAL')
-#'
-#'
 #' @references License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 #'
 #'
 #' @export
 
 getTaxonTable <- function(
-  taxonType = NA, #string, taxonTypeCode, one of ALGAE, GEETLE, BIRD, FISH, HERPETOLOY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
+  taxonType = NA, #string, taxonTypeCode, one of ALGAE, BEETLE, BIRD, FISH, HERPETOLOY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
   recordReturnLimit = NA, #integer, The number of items to limit the result set to. If NA, will return all records in table.
   stream = 'true', #string, Option to obtain the result as a stream. Utilize for large requests.
   token = NA
