@@ -4,12 +4,12 @@
 #' @author
 #' Nate Mietkiewicz \email{mietkiewicz@battelleecology.org}
 
-#' @description
+#' @description Accesses the API with options to use the user-specific API token generated within neon.datascience user accounts.
 #'
 #'
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
-#' @param apiURL The four-letter code of a single NEON site, e.g. 'CLBJ'.
-#' @param token The four-digit year to search for data. Defaults to 2017.
+#' @param apiURL The API endpoint URL
+#' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
