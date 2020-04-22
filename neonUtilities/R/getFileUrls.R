@@ -8,6 +8,7 @@
 #' @description Used to generate a data frame of available AOP files.
 #'
 #' @param m.urls The monthly API URL for the AOP files
+#' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
