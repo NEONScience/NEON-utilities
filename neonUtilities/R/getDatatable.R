@@ -79,13 +79,11 @@ getDatatable <- function(
 
   sample_year_month <- as.Date(sample_date_list) %>% format('%Y-%m')
 
-
-
   # Get records by data product
   # Soils data "DP1.10086.001"
-  
+
   # step 1 and 2 -- query the products endpoint for the product requested
-  avail_content <- getAPI(apiURL = url_prefix_products, dpID = dpID, token = token)
+  avail_content <- getAPI(apiURL = url_prefix_products, dpID = dpid, token = token)
 
   # step 3 -- pull out urls for
   df_avail_data <- data.frame(url = unlist(avail_content$data$siteCodes$availableDataUrls))
