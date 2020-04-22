@@ -13,7 +13,8 @@ zipsByProduct(
   avg = "all",
   check.size = TRUE,
   savepath = NA,
-  load = F
+  load = F,
+  token = NA
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ zipsByProduct(
 \item{savepath}{The location to save the output files to}
 
 \item{load}{T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.}
+
+\item{token}{User specific API token (generated within neon.datascience user accounts)}
 }
 \value{
 A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.

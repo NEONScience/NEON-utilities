@@ -4,7 +4,12 @@
 \alias{getTaxonTable}
 \title{Get NEON taxon table}
 \usage{
-getTaxonTable(taxonType = NA, recordReturnLimit = NA, stream = "true")
+getTaxonTable(
+  taxonType = NA,
+  recordReturnLimit = NA,
+  stream = "true",
+  token = NA
+)
 }
 \arguments{
 \item{taxonType}{Character string for the taxonTypeCode. Must be one of ALGAE, BEETLE, BIRD,
@@ -13,6 +18,8 @@ FISH, HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL
 \item{recordReturnLimit}{Integer. The number of items to limit the result set to. If NA, will return all records in table.}
 
 \item{stream}{Character string, true or false. Option to obtain the result as a stream. Utilize for large requests.}
+
+\item{token}{User specific API token (generated within neon.datascience user accounts)}
 }
 \value{
 data frame with selected NEON data

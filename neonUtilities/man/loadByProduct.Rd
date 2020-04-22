@@ -13,7 +13,8 @@ loadByProduct(
   avg = "all",
   check.size = TRUE,
   nCores = 1,
-  forceParallel = FALSE
+  forceParallel = FALSE,
+  token = NA
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ loadByProduct(
 \item{nCores}{The number of cores to parallelize the stacking procedure. By default it is set to a single core.}
 
 \item{forceParallel}{If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.}
+
+\item{token}{User specific API token (generated within neon.datascience user accounts)}
 }
 \value{
 A named list of all the data tables in the data product downloaded, plus a validation file and a variables file, as available.

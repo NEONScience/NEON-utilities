@@ -4,10 +4,12 @@
 \alias{getAvg}
 \title{Get a list of the available averaging intervals for a data product}
 \usage{
-getAvg(dpID)
+getAvg(dpID, token = NA)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product, in the form DPL.PRNUM.REV, e.g. DP1.00006.001}
+
+\item{token}{User specific API token (generated within neon.datascience user accounts)}
 }
 \value{
 A vector of the available averaging intervals, typically in minutes.
