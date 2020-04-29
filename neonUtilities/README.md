@@ -120,11 +120,10 @@ Disclaimer
 Change Log
 ----------
 
-#### 2020-04-09 v1.3.4
+#### 2020-04-29 v1.3.4
 ----------
 Bug fixes:
 * `byFileAOP()` and `byTileAOP()` escape from infinite loops if availability is in error
-* file cleanup after `stackByTable()` deletes only files that went into the stacking
 * water quality (DP1.20288.001) error handling fixed
 * field spectra (DP1.30012.001) handling enabled - AOP functions error cleanly, OS/IS functions proceed
 * `stackEddy()` works on expanded package data again
@@ -135,6 +134,7 @@ Bug fixes:
 * encoding specified in `readTableNEON()`
 
 Enhancements:
+* download functions include option to use NEON API token
 * `footRaster()` scales raster of flux footprint to geographical coordinates
 * `zipsByProduct()` regenerates URLs if they expire
 
