@@ -40,7 +40,8 @@ getAPI <- function(apiURL, dpID = NA, token=NA){
                                               'accept' = 'application/json')))
   }
 
-  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
+  avail <- jsonlite::fromJSON(httr::content(req, as='text', encoding='UTF-8'), 
+                              simplifyDataFrame=TRUE, flatten=TRUE)
 
   return(avail)
 

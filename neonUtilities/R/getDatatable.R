@@ -54,6 +54,12 @@ getDatatable <- function(
   url_prefix_products = 'https://data.neonscience.org/api/v0/products/',
   token = NA){
 
+  # do not proceed for anything but OS site-date tables
+  if(table_types$tableTMI[which(table_types$tableName==data_table_name)]!=0 | 
+     table_types$tableType[which(table_types$tableName==data_table_name)]!='site-date') {
+    stop('This function is only configured for OS data tables published by site and date. See table_types for more information.')
+  }
+  
   # initialize output data frame
   df_data_from_portal <- data.frame()
 

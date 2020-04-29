@@ -89,7 +89,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       n <- n + length(externalLabs)
     }
 
-    # copy variables and validation files to /stackedFiles using the most recent publication date 
+    # copy variables and validation files to /stackedFiles using the most recent publication date
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
@@ -103,7 +103,16 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles")
       m <- m + 1
     }
+
+    # copy categoricalCodes file to /stackedFiles using the most recent publication date
+    if(TRUE %in% stringr::str_detect(filepaths,'categoricalCodes')) {
+      lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])
+      file.copy(from = lovpath, to = paste0(folder, "/stackedFiles/categoricalCodes_", dpnum, ".csv"))
+      messages <- c(messages, "Copied the most recent publication of categoricalCodes file to /stackedFiles")
+      m <- m + 1
+    }
     
+    # get most recent sensor_positions file for each site and stack
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
       uniqueSites <- unique(basename(sensorPositionList)) %>%
