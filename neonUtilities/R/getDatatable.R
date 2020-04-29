@@ -22,7 +22,7 @@ utils::globalVariables(names = c("%>%", ".", "%--%", "%/%"))
 #' @param data_package_type package type, either 'basic' or 'expanded'. If unsure, use 'expanded'
 #' @param url_prefix_data data endpoint for NEON API.
 #' @param url_prefix_products products endpoint for NEON API.
-#'
+#' @param token User specific API token (generated within neon.datascience user accounts)
 #'
 #' @return data frame with selected NEON data
 #'
@@ -51,7 +51,8 @@ getDatatable <- function(
   ### more defaults
   data_package_type = 'basic',
   url_prefix_data = 'https://data.neonscience.org/api/v0/data/',
-  url_prefix_products = 'https://data.neonscience.org/api/v0/products/'){
+  url_prefix_products = 'https://data.neonscience.org/api/v0/products/',
+  token = NA){
 
   # initialize output data frame
   df_data_from_portal <- data.frame()
@@ -78,16 +79,11 @@ getDatatable <- function(
 
   sample_year_month <- as.Date(sample_date_list) %>% format('%Y-%m')
 
-
-
   # Get records by data product
   # Soils data "DP1.10086.001"
 
-  # step 1 -- use get to get available products -- using products endpoint to get catalog
-  avail_json <- httr::GET(paste0(url_prefix_products,dpid))
-
-  # step 2 -- get content using the "content" call, pass to fromJSON -- list of sites and months
-  avail_content <- jsonlite::fromJSON(httr::content(avail_json, as="text"), simplifyDataFrame=T, flatten=T)
+  # step 1 and 2 -- query the products endpoint for the product requested
+  avail_content <- getAPI(apiURL = url_prefix_products, dpID = dpid, token = token)
 
   # step 3 -- pull out urls for
   df_avail_data <- data.frame(url = unlist(avail_content$data$siteCodes$availableDataUrls))

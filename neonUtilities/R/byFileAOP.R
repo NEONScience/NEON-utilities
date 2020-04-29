@@ -14,6 +14,7 @@
 #' @param year The four-digit year to search for data. Defaults to 2017.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
+#' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
 
@@ -34,7 +35,7 @@
 
 ##############################################################################################
 
-byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
+byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
@@ -60,7 +61,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
   }
-  
+
   # error message if field spectra data are attempted
   if(dpID=='DP1.30012.001') {
     stop('DP1.30012.001 is the Field spectral data product, which is published as tabular data. Use zipsByProduct() or loadByProduct() to download these data.')
@@ -70,16 +71,16 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
   if(avail$data$productScienceTeamAbbr!="AOP") {
     stop(paste(dpID, "is not a remote sensing product. Use zipsByProduct()"))
   }
-  
+
   # check for sites that are flown under the flight box of a different site
   if(site %in% shared_flights$site) {
     flightSite <- shared_flights$flightSite[which(shared_flights$site==site)]
     if(site %in% c('TREE','CHEQ','KONA')) {
-      cat(paste(site, ' is part of the flight box for ', flightSite, 
+      cat(paste(site, ' is part of the flight box for ', flightSite,
                 '. Downloading data from ', flightSite, '.\n', sep=''))
     } else {
-      cat(paste(site, ' is an aquatic site and is sometimes included in the flight box for ', flightSite, 
-                '. Aquatic sites are not always included in flight coverage every year.\nDownloading data from ', 
+      cat(paste(site, ' is an aquatic site and is sometimes included in the flight box for ', flightSite,
+                '. Aquatic sites are not always included in flight coverage every year.\nDownloading data from ',
                 flightSite, '. Check data to confirm coverage of ', site, '.\n', sep=''))
     }
     site <- flightSite
@@ -94,7 +95,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
     stop("There are no data at the selected site and year.")
   }
 
-  file.urls.current <- getFileUrls(month.urls)
+  file.urls.current <- getFileUrls(month.urls, token = token)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
 
@@ -108,7 +109,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
     }
   } else {
     cat(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
-  }
+    }
 
   # create folder in working directory to put files in
   if(is.na(savepath)) {
@@ -157,7 +158,7 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA) {
 
       if(inherits(t, "error")) {
         writeLines("File could not be downloaded. URLs may have expired. Refreshing URLs list.")
-        file.urls.new <- getFileUrls(month.urls)
+        file.urls.new <- getFileUrls(month.urls, token = token)
         file.urls.current <- file.urls.new
 
       } else {

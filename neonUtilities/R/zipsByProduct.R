@@ -16,6 +16,7 @@
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
+#' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
 #' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
@@ -39,7 +40,7 @@
 ##############################################################################################
 
 zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          avg="all", check.size=TRUE, savepath=NA, load=F) {
+                          avg="all", check.size=TRUE, savepath=NA, load=F, token=NA) {
 
   messages <- NA
 
@@ -61,7 +62,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
   }
-  
+
   # error message for individual SAE products
   if(dpID %in% c('DP1.00007.001','DP1.00010.001','DP1.00034.001','DP1.00035.001',
                  'DP1.00036.001','DP1.00037.001','DP1.00099.001','DP1.00100.001',
@@ -72,9 +73,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   # query the products endpoint for the product requested
-  productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
-  req <- httr::GET(productUrl)
-  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
+  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
 
   # error message if product not found
   if(!is.null(avail$error$status)) {
@@ -140,7 +139,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("There are no data at the selected date(s).")
   }
 
-  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages) %>%
+  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
     tidyr::drop_na()
 
   downld.size <- humanReadable(sum(as.numeric(zip.urls$size), na.rm=T))
@@ -191,7 +190,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         if(inherits(t, "error")) {
           writeLines(paste0(zip.urls$name[j], " could not be downloaded. URLs may have expired. Trying new URLs."))
 
-          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages) %>%
+          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
                               tidyr::drop_na())
 
           counter <- counter + 1

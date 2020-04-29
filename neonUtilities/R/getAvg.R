@@ -8,6 +8,7 @@
 #' Most IS products are available at multiple averaging intervals; get a list of what's available for a given data product
 #'
 #' @param dpID The identifier of the NEON data product, in the form DPL.PRNUM.REV, e.g. DP1.00006.001
+#' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @return A vector of the available averaging intervals, typically in minutes.
 
@@ -25,7 +26,7 @@
 #     original creation
 ##############################################################################################
 
-getAvg <- function(dpID) {
+getAvg <- function(dpID, token = NA) {
   
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
@@ -43,9 +44,8 @@ getAvg <- function(dpID) {
   }
   
   # error message if dpID isn't IS
-  productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
-  req <- httr::GET(productUrl)
-  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
+  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
+  
   if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS","AOP") | 
      dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001",
                  "DP1.00096.001","DP1.00097.001","DP4.00133.001")) {

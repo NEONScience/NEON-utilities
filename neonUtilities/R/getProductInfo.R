@@ -10,6 +10,8 @@
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr GET
 #' @param dpID The data product id (optional), formated as DP#.#####.###
+#' @param token User specific API token (generated within neon.datascience user accounts)
+
 #' @return A named list of metadata and availability information for a single data product. If the dpID argument is omitted, a table of information for all data products in the NEON catalog. 
 
 #' @examples
@@ -24,10 +26,10 @@
 # Changelog and author contributions / copyrights
 #   Christine Laney (2017-10-01)
 ##############################################################################################
-getProductInfo <- function(dpID=""){
-  productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
-  req <- httr::GET(productUrl)
-  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
+getProductInfo <- function(dpID="", token = NA){
+
+  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
+  
   avail <- avail[["data"]]
   return(avail)
 }

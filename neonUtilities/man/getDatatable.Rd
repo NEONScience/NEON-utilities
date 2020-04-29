@@ -14,7 +14,8 @@ getDatatable(
   sample_date_format = "\%Y-\%m-\%d",
   data_package_type = "basic",
   url_prefix_data = "https://data.neonscience.org/api/v0/data/",
-  url_prefix_products = "https://data.neonscience.org/api/v0/products/"
+  url_prefix_products = "https://data.neonscience.org/api/v0/products/",
+  token = NA
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ getDatatable(
 \item{url_prefix_data}{data endpoint for NEON API.}
 
 \item{url_prefix_products}{products endpoint for NEON API.}
+
+\item{token}{User specific API token (generated within neon.datascience user accounts)}
 }
 \value{
 data frame with selected NEON data

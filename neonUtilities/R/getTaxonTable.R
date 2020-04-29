@@ -14,21 +14,9 @@
 #' FISH, HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
 #' @param recordReturnLimit Integer. The number of items to limit the result set to. If NA, will return all records in table.
 #' @param stream Character string, true or false. Option to obtain the result as a stream. Utilize for large requests.
+#' @param token User specific API token (generated within neon.datascience user accounts)
 #'
 #' @return data frame with selected NEON data
-#'
-#'
-#' @examples
-#' # taxonTypeCode must be one of
-#' # ALGAE, BEETLE, BIRD, FISH,
-#' # HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS,
-#' # SMALL_MAMMAL, PLANT, TICK
-#' #################################
-#' # return the first 4 fish records
-#' taxa_table <- getTaxonTable('FISH', recordReturnLimit = 4)
-#'
-#' # return all mammal taxa records
-#' taxa_table <- getTaxonTable('SMALL_MAMMAL')
 #'
 #'
 #' @references License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -37,9 +25,10 @@
 #' @export
 
 getTaxonTable <- function(
-  taxonType = NA, #string, taxonTypeCode, one of ALGAE, GEETLE, BIRD, FISH, HERPETOLOY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
+  taxonType = NA, #string, taxonTypeCode, one of ALGAE, BEETLE, BIRD, FISH, HERPETOLOY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
   recordReturnLimit = NA, #integer, The number of items to limit the result set to. If NA, will return all records in table.
-  stream = 'true' #string, Option to obtain the result as a stream. Utilize for large requests.
+  stream = 'true', #string, Option to obtain the result as a stream. Utilize for large requests.
+  token = NA
   ){
 
   # set options
@@ -48,12 +37,6 @@ getTaxonTable <- function(
   # required packages
   requireNamespace('httr')
   requireNamespace('jsonlite')
-
-  # require(dplyr)
-  # require(lubridate)
-  # require(readr)
-  # require(httr)
-  # require(jsonlite)
 
   url_prefix = 'http://data.neonscience.org/api/v0/taxonomy?taxonTypeCode=' #hard code endpoint into function
   url_to_get <- as.character(paste0(url_prefix, taxonType))
@@ -65,7 +48,7 @@ getTaxonTable <- function(
   req.df <- data.frame()
   req <- NULL
 
-  try({req <- httr::GET(url_to_get)}, silent = TRUE)
+  try({req <- getAPI(apiURL = url_prefix, dpID = NA, token = token)}, silent = TRUE)
 
   # request code error handling
   if (req$status_code == 204) {
