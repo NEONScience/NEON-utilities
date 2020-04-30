@@ -31,7 +31,8 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
 
     if(length(zps) >= 1){
 
-      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores), 
+                                  setup_strategy='sequential')
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
 
       pbapply::pblapply(zps, function(z, outpath) {
@@ -53,7 +54,8 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
 
     if(length(zps) >= 1) {
 
-      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores),
+                                  setup_strategy='sequential')
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
 
       pbapply::pblapply(zps, function(z, outpath) {

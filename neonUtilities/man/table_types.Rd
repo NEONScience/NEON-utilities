@@ -4,14 +4,16 @@
 \name{table_types}
 \alias{table_types}
 \title{Publication table information}
-\format{A data frame with 5 variables. Number of rows changes frequently as more tables are added:
+\format{
+A data frame with 5 variables. Number of rows changes frequently as more tables are added:
 \describe{
   \item{productID}{data product ID}
   \item{tableName}{name of table}
   \item{tableDesc}{description of table}
   \item{tableType}{type of table (important for knowing which tables to stack, and how to stack)}
   \item{tableTMI}{a time index (e.g., 0 = native resolution, 1 = 1 minute, 30 = 30 minute averages or totals)}
-}}
+}
+}
 \source{
 NEON database
 }

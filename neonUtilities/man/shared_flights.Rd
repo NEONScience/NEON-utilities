@@ -4,11 +4,13 @@
 \name{shared_flights}
 \alias{shared_flights}
 \title{Flight coverage information}
-\format{A data frame with 2 variables:
+\format{
+A data frame with 2 variables:
 \describe{
   \item{site}{site code of a NEON site}
   \item{flightSite}{site code that matches the file naming for flights that may include "site"}
-}}
+}
+}
 \source{
 NEON flight plans
 }

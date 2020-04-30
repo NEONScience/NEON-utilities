@@ -48,7 +48,7 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing){
         ind <- c(ind, ind.j)
       } else {
         url.messages <- c(url.messages, paste("No tiles found for easting ",
-                                              tileEasting[j], "and northing ",
+                                              tileEasting[j], " and northing ",
                                               tileNorthing[j], sep=""))
       }
     }

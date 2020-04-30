@@ -149,7 +149,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         writeLines(paste0("File requirements do not meet the threshold for automatic parallelization. Running on single core."))
       }
     } else {
-      cl <- parallel::makeCluster(getOption("cl.cores", nCores))
+      cl <- parallel::makeCluster(getOption("cl.cores", nCores),
+                                  setup_strategy='sequential')
       parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
       writeLines(paste0("Parallelizing stacking operation across ", nCores, " cores."))
       # If error, crash, or completion , closes all clusters
@@ -199,12 +200,13 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         vtable <- which(names(vlist)==tables[i])
         if(length(vtable==1)) {
           if("horizontalPosition" %in% names(stackedDf)) {
-            vlist[[vtable]] <- base::rbind(base::cbind(table=rep(tables[i],4), added_fields[1:4,]), 
-                                           vlist[[vtable]], fill=T)
+            vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
+                                                                                 added_fields[1:4,])), 
+                                           vlist[[vtable]]), fill=TRUE)
           }
           if("publicationDate" %in% names(stackedDf)) {
-            vlist[[vtable]] <- base::rbind(vlist[[vtable]], 
-                                           c(table=tables[i], added_fields[5,]), fill=T)
+            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                           c(table=tables[i], added_fields[5,])), fill=TRUE)
           }
         }
       }
