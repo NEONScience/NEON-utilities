@@ -38,6 +38,9 @@ getAPI <- function(apiURL, dpID = NA, token=NA){
     req <- httr::GET(productUrl,
                      add_headers(.headers = c('X-API-Token'= token,
                                               'accept' = 'application/json')))
+    if(req$headers$`x-ratelimit-limit`=='200') {
+      cat('\nAPI token was not recognized. Public rate limit applied.\n')
+    }
   }
 
   avail <- jsonlite::fromJSON(httr::content(req, as='text', encoding='UTF-8'), 
