@@ -28,6 +28,20 @@ library(neonUtilities)
 ```
 
 ### Primary functions
+
+* `zipsByProduct()` Download NEON observational (OS) and instrumentation (IS) data by data product.
+* `byFileAOP()` Download NEON remote sensing data by site, year, and data product.
+* `byTileAOP()` Download NEON remote sensing data by data product, year, and UTM coordinates.
+* `stackByTable()` NEON OS and IS data are provided in separate files for each site and month of collection (and location within site, for IS). This function merges these data files cleanly for each data type. Works with data downloaded either via the NEON Data Portal or `zipsByProduct()`.
+* `readTableNEON()` Read NEON tabular data into R, detecting variable types via the `variables` file. Currently works for OS and IS data, but not eddy covariance data.
+* `loadByProduct()` Combines the actions of `zipsByProduct()`, `stackByTable()`, and `readTableNEON()` for OS and IS data. In one step, downloads, merges, and loads data into R.
+* `stackEddy()` Extracts NEON eddy covariance data from the provided HDF files and merges the resulting tabular data, similar to the IS data handling in `stackByTable()`.
+* `footRaster()` Makes a raster of the flux footprint data provided in the expanded data package for eddy covaraince.
+
+#### Short examples
+
+See [NEON Data Tutorials](https://www.neonscience.org/resources/data-tutorials) for more information, particularly the [Download and Explore](https://www.neonscience.org/download-explore-neon-data) and [neonUtilities](https://www.neonscience.org/neonDataStackR) tutorials.
+
 `stackByTable()` unzips monthly packages, finds the CSV data files, and joins them by table (e.g., 2DWSD_2min, 2DWSD_30min for 2D Wind Speed and Direction). For data products from instrumented systems that have multiple sensors placed at various heights (or depths) and/or horizontal positions away from the supporting tower, this function will create 2 columns in addition to the existing columns, one for horizontalPosition and the other for verticalPosition. This function will only work for data products that organize data in CSV files. Other data file types, such as HDF5 files from the eddy covariance system and remote sensing airborne observing platform (AOP) are not supported.
 
 
@@ -97,7 +111,6 @@ For a tutorial explaining how to use the `neonUtilities` package in more detail,
 
 ### Known issues
 * `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
-* The file cleanup option in `stackByTable()` deletes the unstacked files after stacking, but it doesn't work correctly when used in combination with filtering by averaging interval (`avg=X` option in `zipsByProduct()`). This will be fixed in a future release.
 
 <!-- ****** Acknowledgements ****** -->
 Credits & Acknowledgements
