@@ -52,7 +52,7 @@ getDatatable <- function(
   data_package_type = 'basic',
   url_prefix_data = 'https://data.neonscience.org/api/v0/data/',
   url_prefix_products = 'https://data.neonscience.org/api/v0/products/',
-  token = NA){
+  token = NA_character_){
 
   # do not proceed for anything but OS site-date tables
   if(table_types$tableTMI[which(table_types$tableName==data_table_name)]!=0 | 
@@ -89,7 +89,9 @@ getDatatable <- function(
   # Soils data "DP1.10086.001"
 
   # step 1 and 2 -- query the products endpoint for the product requested
-  avail_content <- getAPI(apiURL = url_prefix_products, dpID = dpid, token = token)
+  avail_json <- getAPI(apiURL = paste0(url_prefix_products, dpid), token = token)
+  avail_content <- jsonlite::fromJSON(httr::content(avail_json, as="text", encoding='UTF-8'), 
+                                      simplifyDataFrame=T, flatten=T)
 
   # step 3 -- pull out urls for
   df_avail_data <- data.frame(url = unlist(avail_content$data$siteCodes$availableDataUrls))

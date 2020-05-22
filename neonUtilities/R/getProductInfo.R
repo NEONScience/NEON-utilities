@@ -28,7 +28,10 @@
 ##############################################################################################
 getProductInfo <- function(dpID="", token = NA){
 
-  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
+  req <- getAPI(apiURL = paste0("http://data.neonscience.org/api/v0/products/", dpID), 
+                  token = token)
+  avail <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
+                              simplifyDataFrame=TRUE, flatten=TRUE)
   
   avail <- avail[["data"]]
   return(avail)

@@ -25,24 +25,31 @@
 
 ##############################################################################################
 
-getZipUrls <- function(month.urls, avg, package, dpID, messages, token = NA) {
+getZipUrls <- function(month.urls, avg, package, dpID, messages, token = NA_character_) {
 
+  writeLines("Finding available files")
+  pb <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb, 1/length(month.urls))
+  
   # get all the file names
   tmp.files <- list(length(month.urls))
   for(j in 1:length(month.urls)) {
 
-    tmp.files[[j]] <- httr::GET(month.urls[j],
-                                add_headers(.headers = c('X-API-Token'= token,
-                                                         'accept' = 'application/json')))
+    tmp.files[[j]] <- getAPI(month.urls[j], token)
+    
     if(tmp.files[[j]]$status_code==500) {
       messages <- c(messages, paste("Query for url ", month.urls[j],
                                     " failed. API may be unavailable; check data portal data.neonscience.org for outage alert.",
                                     sep=""))
       next
     }
-    tmp.files[[j]] <- jsonlite::fromJSON(httr::content(tmp.files[[j]], as="text"),
+    tmp.files[[j]] <- jsonlite::fromJSON(httr::content(tmp.files[[j]], as="text", encoding='UTF-8'),
                                          simplifyDataFrame=T, flatten=T)
+    utils::setTxtProgressBar(pb, j/length(month.urls))
   }
+  
+  utils::setTxtProgressBar(pb, 1)
+  close(pb)
 
   # identify index of most recent publication date, and most recent publication date by site
   rdme.nm <- character(length(tmp.files))

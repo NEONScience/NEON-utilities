@@ -53,13 +53,20 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
   }
 
   # query the products endpoint for the product requested
-  productUrl <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
-  req <- httr::GET(productUrl)
-  avail <- jsonlite::fromJSON(httr::content(req, as="text"), simplifyDataFrame=TRUE, flatten=TRUE)
+  req <- getAPI(paste("http://data.neonscience.org/api/v0/products/", dpID, sep=""), token)
+  avail <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
+                              simplifyDataFrame=TRUE, flatten=TRUE)
 
   # error message if product not found
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
+  }
+  
+  # check that token was used
+  if(!is.na(token) & !is.null(req$headers$`x-ratelimit-limit`)) {
+    if(req$headers$`x-ratelimit-limit`==200) {
+      cat('API token was not recognized. Public rate limit applied.\n')
+    }
   }
 
   # error message if field spectra data are attempted

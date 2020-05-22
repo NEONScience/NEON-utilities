@@ -18,6 +18,15 @@
 #'
 #' @return data frame with selected NEON data
 #'
+#' @examples	
+#' # taxonTypeCode must be one of	
+#' # ALGAE, BEETLE, BIRD, FISH,	
+#' # HERPETOLOGY, MACROINVERTEBRATE, 
+#' # MOSQUITO, MOSQUITO_PATHOGENS,	
+#' # SMALL_MAMMAL, PLANT, TICK	
+#' #################################	
+#' # return the first 4 fish records	
+#' taxa_table <- getTaxonTable('FISH', recordReturnLimit = 4)
 #'
 #' @references License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 #'
@@ -48,7 +57,7 @@ getTaxonTable <- function(
   req.df <- data.frame()
   req <- NULL
 
-  try({req <- getAPI(apiURL = url_prefix, dpID = NA, token = token)}, silent = TRUE)
+  try({req <- getAPI(apiURL = url_to_get, token = token)}, silent = TRUE)
 
   # request code error handling
   if (req$status_code == 204) {
@@ -67,7 +76,7 @@ getTaxonTable <- function(
   if(is.null(req)) stop(paste("No data were returned"))
 
   if(!is.null(req)){
-    taxa_list <- jsonlite::fromJSON(httr::content(req, as='text'))
+    taxa_list <- jsonlite::fromJSON(httr::content(req, as='text', encoding="UTF-8"))
     taxa_table <- taxa_list$data
 
     # get rid of prefixes in column names on left side of ":"

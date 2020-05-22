@@ -7,45 +7,70 @@
 #' @description Accesses the API with options to use the user-specific API token generated within neon.datascience user accounts.
 #'
 #'
-#' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param apiURL The API endpoint URL
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
+#   2020-05-21 (Claire Lunch): Modified to check for reaching rate limit
 #   2020-03-21 (Nate Mietkiewicz): Created original function
 ##############################################################################################
 
-getAPI <- function(apiURL, dpID = NA, token=NA){
-
-  # query the products endpoint for the product requested
-  if(is.na(dpID)) {
-
-    productUrl <- apiURL
-
-  } else {
-    productUrl <- paste0(apiURL, dpID)
-
-  }
+getAPI <- function(apiURL, token=NA){
 
   if(is.na(token)) {
+    
+    # make 5 attempts to access - if rate limit is reached every time, give up
+    j <- 1
+    while(j < 6) {
 
-    req <- httr::GET(productUrl)
+      req <- httr::GET(apiURL)
+      
+      # if rate limit is reached, pause
+      if(req$headers$`x-ratelimit-remaining`<=1) {
+        cat(paste("\nRate limit reached. Pausing for ", 
+                  req$headers$`x-ratelimit-reset`,
+                  " seconds to reset.\n", sep=""))
+        Sys.sleep(req$headers$`x-ratelimit-reset`)
+        j <- j+1
+      } else {
+        j <- j+5
+      }
+      
+    }
 
   } else {
-    req <- httr::GET(productUrl,
-                     add_headers(.headers = c('X-API-Token'= token,
-                                              'accept' = 'application/json')))
-    if(req$headers$`x-ratelimit-limit`=='200') {
-      cat('\nAPI token was not recognized. Public rate limit applied.\n')
+    
+    # same process as in non-token case: make 5 attempts
+    
+    j <- 1
+    while(j < 6) {
+
+      req <- httr::GET(apiURL,
+                       httr::add_headers(.headers = c('X-API-Token'= token,
+                                                      'accept' = 'application/json')))
+
+      # first check for null, since unlimited tokens don't have these headers
+      if(!is.null(req$headers$`x-ratelimit-limit`)) {
+
+        # if rate limit is reached, pause
+        if(req$headers$`x-ratelimit-remaining`<=1) {
+          cat(paste("\nRate limit reached. Pausing for ", 
+                    req$headers$`x-ratelimit-reset`,
+                    " seconds to reset.\n", sep=""))
+          Sys.sleep(req$headers$`x-ratelimit-reset`)
+          j <- j+1
+        } else {
+          j <- j+5
+        }
+      } else {
+        j <- j+5
+      }
     }
   }
 
-  avail <- jsonlite::fromJSON(httr::content(req, as='text', encoding='UTF-8'), 
-                              simplifyDataFrame=TRUE, flatten=TRUE)
-
-  return(avail)
+  return(req)
 
 }

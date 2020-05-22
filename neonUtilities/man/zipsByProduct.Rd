@@ -36,7 +36,7 @@ zipsByProduct(
 
 \item{load}{T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within neon.datascience user accounts). Optional.}
 }
 \value{
 A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.

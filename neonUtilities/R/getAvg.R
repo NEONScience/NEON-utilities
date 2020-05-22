@@ -26,7 +26,7 @@
 #     original creation
 ##############################################################################################
 
-getAvg <- function(dpID, token = NA) {
+getAvg <- function(dpID, token = NA_character_) {
   
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
@@ -44,7 +44,11 @@ getAvg <- function(dpID, token = NA) {
   }
   
   # error message if dpID isn't IS
-  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
+  req <- getAPI(paste(apiURL = "http://data.neonscience.org/api/v0/products/", dpID, sep=""), 
+                  token = token)
+  
+  avail <- jsonlite::fromJSON(httr::content(req, as='text', encoding='UTF-8'), 
+                              simplifyDataFrame=TRUE, flatten=TRUE)
   
   if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS","AOP") | 
      dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001",

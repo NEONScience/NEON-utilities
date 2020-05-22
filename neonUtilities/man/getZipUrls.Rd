@@ -4,7 +4,7 @@
 \alias{getZipUrls}
 \title{Get and store the file names, S3 URLs, file size, and download status (default = 0) in a data frame}
 \usage{
-getZipUrls(month.urls, avg, package, dpID, messages, token = NA)
+getZipUrls(month.urls, avg, package, dpID, messages, token = NA_character_)
 }
 \arguments{
 \item{month.urls}{The monthly API URL for the URL files}

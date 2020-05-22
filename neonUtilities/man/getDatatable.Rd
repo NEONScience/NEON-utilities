@@ -15,7 +15,7 @@ getDatatable(
   data_package_type = "basic",
   url_prefix_data = "https://data.neonscience.org/api/v0/data/",
   url_prefix_products = "https://data.neonscience.org/api/v0/products/",
-  token = NA
+  token = NA_character_
 )
 }
 \arguments{

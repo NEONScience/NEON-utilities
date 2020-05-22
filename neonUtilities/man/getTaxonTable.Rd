@@ -29,6 +29,17 @@ This is a function to retrieve a taxon table
 from the NEON data portal for the taxon type by the
 enduser.
 }
+\examples{
+# taxonTypeCode must be one of	
+# ALGAE, BEETLE, BIRD, FISH,	
+# HERPETOLOGY, MACROINVERTEBRATE, 
+# MOSQUITO, MOSQUITO_PATHOGENS,	
+# SMALL_MAMMAL, PLANT, TICK	
+#################################	
+# return the first 4 fish records	
+taxa_table <- getTaxonTable('FISH', recordReturnLimit = 4)
+
+}
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }

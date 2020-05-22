@@ -4,7 +4,7 @@
 \alias{getAvg}
 \title{Get a list of the available averaging intervals for a data product}
 \usage{
-getAvg(dpID, token = NA)
+getAvg(dpID, token = NA_character_)
 }
 \arguments{
 \item{dpID}{The identifier of the NEON data product, in the form DPL.PRNUM.REV, e.g. DP1.00006.001}

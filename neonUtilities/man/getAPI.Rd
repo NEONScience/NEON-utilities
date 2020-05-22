@@ -4,14 +4,12 @@
 \alias{getAPI}
 \title{Get the data from API}
 \usage{
-getAPI(apiURL, dpID = NA, token = NA)
+getAPI(apiURL, token = NA)
 }
 \arguments{
 \item{apiURL}{The API endpoint URL}
 
-\item{dpID}{The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001}
-
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within neon.datascience user accounts). Optional.}
 }
 \description{
 Accesses the API with options to use the user-specific API token generated within neon.datascience user accounts.

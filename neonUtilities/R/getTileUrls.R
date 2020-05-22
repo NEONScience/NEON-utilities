@@ -10,6 +10,7 @@
 #' @param m.urls The monthly API URL for the AOP tile.
 #' @param tileEasting A vector containing the easting UTM coordinates of the locations to download.
 #' @param tileNorthing A vector containing the northing UTM coordinates of the locations to download.
+#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
 #'
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
@@ -23,13 +24,13 @@
 ##############################################################################################
 
 # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
-getTileUrls <- function(m.urls, tileEasting, tileNorthing){
+getTileUrls <- function(m.urls, tileEasting, tileNorthing, token=NA_character_){
 
   url.messages <- character()
   file.urls <- c(NA, NA, NA)
   for(i in 1:length(m.urls)) {
-    tmp <- httr::GET(m.urls[i])
-    tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text"),
+    tmp <- getAPI(m.urls[i], token)
+    tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text", encoding="UTF-8"),
                                     simplifyDataFrame=T, flatten=T)
 
     # check for no files

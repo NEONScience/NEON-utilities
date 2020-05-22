@@ -70,11 +70,22 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
 
   # query the products endpoint for the product requested
-  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
+  prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", dpID, sep=""), 
+                  token = token)
+  
+  avail <- jsonlite::fromJSON(httr::content(prod.req, as='text', encoding='UTF-8'), 
+                              simplifyDataFrame=TRUE, flatten=TRUE)
 
   # error message if product not found
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
+  }
+  
+  # check that token was used
+  if(!is.na(token) & !is.null(prod.req$headers$`x-ratelimit-limit`)) {
+    if(prod.req$headers$`x-ratelimit-limit`==200) {
+      cat('API token was not recognized. Public rate limit applied.\n')
+    }
   }
 
   # error message if data are not from AOP

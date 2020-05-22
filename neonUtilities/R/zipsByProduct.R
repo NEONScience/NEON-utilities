@@ -16,7 +16,7 @@
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
 
 #' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
 #' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
@@ -58,6 +58,13 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   if(substring(dpID, 5, 5)==3 & dpID!='DP1.30012.001') {
     stop(paste(dpID, "is a remote sensing data product. Use the byFileAOP() or byTileAOP() function.", sep=" "))
   }
+  
+  # error message if dates aren't formatted correctly
+  if(!is.na(startdate) | !is.na(enddate)) {
+    if(regexpr("[0-9]{4}-[0-9]{2}", startdate)!=1 | regexpr("[0-9]{4}-[0-9]{2}", enddate)!=1) {
+      stop("startdate and enddate must be either NA or valid dates in the form YYYY-MM")
+    }
+  }
 
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
@@ -73,11 +80,22 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   # query the products endpoint for the product requested
-  avail <- getAPI(apiURL = "http://data.neonscience.org/api/v0/products/", dpID = dpID, token = token)
+  prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
+                                    dpID, sep=""), token = token)
 
+  avail <- jsonlite::fromJSON(httr::content(prod.req, as='text', encoding='UTF-8'), 
+                              simplifyDataFrame=TRUE, flatten=TRUE)
+  
   # error message if product not found
   if(!is.null(avail$error$status)) {
     stop(paste("No data found for product", dpID, sep=" "))
+  }
+  
+  # check that token was used
+  if(!is.na(token) & !is.null(prod.req$headers$`x-ratelimit-limit`)) {
+    if(prod.req$headers$`x-ratelimit-limit`==200) {
+      cat('API token was not recognized. Public rate limit applied.\n')
+    }
   }
 
   # error message if averaging interval is invalid
@@ -142,7 +160,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
     tidyr::drop_na()
 
-  downld.size <- humanReadable(sum(as.numeric(zip.urls$size), na.rm=T))
+  downld.size <- gdata::humanReadable(sum(as.numeric(zip.urls$size), na.rm=T))
 
   # ask user if they want to proceed
   # can disable this with check.size=F
