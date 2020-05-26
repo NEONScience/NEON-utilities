@@ -51,6 +51,10 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   } else {
     folder <- TRUE
   }
+  
+  if(savepath=="envt" & saveUnzippedFiles) {
+    cat("Warning: savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE. Unzipped files won't be saved.")
+  }
 
   #### Check whether data should be stacked ####
   if(folder==FALSE){
@@ -158,8 +162,11 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       }
     })
     names(stacked_list) <- substring(basename(stacked_files), 1, nchar(basename(stacked_files))-4)
+    
+    # remove temporary directory
+    unlink(savepath, recursive=T)
+    
     return(stacked_list)
-    unlink(stacked_files)
   }
 
 }

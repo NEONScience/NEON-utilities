@@ -79,6 +79,6 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),
                       savepath="envt", folder=TRUE, nCores, forceParallel)
   # Remove temppath directory
-  unlink(temppath)
+  unlink(temppath, recursive=T)
   return(out)
   }
