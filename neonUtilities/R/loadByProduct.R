@@ -77,7 +77,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   # stack and load the downloaded files using stackByTable
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),
-                      savepath="envt", folder=TRUE, nCores, forceParallel)
+                      savepath="envt", folder=TRUE, nCores=nCores, 
+                      saveUnzippedFiles=FALSE)
   # Remove temppath directory
   unlink(temppath, recursive=T)
   return(out)
