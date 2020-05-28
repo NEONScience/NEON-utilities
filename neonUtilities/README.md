@@ -133,6 +133,13 @@ Disclaimer
 Change Log
 ----------
 
+#### 2020-05-29 v1.3.5
+----------
+Bug fixes:
+* `loadByProduct()` automatic deletion of temporary files restored
+* when API rate limit is reached, `zipsByProduct()` pauses to reset
+
+
 #### 2020-04-29 v1.3.4
 ----------
 Bug fixes:
