@@ -29,16 +29,20 @@ getAPI <- function(apiURL, token=NA){
       req <- httr::GET(apiURL)
       
       # if rate limit is reached, pause
-      if(req$headers$`x-ratelimit-remaining`<=1) {
-        cat(paste("\nRate limit reached. Pausing for ", 
-                  req$headers$`x-ratelimit-reset`,
-                  " seconds to reset.\n", sep=""))
-        Sys.sleep(req$headers$`x-ratelimit-reset`)
-        j <- j+1
+      if(!is.null(req$headers$`x-ratelimit-limit`)) {
+        
+        if(req$headers$`x-ratelimit-remaining`<=1) {
+          cat(paste("\nRate limit reached. Pausing for ", 
+                    req$headers$`x-ratelimit-reset`,
+                    " seconds to reset.\n", sep=""))
+          Sys.sleep(req$headers$`x-ratelimit-reset`)
+          j <- j+1
+        } else {
+          j <- j+5
+        }
       } else {
         j <- j+5
       }
-      
     }
 
   } else {
