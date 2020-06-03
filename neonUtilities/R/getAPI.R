@@ -20,6 +20,10 @@
 
 getAPI <- function(apiURL, token=NA){
 
+  if(!curl::has_internet()) {
+    stop("No internet connection detected. Cannot access NEON API.")
+  }
+  
   if(is.na(token)) {
     
     # make 5 attempts to access - if rate limit is reached every time, give up
