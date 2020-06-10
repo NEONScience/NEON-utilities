@@ -21,8 +21,7 @@
 ##############################################################################################
 cleanUp <- function(folder, orig) {
   
-  zipPattern <- paste(orig, collapse = '|')
-  currentFileList <- list.files(folder, full.names = TRUE, pattern = zipPattern)
+  currentFileList <- paste(folder, orig, sep="/")
   
   if(length(currentFileList) > 0) {
     unlink(currentFileList, recursive = TRUE)
