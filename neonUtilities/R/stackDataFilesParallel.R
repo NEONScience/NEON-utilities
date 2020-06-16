@@ -215,7 +215,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     }
     
     # write out complete variables file
-    vfull <- data.table::rbindlist(vlist)
+    vfull <- data.table::rbindlist(vlist, fill=TRUE)
     utils::write.csv(vfull, paste0(folder, "/stackedFiles/variables_", dpnum, ".csv"), row.names=F)
     messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles")
     m <- m + 1

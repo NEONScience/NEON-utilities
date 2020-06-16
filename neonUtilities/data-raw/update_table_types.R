@@ -50,7 +50,10 @@ update_table_types <- function(){
                                                  'Date of data publication on the NEON data portal'),
                                    dataType=c(rep('string',4),'dateTime'),
                                    units=rep(NA,5),
-                                   downloadPkg=rep('appended by stackByTable',5)))
+                                   downloadPkg=rep('appended by stackByTable',5),
+                                   pubFormat=rep(NA,5),
+                                   primaryKey=rep('N',5),
+                                   categoricalCodeName=rep('',5)))
   
   usethis::use_data(table_types, added_fields, shared_flights, internal=TRUE, overwrite=TRUE)
   
