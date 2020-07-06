@@ -60,12 +60,20 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
   
   # error message if dates aren't formatted correctly
-  if(!is.na(startdate) | !is.na(enddate)) {
-    if(regexpr("[0-9]{4}-[0-9]{2}", startdate)!=1 | regexpr("[0-9]{4}-[0-9]{2}", enddate)!=1) {
+  # separate logic for each, to easily allow only one to be NA
+  if(!is.na(startdate)) {
+    if(regexpr("[0-9]{4}-[0-9]{2}", startdate)!=1) {
+      stop("startdate and enddate must be either NA or valid dates in the form YYYY-MM")
+    }
+  }
+  
+  if(!is.na(enddate)) {
+    if(regexpr("[0-9]{4}-[0-9]{2}", enddate)!=1) {
       stop("startdate and enddate must be either NA or valid dates in the form YYYY-MM")
     }
   }
 
+  # error for Phenocam data
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
   }
