@@ -56,6 +56,7 @@ update_table_types <- function(){
                                    categoricalCodeName=rep('',5)))
   
   usethis::use_data(table_types, added_fields, shared_flights, internal=TRUE, overwrite=TRUE)
+  usethis::use_data(table_types, shared_flights, internal=FALSE, overwrite=TRUE)
   
 }
 
