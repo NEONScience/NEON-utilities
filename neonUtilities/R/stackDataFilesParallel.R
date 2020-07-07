@@ -121,14 +121,14 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         unlist() %>% 
         unique(.)
 
-      outputSensorPositions <- do.call(rbind, pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
+      outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
         
         sppath <- getRecentPublication(sensorPositionList[grep(x, sensorPositionList)])
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
                                     colClasses = list(character = c('HOR.VER'))) %>%
           makePosColumns(., sppath, x)
         return(outTbl)
-      }, sensorPositionList=sensorPositionList))
+      }, sensorPositionList=sensorPositionList), fill=TRUE)
       
       data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
       messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
