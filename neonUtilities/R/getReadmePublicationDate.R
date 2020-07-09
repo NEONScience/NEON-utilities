@@ -19,7 +19,6 @@
 #   2019-10-08 (Nathan Mietkiewicz): Original creation
 
 ##############################################################################################
-
 getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
   requireNamespace('stringr', quietly = TRUE)
   requireNamespace('dplyr', quiet=TRUE)
@@ -41,7 +40,7 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
 
   op <- pbapply::pboptions()
   pbapply::pboptions(type='none')
-  pub_date_df <- do.call(rbind, pbapply::pblapply(readme_list, function(x) {
+  pub_date_df <- do.call(rbind, pbapply::pblapply(as.list(readme_list), function(x) {
     split <- x %>%
       stringr::str_split(., '/') %>%
       unlist() %>%
@@ -53,20 +52,21 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
       dplyr::select(-c('X1', 'X2'))
 
     return(pub_date_str)
-    }))
+    }))  %>%
+    dplyr::distinct(.)
   pbapply::pboptions(op)
 
   txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]]) %>%
     .[!stringr::str_detect(., pattern="Date-Time")]
-  
+
   qInd <- grep('QUERY', txt_file)
   dPackInd <- grep('PACKAGE CONTENTS', txt_file)
   downPackInd <- grep('Basic download package', txt_file)
-  
+
   files <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
   dpID <- substr(basename(files[1]), 15, 27)
   tables <- table_types[which(table_types$productID==dpID),]
-  
+
   txt_file[I(dPackInd+3)] <- paste('This data product contains up to', nrow(tables), 'data tables:')
   txt_file[I(dPackInd+5):I(dPackInd+4+nrow(tables))] <- paste(tables$tableName, tables$tableDesc, sep=' - ')
   txt_file[I(dPackInd+5+nrow(tables))] <- 'If data are unavailable for the particular sites and dates queried, some tables may be absent.'
