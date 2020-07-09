@@ -51,8 +51,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   } else {
     folder <- TRUE
   }
-  
-  if(savepath=="envt" & saveUnzippedFiles) {
+
+  if(identical(savepath, "envt") & saveUnzippedFiles == TRUE) {
     cat("Warning: savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE. Unzipped files won't be saved.")
   }
 
@@ -150,7 +150,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
         fls <- suppressWarnings(data.table::fread(x, sep=',', keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
       } else if(length(grep("readme", basename(x)))>0) {
         fls <- suppressMessages(readr::read_table(x, col_names = FALSE))
-        } else if(length(grep("variables", basename(x)))>0 | length(grep("validation", basename(x)))>0 | 
+        } else if(length(grep("variables", basename(x)))>0 | length(grep("validation", basename(x)))>0 |
                   length(grep("categoricalCodes", basename(x)))>0) {
           fls <- suppressWarnings(data.table::fread(x, sep=','))
         } else {
@@ -162,10 +162,10 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       }
     })
     names(stacked_list) <- substring(basename(stacked_files), 1, nchar(basename(stacked_files))-4)
-    
+
     # remove temporary directory
     unlink(savepath, recursive=T)
-    
+
     return(stacked_list)
   }
 
