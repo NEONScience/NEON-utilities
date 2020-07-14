@@ -50,8 +50,11 @@ zipsByURI <- function(filepath,
   if(length(files) == 0){
     stop("Variables file is not present in specified filepath.")
   }
+  if(length(files)>1) {
+    stop("More than one variables file found in filepath.")
+  }
   
-  variablesFile <- utils::read.csv(paste(filepath,"variables.csv",sep = "/"),stringsAsFactors = FALSE)
+  variablesFile <- utils::read.csv(paste(filepath, files, sep = "/"), stringsAsFactors = FALSE)
   URLs <- variablesFile[variablesFile$dataType == "uri",]
   
   #All of the tables in the package with URLs to download
@@ -114,27 +117,41 @@ zipsByURI <- function(filepath,
     dir.create(savepath)
   }
   
-  #Loop to check cumulative size of files
+  #Loop to check existence and cumulative size of files
   cat("checking file sizes...\n")
   fileSize <- rep(NA,length(URLsToDownload))
   idx <- 0
+  idxrem <- NA
   for(i in URLsToDownload) {
     idx <- idx + 1
     # get file metadata
-    response <- httr::HEAD(i)  
-    # grab file size and convert bytes to MB
-    fileSize[idx] <- round(as.numeric(httr::headers(response)[["Content-Length"]])/1048576, 1)   
+    response <- httr::HEAD(i)
+    
+    # check for file found
+    if(is.null(httr::headers(response)[["Content-Length"]])) {
+      cat(paste('No files found for url ', i, '\n', sep=''))
+      idxrem <- c(idxrem, idx)
+    } else {
+      # grab file size and convert bytes to MB
+      fileSize[idx] <- as.numeric(httr::headers(response)[["Content-Length"]])
+    }
   }
-  totalFileSize <- sum(fileSize, na.rm = TRUE)
+  totalFileSize <- gdata::humanReadable(sum(fileSize, na.rm = TRUE))
   
   if(check.size==TRUE) {
     resp <- readline(paste("Continuing will download",length(URLsToDownload), "files totaling approximately",
-                           totalFileSize, "MB. Do you want to proceed y/n: ", sep=" "))
+                           totalFileSize, ". Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) stop()
   }else{
-    cat("Continuing will download",length(URLsToDownload), "files totaling approximately",totalFileSize,"MB.\n")
+    cat("Downloading",length(URLsToDownload), "files totaling approximately",totalFileSize,".\n")
   }
 
+  # remove URLs with no data
+  idxrem <- idxrem[-1]
+  if(length(idxrem)>0) {
+    URLsToDownload <- URLsToDownload[-idxrem]
+  }
+  
   # copy zip files into folder
   numDownloads <- 0
   pb <- utils::txtProgressBar(style=3)
@@ -154,15 +171,22 @@ zipsByURI <- function(filepath,
       if(!saveZippedFiles){
         unlink(paste(savepath, gsub("^.*\\/","",i), sep="/"),recursive = FALSE)
       }
-    }else if(unzip == TRUE && grepl("\\.tar\\.gz",i)){
+    } else if(unzip == TRUE && grepl("\\.tar\\.gz",i)){
       utils::untar(paste(savepath, gsub("^.*\\/","",i), sep="/"), 
                      exdir=paste(savepath, gsub("^.*\\/|\\..*$","",i), sep="/"))
       if(!saveZippedFiles){
         unlink(paste(savepath, gsub("^.*\\/","",i), sep="/"),recursive = FALSE)
       }
-    }else if(grepl("\\.csv|\\.CSV",i)){
+    } else if(unzip == TRUE && (grepl("\\.fastq\\.gz", i))) {
+      utils::unzip(paste(savepath, gsub("^.\\/", "", i),
+                          sep = "/"), remove=FALSE)
+      if (!saveZippedFiles) {
+        unlink(paste(savepath, gsub("^.\\/", "", i),
+                     sep = "/"), recursive = FALSE)
+      }
+    } else if(grepl("\\.csv|\\.CSV",i)){
       next
-    }else if(unzip == TRUE && !(grepl("\\.zip|\\.ZIP",i) | grepl("\\.tar\\.gz",i))){
+    } else if(unzip == TRUE && !(grepl("\\.zip|\\.ZIP",i) | grepl("\\.tar\\.gz",i))){
       cat("Unable to unzip data for URL:",i,"\n")
     }
   }
