@@ -69,10 +69,22 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
-    tables <- findTablesUnique(names(datafls), ttypes)
+    # detecting table types by file format, then checking against table_types
+    # reducing dependency on table_types updating
+    tables <- findTablesByFormat(names(datafls))
+    ttypes <- tables[,2]
+    tables <- tables[,1]
     n <- 0
     m <- 0
     messages <- character()
+    
+    # next steps:
+    # 1. compare table types inferred from format to table_types
+    # 2. if they agree, great
+    # 3. if they disagree, check data publication date
+    # 4. if publication date is more recent than package version, use inferred file format
+    # 5. if publication date is older than package version, use table_types
+    # Q: all publication dates, or only most recent?
 
     # find external lab tables (lab-current, lab-all) and copy the most recently published file from each lab into stackedFiles
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
