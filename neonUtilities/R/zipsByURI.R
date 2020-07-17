@@ -178,10 +178,10 @@ zipsByURI <- function(filepath,
         unlink(paste(savepath, gsub("^.*\\/","",i), sep="/"),recursive = FALSE)
       }
     } else if(unzip == TRUE && (grepl("\\.fastq\\.gz", i))) {
-      utils::unzip(paste(savepath, gsub("^.\\/", "", i),
-                          sep = "/"), remove=FALSE)
+      R.utils::gunzip(paste(savepath, gsub("^.*\\/", "", i), 
+                            sep = "/"), remove=FALSE)
       if (!saveZippedFiles) {
-        unlink(paste(savepath, gsub("^.\\/", "", i),
+        unlink(paste(savepath, gsub("^.*\\/", "", i),
                      sep = "/"), recursive = FALSE)
       }
     } else if(grepl("\\.csv|\\.CSV",i)){
