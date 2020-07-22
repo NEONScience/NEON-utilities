@@ -71,9 +71,44 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     
     # detecting table types by file format, then checking against table_types
     # reducing dependency on table_types updating
-    tables <- findTablesByFormat(names(datafls))
-    ttypes <- tables[,2]
-    tables <- tables[,1]
+    tableForm <- findTablesByFormat(names(datafls))
+    ttypes <- tableForm$tableType
+    tables <- tableForm$tableName
+
+    # check against table_types. use grep() since format only identifies to 'lab'
+    mis <- 0
+    for(j in 1:nrow(tableForm)) {
+      ind <- which(table_types$tableName[j]==tableForm$tableName)
+      if(length(ind)==0) {
+        mis <- mis+1
+        next
+        }
+      indt <- grep(tableForm$tableType[j], table_types$tableType[ind])
+      if(length(indt)==0) {
+        mis <- mis+1
+      }
+    }
+    
+    # if there are any mismatches, check publication dates
+    if(mis>0) {
+      dats <- character()
+      filespl <- strsplit(filenames, "\\.")
+      for(k in 1:length(filespl)) {
+        dats <- c(dats, filespl[[k]][length(filespl[[k]])-1])
+      }
+      dats <- as.POSIXct(dats, format="%Y%m%dT%H%M%SZ")
+      if(min(dats, na.rm=T) > packageDate("neonUtilities")) {
+        cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed, but check results carefully, and check for updates to neonUtilities.\n")
+        ttypes <- tableForm
+      } else {
+        if(max(dats, na.rm=T) < packageDate("neonUtilities")) {
+          cat("Downloaded data formats do not match expected formats. ")
+        }
+      } else {
+        cat("")
+      }
+    }
+    
     n <- 0
     m <- 0
     messages <- character()
@@ -84,7 +119,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # 3. if they disagree, check data publication date
     # 4. if publication date is more recent than package version, use inferred file format
     # 5. if publication date is older than package version, use table_types
-    # Q: all publication dates, or only most recent?
+    # Q: all publication dates, or only most recent? I think all
+    # I think I need to move all of this to a separate function
 
     # find external lab tables (lab-current, lab-all) and copy the most recently published file from each lab into stackedFiles
     labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]

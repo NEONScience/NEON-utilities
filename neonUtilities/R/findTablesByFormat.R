@@ -48,5 +48,9 @@ findTablesUnique <- function(datatables){
     }
   }
   
-  return(cbind(tn,tt))
+  tf <- cbind(tn,tt)
+  tf <- data.frame(tf)
+  names(tf) <- c("tableName","tableType")
+  
+  return(tf)
 }
