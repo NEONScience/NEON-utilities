@@ -18,7 +18,7 @@
 #   2017-09-28 (Claire Lunch): created function, based on findTablesUnique()
 ##############################################################################################
 
-findTablesUnique <- function(datatables){
+findTablesByFormat <- function(datatables){
   dt <- datatables
   splitNames <- strsplit(x = dt, split = "\\.")
   t <- character()

@@ -72,13 +72,12 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # detecting table types by file format, then checking against table_types
     # reducing dependency on table_types updating
     tableForm <- findTablesByFormat(names(datafls))
-    ttypes <- tableForm$tableType
     tables <- tableForm$tableName
 
     # check against table_types. use grep() since format only identifies to 'lab'
     mis <- 0
     for(j in 1:nrow(tableForm)) {
-      ind <- which(table_types$tableName[j]==tableForm$tableName)
+      ind <- which(table_types$tableName==tableForm$tableName[j])
       if(length(ind)==0) {
         mis <- mis+1
         next
@@ -97,15 +96,15 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         dats <- c(dats, filespl[[k]][length(filespl[[k]])-1])
       }
       dats <- as.POSIXct(dats, format="%Y%m%dT%H%M%SZ")
-      if(min(dats, na.rm=T) > packageDate("neonUtilities")) {
-        cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed, but check results carefully, and check for updates to neonUtilities.\n")
+      if(min(dats, na.rm=T) > utils::packageDate("neonUtilities")) {
+        cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed using inference from downloaded data formats. Check results carefully, and check for updates to neonUtilities.\n")
         ttypes <- tableForm
       } else {
-        if(max(dats, na.rm=T) < packageDate("neonUtilities")) {
-          cat("Downloaded data formats do not match expected formats. ")
-        }
-      } else {
-        cat("")
+        if(max(dats, na.rm=T) < utils::packageDate("neonUtilities")) {
+          cat("Downloaded data formats do not match expected formats. neonUtilities version is more recent than data publication dates. Stacking will proceed based on package expectations. Check results carefully.\n")
+        } else {
+        cat("Downloaded data formats do not match expected formats. Data publication dates include both older and more recent data than neonUtilities package version. Stacking will proceed based on package expectations. Check results carefully, and check for updates to neonUtilities.\n")
+      }
       }
     }
     
@@ -113,17 +112,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     m <- 0
     messages <- character()
     
-    # next steps:
-    # 1. compare table types inferred from format to table_types
-    # 2. if they agree, great
-    # 3. if they disagree, check data publication date
-    # 4. if publication date is more recent than package version, use inferred file format
-    # 5. if publication date is older than package version, use table_types
-    # Q: all publication dates, or only most recent? I think all
-    # I think I need to move all of this to a separate function
-
     # find external lab tables (lab-current, lab-all) and copy the most recently published file from each lab into stackedFiles
-    labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
+    labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
     if(length(labTables)>0){
       externalLabs <- unique(names(datafls)[grep(paste(paste('.', labTables, '.', sep=''), 
                                                        collapse='|'), names(datafls))])
