@@ -178,6 +178,12 @@ zipsByURI <- function(filepath,
         unlink(paste(savepath, gsub("^.*\\/","",i), sep="/"),recursive = FALSE)
       }
     } else if(unzip == TRUE && (grepl("\\.fastq\\.gz", i))) {
+      
+      # check if R.utils is installed (only suggested in package)
+      if(!requireNamespace("R.utils", quietly=T)) {
+        stop("Package R.utils is required for this function to work on fastq files. Please install and try again.")
+      }
+      
       R.utils::gunzip(paste(savepath, gsub("^.*\\/", "", i), 
                             sep = "/"), remove=FALSE)
       if (!saveZippedFiles) {
