@@ -19,7 +19,7 @@
 ##############################################################################################
 
 findTablesByFormat <- function(datatables){
-  dt <- datatables
+  dt <- basename(datatables)
   splitNames <- strsplit(x = dt, split = "\\.")
   t <- character()
   for (i in 1:length(splitNames)){
@@ -35,7 +35,11 @@ findTablesByFormat <- function(datatables){
   tt <- character(length(tn))
   
   for(k in 1:length(tn)) {
-    names.k <- splitNames[grep(tn[k], dt)][[1]]
+    names.k <- splitNames[union(grep(paste(".", tn[k], ".", sep=""), dt, fixed=T),
+                                grep(paste(".", tn[k], "_pub.", sep=""), dt, fixed=T))][[1]]
+    if(length(which(names.k==""))>0) {
+      names.k <- names.k[-which(names.k=="")]
+    }
     if(length(names.k)==4) {
       tt[k] <- "lab"
     } else {

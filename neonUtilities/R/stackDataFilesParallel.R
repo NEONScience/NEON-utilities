@@ -39,7 +39,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
-  ttypes <- table_types
+  ttypes <- table_types[which(table_types$productID==dpID),]
   dpnum <- substring(dpID, 5, 9)
   
   # filenames without full path
@@ -73,7 +73,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # reducing dependency on table_types updating
     tableForm <- findTablesByFormat(names(datafls))
     tables <- tableForm$tableName
-
+    
     # check against table_types. use grep() since format only identifies to 'lab'
     mis <- 0
     for(j in 1:nrow(tableForm)) {
