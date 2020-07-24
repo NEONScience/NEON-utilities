@@ -18,13 +18,12 @@
 ##############################################################################################
 getRecentPublication <- function(inList) {
   path_dates <-  lapply(inList, function(x) {
-    var_recent <- basename(x) %>%
+    var_recent <- x %>%
       gsub(pattern = "\\.csv$|\\.txt$", "", .) %>%
-      stringr::str_split(., '\\.') %>%
+      stringr::str_split(., '\\.|\\/') %>%
       unlist(.) %>%
-      .[length(.)]
+      .[grep("[0-9]{8}T[0-9]{6}Z", .)]
   })
-  outList <- inList[grep(max(unlist(path_dates)), inList)] %>%
-    .[length(.)]
-  return(outList)
+  outList <- inList[grep(max(unlist(path_dates)), inList)]
+  return(list(outList, max(unlist(path_dates))))
 }
