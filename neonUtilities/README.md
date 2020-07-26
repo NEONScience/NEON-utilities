@@ -133,6 +133,16 @@ Disclaimer
 Change Log
 ----------
 
+#### 2020-07-26 v1.3.6
+Bug fixes:
+* unzipped file deletion no longer crashes on large numbers of files
+
+Enhancements:
+* compatible with new format of sensor positions files
+* zipsByURI() works with fastq files
+* lab-specific tables are stacked as well as site-specific tables
+
+
 #### 2020-05-29 v1.3.5
 ----------
 Bug fixes:
