@@ -76,19 +76,25 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     
     # check against table_types. use grep() since format only identifies to 'lab'
     mis <- 0
+    newtables <- character()
     for(j in 1:nrow(tableForm)) {
-      ind <- which(table_types$tableName==tableForm$tableName[j])
+      ind <- which(ttypes$tableName==tableForm$tableName[j])
       if(length(ind)==0) {
-        mis <- mis+1
+        newtables <- rbind(newtables, tableForm[j,])
         next
         }
-      indt <- grep(tableForm$tableType[j], table_types$tableType[ind])
+      indt <- grep(tableForm$tableType[j], ttypes$tableType[ind])
       if(length(indt)==0) {
         mis <- mis+1
       }
     }
     
-    # if there are any mismatches, check publication dates
+    # for new tables, always use inferred types. for mismatches, decide based on publication dates
+    if(!is.null(nrow(newtables))) {
+      cat("Table(s)", newtables[,1], "are unexpected. Stacking will proceed based on inferred table format; check for updates to neonUtilities.\n")
+      ttypes <- plyr::rbind.fill(ttypes, newtables)
+    }
+    
     if(mis>0) {
       dats <- character()
       filespl <- strsplit(filenames, "\\.")
