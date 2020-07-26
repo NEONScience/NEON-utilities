@@ -1,6 +1,8 @@
-##################################
-########### Attention ############
-Disclaimer: this is a compiled version and may have some information from specific site-dates based on readme files used during stackByTable.
+###################################
+########### Disclaimer ############
+This is the most recent readme publication based on all site-date combinations used during stackByTable.
+Information specific to the query, including sites and dates, has been removed. The remaining content reflects general metadata for the data product.
+All files used during stacking are listed at the bottom of this document, which includes the data publication dates.
 ##################################
 
 This data package been produced by and downloaded from the National Ecological Observatory Network, managed cooperatively by Battelle. These data are provided under the terms of the NEON data policy at http://data.neonscience.org/data-policy. 
@@ -24,40 +26,18 @@ Brief Study Area Description: These data are collected at all NEON terrestrial s
 
 Keywords: soil, archaea, microbes, fungi, bacteria, microbe abundances, group abundances, quantitative polymerase chain reaction (qPCR)
 
-QUERY INFORMATION
------------------
-
-Date-Time for Data Publication: 2018-07-05 17:37 (UTC)
-Start Date-Time for Queried Data: 2016-07-18 19:05 (UTC)
-End Date-Time for Queried Data: 2016-07-20 19:40 (UTC)
-
-Site: NOGP
-Geographic coordinates (lat/long datum): 46.769720 -100.915350 WGS 84
-Domain: D09
-
-This zip package was generated on: 2018-07-05 17:37 (UTC)
 
 DATA PACKAGE CONTENTS
 ---------------------
 
-This zip package contains the following documentation files:
+This data product contains up to 5 data tables:
 
-- This readme file: NEON.D09.NOGP.DP1.10109.001.readme.20180705T173721Z.txt
-- Term descriptions, data types, and units: NEON.D09.NOGP.DP1.10109.001.variables.20180705T173721Z.csv
-- Data entry validation and parsing rules: NEON.D09.NOGP.DP1.10109.001.validation.20180705T173721Z.csv
-- Machine-readable metadata file describing the data package: NEON.D09.NOGP.DP1.10109.001.EML.20160718-20160720.20180705T173721Z.xml. This file uses the Ecological Metadata Language schema. Learn more about this specification and tools to parse it at http://data.neonscience.org/faq.
-- Other related documents, such as engineering specifications, field protocols and data processing documentation: 
-NEON_groupAbundance_userGuide_vA
-NEON.DOC.014048vJ
-NEON.DOC.000908vB
-
-Additional documentation for this data product or other related documentation are available at http://data.neonscience.org/documents.
-
-This zip package also contains 3 data files:
-NEON.Battelle_Applied_Genomics.mga_labSummary.csv - Summary data on laboratory methods for qPCR results in soil samples
-NEON.D09.NOGP.DP1.10109.001.mga_soilGroupAbundances.2016-07.expanded.20180705T173721Z.csv - Laboratory results of gene copy number data in soil samples
-NEON.Battelle_Applied_Genomics.mga_batchResults.csv - Batch-level results of analysis of gene copy number in soil samples
-
+mga_soilGroupAbundances - Laboratory results of gene copy number data in soil samples
+mga_soilLabSummary - Summary data on laboratory methods for qPCR results in soil samples
+mga_soilBatchResults - Batch-level results of analysis of gene copy number in soil samples
+mga_batchResults - Batch-level results of analysis of gene copy number in soil samples
+mga_labSummary - Summary data on laboratory methods for qPCR results in soil samples
+If data are unavailable for the particular sites and dates queried, some tables may be absent.
 Basic download package definition: The basic package includes the group abundance data.
 
 Expanded download package definition: The expanded package includes two additional tables that provide batch level metadata and summary information about the lab methodology.
@@ -152,3 +132,9 @@ Starting in 2020 or earlier, NEON will begin to offer static versions of each da
 
 POST STACKING README DOCUMENTATION
 ----------------------------------
+
+Each row contains the readme filename used during stackByTable
+
+NEON.D04.LAJA.DP1.10109.001.readme.20180705T154613Z.txt
+NEON.D06.UKFS.DP1.10109.001.readme.20180705T163900Z.txt
+NEON.D09.NOGP.DP1.10109.001.readme.20180705T173721Z.txt
