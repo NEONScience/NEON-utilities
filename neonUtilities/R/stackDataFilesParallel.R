@@ -39,7 +39,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
-  ttypes <- table_types
+  ttypes <- table_types[which(table_types$productID==dpID),]
   dpnum <- substring(dpID, 5, 9)
   
   # filenames without full path
@@ -69,36 +69,92 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
-    tables <- findTablesUnique(names(datafls), ttypes)
+    # detecting table types by file format, then checking against table_types
+    # reducing dependency on table_types updating
+    tableForm <- findTablesByFormat(names(datafls))
+    tables <- tableForm$tableName
+    
+    # check against table_types. use grep() since format only identifies to 'lab'
+    mis <- 0
+    newtables <- character()
+    for(j in 1:nrow(tableForm)) {
+      ind <- which(ttypes$tableName==tableForm$tableName[j])
+      if(length(ind)==0) {
+        newtables <- rbind(newtables, tableForm[j,])
+        next
+        }
+      indt <- grep(tableForm$tableType[j], ttypes$tableType[ind])
+      if(length(indt)==0) {
+        mis <- mis+1
+      }
+    }
+    
+    # for new tables, always use inferred types. for mismatches, decide based on publication dates
+    if(!is.null(nrow(newtables))) {
+      cat("Table(s)", newtables[,1], "are unexpected. Stacking will proceed based on inferred table format; check for updates to neonUtilities.\n")
+      ttypes <- plyr::rbind.fill(ttypes, newtables)
+    }
+    
+    if(mis>0) {
+      dats <- character()
+      filespl <- strsplit(filenames, "\\.")
+      for(k in 1:length(filespl)) {
+        dats <- c(dats, filespl[[k]][length(filespl[[k]])-1])
+      }
+      dats <- as.POSIXct(dats, format="%Y%m%dT%H%M%SZ")
+      if(min(dats, na.rm=T) > utils::packageDate("neonUtilities")) {
+        cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed using inference from downloaded data formats. Check results carefully, and check for updates to neonUtilities.\n")
+        ttypes <- tableForm
+      } else {
+        if(max(dats, na.rm=T) < utils::packageDate("neonUtilities")) {
+          cat("Downloaded data formats do not match expected formats. neonUtilities version is more recent than data publication dates. Stacking will proceed based on neonUtilities expectations. Check results carefully, and consider re-downloading data.\n")
+        } else {
+        cat("Downloaded data formats do not match expected formats. Data publication dates include both older and more recent data than neonUtilities package version. Stacking will proceed based on neonUtilities expectations. Check results carefully, and check for updates to neonUtilities.\n")
+      }
+      }
+    }
+    
     n <- 0
     m <- 0
     messages <- character()
-
-    # find external lab tables (lab-current, lab-all) and copy the most recently published file from each lab into stackedFiles
-    labTables <- tables[which(tables %in% table_types$tableName[which(table_types$tableType %in% c("lab-current","lab-all"))])]
+    
+    # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
+    labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
     if(length(labTables)>0){
       externalLabs <- unique(names(datafls)[grep(paste(paste('.', labTables, '.', sep=''), 
                                                        collapse='|'), names(datafls))])
       
-      pbapply::pblapply(as.list(externalLabs), function(x) {
-        labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
-        file.copy(labpath, paste0(folder, "/stackedFiles/"))
-      })
-      messages <- c(messages, paste("Copied the most recent publication of", externalLabs, "to /stackedFiles"))
+      for(j in 1:length(labTables)) {
+        
+        tablesj <- externalLabs[grep(paste(".", labTables[j], ".", sep=""), externalLabs)]
+        if(length(tablesj)>0) {
+
+          writeLines(paste0("Stacking table ", labTables[j]))
+          
+          outputLab <- data.table::rbindlist(pbapply::pblapply(as.list(tablesj), function(x, filepaths) {
+            labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
+            outputj <- data.table::fread(labpath[[1]], header=TRUE, encoding="UTF-8")
+            outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
+            return(outputj)
+            }, filepaths=filepaths), fill=TRUE)
+        
+        data.table::fwrite(outputLab, paste0(folder, "/stackedFiles/", labTables[j], ".csv"))
+        n <- n + 1
+        }
+      }
       tables <- setdiff(tables, labTables)
-      n <- n + length(externalLabs)
     }
 
     # copy variables and validation files to /stackedFiles using the most recent publication date
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
-      varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])
+      varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       v <- suppressWarnings(data.table::fread(varpath, sep=','))
       vlist <- base::split(v, v$table)
     }
     
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
-      valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])
+      valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])[[1]]
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation_", dpnum, ".csv"))
       messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles")
       m <- m + 1
@@ -106,7 +162,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
 
     # copy categoricalCodes file to /stackedFiles using the most recent publication date
     if(TRUE %in% stringr::str_detect(filepaths,'categoricalCodes')) {
-      lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])
+      lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])[[1]]
       file.copy(from = lovpath, to = paste0(folder, "/stackedFiles/categoricalCodes_", dpnum, ".csv"))
       messages <- c(messages, "Copied the most recent publication of categoricalCodes file to /stackedFiles")
       m <- m + 1
@@ -123,7 +179,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
 
       outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
         
-        sppath <- getRecentPublication(sensorPositionList[grep(x, sensorPositionList)])
+        sppath <- getRecentPublication(sensorPositionList[grep(x, sensorPositionList)])[[1]]
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
                                     colClasses = list(character = c('HOR.VER'))) %>%
           makePosColumns(., sppath, x)

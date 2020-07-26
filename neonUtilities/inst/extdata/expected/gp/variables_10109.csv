@@ -1,74 +1,75 @@
-table,fieldName,description,dataType,units,downloadPkg
-mga_soilGroupAbundances,uid,"Unique ID within NEON database; an identifier for the record",string,NA,basic
-mga_soilGroupAbundances,namedLocation,"Name of the measurement location in the NEON database",string,NA,basic
-mga_soilGroupAbundances,domainID,"Unique identifier of the NEON domain",string,NA,basic
-mga_soilGroupAbundances,siteID,"NEON site code",string,NA,basic
-mga_soilGroupAbundances,plotID,"Plot identifier (NEON site code_XXX)",string,NA,basic
-mga_soilGroupAbundances,collectDate,"Date of the collection event",dateTime,NA,basic
-mga_soilGroupAbundances,processedDate,"Date or date and time of processing event",dateTime,NA,basic
-mga_soilGroupAbundances,sampleMaterial,"The material in which a sample was embedded prior to the sampling event",string,NA,basic
-mga_soilGroupAbundances,geneticSampleID,"Identifier for the genetic sample",string,NA,basic
-mga_soilGroupAbundances,laboratoryName,"Name of the laboratory or facility that is processing the sample",string,NA,basic
-mga_soilGroupAbundances,dnaSampleID,"Identifier for DNA sample",string,NA,basic
-mga_soilGroupAbundances,batchID,"Identifier for batch or analytical run",string,NA,expanded
-mga_soilGroupAbundances,testProtocolVersion,"The protocol version used to test the sample",string,NA,basic
-mga_soilGroupAbundances,nucleicAcidConcentration,"Concentration of extracted nucleic acids",real,nanogramsPerMicroliter,basic
-mga_soilGroupAbundances,inhibitorRemovalRequired,"Indicates whether nucleic acid inhibitor removal was required prior to analysis",string,NA,basic
-mga_soilGroupAbundances,targetGene,"Targeted gene or locus name",string,NA,basic
-mga_soilGroupAbundances,targetTaxonGroup,"Taxonomic group targeted",string,NA,basic
-mga_soilGroupAbundances,sampleCondition,"Condition of a sample",string,NA,expanded
-mga_soilGroupAbundances,meanCopyNumber,"Average gene copy number in a sample in copies per nanogram of DNA",real,numberPerNanogram,basic
-mga_soilGroupAbundances,copyNumberStandardDeviation,"Standard deviation in gene copy number in a sample",real,numberPerNanogram,basic
-mga_soilGroupAbundances,meanCqValue,"Average quantification cycle or threshold number in a sample",real,NA,expanded
-mga_soilGroupAbundances,processedBy,"An identifier for the technician who processed the sample(s)",string,NA,basic
-mga_soilGroupAbundances,reviewedBy,"Name of lab personnel who reviewed the data prior to submission",string,NA,basic
-mga_soilGroupAbundances,remarks,"Technician notes; free text comments accompanying the record",string,NA,basic
-mga_soilGroupAbundances,dataQF,"Data quality flag",string,NA,expanded
-mga_labSummary,uid,"Unique ID within NEON database; an identifier for the record",string,NA,expanded
-mga_labSummary,targetTaxonGroup,"Taxonomic group targeted",string,NA,expanded
-mga_labSummary,labSpecificStartDate,"Date a specific analyte, instrument, and associated method detection limit combination started",dateTime,NA,expanded
-mga_labSummary,labSpecificEndDate,"Date a specific analyte, instrument, and associated method detection limit combination ended",dateTime,NA,expanded
-mga_labSummary,laboratoryName,"Name of the laboratory or facility that is processing the sample",string,NA,expanded
-mga_labSummary,qpcrDetectionMethod,"Method used for amplicon detection in qPCR assay",string,NA,expanded
-mga_labSummary,primerConcentration,"Concentration of primers used in sample assay",real,micromolesPerLiter,expanded
-mga_labSummary,forwardPrimer,"DNA sequence of forward primer",string,NA,expanded
-mga_labSummary,reversePrimer,"DNA sequence of reverse primer",string,NA,expanded
-mga_labSummary,ampliconLength,"Length of amplicon",unsigned integer,number,expanded
-mga_labSummary,dNTPConcentration,"Concentration of deoxynucleoside triphosphates used in sample assay",real,millimolesPerLiter,expanded
-mga_labSummary,probeConcentration,"Concentration of probe used in sample assays",real,millimolesPerLiter,expanded
-mga_labSummary,mgConcentration,"Concentration of magnesium used in sample assay",real,millimolesPerLiter,expanded
-mga_labSummary,polymeraseType,"Type of DNA polymerase used in sample assay",string,NA,expanded
-mga_labSummary,polymeraseUnitNumber,"Number of units of DNA polymerase used in sample assay",real,number,expanded
-mga_labSummary,bufferID,"Identity and manufacturer of buffer or kit",string,NA,expanded
-mga_labSummary,bufferComposition,"Contents of buffer solution",string,NA,expanded
-mga_labSummary,reactionVolume,"Volume of reaction",real,microliter,expanded
-mga_labSummary,qpcrMethod,"Protocol used for qPCR reaction setup and themocycling conditions",string,NA,expanded
-mga_labSummary,instrument,"Type of instrument used for the analysis",string,NA,expanded
-mga_labSummary,primerSpecificity,"Specificity of primer for target taxa based on BLAST or similar analysis",real,percent,expanded
-mga_labSummary,detectionLimit,"Lowest concentration of target gene copies measured consistently in replicate assays",real,numberPerNanogram,expanded
-mga_labSummary,multiplexStatus,"Whether multiple genes are targeted in a single PCR reaction",string,NA,expanded
-mga_labSummary,qPCRAnalysisProgram,"Name, version and manufacturer of qPCR analysis software",string,NA,expanded
-mga_labSummary,cqMethod,"Method used to determine the quantification cycle",string,NA,expanded
-mga_labSummary,recordedBy,"An identifier for the technician who recorded the data",string,NA,expanded
-mga_labSummary,dataQF,"Data quality flag",string,NA,expanded
-mga_batchResults,uid,"Unique ID within NEON database; an identifier for the record",string,NA,expanded
-mga_batchResults,laboratoryName,"Name of the laboratory or facility that is processing the sample",string,NA,expanded
-mga_batchResults,startDate,"The start date-time or interval during which an event occurred",dateTime,NA,expanded
-mga_batchResults,endDate,"The end date-time or interval during which an event occurred",dateTime,NA,expanded
-mga_batchResults,batchID,"Identifier for batch or analytical run",string,NA,expanded
-mga_batchResults,noTemplateControlCq,"Quantification or threshold cycle number for no template control",integer,NA,expanded
-mga_batchResults,calCurveSlope,"Slope of assay calibration curve for the quantification cycle versus log10 of the template concentration",real,NA,expanded
-mga_batchResults,calCurveIntercept,"y-intercept of assay calibration curve for the quantification cycle versus log10 of the template concentration",real,NA,expanded
-mga_batchResults,standardDescription,"Description of assay standard used",string,NA,expanded
-mga_batchResults,linearDynamicRangeLower,"The lower range of gene copy number in which the threshold cycle versus the dilution factor fits a straight line on a base-10 semi-logarithmic graph",real,numberPerNanogram,expanded
-mga_batchResults,linearDynamicRangeUpper,"The upper range of gene copy number in which the threshold cycle versus the dilution factor fits a straight line on a base-10 semi-logarithmic graph",real,numberPerNanogram,expanded
-mga_batchResults,lodCqVar,"Variability in quantification cycle threshold at the limit of detection",real,NA,expanded
-mga_batchResults,negControl1Result,"Result for negative control sample 1",string,NA,expanded
-mga_batchResults,negControl2Result,"Result for negative control sample 2",string,NA,expanded
-mga_batchResults,negControl3Result,"Result for negative control sample 3",string,NA,expanded
-mga_batchResults,negControl4Result,"Result for negative control sample 4",string,NA,expanded
-mga_batchResults,negControl5Result,"Result for negative control sample 5",string,NA,expanded
-mga_batchResults,calCurveRsquared,"R-squared value for calibration curve",real,NA,expanded
-mga_batchResults,pcrEfficiency,"Efficiency of PCR reaction",real,percent,expanded
-mga_batchResults,pcrEfficiencyConfInt,"Confidence interval for PCR efficiency",real,NA,expanded
-mga_batchResults,dataQF,"Data quality flag",string,NA,expanded
+"table","fieldName","description","dataType","units","downloadPkg","pubFormat","primaryKey","categoricalCodeName"
+"mga_batchResults","uid","Unique ID within NEON database; an identifier for the record","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","laboratoryName","Name of the laboratory or facility that is processing the sample","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","startDate","The start date-time or interval during which an event occurred","dateTime",NA,"expanded",NA,NA,NA
+"mga_batchResults","endDate","The end date-time or interval during which an event occurred","dateTime",NA,"expanded",NA,NA,NA
+"mga_batchResults","batchID","Identifier for batch or analytical run","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","noTemplateControlCq","Quantification or threshold cycle number for no template control","integer",NA,"expanded",NA,NA,NA
+"mga_batchResults","calCurveSlope","Slope of assay calibration curve for the quantification cycle versus log10 of the template concentration","real",NA,"expanded",NA,NA,NA
+"mga_batchResults","calCurveIntercept","y-intercept of assay calibration curve for the quantification cycle versus log10 of the template concentration","real",NA,"expanded",NA,NA,NA
+"mga_batchResults","standardDescription","Description of assay standard used","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","linearDynamicRangeLower","The lower range of gene copy number in which the threshold cycle versus the dilution factor fits a straight line on a base-10 semi-logarithmic graph","real","numberPerNanogram","expanded",NA,NA,NA
+"mga_batchResults","linearDynamicRangeUpper","The upper range of gene copy number in which the threshold cycle versus the dilution factor fits a straight line on a base-10 semi-logarithmic graph","real","numberPerNanogram","expanded",NA,NA,NA
+"mga_batchResults","lodCqVar","Variability in quantification cycle threshold at the limit of detection","real",NA,"expanded",NA,NA,NA
+"mga_batchResults","negControl1Result","Result for negative control sample 1","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","negControl2Result","Result for negative control sample 2","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","negControl3Result","Result for negative control sample 3","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","negControl4Result","Result for negative control sample 4","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","negControl5Result","Result for negative control sample 5","string",NA,"expanded",NA,NA,NA
+"mga_batchResults","calCurveRsquared","R-squared value for calibration curve","real",NA,"expanded",NA,NA,NA
+"mga_batchResults","pcrEfficiency","Efficiency of PCR reaction","real","percent","expanded",NA,NA,NA
+"mga_batchResults","pcrEfficiencyConfInt","Confidence interval for PCR efficiency","real",NA,"expanded",NA,NA,NA
+"mga_batchResults","dataQF","Data quality flag","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","uid","Unique ID within NEON database; an identifier for the record","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","targetTaxonGroup","Taxonomic group targeted","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","labSpecificStartDate","Date a specific analyte, instrument, and associated method detection limit combination started","dateTime",NA,"expanded",NA,NA,NA
+"mga_labSummary","labSpecificEndDate","Date a specific analyte, instrument, and associated method detection limit combination ended","dateTime",NA,"expanded",NA,NA,NA
+"mga_labSummary","laboratoryName","Name of the laboratory or facility that is processing the sample","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","qpcrDetectionMethod","Method used for amplicon detection in qPCR assay","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","primerConcentration","Concentration of primers used in sample assay","real","micromolesPerLiter","expanded",NA,NA,NA
+"mga_labSummary","forwardPrimer","DNA sequence of forward primer","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","reversePrimer","DNA sequence of reverse primer","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","ampliconLength","Length of amplicon","unsigned integer","number","expanded",NA,NA,NA
+"mga_labSummary","dNTPConcentration","Concentration of deoxynucleoside triphosphates used in sample assay","real","millimolesPerLiter","expanded",NA,NA,NA
+"mga_labSummary","probeConcentration","Concentration of probe used in sample assays","real","millimolesPerLiter","expanded",NA,NA,NA
+"mga_labSummary","mgConcentration","Concentration of magnesium used in sample assay","real","millimolesPerLiter","expanded",NA,NA,NA
+"mga_labSummary","polymeraseType","Type of DNA polymerase used in sample assay","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","polymeraseUnitNumber","Number of units of DNA polymerase used in sample assay","real","number","expanded",NA,NA,NA
+"mga_labSummary","bufferID","Identity and manufacturer of buffer or kit","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","bufferComposition","Contents of buffer solution","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","reactionVolume","Volume of reaction","real","microliter","expanded",NA,NA,NA
+"mga_labSummary","qpcrMethod","Protocol used for qPCR reaction setup and themocycling conditions","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","instrument","Type of instrument used for the analysis","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","primerSpecificity","Specificity of primer for target taxa based on BLAST or similar analysis","real","percent","expanded",NA,NA,NA
+"mga_labSummary","detectionLimit","Lowest concentration of target gene copies measured consistently in replicate assays","real","numberPerNanogram","expanded",NA,NA,NA
+"mga_labSummary","multiplexStatus","Whether multiple genes are targeted in a single PCR reaction","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","qPCRAnalysisProgram","Name, version and manufacturer of qPCR analysis software","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","cqMethod","Method used to determine the quantification cycle","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","recordedBy","An identifier for the technician who recorded the data","string",NA,"expanded",NA,NA,NA
+"mga_labSummary","dataQF","Data quality flag","string",NA,"expanded",NA,NA,NA
+"mga_soilGroupAbundances","uid","Unique ID within NEON database; an identifier for the record","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","namedLocation","Name of the measurement location in the NEON database","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","domainID","Unique identifier of the NEON domain","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","siteID","NEON site code","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","plotID","Plot identifier (NEON site code_XXX)","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","collectDate","Date of the collection event","dateTime",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","processedDate","Date or date and time of processing event","dateTime",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","sampleMaterial","The material in which a sample was embedded prior to the sampling event","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","geneticSampleID","Identifier for the genetic sample","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","laboratoryName","Name of the laboratory or facility that is processing the sample","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","dnaSampleID","Identifier for DNA sample","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","batchID","Identifier for batch or analytical run","string",NA,"expanded",NA,NA,NA
+"mga_soilGroupAbundances","testProtocolVersion","The protocol version used to test the sample","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","nucleicAcidConcentration","Concentration of extracted nucleic acids","real","nanogramsPerMicroliter","basic",NA,NA,NA
+"mga_soilGroupAbundances","inhibitorRemovalRequired","Indicates whether nucleic acid inhibitor removal was required prior to analysis","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","targetGene","Targeted gene or locus name","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","targetTaxonGroup","Taxonomic group targeted","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","sampleCondition","Condition of a sample","string",NA,"expanded",NA,NA,NA
+"mga_soilGroupAbundances","meanCopyNumber","Average gene copy number in a sample in copies per nanogram of DNA","real","numberPerNanogram","basic",NA,NA,NA
+"mga_soilGroupAbundances","copyNumberStandardDeviation","Standard deviation in gene copy number in a sample","real","numberPerNanogram","basic",NA,NA,NA
+"mga_soilGroupAbundances","meanCqValue","Average quantification cycle or threshold number in a sample","real",NA,"expanded",NA,NA,NA
+"mga_soilGroupAbundances","processedBy","An identifier for the technician who processed the sample(s)","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","reviewedBy","Name of lab personnel who reviewed the data prior to submission","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","remarks","Technician notes; free text comments accompanying the record","string",NA,"basic",NA,NA,NA
+"mga_soilGroupAbundances","dataQF","Data quality flag","string",NA,"expanded",NA,NA,NA
+"mga_soilGroupAbundances","publicationDate","Date of data publication on the NEON data portal","dateTime",NA,"appended by stackByTable",NA,"N",""
