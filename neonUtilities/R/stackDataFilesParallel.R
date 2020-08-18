@@ -181,7 +181,9 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         
         sppath <- getRecentPublication(sensorPositionList[grep(x, sensorPositionList)])[[1]]
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                    colClasses = list(character = c('HOR.VER'))) %>%
+                                    colClasses = list(character = c('HOR.VER','start','end',
+                                                                    'referenceStart',
+                                                                    'referenceEnd'))) %>%
           makePosColumns(., sppath, x)
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
