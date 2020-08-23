@@ -24,6 +24,6 @@ getRecentPublication <- function(inList) {
       unlist(.) %>%
       .[grep("[0-9]{8}T[0-9]{6}Z", .)]
   })
-  outList <- inList[grep(max(unlist(path_dates)), inList)]
+  outList <- inList[grep(max(unlist(path_dates)), inList)][1]
   return(list(outList, max(unlist(path_dates))))
 }
