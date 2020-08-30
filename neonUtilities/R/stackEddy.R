@@ -35,13 +35,13 @@
 ##############################################################################################
 
 stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
-  
+
   # first check for rhdf5 package
   if(!requireNamespace("rhdf5", quietly=T)) {
     stop("Package rhdf5 is required for this function to work.
          \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
   }
-  
+
   # get list of files, unzipping if necessary
   if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
     outpath <- gsub(".zip", "", filepath)
@@ -51,35 +51,48 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     utils::unzip(filepath, exdir=outpath)
     filepath <- outpath
   }
-  
-  # allow for a single H5 file
-  if(substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
-    files <- unlist(strsplit(filepath, split="/", 
-                             fixed=T))[length(unlist(strsplit(filepath, 
-                                                              split="/", fixed=T)))]
-    filepath <- paste0(unlist(strsplit(filepath, split="/", 
-                                fixed=T))[1:I(length(unlist(strsplit(filepath, 
-                                                                   split="/", fixed=T)))-1)],
-                       collapse="/")
-  } else {
-    files <- list.files(filepath, recursive=F)
-  }
-  
+
+  # allow for a single H5 file or a list of H5 files
+  if (substring(filepath[1], nchar(filepath[1]) - 2, nchar(filepath[1])) ==
+      ".h5") {
+    if(length(filepath) == 1){
+    #Single H5 file
+    files <- unlist(strsplit(filepath, split = "/", fixed = T))[length(unlist(strsplit(filepath,
+                                                                                       split = "/", fixed = T)))]
+    filepath <- paste0(unlist(strsplit(filepath, split = "/",
+                                       fixed = T))[1:I(length(unlist(strsplit(filepath,
+                                                                              split = "/", fixed = T))) - 1)], collapse = "/")
+     filepath <- filepath
+  }else {
+    #list of H5 files
+      files <- basename(filepath)
+      # This allows different files in the list of h5 to
+      # have different filepaths.
+      filepath <- dirname(filepath)
+    }
+    }else{
+      files <- list.files(filepath, recursive = F)
+      # replicating the filepath because it is expecting a list below
+      filepath <- rep(filepath, length(files))
+    }
+
   # unzip files if necessary
   if(length(grep(".zip", files))==length(files)) {
     for(i in 1:length(files)) {
       utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
     }
     files <- list.files(filepath, recursive=F)
+    # replicating the filepath because it is expecting a list below
+    filepath <- rep(filepath, length(files))
   }
-  
+
   # only need to H5 files for data extraction
   files <- files[grep(".h5", files)]
-  
+
   # make empty, named list for the data tables
   tableList <- vector("list", length(files))
   names(tableList) <- substring(files, 1, nchar(files)-3)
-  
+
   # set up progress bar
   writeLines(paste0("Extracting data"))
   pb <- utils::txtProgressBar(style=3)
@@ -87,20 +100,20 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
 
   # extract data from each file
   for(i in 1:length(files)) {
-    
-    listObj <- base::try(rhdf5::h5ls(paste(filepath, files[i], sep="/")), silent=T)
-    
+
+    listObj <- base::try(rhdf5::h5ls(paste(filepath[i], files[i], sep="/")), silent=T)
+
     if(class(listObj)=="try-error") {
-      cat(paste("\n", paste(filepath, files[i], sep="/"), " could not be read.", sep=""))
+      cat(paste("\n", paste(filepath[i], files[i], sep="/"), " could not be read.", sep=""))
       next
     }
-    
+
     listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
     listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
-    
+
     # filter by variable/level selections
     levelInd <- grep(level, listDataName)
-    
+
     if(level!="dp04" & level!="dp03" & level!="dp02" & !all(is.na(var))) {
       varInd <- which(listDataObj$name %in% var)
     } else {
@@ -115,49 +128,49 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
         avgInd <- 1:length(listDataName)
       }
     }
-    
+
     # exclude footprint grid data from expanded packages
     if(length(grep("foot/grid", listDataName))>0) {
       gridInd <- grep("foot/grid", listDataName, invert=T)
     } else {
       gridInd <- 1:length(listDataName)
     }
-    
+
     # index that includes all filtering criteria
     ind <- intersect(intersect(levelInd, intersect(varInd, avgInd)), gridInd)
-    
+
     # check that you haven't filtered to nothing
     if(length(ind)==0) {
-      stop(paste("There are no data meeting the criteria level ", level, 
+      stop(paste("There are no data meeting the criteria level ", level,
                  ", averaging interval ", avg, ", and variables ", var, sep=""))
     }
-    
+
     listDataName <- listDataName[ind]
-    
+
     # add extracted data to the list
-    tableList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=paste(filepath, files[i], sep="/"), read.attributes=T)
+    tableList[[i]] <- base::lapply(listDataName, rhdf5::h5read,
+                                 file=paste(filepath[i], files[i], sep="/"), read.attributes=T)
     base::names(tableList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
-    
+
     utils::setTxtProgressBar(pb, i/length(files))
-    
+
   }
   close(pb)
-  
+
   # get variable units
   variables <- character(5)
   for(p in 1:length(tableList[[1]])) {
     if(!is.null(attributes(tableList[[1]][[p]])$unit)) {
-      var.nm <- strsplit(names(tableList[[1]])[p], 
-                         split="/", fixed=T)[[1]][c(3,4,length(strsplit(names(tableList[[1]])[p], 
+      var.nm <- strsplit(names(tableList[[1]])[p],
+                         split="/", fixed=T)[[1]][c(3,4,length(strsplit(names(tableList[[1]])[p],
                                                              split="/", fixed=T)[[1]]))]
       if(length(attributes(tableList[[1]][[p]])$unit)>1) {
         var.nm <- matrix(var.nm, ncol=3, nrow=length(attributes(tableList[[1]][[p]])$unit), byrow=T)
         if(length(attributes(tableList[[1]][[p]])$unit)==length(attributes(tableList[[1]][[p]])$names)) {
           var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$names)
         } else {
-          var.nm <- cbind(var.nm, 
-                          attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
+          var.nm <- cbind(var.nm,
+                          attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names
                                                                        %in% c("timeBgn","timeEnd"))])
         }
         var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$unit)
@@ -175,7 +188,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     colnames(variables) <- c("category","system","variable","stat","units")
     rownames(variables) <- 1:nrow(variables)
   }
-  
+
   # make empty, named list for the merged data tables
   tabs <- character()
   for(k in 1:length(tableList)) {
@@ -189,13 +202,13 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   writeLines(paste0("Stacking data tables by month"))
   pb2 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb2, 0)
-  
+
   # concatenate tables
   for(j in 1:length(timeMergList)) {
-    
+
     # table to concatenate
     nm <- base::names(timeMergList)[j]
-    
+
     # subset to one site at a time
     tableListSub <- tableList[base::grep(substring(nm, 1, 4), base::names(tableList))]
 
@@ -204,68 +217,68 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     for(k in 1:length(tableListSub)) {
       tableListToMerge[[k]] <- tableListSub[[k]][[nm]]
     }
-    
+
     # stack list of tables with matching table name
     timeMergList[[j]] <- data.frame(data.table::rbindlist(tableListToMerge, fill=T))
-    
+
     utils::setTxtProgressBar(pb2, j/length(timeMergList))
   }
   close(pb2)
-  
+
   # for dp01 and dp02, stack tower levels and calibration gases
   if(level=="dp01" | level=="dp02") {
-    namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)), 
+    namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)),
                        nrow=length(names(timeMergList)), byrow=T))
-    verSpl <- tidyr::separate(namesSpl, col="X5", 
-                              into=c("hor", "ver", "tmi"), 
+    verSpl <- tidyr::separate(namesSpl, col="X5",
+                              into=c("hor", "ver", "tmi"),
                               sep="_", fill="left")
-    
+
     # add ver index to tables
     for(n in 1:length(timeMergList)) {
       verticalPosition <- rep(verSpl$ver[n], nrow(timeMergList[[n]]))
       timeMergList[[n]] <- cbind(verticalPosition, timeMergList[[n]])
     }
-    
+
     # next: stack everything with names that match when index is excluded
     # timeMergList becomes list of the stacked, renamed objects
     profNames <- apply(verSpl[,grep("X", names(verSpl))], 1, paste0, collapse="/")
     profTabs <- unique(profNames)
-    
+
     # make empty, named list for the merged data tables
     verMergList <- vector("list", length(profTabs))
     names(verMergList) <- profTabs
-    
+
     for(o in 1:length(verMergList)) {
 
       # table to concatenate
       nm <- names(verMergList)[o]
-      
+
       # get matching tables
       verListSub <- timeMergList[which(profNames==nm)]
-      
+
       # stack contents
       verMergList[[o]] <- data.frame(data.table::rbindlist(verListSub, fill=T))
     }
-    
+
     timeMergList <- verMergList
 
   }
-  
+
   # join the concatenated tables
 
   sites <- unique(substring(names(timeMergList), 1, 4))
   varMergList <- vector("list", length(sites)+2)
   names(varMergList) <- c(sites, "variables", "objDesc")
-  
+
   # set up progress bar
   writeLines(paste0("Joining data variables"))
   pb3 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb3, 0)
   idx <- 0
-  
+
   # make one merged table per site
   for(m in 1:I(length(varMergList)-2)) {
-    
+
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
 
     if(level=="dp01" | level=="dp02") {
@@ -279,18 +292,18 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     # initiate the table with time stamps
     # turbulent flux end time stamps don't match the others
     varMergTabl <- timeMergPerSite[[grep("turb", names(timeMergList), invert=T)[1]]][,nameSet]
-    
+
     # merge individual variable tables into one
     for(l in 1:length(timeMergPerSite)) {
-      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <- 
+      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <-
         paste(names(timeMergPerSite)[l], names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)],
               sep=".")
       names(timeMergPerSite[[l]]) <- gsub("/", ".", names(timeMergPerSite[[l]]), fixed=T)
-      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <- 
-        substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)], 
+      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <-
+        substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)],
                   11, nchar(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)]))
 
-      varMergTabl <- base::merge(varMergTabl, 
+      varMergTabl <- base::merge(varMergTabl,
                            timeMergPerSite[[l]][,-which(names(timeMergPerSite[[l]])=="timeEnd")],
                            by=mergSet, all=T)
       idx <- idx + 1
@@ -307,13 +320,13 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   close(pb3)
 
   # get one objDesc table and add it and variables table to list
-  objDesc <- base::try(rhdf5::h5read(paste(filepath, files[1], sep="/"), name="//objDesc"), silent=T)
+  objDesc <- base::try(rhdf5::h5read(paste(filepath[1], files[1], sep="/"), name="//objDesc"), silent=T)
   # if processing gets this far without failing, don't fail here, just return data without objDesc table
   if(class(objDesc)=="try-error") {
     objDesc <- NA
   }
   varMergList[["variables"]] <- variables
   varMergList[["objDesc"]] <- objDesc
-  
+
   return(varMergList)
 }
