@@ -12,7 +12,8 @@
 #' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
-#' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
+#' @param avg Deprecated; use timeIndex
+#' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
@@ -20,6 +21,7 @@
 
 #' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
 #' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
+#' timeIndex: NEON sensor data are published at pre-determined averaging intervals, usually 1 and 30 minutes. The default download includes all available data. Download volume can be greatly reduced by downloading only the 30 minute files, if higher frequency data are not needed. Use getTimeIndex() to find the available averaging intervals for each sensor data product.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all zip files meeting query criteria.
 
@@ -40,7 +42,7 @@
 ##############################################################################################
 
 zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          avg="all", check.size=TRUE, savepath=NA, load=F, token=NA) {
+                          timeIndex="all", check.size=TRUE, savepath=NA, load=F, token=NA, avg=NA) {
 
   messages <- NA
 
@@ -71,6 +73,13 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     if(regexpr("[0-9]{4}-[0-9]{2}", enddate)!=1) {
       stop("startdate and enddate must be either NA or valid dates in the form YYYY-MM")
     }
+  }
+  
+  # warning message if using deprecated avg= instead of timeIndex=
+  if(!is.na(avg)) {
+    cat('Input parameter avg is deprecated; use timeIndex to download by time interval.\n')
+  } else {
+    avg <- timeIndex
   }
 
   # error for Phenocam data
@@ -116,14 +125,14 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   } else {
     # exceptions for water quality, SAE, summary weather statistics
     if(dpID %in% c("DP1.20288.001","DP4.00001.001","DP4.00200.001")) {
-      cat(paste("Subsetting by averaging interval is not available for ", dpID,
+      cat(paste("Downloading by time interval is not available for ", dpID,
                 ". Proceeding to download all available data.\n", sep=""))
       avg <- "all"
     } else {
       # check and make sure the averaging interval is valid for the product
       if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
-        stop(paste(avg, " is not a valid averaging interval for ", dpID,
-                   ". Use function getAvg() to find valid averaging intervals.", sep=""))
+        stop(paste(avg, " is not a valid time interval for ", dpID,
+                   ". Use function getTimeIndex() to find valid time intervals.", sep=""))
         }
       }
     }

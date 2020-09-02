@@ -12,7 +12,8 @@
 #' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
-#' @param avg Either the string 'all', or the averaging interval to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
+#' @param avg Deprecated; use timeIndex
+#' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param nCores The number of cores to parallelize the stacking procedure. By default it is set to a single core.
 #' @param forceParallel If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.
@@ -40,7 +41,8 @@
 ##############################################################################################
 
 loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          avg="all", check.size=TRUE, nCores=1, forceParallel=FALSE, token=NA) {
+                          timeIndex="all", check.size=TRUE, nCores=1, forceParallel=FALSE, 
+                          token=NA, avg=NA) {
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -73,7 +75,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   # pass the request to zipsByProduct() to download
   zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
-                avg=avg, check.size=check.size, savepath=temppath, load=TRUE, token=token)
+                avg=avg, timeIndex=timeIndex, check.size=check.size, savepath=temppath, 
+                load=TRUE, token=token)
 
   # stack and load the downloaded files using stackByTable
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),
