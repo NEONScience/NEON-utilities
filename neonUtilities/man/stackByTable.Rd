@@ -18,7 +18,7 @@ stackByTable(
 
 \item{savepath}{The location to save the output files to}
 
-\item{folder}{T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatilibity.}
+\item{folder}{T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatibility.}
 
 \item{saveUnzippedFiles}{T or F: should the unzipped monthly data folders be retained?}
 

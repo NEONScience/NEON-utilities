@@ -11,7 +11,7 @@
 
 #' @param filepath The location of the zip file
 #' @param savepath The location to save the output files to
-#' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatilibity.
+#' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatibility.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
 #' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
@@ -46,14 +46,19 @@
 
 stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1){
 
-  if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
-    folder <- FALSE
+  if(length(filepath)>1) {
+    folder <- "ls"
+    saveUnzippedFiles <- TRUE
   } else {
-    folder <- TRUE
+    if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+      folder <- FALSE
+    } else {
+      folder <- TRUE
+    }
   }
 
-  if(identical(savepath, "envt") & saveUnzippedFiles == TRUE) {
-    cat("Warning: savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE. Unzipped files won't be saved.")
+  if(identical(savepath, "envt") & saveUnzippedFiles == TRUE & folder!="ls") {
+    cat("Warning: savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE unless stacking from an archive. Unzipped files won't be saved.")
   }
 
   #### Check whether data should be stacked ####
@@ -72,6 +77,16 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
   }
 
+  if(folder=="ls"){
+    files <- filepath[grep(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")]
+    if(length(files) == 0){
+      stop("Data files are not present in specified filepath.")
+    }
+    if(any(!file.exists(files))) {
+      stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
+    }
+  }
+  
   dpID <- substr(basename(files[1]), 15, 27)
   package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
   if(package == "anded"){package <- "expanded"}
@@ -88,7 +103,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
 
   # error message for SAE data
   if(dpID == "DP4.00200.001"){
-    stop("This eddy covariance data product is in HDF5 format and cannot be stacked.")
+    stop("This eddy covariance data product is in HDF5 format. Stack using stackEddy()")
   }
 
   if(dpID == "DP1.10017.001" && package != 'basic'){
@@ -127,6 +142,34 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       }
     }
   }
+  
+  # logic: if zipped, unzip. save list of unzipped folder names.
+  # from there, either way there is a list of unzipped folders.
+  # copy from list of folders to temporary directory (this is inefficient) (do not delete originals)
+  # use temporary directory as single filepath for stacking
+  # if savepath != envt, copy stackedFiles folder from temporary directory to savepath directory
+  # delete temporary directory
+  if(folder=="ls") {
+    if(identical(savepath, "envt")) {envt <- 1}
+    if(is.na(savepath) | identical(savepath, "envt")) {
+      finalpath <- dirname(files[1])
+    } else {
+      finalpath <- savepath
+    }
+    if(!dir.exists(finalpath)){dir.create(finalpath)}
+    if(length(grep(files, pattern = ".zip")) > 0){
+      fols <- sapply(files, function(x) {utils::unzip(x, exdir=paste(finalpath, 
+                                                             substring(basename(x), 1, 
+                                                                       nchar(basename(x))-4), 
+                                                             sep="/"))})
+      files <- substring(colnames(fols), 1, nchar(colnames(fols))-4)
+    }
+    savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+    dir.create(savepath)
+    for(i in files) {
+      file.copy(i, savepath, recursive=T)
+    }
+  }
 
   stackDataFilesParallel(savepath, nCores, dpID)
   getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
@@ -138,7 +181,12 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       gsub('.zip', '', .)
 
     cleanUp(savepath, zipList)
-    }
+  }
+  
+  if(folder=="ls" & envt!=1) {
+    file.copy(paste(savepath, "stackedFiles", sep="/"), finalpath, recursive=T)
+    unlink(savepath, recursive=T)
+  }
 
   if(envt==1) {
 
