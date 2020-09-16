@@ -162,7 +162,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
                                                              substring(basename(x), 1, 
                                                                        nchar(basename(x))-4), 
                                                              sep="/"))})
-      files <- substring(colnames(fols), 1, nchar(colnames(fols))-4)
+      files <- substring(names(fols), 1, nchar(names(fols))-4)
     }
     savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
     dir.create(savepath)
