@@ -12,6 +12,7 @@ stackFromStore(
   enddate = NA,
   pubdate = NA,
   zipped = FALSE,
+  package = "basic",
   load = TRUE,
   nCores = 1
 )
@@ -30,6 +31,8 @@ stackFromStore(
 \item{pubdate}{The maximum publication date of data to include in stacking, in the form YYYY-MM. If NA, the most recently published data for each product-site-month combination will be selected. Otherwise, the most recent publication date that is older than pubdate will be selected. Thus the data stacked will be the data that would have been accessed on the NEON Data Portal, if it had been downloaded on pubdate. [character]}
 
 \item{zipped}{Should stacking use data from zipped files or unzipped folders? This option allows zips and their equivalent unzipped folders to be stored in the same directory; stacking will extract whichever is specified. Defaults to FALSE, i.e. stacking using unzipped folders. [logical]}
+
+\item{package}{Either "basic" or "expanded", indicating which data package to stack. Defaults to basic. [character]}
 
 \item{load}{If TRUE, stacked data are read into the current R environment. If FALSE, stacked data are written to the directory where data files are stored. Defaults to TRUE. [logical]}
 

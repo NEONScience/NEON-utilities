@@ -14,6 +14,7 @@
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA. [character]
 #' @param pubdate The maximum publication date of data to include in stacking, in the form YYYY-MM. If NA, the most recently published data for each product-site-month combination will be selected. Otherwise, the most recent publication date that is older than pubdate will be selected. Thus the data stacked will be the data that would have been accessed on the NEON Data Portal, if it had been downloaded on pubdate. [character]
 #' @param zipped Should stacking use data from zipped files or unzipped folders? This option allows zips and their equivalent unzipped folders to be stored in the same directory; stacking will extract whichever is specified. Defaults to FALSE, i.e. stacking using unzipped folders. [logical]
+#' @param package Either "basic" or "expanded", indicating which data package to stack. Defaults to basic. [character]
 #' @param load If TRUE, stacked data are read into the current R environment. If FALSE, stacked data are written to the directory where data files are stored. Defaults to TRUE. [logical]
 #' @param nCores Number of cores to use for optional parallel processing. Defaults to 1. [integer]
 
@@ -30,7 +31,8 @@
 stackFromStore <- function(filepaths, dpID, site="all", 
                            startdate=NA, enddate=NA, 
                            pubdate=NA, zipped=FALSE,
-                           load=TRUE, nCores=1) {
+                           package="basic", load=TRUE, 
+                           nCores=1) {
   
   if(any(!file.exists(filepaths))) {
     stop("Files not found in specified file paths.")
@@ -60,6 +62,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
     
     files <- list.files(filepaths, full.names=T)
     files <- files[grep(dpID, files)]
+    files <- files[grep(package, files)]
     
     if(zipped==T) {
       files <- files[grep(".zip", files)]
@@ -110,6 +113,11 @@ stackFromStore <- function(filepaths, dpID, site="all",
       }
     }
     files <- files[sitedates]
+    
+    # check for no files
+    if(length(files)==0) {
+      stop("No files found meeting all input criteria.")
+    }
     
     if(dpID=="DP4.00200.001") {
       if(load==FALSE) {
