@@ -133,6 +133,14 @@ Disclaimer
 Change Log
 ----------
 
+#### 2020-09-24 v1.3.7
+Bug fixes:
+* removed gdata package dependency
+
+Enhancements:
+* input `avg` to `zipsByProduct()` changed to `timeIndex` for clarity
+
+
 #### 2020-07-26 v1.3.6
 Bug fixes:
 * unzipped file deletion no longer crashes on large numbers of files
