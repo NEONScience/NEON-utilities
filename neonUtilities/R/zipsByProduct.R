@@ -177,7 +177,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
     tidyr::drop_na()
 
-  downld.size <- gdata::humanReadable(sum(as.numeric(zip.urls$size), na.rm=T))
+  downld.size <- convByteSize(sum(as.numeric(zip.urls$size), na.rm=T))
 
   # ask user if they want to proceed
   # can disable this with check.size=F

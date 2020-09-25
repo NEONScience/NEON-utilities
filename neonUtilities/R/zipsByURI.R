@@ -136,7 +136,7 @@ zipsByURI <- function(filepath,
       fileSize[idx] <- as.numeric(httr::headers(response)[["Content-Length"]])
     }
   }
-  totalFileSize <- gdata::humanReadable(sum(fileSize, na.rm = TRUE))
+  totalFileSize <- convByteSize(sum(fileSize, na.rm = TRUE))
   
   if(check.size==TRUE) {
     resp <- readline(paste("Continuing will download",length(URLsToDownload), "files totaling approximately",
