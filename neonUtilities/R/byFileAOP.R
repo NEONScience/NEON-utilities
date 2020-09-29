@@ -104,13 +104,13 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
 
   file.urls.current <- getFileUrls(month.urls, token = token)
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
-  downld.size.read <- humanReadable(downld.size, units = "auto", standard = "SI")
+  downld.size.read <- convByteSize(downld.size)
 
   # ask user if they want to proceed
   # can disable this with check.size=F
   if(check.size==TRUE) {
-    resp <- readline(paste("Continuing will download", nrow(file.urls.current), "files totaling approximately",
-                           downld.size.read, ". Do you want to proceed y/n: ", sep=" "))
+    resp <- readline(paste("Continuing will download ", nrow(file.urls.current), " files totaling approximately ",
+                           downld.size.read, ". Do you want to proceed y/n: ", sep=""))
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
     }
