@@ -42,6 +42,8 @@
 #     * Remove extranous parameters dpID and package (obtain from data package)
 #   2019-11-14 (Nathan Mietkiewicz)
 #     * Parallelized the function
+#   2020-10-25 (Claire Lunch)
+#     * Add handling for input vector of file names; enables working with stackFromStore()
 ##############################################################################################
 
 stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1){
@@ -58,7 +60,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
 
   if(identical(savepath, "envt") & saveUnzippedFiles == TRUE & folder!="ls") {
-    cat("Warning: savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE unless stacking from an archive. Unzipped files won't be saved.")
+    cat("Warning: savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE unless stacking from an archive. Unzipped files won't be saved.\n")
   }
 
   #### Check whether data should be stacked ####
@@ -108,7 +110,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
 
   if(dpID == "DP1.10017.001" && package != 'basic'){
     saveUnzippedFiles = TRUE
-    writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.")
+    writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.\n")
   }
 
   #### If all checks pass, unzip and stack files ####
@@ -157,13 +159,20 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       finalpath <- savepath
     }
     if(!dir.exists(finalpath)){dir.create(finalpath)}
-    if(length(grep(files, pattern = ".zip")) > 0){
+    if(length(grep(files, pattern = ".zip"))==length(files)){
       fols <- sapply(files, function(x) {utils::unzip(x, exdir=paste(finalpath, 
                                                              substring(basename(x), 1, 
                                                                        nchar(basename(x))-4), 
                                                              sep="/"))})
       files <- substring(names(fols), 1, nchar(names(fols))-4)
+    } else {
+      if(length(grep(files, pattern = ".zip"))>I(length(files)/5)) {
+        cat("There are a large number of zip files in the input list.\nFiles are only unzipped if all input files are zip files.\n")
+      }
     }
+    files <- ifelse(length(grep(files, pattern = ".zip"))>0,
+                    files[grep(files, pattern = ".zip", invert=T)],
+                    files)
     savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
     dir.create(savepath)
     for(i in files) {

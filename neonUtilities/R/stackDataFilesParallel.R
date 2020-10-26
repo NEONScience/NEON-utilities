@@ -37,6 +37,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   requireNamespace("magrittr", quietly = TRUE)
   requireNamespace('data.table', quietly = TRUE)
   
+  messages <- character()
+  
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
   ttypes <- table_types[which(table_types$productID==dpID),]
@@ -62,6 +64,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   if(length(datafls) == 1){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     file.copy(from = datafls[1][[1]], to = "/stackedFiles")
+    m <- 0
+    n <- 1
   }
   
   # if there is more than one data file, stack files
@@ -116,7 +120,6 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     
     n <- 0
     m <- 0
-    messages <- character()
     
     # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
     labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]

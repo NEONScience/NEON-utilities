@@ -60,7 +60,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
   # if parent directory is input, select files based on criteria
   if(length(filepaths)==1) {
     
-    files <- list.files(filepaths, full.names=T)
+    files <- list.files(filepaths, full.names=T, recursive=T)
     files <- files[grep(dpID, files)]
     files <- files[grep(package, files)]
     
