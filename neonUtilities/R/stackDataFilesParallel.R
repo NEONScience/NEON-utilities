@@ -226,12 +226,11 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       if(tbltype == "site-all") {
         sites <- as.list(unique(substr(basename(file_list), 10, 13)))
 
-        tblfls <- lapply(sites, function(j, file_list) {
-          tbl_list <- file_list[grep(j, file_list)] %>%
-            .[order(.)] %>%
-            .[length(.)] 
-          }, file_list=file_list) 
-      } 
+        tblfls <- unlist(lapply(sites, function(j, file_list) {
+          tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
+        }, file_list=file_list))
+        
+      }
       if(tbltype == "site-date") {
         tblfls <- file_list
       }
