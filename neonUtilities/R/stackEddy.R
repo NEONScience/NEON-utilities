@@ -47,7 +47,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     if(length(grep(".zip", filepath))==length(filepath) |
        length(grep(".h5", filepath))==length(filepath)) {
       files <- filepath
-      filepath <- dirname(files[1])
+      filepath <- dirname(files[1]) #### is this too restrictive?
     } else {
       stop("Input list of files must be either site-month zip files or .h5 files.")
     }
@@ -81,14 +81,31 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # unzip files if necessary
   if(length(grep(".zip", files))==length(files)) {
-    for(i in 1:length(files)) {
-      utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
-    }
+    lapply(files, function(x) {
+      utils::unzip(paste(filepath, x, sep="/"), exdir=filepath)
+    })
     files <- list.files(filepath, recursive=F)
   }
   
+  # after unzipping, check for .gz
+  if(length(grep(".h5.gz", files))>0) {
+    lapply(files[grep(".h5.gz", files)], function(x) {
+      R.utils::gunzip(paste(filepath, x, sep="/"))
+    })
+  }
+  
   # only need the H5 files for data extraction
-  files <- files[grep(".h5", files)]
+  files <- files[grep(".h5$", files)]
+  
+  # check for duplicate files and use the most recent
+  fileDups <- gsub("[0-9]{8}T[0-9]{6}Z", "", files)
+  if(base::anyDuplicated(fileDups)) {
+    maxFiles <- character()
+    for(i in unique(fileDups)) {
+      maxFiles <- c(maxFiles, 
+                    max(files[grep(i, files)]))
+    }
+  }
   
   # make empty, named list for the data tables
   tableList <- vector("list", length(files))
