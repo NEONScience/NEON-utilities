@@ -98,13 +98,14 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   files <- files[grep(".h5$", files)]
   
   # check for duplicate files and use the most recent
-  fileDups <- gsub("[0-9]{8}T[0-9]{6}Z", "", files)
-  if(base::anyDuplicated(fileDups)) {
+  fileDups <- gsub("[0-9]{8}T[0-9]{6}Z.h5", "", files)
+  if(any(base::duplicated(fileDups))) {
     maxFiles <- character()
     for(i in unique(fileDups)) {
       maxFiles <- c(maxFiles, 
                     max(files[grep(i, files)]))
     }
+    files <- maxFiles
   }
   
   # make empty, named list for the data tables
