@@ -65,17 +65,17 @@ stackFromStore <- function(filepaths, dpID, site="all",
     files <- files[grep(package, files)]
     
     if(zipped==T) {
-      files <- files[grep(".zip", files)]
+      files <- files[grep(".zip$", files)]
     } else {
-      files <- files[grep(".zip", files, invert=T)]
+      files <- files[grep(".zip$", files, invert=T)]
     }
     
     if(!identical(site, "all")) {
       files <- files[grep(paste(site, collapse="|"), files)]
     }
     
-    splfiles <- strsplit(files, split=".", fixed=T)
-    datadates <- unlist(lapply(splfiles, "[", 7))
+    datemat <- regexpr('[0-9]{4}-[0-9]{2}', basename(files))
+    datadates <- regmatches(basename(files), datemat)
     
     if(!is.na(startdate) & !is.na(enddate)) {
       files <- files[which(datadates >= startdate & datadates <= enddate)]

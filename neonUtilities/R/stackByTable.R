@@ -154,7 +154,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(folder=="ls") {
     if(identical(savepath, "envt")) {envt <- 1}
     if(is.na(savepath) | identical(savepath, "envt")) {
-      finalpath <- dirname(files[1])
+      finalpath <- getwd()
     } else {
       finalpath <- savepath
     }
