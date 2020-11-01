@@ -12,7 +12,7 @@
 #' @param site Either "all" or a vector of NEON site codes to be stacked [character]
 #' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA. [character]
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA. [character]
-#' @param pubdate The maximum publication date of data to include in stacking, in the form YYYY-MM. If NA, the most recently published data for each product-site-month combination will be selected. Otherwise, the most recent publication date that is older than pubdate will be selected. Thus the data stacked will be the data that would have been accessed on the NEON Data Portal, if it had been downloaded on pubdate. [character]
+#' @param pubdate The maximum publication date of data to include in stacking, in the form YYYY-MM-DD. If NA, the most recently published data for each product-site-month combination will be selected. Otherwise, the most recent publication date that is older than pubdate will be selected. Thus the data stacked will be the data that would have been accessed on the NEON Data Portal, if it had been downloaded on pubdate. [character]
 #' @param zipped Should stacking use data from zipped files or unzipped folders? This option allows zips and their equivalent unzipped folders to be stored in the same directory; stacking will extract whichever is specified. Defaults to FALSE, i.e. stacking using unzipped folders. [logical]
 #' @param package Either "basic" or "expanded", indicating which data package to stack. Defaults to basic. [character]
 #' @param load If TRUE, stacked data are read into the current R environment. If FALSE, stacked data are written to the directory where data files are stored. Defaults to TRUE. [logical]
@@ -62,19 +62,92 @@ stackFromStore <- function(filepaths, dpID, site="all",
     
     files <- list.files(filepaths, full.names=T, recursive=T)
     files <- files[grep(dpID, files)]
-    files <- files[grep(package, files)]
     
     if(zipped==T) {
       files <- files[grep(".zip$", files)]
+      stop("Files must be unzipped to use this function. Zip file handling will be added in a future version.")
     } else {
       files <- files[grep(".zip$", files, invert=T)]
     }
-    
+
     if(!identical(site, "all")) {
       files <- files[grep(paste(site, collapse="|"), files)]
     }
     
-    datemat <- regexpr('[0-9]{4}-[0-9]{2}', basename(files))
+    # basic vs expanded files are simple for SAE, not for everything else
+    if(dpID=="DP4.00200.001") {
+      files <- files[grep(package, files)]
+    } else {
+      
+      # expanded package can contain basic files. find variables file published 
+      # most recently, or most recently before pubdate, to check expected contents
+      varFiles <- files[grep("[.]variables[.]", files)]
+      varDates <- regmatches(basename(varFiles), 
+                             regexpr("[0-9]{8}T[0-9]{6}Z", basename(varFiles)))
+      if(is.na(pubdate)) {
+        varFile <- varFiles[grep(max(varDates, na.rm=T), varFiles)][1]
+      } else {
+        pubdateP <- as.POSIXct(pubdate, format="%Y-%m-%d", tz="GMT")
+        varDatesP <- as.POSIXct(varDates, format="%Y%m%dT%H%M%SZ", tz="GMT")
+        varInd <- which(varDatesP==max(varDatesP[which(varDatesP < pubdateP)], na.rm=T))[1]
+        varFile <- varFiles[varInd]
+      }
+      
+      # inspect variables file for basic/expanded package status of each table
+      v <- utils::read.csv(varFile, header=T, stringsAsFactors=F)
+      vTabs <- unique(v$table)
+      vTypes <- unlist(lapply(vTabs, function(x) {
+        vx <- v$downloadPkg[which(v$table==x)]
+        if(all(vx=="none")) {"none"} else {
+          vx <- vx[which(vx!="none")]
+        }
+        if(all(vx=="basic")) {"basic"} else {
+          if(all(vx=="expanded")) {"expanded"} else {"both"}
+        }
+      }))
+      
+      # assemble list of tables included in the package
+      # expanded package includes the basic tables
+      tabs1 <- ifelse(package=="expanded", 
+                     vTabs,
+                     vTabs[which(vTypes %in% c(package,"both"))])
+      
+      # include metadata tables
+      tabs <- c(tabs1, "validation", "variables", "readme", 
+                "categoricalCodes", "sensor_positions")
+      
+      # select files matching table names and metadata
+      files <- files[grep(paste(paste("[.]", tabs, "[.]", sep=""), collapse="|"), files)]
+      
+      # for tables with both versions, need to pick the correct one
+      if(any(vTypes=="both")) {
+        bothTabs <- vTabs[which(vTypes=="both")]
+        bothFiles <- files[grep(paste(paste("[.]", bothTabs, "[.]", sep=""), 
+                                      collapse="|"), files)]
+        if(package=="expanded") {
+          remFiles <- bothFiles[grep("basic", bothFiles)]
+        } else {
+          remFiles <- bothFiles[grep("expanded", bothFiles)]
+        }
+        files <- files[which(!files %in% remFiles)]
+      }
+      
+      # check whether expected files are in archive
+      tabCheck <- unlist(lapply(tabs1, function(x) {
+        if(length(grep(paste("[.]", x, "[.]", sep=""), files))>0) {
+          TRUE
+        } else {
+          FALSE
+        }
+      }))
+      if(any(!tabCheck)) {
+        warning("Some expected data tables are not present in the files to be stacked. Stacking will proceed with available tables, but check for mismatched input criteria, e.g. attempting to stack expanded package from an archive containing only the basic package.")
+      }
+      
+    }
+    
+    # extract dates from filenames for subsetting
+    datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(files))
     datadates <- regmatches(basename(files), datemat)
     
     if(!is.na(startdate) & !is.na(enddate)) {
@@ -85,18 +158,27 @@ stackFromStore <- function(filepaths, dpID, site="all",
       files <- files[which(datadates <= enddate)]
     }
     
-    splfiles.sites <- strsplit(files, split=".", fixed=T)
-    sitesactual <- unlist(lapply(splfiles.sites, "[", 3))
-    monthsactual <- unlist(lapply(splfiles.sites, "[", 7))
-    pubdates <- unlist(lapply(splfiles.sites, "[", 9))
+    # extract sites, dates, and pub dates from filenames
+    sitemat <- regexpr("[.][A-Z]{4}[.]", basename(files))
+    sitesactual <- regmatches(basename(files), sitemat)
+    sitesactual <- gsub(".", "", sitesactual, fixed=T)
     
-    if(is.na(pubdate)) {
+    datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(files))
+    monthsactual <- regmatches(basename(files), datemat)
+    
+    pubmat <- regexpr("[0-9]{8}T[0-9]{6}Z", basename(files))
+    pubdates <- regmatches(basename(files), pubmat)
+    pubdates <- as.POSIXct(pubdates, format="%Y%m%dT%H%M%SZ", tz="GMT")
+    
+    if(!is.na(pubdate)) {
+      pubdate <- as.POSIXct(pubdate, format="%Y-%m-%d", tz="GMT")
+    } else {
       pubdate <- max(pubdates, na.rm=T)
     }
     
     # get most recent publication date *before* pubdate for each site and month
     # this mimics behavior as if data had been downloaded from portal or API on pubdate
-    # not precisely - pub packages are created and then have to sync to portal, so there is a small delay
+    # but not precisely - pub packages are created and then have to sync to portal, so there is a small delay
     sitedates <- numeric()
     for(i in unique(sitesactual)) {
       sitemonths <- monthsactual[which(sitesactual==i)]
