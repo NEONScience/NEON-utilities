@@ -124,12 +124,12 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
     labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
     if(length(labTables)>0){
-      externalLabs <- unique(names(datafls)[grep(paste(paste('.', labTables, '.', sep=''), 
+      externalLabs <- unique(names(datafls)[grep(paste(paste('[.]', labTables, '[.]', sep=''), 
                                                        collapse='|'), names(datafls))])
       
       for(j in 1:length(labTables)) {
         
-        tablesj <- externalLabs[grep(paste(".", labTables[j], ".", sep=""), externalLabs)]
+        tablesj <- externalLabs[grep(paste("[.]", labTables[j], "[.]", sep=""), externalLabs)]
         if(length(tablesj)>0) {
 
           writeLines(paste0("Stacking table ", labTables[j]))
@@ -223,8 +223,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
       writeLines(paste0("Stacking table ", tables[i]))
-      file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
-                         filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
+      file_list <- sort(union(filepaths[grep(paste("[.]", tables[i], "_pub[.]", sep=""), filepaths, fixed=T)],
+                         filepaths[grep(paste("[.]", tables[i], "[.]", sep=""), filepaths, fixed=T)]))
 
       if(tbltype == "site-all") {
         sites <- as.list(unique(substr(basename(file_list), 10, 13)))

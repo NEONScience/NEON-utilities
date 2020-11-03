@@ -77,6 +77,58 @@ stackFromStore <- function(filepaths, dpID, site="all",
     # basic vs expanded files are simple for SAE, not for everything else
     if(dpID=="DP4.00200.001") {
       files <- files[grep(package, files)]
+      
+      # every SAE filename includes site, date, and pub date
+      # extract dates from filenames for subsetting
+      datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(files))
+      datadates <- regmatches(basename(files), datemat)
+      
+      if(!is.na(startdate) & !is.na(enddate)) {
+        files <- files[which(datadates >= startdate & datadates <= enddate)]
+      } else if(!is.na(startdate)) {
+        files <- files[which(datadates >= startdate)]
+      } else if(!is.na(enddate)) {
+        files <- files[which(datadates <= enddate)]
+      }
+      
+      # extract sites, dates, and pub dates from filenames
+      sitemat <- regexpr("[.][A-Z]{4}[.]", basename(files))
+      sitesactual <- regmatches(basename(files), sitemat)
+      sitesactual <- gsub(".", "", sitesactual, fixed=T)
+      
+      datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(files))
+      monthsactual <- regmatches(basename(files), datemat)
+      
+      pubmat <- regexpr("[0-9]{8}T[0-9]{6}Z", basename(files))
+      pubdates <- regmatches(basename(files), pubmat)
+      pubdates <- as.POSIXct(pubdates, format="%Y%m%dT%H%M%SZ", tz="GMT")
+      
+      if(!is.na(pubdate)) {
+        pubdate <- as.POSIXct(pubdate, format="%Y-%m-%d", tz="GMT")
+      } else {
+        pubdate <- max(pubdates, na.rm=T)
+      }
+      
+      # get most recent publication date *before* pubdate for each site and month
+      # this mimics behavior as if data had been downloaded from portal or API on pubdate
+      # but not precisely - pub packages are created and then have to sync to portal, so there is a small delay
+      sitedates <- numeric()
+      for(i in unique(sitesactual)) {
+        sitemonths <- monthsactual[which(sitesactual==i)]
+        for(j in unique(sitemonths)) {
+          sitemonthfiles <- files[intersect(grep(i, files), grep(j, files))]
+          sitemonthpubs <- pubdates[intersect(grep(i, files), grep(j, files))]
+          maxdate <- max(sitemonthpubs[which(sitemonthpubs <= pubdate)])
+          if(length(maxdate)==0) {
+            sitedates <- sitedates
+          } else {
+            maxdateindex <- grep(maxdate, files)
+            sitedates <- c(sitedates, maxdateindex)
+          }
+        }
+      }
+      files <- files[sitedates]
+      
     } else {
       
       # expanded package can contain basic files. find variables file published 
@@ -108,9 +160,15 @@ stackFromStore <- function(filepaths, dpID, site="all",
       
       # assemble list of tables included in the package
       # expanded package includes the basic tables
-      tabs1 <- ifelse(package=="expanded", 
-                     vTabs,
-                     vTabs[which(vTypes %in% c(package,"both"))])
+      if(package=="expanded") {
+        tabs1 <- vTabs
+      } else {
+        if(package=="basic") {
+          tabs1 <- vTabs[which(vTypes %in% c("basic","both"))]
+        } else {
+          stop("Package must be basic or expanded.")
+        }
+      }
       
       # include metadata tables
       tabs <- c(tabs1, "validation", "variables", "readme", 
@@ -144,11 +202,51 @@ stackFromStore <- function(filepaths, dpID, site="all",
         warning("Some expected data tables are not present in the files to be stacked. Stacking will proceed with available tables, but check for mismatched input criteria, e.g. attempting to stack expanded package from an archive containing only the basic package.")
       }
       
+      # for all tables, discard anything more recent than pub date.
+      # for anything that isn't site-month-specific, pass on to stackByTable - it will find most recent
+      # for site-date tables, find the most recent.
+      
+      # get pub dates
+      if(!is.na(pubdate)) {
+        pubdate <- as.POSIXct(pubdate, format="%Y-%m-%d", tz="GMT")
+        pubmat <- regexpr("[0-9]{8}T[0-9]{6}Z", basename(files))
+        pubdates <- regmatches(basename(files), pubmat)
+        pubdates <- as.POSIXct(pubdates, format="%Y%m%dT%H%M%SZ", tz="GMT")
+        
+        #files <- 
+      } else {
+        pubdate <- max(pubdates, na.rm=T)
+      }
+      
+      
+      for(i in tabs) {
+        filesub <- files[grep(paste("[.]", i, "[.]", sep=""), files)]
+        
+        # extract sites from filenames (don't use site input in case some sites requested aren't available)
+        sitemat <- regexpr("[.][A-Z]{4}[.]", basename(filesub))
+        sitesactual <- regmatches(basename(filesub), sitemat)
+        sitesactual <- gsub(".", "", sitesactual, fixed=T)
+        
+        # if files aren't specific to a site, pick the most recent one that otherwise matches
+        # can't just pick the most recent one due to multiple lab scenario
+        if(length(sitesactual)==0) {
+          filematch <- unique(gsub("[0-9]{8}T[0-9]{6}Z", "", basename(filesub)))
+          filesave <- unlist(lapply(filematch, function(x) {
+            filesubmatch <- grep(x, basename(filesub), value=T)
+            return(filesub[which(filesub==max(filesubmatch, na.rm=T))][1])
+          }))
+
+        }
+        
+        # extract dates from filenames for subsetting
+        datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(filesub))
+        datadates <- regmatches(basename(filesub), datemat)
+        
+        
+      }
+      
     }
     
-    # extract dates from filenames for subsetting
-    datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(files))
-    datadates <- regmatches(basename(files), datemat)
     
     if(!is.na(startdate) & !is.na(enddate)) {
       files <- files[which(datadates >= startdate & datadates <= enddate)]
