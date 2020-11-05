@@ -10,6 +10,7 @@ stackByTable(
   folder = FALSE,
   saveUnzippedFiles = FALSE,
   dpID = NA,
+  package = NA,
   nCores = 1
 )
 }
@@ -22,7 +23,9 @@ stackByTable(
 
 \item{saveUnzippedFiles}{T or F: should the unzipped monthly data folders be retained?}
 
-\item{dpID}{Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility}
+\item{dpID}{Data product ID of product to stack. Ignored and determined from data unless input is a vector of files, generally via stackFromStore().}
+
+\item{package}{Data download package, either basic or expanded. Ignored and determined from data unless input is a vector of files, generally via stackFromStore().}
 
 \item{nCores}{The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.}
 }

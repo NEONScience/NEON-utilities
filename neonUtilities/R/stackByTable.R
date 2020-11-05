@@ -13,7 +13,8 @@
 #' @param savepath The location to save the output files to
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatibility.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
-#' @param dpID Data product ID of product to stack. Not needed; defaults to NA, included for back compatibility
+#' @param dpID Data product ID of product to stack. Ignored and determined from data unless input is a vector of files, generally via stackFromStore().
+#' @param package Data download package, either basic or expanded. Ignored and determined from data unless input is a vector of files, generally via stackFromStore().
 #' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
 #' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
@@ -46,7 +47,7 @@
 #     * Add handling for input vector of file names; enables working with stackFromStore()
 ##############################################################################################
 
-stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, nCores=1){
+stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=FALSE, dpID=NA, package=NA, nCores=1){
 
   if(length(filepath)>1) {
     folder <- "ls"
@@ -80,10 +81,16 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
 
   if(folder=="ls"){
-    # files <- filepath[grep(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")]
-    # if(length(files) == 0){
-    #   stop("Data files are not present in specified filepath.")
-    # }
+    if(is.na(dpID)) {
+      stop("dpID must be provided when input is not a single filepath.")
+    }
+    if(is.na(package)) {
+      stop("package (basic or expanded) must be provided when input is not a single filepath.")
+    }
+    files <- filepath
+    if(length(files) == 0){
+      stop("Data files are not present in specified filepath.")
+    }
     if(any(!file.exists(files))) {
       stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
     }
@@ -159,20 +166,20 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       finalpath <- savepath
     }
     if(!dir.exists(finalpath)){dir.create(finalpath)}
-    if(length(grep(files, pattern = ".zip"))==length(files)){
+    if(length(grep(files, pattern = ".zip$"))==length(files)){
       fols <- sapply(files, function(x) {utils::unzip(x, exdir=paste(finalpath, 
                                                              substring(basename(x), 1, 
                                                                        nchar(basename(x))-4), 
                                                              sep="/"))})
       files <- substring(names(fols), 1, nchar(names(fols))-4)
     } else {
-      if(length(grep(files, pattern = ".zip"))>I(length(files)/5)) {
+      if(length(grep(files, pattern = ".zip$"))>I(length(files)/5)) {
         cat("There are a large number of zip files in the input list.\nFiles are only unzipped if all input files are zip files.\n")
       }
     }
-    files <- ifelse(length(grep(files, pattern = ".zip"))>0,
-                    files[grep(files, pattern = ".zip", invert=T)],
-                    files)
+    if(length(grep(files, pattern = ".zip$"))>0) {
+      files <- files[grep(files, pattern = ".zip$", invert=T)]
+    }
     savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
     dir.create(savepath)
     for(i in files) {

@@ -82,6 +82,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
   
   # if a list of files is input, pass directly to stacking functions
   # need to add some checking here - don't allow nonsensical file combinations to pass through
+  # should this really be an option?
   if(length(filepaths)>1) {
     if(dpID=="DP4.00200.001") {
       if(load==FALSE) {
@@ -95,7 +96,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
       } else {
         savepath <- NA
       }
-      return(stackByTable(filepaths, savepath=savepath))
+      return(stackByTable(filepaths, savepath=savepath, dpID=dpID, package=package))
     }
   }
   
@@ -191,7 +192,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
         }
       }))
       if(any(!tabCheck)) {
-        warning("Some expected data tables are not present in the files to be stacked. Stacking will proceed with available tables, but check for mismatched input criteria, e.g. attempting to stack expanded package from an archive containing only the basic package.")
+        warning(paste("Some expected data tables are not present in the files to be stacked. Stacking will proceed with available tables, but check for mismatched input criteria, e.g. attempting to stack expanded package from an archive containing only the basic package. The missing tables are", paste(tabs1[!tabCheck], collapse=" ")))
       }
       
     }
@@ -303,7 +304,8 @@ stackFromStore <- function(filepaths, dpID, site="all",
       } else {
         savepath <- NA
       }
-      return(stackByTable(files, savepath=savepath, saveUnzippedFiles=T, nCores=nCores))
+      return(stackByTable(files, savepath=savepath, saveUnzippedFiles=T, nCores=nCores,
+                          dpID=dpID, package=package))
     }
     
   }
