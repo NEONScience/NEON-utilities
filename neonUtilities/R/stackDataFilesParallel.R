@@ -223,15 +223,15 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
       writeLines(paste0("Stacking table ", tables[i]))
-      file_list <- sort(union(filepaths[grep(paste("[.]", tables[i], "_pub[.]", sep=""), filepaths, fixed=T)],
-                         filepaths[grep(paste("[.]", tables[i], "[.]", sep=""), filepaths, fixed=T)]))
+      file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
+                         filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
 
       if(tbltype == "site-all") {
         sites <- as.list(unique(substr(basename(file_list), 10, 13)))
 
-        tblfls <- unlist(lapply(sites, function(j, file_list) {
+        tblfls <- lapply(sites, function(j, file_list) {
           tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
-        }, file_list=file_list))
+        }, file_list=file_list)
         
       }
       if(tbltype == "site-date") {

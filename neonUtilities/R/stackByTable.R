@@ -80,21 +80,21 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
 
   if(folder=="ls"){
-    files <- filepath[grep(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")]
-    if(length(files) == 0){
-      stop("Data files are not present in specified filepath.")
-    }
+    # files <- filepath[grep(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")]
+    # if(length(files) == 0){
+    #   stop("Data files are not present in specified filepath.")
+    # }
     if(any(!file.exists(files))) {
       stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
     }
+  } else {
+    dpID <- substr(basename(files[1]), 15, 27)
+    package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
+    if(package == "anded"){package <- "expanded"}
   }
   
-  dpID <- substr(basename(files[1]), 15, 27)
-  package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
-  if(package == "anded"){package <- "expanded"}
-
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
+  if(regexpr("DP[1-4]{1}.[0-9]{5}.00[0-9]{1}",dpID)!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001, where the first placeholder must be between 1 and 4.", sep=" "))
   }
 
@@ -154,7 +154,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(folder=="ls") {
     if(identical(savepath, "envt")) {envt <- 1}
     if(is.na(savepath) | identical(savepath, "envt")) {
-      finalpath <- getwd()
+      finalpath <- dirname(files[1])
     } else {
       finalpath <- savepath
     }
@@ -200,7 +200,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(envt==1) {
 
     stacked_files <- list.files(paste(savepath, "stackedFiles", sep="/"), full.names = TRUE)
-    v <- utils::read.csv(stacked_files[grep('variables', stacked_files)], header=T, stringsAsFactors=F)
+    v <- utils::read.csv(stacked_files[grep('variables', stacked_files)][1], header=T, stringsAsFactors=F)
 
     stacked_list <- lapply(stacked_files, function(x) {
       if(length(grep("sensor_position", basename(x)))>0) {
