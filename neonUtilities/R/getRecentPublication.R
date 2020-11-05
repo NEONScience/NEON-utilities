@@ -14,16 +14,18 @@
 
 # Changelog and author contributions / copyrights
 #   2019-10-08 (Nathan Mietkiewicz): Original creation
+#   2020-11-05 (Claire Lunch): Modify for compatibility with stackFromStore()
 
 ##############################################################################################
 getRecentPublication <- function(inList) {
   path_dates <-  lapply(inList, function(x) {
-    var_recent <- x %>%
-      gsub(pattern = "\\.csv$|\\.txt$", "", .) %>%
-      stringr::str_split(., '\\.|\\/') %>%
-      unlist(.) %>%
-      .[grep("[0-9]{8}T[0-9]{6}Z", .)]
+    regmatches(x, regexpr("[0-9]{8}T[0-9]{6}Z", x))
   })
+  # if dates can't be found, use "max" of input file names. This should be rare.
+  if(length(unlist(path_dates))==0) {
+    path_dates <- inList
+  }
   outList <- inList[grep(max(unlist(path_dates)), inList)][1]
-  return(list(outList, max(unlist(path_dates))))
+  return(list(outList, ifelse(nchar(path_dates[[1]])==16, max(unlist(path_dates)),
+                              "undetermined")))
 }

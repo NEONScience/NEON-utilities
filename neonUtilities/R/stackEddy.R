@@ -42,8 +42,22 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
          \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
   }
   
+  # check for vector of files as input
+  if(length(filepath)>1) {
+    if(length(grep(".zip", filepath))==length(filepath) |
+       length(grep(".h5", filepath))==length(filepath)) {
+      files <- filepath
+      filepath <- dirname(files[1]) #### is this too restrictive?
+    } else {
+      stop("Input list of files must be either site-month zip files or .h5 files.")
+    }
+    if(any(!file.exists(files))) {
+      stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
+    }
+  }
+  
   # get list of files, unzipping if necessary
-  if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+  if(any(!exists("files")) & substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
     outpath <- gsub(".zip", "", filepath)
     if(!dir.exists(outpath)) {
       dir.create(outpath)
@@ -53,7 +67,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # allow for a single H5 file
-  if(substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
+  if(any(!exists("files")) & substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
     files <- unlist(strsplit(filepath, split="/", 
                              fixed=T))[length(unlist(strsplit(filepath, 
                                                               split="/", fixed=T)))]
@@ -67,14 +81,32 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # unzip files if necessary
   if(length(grep(".zip", files))==length(files)) {
-    for(i in 1:length(files)) {
-      utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
-    }
+    lapply(files, function(x) {
+      utils::unzip(paste(filepath, x, sep="/"), exdir=filepath)
+    })
     files <- list.files(filepath, recursive=F)
   }
   
-  # only need to H5 files for data extraction
-  files <- files[grep(".h5", files)]
+  # after unzipping, check for .gz
+  if(length(grep(".h5.gz", files))>0) {
+    lapply(files[grep(".h5.gz", files)], function(x) {
+      R.utils::gunzip(paste(filepath, x, sep="/"))
+    })
+  }
+  
+  # only need the H5 files for data extraction
+  files <- files[grep(".h5$", files)]
+  
+  # check for duplicate files and use the most recent
+  fileDups <- gsub("[0-9]{8}T[0-9]{6}Z.h5", "", files)
+  if(any(base::duplicated(fileDups))) {
+    maxFiles <- character()
+    for(i in unique(fileDups)) {
+      maxFiles <- c(maxFiles, 
+                    max(files[grep(i, files)]))
+    }
+    files <- maxFiles
+  }
   
   # make empty, named list for the data tables
   tableList <- vector("list", length(files))

@@ -63,8 +63,6 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
   dPackInd <- grep('PACKAGE CONTENTS', txt_file)
   downPackInd <- grep('Basic download package', txt_file)
 
-  files <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
-  dpID <- substr(basename(files[1]), 15, 27)
   tables <- table_types[which(table_types$productID==dpID),]
 
   txt_file[I(dPackInd+3)] <- paste('This data product contains up to', nrow(tables), 'data tables:')

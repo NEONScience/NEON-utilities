@@ -37,6 +37,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   requireNamespace("magrittr", quietly = TRUE)
   requireNamespace('data.table', quietly = TRUE)
   
+  messages <- character()
+  
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
   ttypes <- table_types[which(table_types$productID==dpID),]
@@ -62,6 +64,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   if(length(datafls) == 1){
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     file.copy(from = datafls[1][[1]], to = "/stackedFiles")
+    m <- 0
+    n <- 1
   }
   
   # if there is more than one data file, stack files
@@ -116,17 +120,16 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     
     n <- 0
     m <- 0
-    messages <- character()
     
     # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
     labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
     if(length(labTables)>0){
-      externalLabs <- unique(names(datafls)[grep(paste(paste('.', labTables, '.', sep=''), 
+      externalLabs <- unique(names(datafls)[grep(paste(paste('[.]', labTables, '[.]', sep=''), 
                                                        collapse='|'), names(datafls))])
       
       for(j in 1:length(labTables)) {
         
-        tablesj <- externalLabs[grep(paste(".", labTables[j], ".", sep=""), externalLabs)]
+        tablesj <- externalLabs[grep(paste("[.]", labTables[j], "[.]", sep=""), externalLabs)]
         if(length(tablesj)>0) {
 
           writeLines(paste0("Stacking table ", labTables[j]))
@@ -227,11 +230,10 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         sites <- as.list(unique(substr(basename(file_list), 10, 13)))
 
         tblfls <- lapply(sites, function(j, file_list) {
-          tbl_list <- file_list[grep(j, file_list)] %>%
-            .[order(.)] %>%
-            .[length(.)] 
-          }, file_list=file_list) 
-      } 
+          tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
+        }, file_list=file_list)
+        
+      }
       if(tbltype == "site-date") {
         tblfls <- file_list
       }
