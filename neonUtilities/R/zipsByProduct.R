@@ -95,6 +95,29 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                  'DP4.00067.001','DP4.00137.001','DP4.00201.001')) {
     stop(paste(dpID, 'is only available in the bundled eddy covariance data product. Download DP4.00200.001 to access these data.', sep=' '))
   }
+  
+  # redirect for met/precip data shared between terrestrial & aquatic sites
+  # site=='all' not addressed, because in that case all available sites for the product are returned
+  if(dpID %in% shared_aquatic$product & any(site %in% shared_aquatic$site)) {
+    cat(paste("Some sites in your download request are aquatic sites where ", 
+              dpID, " is collected at a nearby terrestrial site. The sites you requested, and the sites that will be accessed instead, are listed below:\n", 
+              sep=""))
+    site <- unlist(lapply(site, function(x) {
+      if(x %in% shared_aquatic$site) {
+        if(dpID %in% shared_aquatic$product[which(shared_aquatic$site==x)]) {
+          terrSite <- unique(shared_aquatic$towerSite[which(shared_aquatic$site==x)])
+          cat(paste(x, " -> ", terrSite, "\n", sep=""))
+          return(terrSite)
+        }
+        else {
+          return(x)
+        }
+      }
+      else {
+        return(x)
+      }
+    }))
+  }
 
   # query the products endpoint for the product requested
   prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 

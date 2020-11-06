@@ -55,9 +55,10 @@ update_table_types <- function(){
                                    primaryKey=rep('N',5),
                                    categoricalCodeName=rep('',5)))
   
-  usethis::use_data(table_types, added_fields, shared_flights, relevant_EPSG, 
-                    internal=TRUE, overwrite=TRUE)
-  usethis::use_data(table_types, shared_flights, internal=FALSE, overwrite=TRUE)
+  usethis::use_data(table_types, added_fields, shared_flights, shared_aquatic, 
+                    relevant_EPSG, internal=TRUE, overwrite=TRUE)
+  usethis::use_data(table_types, shared_flights, shared_aquatic, 
+                    internal=FALSE, overwrite=TRUE)
 }
 
 update_table_types()
