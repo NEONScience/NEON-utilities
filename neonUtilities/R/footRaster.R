@@ -66,14 +66,14 @@ footRaster <- function(filepath) {
   }
   
   # unzip files if necessary
-  if(length(grep(".zip", files))==length(files)) {
+  if(length(grep(".zip$", files))==length(files)) {
     for(i in 1:length(files)) {
       utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
     }
     files <- list.files(filepath, recursive=F)
   }
   
-  files <- files[grep(".h5", files)]
+  files <- files[grep(".h5$", files)]
   
   # make empty, named list for the footprint grids
   gridList <- vector("list", length(files))
@@ -196,16 +196,24 @@ footRaster <- function(filepath) {
     # set up location data to scale rasters
     LatLong <- data.frame(X = locAttr$LonTow, Y = locAttr$LatTow)
     sp::coordinates(LatLong) <- ~ X + Y # longitude first
-    sp::proj4string(LatLong) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
-    utmTow <- sp::spTransform(LatLong, sp::CRS(paste0("+proj=utm +zone=", locAttr$ZoneUtm, "N +ellps=WGS84")))
+    epsg.z <- relevant_EPSG$code[grep(paste("+proj=utm +zone=", 
+                                            locAttr$ZoneUtm, sep=""), 
+                                      relevant_EPSG$prj4, fixed=T)]
+    if(utils::packageVersion("sp")<"1.4.2") {
+      sp::proj4string(LatLong) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
+      utmTow <- sp::spTransform(LatLong, sp::CRS(paste0("+proj=utm +zone=", 
+                                                        locAttr$ZoneUtm, "N +ellps=WGS84")))
+    } else {
+      raster::crs(LatLong) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
+      utmTow <- sp::spTransform(LatLong, sp::CRS(paste("+init=epsg:", epsg.z, sep='')))
+    }
     
     # adjust extent and coordinate system of raster stack
     raster::extent(masterRaster) <- rbind(c(xmn = raster::xmin(utmTow) - 150.5*locAttr$distReso, 
                                             xmx = raster::xmax(utmTow) + 150.5*locAttr$distReso),
                                           c(ymn = raster::ymin(utmTow) - 150.5*locAttr$distReso, 
                                             ymx = raster::ymax(utmTow) + 150.5*locAttr$distReso))
-    raster::crs(masterRaster) <- paste0("+proj=utm +zone=", locAttr$ZoneUtm, "N +ellps=WGS84")
-    
+    raster::crs(masterRaster) <- paste("+init=epsg:", epsg.z, sep='')
   }
   
   # add top layer raster to stack: mean of all layers
