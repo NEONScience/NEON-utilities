@@ -126,10 +126,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       stop("Root chemistry and isotopes have been bundled with the root biomass data. For root chemistry from Megapits, download DP1.10066.001. For root chemistry from periodic sampling, download DP1.10067.001.")
     } else {
       newDPID <- chem_bundles$homeProduct[which(chem_bundles$product==dpID)]
-      cat(paste(dpID, " has been bundled with ", newDPID, 
-                " and is not available independently. Proceeding to download ", 
-                newDPID, "\n", sep=""))
-      dpID <- newDPID
+      stop(paste(dpID, " has been bundled with ", newDPID, 
+                " and is not available independently. Please download ", 
+                newDPID, sep=""))
     }
   }
 
