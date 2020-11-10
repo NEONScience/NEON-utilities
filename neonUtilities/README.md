@@ -133,6 +133,17 @@ Disclaimer
 Change Log
 ----------
 
+#### 2020-11-09 v1.3.8
+Bug fixes:
+* handles .gz files in `stackEddy()`
+* `footRaster()` update to work with latest rgdal
+
+Enhancements:
+* new `stackFromStore()` function to stack files from a local archive
+* aquatic site requests can download meteorological data from nearby terrestrial sites
+* `stackEddy()` accepts a vector of filepaths to .h5 files
+
+
 #### 2020-09-24 v1.3.7
 Bug fixes:
 * removed gdata package dependency
