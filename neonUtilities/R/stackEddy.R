@@ -92,6 +92,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     lapply(files[grep(".h5.gz", files)], function(x) {
       R.utils::gunzip(paste(filepath, x, sep="/"))
     })
+    files <- list.files(filepath, recursive=F)
   }
   
   # only need the H5 files for data extraction
