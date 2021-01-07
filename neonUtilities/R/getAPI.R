@@ -31,10 +31,10 @@ getAPI <- function(apiURL, token=NA){
     j <- 1
     while(j < 6) {
 
-      req <- httr::GET(apiURL)
+      req <- try(httr::GET(apiURL), silent=T)
       
       # check for no response
-      if(is.null(req)) {
+      if(!identical(class(req), "response")) {
         message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
         return(invisible())
       }
@@ -63,12 +63,13 @@ getAPI <- function(apiURL, token=NA){
     j <- 1
     while(j < 6) {
 
-      req <- httr::GET(apiURL,
+      req <- try(httr::GET(apiURL,
                        httr::add_headers(.headers = c('X-API-Token'= token,
-                                                      'accept' = 'application/json')))
+                                                      'accept' = 'application/json'))),
+                 silent=T)
       
       # check for no response
-      if(is.null(req)) {
+      if(!identical(class(req), "response")) {
         message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
         return(invisible())
       }

@@ -57,7 +57,7 @@ getTaxonTable <- function(
   req.df <- data.frame()
   req <- NULL
 
-  try({req <- getAPI(apiURL = url_to_get, token = token)}, silent = TRUE)
+  req <- getAPI(apiURL = url_to_get, token = token)
 
   # request code error handling
   if(is.null(req)) {
