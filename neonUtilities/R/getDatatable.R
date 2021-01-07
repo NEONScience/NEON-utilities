@@ -90,6 +90,12 @@ getDatatable <- function(
 
   # step 1 and 2 -- query the products endpoint for the product requested
   avail_json <- getAPI(apiURL = paste0(url_prefix_products, dpid), token = token)
+  
+  if(is.null(avail_json)) {
+    message(paste("No data were returned. Check internet connection, and check NEON data portal for API outage alerts."))
+    return(invisible())
+  }
+  
   avail_content <- jsonlite::fromJSON(httr::content(avail_json, as="text", encoding='UTF-8'), 
                                       simplifyDataFrame=T, flatten=T)
 

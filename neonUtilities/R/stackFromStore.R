@@ -70,7 +70,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
   }
   
   if(!is.na(pubdate)) {
-    if(regexpr("[0-9]{4}-[0-9]{2}-[0-9]{2}", enddate)!=1) {
+    if(regexpr("[0-9]{4}-[0-9]{2}-[0-9]{2}", pubdate)!=1) {
       stop("pubdate must be either NA or a valid date in the form YYYY-MM-DD")
     }
   }

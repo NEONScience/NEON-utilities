@@ -21,7 +21,8 @@
 getAPI <- function(apiURL, token=NA){
 
   if(!curl::has_internet()) {
-    stop("No internet connection detected. Cannot access NEON API.")
+    message("No internet connection detected. Cannot access NEON API.")
+    return(invisible())
   }
   
   if(is.na(token)) {
@@ -30,7 +31,13 @@ getAPI <- function(apiURL, token=NA){
     j <- 1
     while(j < 6) {
 
-      req <- httr::GET(apiURL)
+      req <- try(httr::GET(apiURL), silent=T)
+      
+      # check for no response
+      if(!identical(class(req), "response")) {
+        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
+        return(invisible())
+      }
       
       # if rate limit is reached, pause
       if(!is.null(req$headers$`x-ratelimit-limit`)) {
@@ -56,9 +63,16 @@ getAPI <- function(apiURL, token=NA){
     j <- 1
     while(j < 6) {
 
-      req <- httr::GET(apiURL,
+      req <- try(httr::GET(apiURL,
                        httr::add_headers(.headers = c('X-API-Token'= token,
-                                                      'accept' = 'application/json')))
+                                                      'accept' = 'application/json'))),
+                 silent=T)
+      
+      # check for no response
+      if(!identical(class(req), "response")) {
+        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
+        return(invisible())
+      }
 
       # first check for null, since unlimited tokens don't have these headers
       if(!is.null(req$headers$`x-ratelimit-limit`)) {

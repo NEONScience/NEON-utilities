@@ -49,6 +49,11 @@ getAvg <- function(dpID, token = NA_character_) {
   req <- getAPI(paste(apiURL = "http://data.neonscience.org/api/v0/products/", dpID, sep=""), 
                   token = token)
   
+  if(is.null(req)) {
+    message(paste("Could not verify data product. NEON API may be unavailable."))
+    return(invisible())
+  }
+  
   avail <- jsonlite::fromJSON(httr::content(req, as='text', encoding='UTF-8'), 
                               simplifyDataFrame=TRUE, flatten=TRUE)
   

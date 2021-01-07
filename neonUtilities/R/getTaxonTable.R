@@ -57,23 +57,30 @@ getTaxonTable <- function(
   req.df <- data.frame()
   req <- NULL
 
-  try({req <- getAPI(apiURL = url_to_get, token = token)}, silent = TRUE)
+  req <- getAPI(apiURL = url_to_get, token = token)
 
   # request code error handling
+  if(is.null(req)) {
+    message(paste("No data were returned"))
+    return(invisible())
+  }
+  
   if (req$status_code == 204) {
-    stop(paste("No data are available"))
+    message(paste("No data are available"))
+    return(invisible())
   }else if (req$status_code == 413) {
-    stop(paste("Data GET failed with status code ", req$status_code,
+    message(paste("Data GET failed with status code ", req$status_code,
                ": Payload Too Large. Query a smaller dataset.",
                sep = ""))
+    return(invisible())
   }else {
     if (req$status_code != 200) {
-      stop(paste("Data GET failed with status code ", req$status_code,
+      message(paste("Data GET failed with status code ", req$status_code,
                  ". Check the formatting of your inputs.", sep = ""))
+      return(invisible())
     }
   }
 
-  if(is.null(req)) stop(paste("No data were returned"))
 
   if(!is.null(req)){
     taxa_list <- jsonlite::fromJSON(httr::content(req, as='text', encoding="UTF-8"))
