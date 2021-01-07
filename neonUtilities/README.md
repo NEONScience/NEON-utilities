@@ -133,6 +133,13 @@ Disclaimer
 Change Log
 ----------
 
+#### 2021-01-06 v1.3.9
+Bug fixes:
+* fix bug in handling of .gz files in `stackEddy()`
+* fix pubdate filtering in `stackFromStore()`
+* regularize fail behavior when API is unavailable
+
+
 #### 2020-11-09 v1.3.8
 Bug fixes:
 * handles .gz files in `stackEddy()`
