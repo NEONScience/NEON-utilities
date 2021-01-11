@@ -40,7 +40,7 @@ library(neonUtilities)
 
 #### Short examples
 
-See [NEON Data Tutorials](https://www.neonscience.org/resources/data-tutorials) for more information, particularly the [Download and Explore](https://www.neonscience.org/download-explore-neon-data) and [neonUtilities](https://www.neonscience.org/neonDataStackR) tutorials.
+See [NEON Data Tutorials](https://www.neonscience.org/resources/learning-hub/tutorials) for more information, particularly the [Download and Explore](https://www.neonscience.org/resources/learning-hub/tutorials/download-explore-neon-data) and [neonUtilities](https://www.neonscience.org/resources/learning-hub/tutorials/neondatastackr) tutorials.
 
 `stackByTable()` unzips monthly packages, finds the CSV data files, and joins them by table (e.g., 2DWSD_2min, 2DWSD_30min for 2D Wind Speed and Direction). For data products from instrumented systems that have multiple sensors placed at various heights (or depths) and/or horizontal positions away from the supporting tower, this function will create 2 columns in addition to the existing columns, one for horizontalPosition and the other for verticalPosition. This function will only work for data products that organize data in CSV files. Other data file types, such as HDF5 files from the eddy covariance system and remote sensing airborne observing platform (AOP) are not supported.
 
