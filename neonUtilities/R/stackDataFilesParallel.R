@@ -244,6 +244,19 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
                                                       encoding="UTF-8", keepLeadingZeros=T))
         tabtemp <- assignClasses(tabtemp, variables)
         tabtemp <- makePosColumns(tabtemp, basename(x))
+        
+        # add column for release tag, if available
+        tabtemp$release <- rep(NA, nrow(tabtemp))
+        dir.splitName <- strsplit(dirname(x), split = "\\.")
+        pubd <- grep("[0-9]{8}T[0-9]{6}Z", dir.splitName[[1]])
+        if(identical(as.integer(pubd), 
+                     as.integer(length(dir.splitName[[1]])-1))) {
+          tabtemp$release <- rep(dir.splitName[[1]][length(dir.splitName[[1]])],
+                                 nrow(tabtemp))
+        } else {
+          tabtemp$release <- rep("unknown", nrow(tabtemp))
+        }
+        
         return(tabtemp)
       }, variables=variables)
       
