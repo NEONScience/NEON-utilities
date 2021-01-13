@@ -96,7 +96,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # for new tables, always use inferred types. for mismatches, decide based on publication dates
     if(!is.null(nrow(newtables))) {
       cat("Table(s)", newtables[,1], "are unexpected. Stacking will proceed based on inferred table format; check for updates to neonUtilities.\n")
-      ttypes <- plyr::rbind.fill(ttypes, newtables)
+      ttypes <- data.table::rbindlist(list(ttypes, newtables), fill=T)
     }
     
     if(mis>0) {
@@ -238,19 +238,16 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         tblfls <- file_list
       }
       
-      stackedDf <- do.call(plyr::rbind.fill, pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
-                                                      makePosColumns) {
-
-        stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
-          assignClasses(., variables) %>%
-          makePosColumns(., basename(x))
+      stackingList <- pbapply::pblapply(tblfls, function(x, variables) {
         
-        return(stackedDf)
-      },
-      tables_i=tables[i], variables=variables,
-      assignClasses=assignClasses,
-      makePosColumns=makePosColumns, cl=cl
-      ))
+        tabtemp <- suppressWarnings(data.table::fread(x, header=T, 
+                                                      encoding="UTF-8", keepLeadingZeros=T))
+        tabtemp <- assignClasses(tabtemp, variables)
+        tabtemp <- makePosColumns(tabtemp, basename(x))
+        return(tabtemp)
+      }, variables=variables)
+      
+      stackedDf <- data.table::rbindlist(stackingList, fill=T)
 
       data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
