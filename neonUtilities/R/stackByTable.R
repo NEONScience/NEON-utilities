@@ -133,7 +133,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     } else {
       if(!dir.exists(savepath)){dir.create(savepath)}
       utils::unzip(zipfile=filepath, exdir=dirname(savepath))
-      zipList <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
+      zipList <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.", 
+                            recursive = T)
     }
   }
 
@@ -147,7 +148,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
     } else {
-      if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
+      if(filepath!=savepath) {
         if(!dir.exists(savepath)){dir.create(savepath)}
         for(i in files) {
           file.copy(paste(filepath, i, sep="/"), savepath)

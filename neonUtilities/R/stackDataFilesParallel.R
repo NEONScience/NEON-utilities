@@ -254,7 +254,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
           tabtemp$release <- rep(dir.splitName[[1]][length(dir.splitName[[1]])],
                                  nrow(tabtemp))
         } else {
-          tabtemp$release <- rep("unknown", nrow(tabtemp))
+          tabtemp$release <- rep("undetermined", nrow(tabtemp))
         }
         
         return(tabtemp)
