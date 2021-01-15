@@ -132,9 +132,12 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
     } else {
       if(!dir.exists(savepath)){dir.create(savepath)}
-      utils::unzip(zipfile=filepath, exdir=dirname(savepath))
-      zipList <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.", 
-                            recursive = T)
+      if(envt==1) {
+        utils::unzip(zipfile=filepath, exdir=savepath)
+      } else {
+        utils::unzip(zipfile=filepath, exdir=dirname(savepath))
+      }
+      zipList <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
     }
   }
 
@@ -195,7 +198,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   stackDataFilesParallel(savepath, nCores, dpID)
   getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
 
-  if(saveUnzippedFiles == FALSE){
+  if(saveUnzippedFiles == FALSE & envt!=1){
     zipList <- zipList %>%
       unlist() %>%
       basename() %>%
