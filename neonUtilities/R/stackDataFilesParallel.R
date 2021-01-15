@@ -278,6 +278,10 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
                                            c(table=tables[i], added_fields[5,])), fill=TRUE)
           }
+          if("release" %in% names(stackedDf)) {
+            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                           c(table=tables[i], added_fields[6,])), fill=TRUE)
+          }
         }
       }
       invisible(rm(stackedDf))

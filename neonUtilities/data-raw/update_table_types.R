@@ -42,18 +42,20 @@ update_table_types <- function(){
   
   # term definitions for fields added by stackByTable
   added_fields <- data.frame(cbind(fieldName=c('domainID','siteID','horizontalPosition',
-                                               'verticalPosition','publicationDate'),
+                                               'verticalPosition','publicationDate',
+                                               'release'),
                                    description=c('Unique identifier of the NEON domain',
                                                  'NEON site code',
                                                  'Index of horizontal location at a NEON site',
                                                  'Index of vertical location at a NEON site',
-                                                 'Date of data publication on the NEON data portal'),
-                                   dataType=c(rep('string',4),'dateTime'),
-                                   units=rep(NA,5),
-                                   downloadPkg=rep('appended by stackByTable',5),
-                                   pubFormat=rep(NA,5),
-                                   primaryKey=rep('N',5),
-                                   categoricalCodeName=rep('',5)))
+                                                 'Date of data publication on the NEON data portal',
+                                                 'Identifier for data release'),
+                                   dataType=c(rep('string',4),'dateTime','string'),
+                                   units=rep(NA,6),
+                                   downloadPkg=rep('appended by stackByTable',6),
+                                   pubFormat=rep(NA,6),
+                                   primaryKey=rep('N',6),
+                                   categoricalCodeName=rep('',6)))
   
   usethis::use_data(table_types, added_fields, shared_flights, shared_aquatic, 
                     chem_bundles, relevant_EPSG, internal=TRUE, overwrite=TRUE)
