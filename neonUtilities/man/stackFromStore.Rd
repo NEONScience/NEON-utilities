@@ -11,6 +11,7 @@ stackFromStore(
   startdate = NA,
   enddate = NA,
   pubdate = NA,
+  timeIndex = "all",
   zipped = FALSE,
   package = "basic",
   load = TRUE,
@@ -29,6 +30,8 @@ stackFromStore(
 \item{enddate}{Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA. [character]}
 
 \item{pubdate}{The maximum publication date of data to include in stacking, in the form YYYY-MM-DD. If NA, the most recently published data for each product-site-month combination will be selected. Otherwise, the most recent publication date that is older than pubdate will be selected. Thus the data stacked will be the data that would have been accessed on the NEON Data Portal, if it had been downloaded on pubdate. [character]}
+
+\item{timeIndex}{Either the string 'all', or the time index of data to be stacked, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'. [character]}
 
 \item{zipped}{Should stacking use data from zipped files or unzipped folders? This option allows zips and their equivalent unzipped folders to be stored in the same directory; stacking will extract whichever is specified. Defaults to FALSE, i.e. stacking using unzipped folders. [logical]}
 
