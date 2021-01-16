@@ -14,6 +14,7 @@
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param avg Deprecated; use timeIndex
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
+#' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
@@ -42,7 +43,8 @@
 ##############################################################################################
 
 zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          timeIndex="all", check.size=TRUE, savepath=NA, load=F, token=NA, avg=NA) {
+                          timeIndex="all", tabl="all", check.size=TRUE, savepath=NA, 
+                          load=F, token=NA_character_, avg=NA) {
 
   messages <- NA
 
@@ -80,6 +82,16 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     cat('Input parameter avg is deprecated; use timeIndex to download by time interval.\n')
   } else {
     avg <- timeIndex
+  }
+  
+  # error message if using timeIndex & tabl
+  if(avg!="all" & tabl!="all") {
+    stop("Either timeIndex or tabl can be specified, but not both.")
+  }
+  
+  # warning message if using tabl=
+  if(tabl!="all") {
+    cat(paste("Warning: Downloading only table ", tabl, ". Downloading by table is not recommended unless you are already familiar with the data product and its contents.\n", sep=""))
   }
 
   # error for Phenocam data
@@ -210,7 +222,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("There are no data at the selected date(s).")
   }
 
-  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
+  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, tabl=tabl,
+                         messages=messages, token=token) %>%
     tidyr::drop_na()
 
   downld.size <- convByteSize(sum(as.numeric(zip.urls$size), na.rm=T))

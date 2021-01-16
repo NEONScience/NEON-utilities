@@ -4,7 +4,15 @@
 \alias{getZipUrls}
 \title{Get and store the file names, S3 URLs, file size, and download status (default = 0) in a data frame}
 \usage{
-getZipUrls(month.urls, avg, package, dpID, messages, token = NA_character_)
+getZipUrls(
+  month.urls,
+  avg,
+  package,
+  dpID,
+  messages,
+  tabl,
+  token = NA_character_
+)
 }
 \arguments{
 \item{month.urls}{The monthly API URL for the URL files}
@@ -16,6 +24,8 @@ getZipUrls(month.urls, avg, package, dpID, messages, token = NA_character_)
 \item{dpID}{Global variable for data product ID}
 
 \item{messages}{Error/warning messages from previous steps}
+
+\item{tabl}{Table name to get}
 
 \item{token}{User specific API token (generated within neon.datascience user accounts)}
 }
