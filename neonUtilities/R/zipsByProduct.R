@@ -224,6 +224,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, tabl=tabl,
                          messages=messages, token=token)
+  if(is.null(zip.urls)) { return(invisible()) }
   zip.urls <- tidyr::drop_na(zip.urls)
 
   downld.size <- convByteSize(sum(as.numeric(zip.urls$size), na.rm=T))

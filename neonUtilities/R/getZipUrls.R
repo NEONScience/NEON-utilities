@@ -257,8 +257,9 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = N
   
   # check for bad table name
   if(tabl!="all" & length(grep(paste("[.]", tabl, "[.]", sep=""), zip.urls$name))==0) {
-    stop(paste("No files found for ", tabl, ". Check that this is a valid table name in ", 
+    message(paste("No files found for ", tabl, ". Check that this is a valid table name in ", 
                dpID, ".", sep=""))
+    return(invisible())
   }
 
   writeLines(paste0(messages[-1], collapse = "\n"))
