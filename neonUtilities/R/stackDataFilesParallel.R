@@ -174,11 +174,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # get most recent sensor_positions file for each site and stack
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
-      uniqueSites <- unique(basename(sensorPositionList)) %>%
-        stringr::str_split('\\.') %>%
-        lapply(`[`, 3) %>%
-        unlist() %>% 
-        unique(.)
+      uniqueSites <- stringr::str_split(unique(basename(sensorPositionList)), "\\.")
+      uniqueSites <- unique(unlist(lapply(uniqueSites, "[", 3)))
 
       outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
         
@@ -186,8 +183,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
                                     colClasses = list(character = c('HOR.VER','start','end',
                                                                     'referenceStart',
-                                                                    'referenceEnd'))) %>%
-          makePosColumns(., sppath, x)
+                                                                    'referenceEnd')))
+        outTbl <- makePosColumns(outTbl, sppath, x)
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
       

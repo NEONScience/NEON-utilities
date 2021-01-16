@@ -20,9 +20,7 @@
 
 ##############################################################################################
 getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
-  requireNamespace('stringr', quietly = TRUE)
   requireNamespace('dplyr', quiet=TRUE)
-  requireNamespace('magrittr', quiet=TRUE)
   requireNamespace('stringr', quiet=TRUE)
 
   dpnum <- substring(dpID, 5, 9)
@@ -37,27 +35,24 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
   if(length(readme_list)==0) {
     writeLines("No readme file found.\n")
   } else {
-
   op <- pbapply::pboptions()
   pbapply::pboptions(type='none')
   pub_date_df <- do.call(rbind, pbapply::pblapply(as.list(readme_list), function(x) {
-    split <- x %>%
-      stringr::str_split(., '/') %>%
-      unlist() %>%
-      .[max(length(unlist(.)))]
+    split <- unlist(stringr::str_split(x, '/'))
+    split <- split[length(split)]
 
     pub_date_str <- suppressWarnings(
-      suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2')))) %>%
-      dplyr::mutate(readme_filename = as.factor(split)) %>%
-      dplyr::select(-c('X1', 'X2'))
+      suppressMessages(readr::read_csv(x, col_names=c('X1', 'X2'))))
+    pub_date_str <- dplyr::mutate(pub_date_str, readme_filename = as.factor(split))
+    pub_date_str <- dplyr::select(pub_date_str, -c('X1', 'X2'))
 
     return(pub_date_str)
-    }))  %>%
-    dplyr::distinct(.)
+    }))
+  pub_date_df <- dplyr::distinct(pub_date_df)
   pbapply::pboptions(op)
 
-  txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]]) %>%
-    .[!stringr::str_detect(., pattern="Date-Time")]
+  txt_file <- readr::read_lines(readme_list[[max(length(readme_list))]])
+  txt_file <- txt_file[!stringr::str_detect(txt_file, pattern="Date-Time")]
 
   qInd <- grep('QUERY', txt_file)
   dPackInd <- grep('PACKAGE CONTENTS', txt_file)

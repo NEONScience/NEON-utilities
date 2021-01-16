@@ -199,10 +199,9 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
 
   if(saveUnzippedFiles == FALSE & envt!=1){
-    zipList <- zipList %>%
-      unlist() %>%
-      basename() %>%
-      gsub('.zip', '', .)
+    zipList <- unlist(zipList)
+    zipList <- basename(zipList)
+    zipList <- gsub('.zip', '', zipList)
 
     cleanUp(savepath, zipList)
   }

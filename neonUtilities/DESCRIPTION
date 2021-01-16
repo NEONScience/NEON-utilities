@@ -11,7 +11,7 @@ Description: NEON data packages can be accessed through the NEON Data Portal <ht
     converting formats. For more information, see the readme file at <https://github.com/NEONScience/NEON-utilities>.
 Depends: R (>= 3.4.0)
 biocViews:
-Imports: dplyr(>= 0.7.1), httr, jsonlite, downloader, data.table, utils, R.utils, stats, lubridate, readr, tidyr, stringr, pbapply, parallel, curl
+Imports: dplyr(>= 0.7.1), httr, jsonlite, downloader, data.table, utils, R.utils, stats, readr, tidyr, stringr, pbapply, parallel, curl
 Suggests: rhdf5, raster, sp, testthat, magrittr
 License: AGPL-3
 URL: https://github.com/NEONScience/NEON-utilities
