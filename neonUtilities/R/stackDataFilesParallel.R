@@ -105,7 +105,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       for(k in 1:length(filespl)) {
         dats <- c(dats, filespl[[k]][length(filespl[[k]])-1])
       }
-      dats <- as.POSIXct(dats, format="%Y%m%dT%H%M%SZ")
+      dats <- as.Date(dats, format="%Y%m%dT%H%M%SZ")
       if(min(dats, na.rm=T) > utils::packageDate("neonUtilities")) {
         cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed using inference from downloaded data formats. Check results carefully, and check for updates to neonUtilities.\n")
         ttypes <- tableForm
