@@ -89,9 +89,26 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("Either timeIndex or tabl can be specified, but not both.")
   }
   
-  # warning message if using tabl=
+  # check and warning message if using tabl=
   if(tabl!="all") {
-    cat(paste("Warning: Downloading only table ", tabl, ". Downloading by table is not recommended unless you are already familiar with the data product and its contents.\n", sep=""))
+    message(paste("Warning: Downloading only table ", tabl, ". Downloading by table is not recommended unless you are already familiar with the data product and its contents.\n", sep=""))
+    if(!tabl %in% table_types$tableName) {
+      message(paste("Warning: ", tabl, " is not in list of known tables. Download will be attempted, but check name and check neonUtilities for updates.\n", sep=""))
+    } else {
+      if(!dpID %in% table_types$productID[which(table_types$tableName==tabl)]) {
+        stop(paste(tabl, " is a table in ", 
+                   paste(table_types$productID[which(table_types$tableName==tabl)], collapse=" "), 
+                   ", not in ", dpID, 
+                   ". Verify input parameters.", sep=""))
+      }
+      if("lab-current" %in% table_types$tableType[which(table_types$tableName==tabl)] | 
+         "lab-all" %in% table_types$tableType[which(table_types$tableName==tabl)]) {
+        stop(paste("Download by table is not available for lab metadata tables. To get the complete dataset for table ", 
+                   tabl, ", download the most recently published site and month of data for ", 
+                   paste(table_types$productID[which(table_types$tableName==tabl)], collapse=" or "), 
+                   ".", sep=""))
+      }
+    }
   }
 
   # error for Phenocam data
