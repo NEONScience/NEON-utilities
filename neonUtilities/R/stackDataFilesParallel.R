@@ -239,6 +239,11 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         
         tabtemp <- suppressWarnings(data.table::fread(x, header=T, 
                                                       encoding="UTF-8", keepLeadingZeros=T))
+        # skip if file is empty - rare publication error
+        if(length(tabtemp)==0) {
+          return()
+        }
+        
         tabtemp <- assignClasses(tabtemp, variables)
         tabtemp <- makePosColumns(tabtemp, basename(x))
         
