@@ -194,16 +194,62 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = N
                                         unique.files$url[which.file],
                                         unique.files$size[which.file]))
 
+    # if downloading everything for product-site-month, instead of specific files, get zips
     } else {
 
-      # to get all data, select the zip files
+      # check for packages section in response
+      if("packages" %in% names(tmp.files[[i]]$data)) {
+        
+        # check for no files
+        if(length(tmp.files[[i]]$data$packages)==0) {
+          messages <- c(messages, paste("No files found for site", tmp.files[[i]]$data$siteCode,
+                                        "and month", tmp.files[[i]]$data$month, sep=" "))
+          next
+        }
+        
+        # if package==expanded, check that expanded package exists
+        # if it doesn't, download basic package
+        pk <- package
+        if(pk=="expanded") {
+          if(!pk %in% tmp.files[[i]]$data$packages$type) {
+            pk <- "basic"
+            messages <- c(messages, paste("No expanded package found for site ",
+                                          tmp.files[[i]]$data$siteCode, " and month ",
+                                          tmp.files[[i]]$data$month,
+                                          ". Basic package downloaded instead.",
+                                          sep=""))
+          }
+        }
+
+        # get the file name, and estimate the size
+        z <- tmp.files[[i]]$data$packages$url[which(tmp.files[[i]]$data$packages$type==pk)]
+        h <- getAPIHeaders(apiURL=z, token=token)
+        
+        # if no response, move to next silently - message will be printed by getAPIHeaders()
+        if(is.null(h)) {
+          next
+        }
+        
+        flhd <- httr::headers(h)
+        flnm <- gsub('\"', '', flhd$`content-disposition`, fixed=T)
+        flnm <- gsub("inline; filename=", "", flnm, fixed=T)
+        sz <- sum(tmp.files[[i]]$data$files$size[which(tmp.files[[i]]$data$packages$type==pk)], 
+                  na.rm=T)
+        
+        zip.urls <- rbind(zip.urls, cbind(flnm, z, sz))
+        
+      } else {
+      
+      # if no packages, look for pre-packaged zip files
       all.zip <- grep(".zip", tmp.files[[i]]$data$files$name, fixed=T)
 
-      # error message if there are no zips in the package
+      # check for no zips
       if(length(all.zip)==0) {
+        
         messages <- c(messages, paste("No zip files found for site", tmp.files[[i]]$data$siteCode,
                                       "and month", tmp.files[[i]]$data$month, sep=" "))
         next
+        
       }
 
       # if package==expanded, check that expanded package exists
@@ -236,6 +282,7 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = N
                                         tmp.files[[i]]$data$files$url[which.zip],
                                         tmp.files[[i]]$data$files$size[which.zip]))
     }
+    }
   }
 
   # check for no files
@@ -266,3 +313,4 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = N
 
   return(zip.urls)
 }
+
