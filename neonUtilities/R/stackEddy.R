@@ -62,7 +62,11 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     if(!dir.exists(outpath)) {
       dir.create(outpath)
     }
-    utils::unzip(filepath, exdir=outpath)
+    if(length(grep(".zip", utils::unzip(filepath, list=T)$Name, fixed=T))>0) {
+      utils::unzip(filepath, exdir=outpath)
+    } else {
+      utils::unzip(filepath, exdir=outpath, junkpaths=T)
+    }
     filepath <- outpath
   }
   
