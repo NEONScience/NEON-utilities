@@ -135,7 +135,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       if(envt==1) {
         utils::unzip(zipfile=filepath, exdir=savepath)
       } else {
-        utils::unzip(zipfile=filepath, exdir=dirname(savepath))
+        utils::unzip(zipfile=filepath, exdir=savepath, junkpaths=T)
       }
       zipList <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
     }
