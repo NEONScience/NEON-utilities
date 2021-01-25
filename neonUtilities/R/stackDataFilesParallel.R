@@ -124,8 +124,9 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
     labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
     if(length(labTables)>0){
-      externalLabs <- unique(names(datafls)[grep(paste(paste('[.]', labTables, '[.]', sep=''), 
-                                                       collapse='|'), names(datafls))])
+      externalLabs <- names(datafls)[grep(paste(paste('[.]', labTables, '[.]', sep=''), 
+                                                       collapse='|'), names(datafls))]
+      externalLabs <- unique(gsub("[0-9]{8}T[0-9]{6}Z.csv", "", externalLabs))
       
       for(j in 1:length(labTables)) {
         
@@ -141,11 +142,6 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             return(outputj)
             }, filepaths=filepaths), fill=TRUE)
           
-          # sometimes lab data get published with the same time stamp in many download packages
-          if(length(duplicated(outputLab$uid))>0) {
-            outputLab <- outputLab[!duplicated(outputLab$uid),]
-          }
-        
         data.table::fwrite(outputLab, paste0(folder, "/stackedFiles/", labTables[j], ".csv"))
         n <- n + 1
         }

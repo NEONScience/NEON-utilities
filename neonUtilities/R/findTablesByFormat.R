@@ -40,7 +40,7 @@ findTablesByFormat <- function(datatables){
     if(length(which(names.k==""))>0) {
       names.k <- names.k[-which(names.k=="")]
     }
-    if(length(names.k)==4) {
+    if(length(names.k)==5) {
       tt[k] <- "lab"
     } else {
       if(length(grep("[0-9]{4}-[0-9]{2}", names.k))>0) {
