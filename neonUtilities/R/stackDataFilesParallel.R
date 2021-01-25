@@ -96,7 +96,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # for new tables, always use inferred types. for mismatches, decide based on publication dates
     if(!is.null(nrow(newtables))) {
       cat("Table(s)", newtables[,1], "are unexpected. Stacking will proceed based on inferred table format; check for updates to neonUtilities.\n")
-      ttypes <- plyr::rbind.fill(ttypes, newtables)
+      ttypes <- data.table::rbindlist(list(ttypes, newtables), fill=T)
     }
     
     if(mis>0) {
@@ -105,7 +105,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       for(k in 1:length(filespl)) {
         dats <- c(dats, filespl[[k]][length(filespl[[k]])-1])
       }
-      dats <- as.POSIXct(dats, format="%Y%m%dT%H%M%SZ")
+      dats <- as.Date(dats, format="%Y%m%dT%H%M%SZ")
       if(min(dats, na.rm=T) > utils::packageDate("neonUtilities")) {
         cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed using inference from downloaded data formats. Check results carefully, and check for updates to neonUtilities.\n")
         ttypes <- tableForm
@@ -140,6 +140,11 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
             return(outputj)
             }, filepaths=filepaths), fill=TRUE)
+          
+          # sometimes lab data get published with the same time stamp in many download packages
+          if(length(duplicated(outputLab$uid))>0) {
+            outputLab <- outputLab[!duplicated(outputLab$uid),]
+          }
         
         data.table::fwrite(outputLab, paste0(folder, "/stackedFiles/", labTables[j], ".csv"))
         n <- n + 1
@@ -174,11 +179,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # get most recent sensor_positions file for each site and stack
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
-      uniqueSites <- unique(basename(sensorPositionList)) %>%
-        stringr::str_split('\\.') %>%
-        lapply(`[`, 3) %>%
-        unlist() %>% 
-        unique(.)
+      uniqueSites <- stringr::str_split(unique(basename(sensorPositionList)), "\\.")
+      uniqueSites <- unique(unlist(lapply(uniqueSites, "[", 3)))
 
       outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
         
@@ -186,8 +188,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
                                     colClasses = list(character = c('HOR.VER','start','end',
                                                                     'referenceStart',
-                                                                    'referenceEnd'))) %>%
-          makePosColumns(., sppath, x)
+                                                                    'referenceEnd')))
+        outTbl <- makePosColumns(outTbl, sppath, x)
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
       
@@ -238,19 +240,34 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         tblfls <- file_list
       }
       
-      stackedDf <- do.call(plyr::rbind.fill, pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
-                                                      makePosColumns) {
-
-        stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
-          assignClasses(., variables) %>%
-          makePosColumns(., basename(x))
+      stackingList <- pbapply::pblapply(tblfls, function(x, variables) {
         
-        return(stackedDf)
-      },
-      tables_i=tables[i], variables=variables,
-      assignClasses=assignClasses,
-      makePosColumns=makePosColumns, cl=cl
-      ))
+        tabtemp <- suppressWarnings(data.table::fread(x, header=T, 
+                                                      encoding="UTF-8", keepLeadingZeros=T))
+        # skip if file is empty - rare publication error
+        if(length(tabtemp)==0) {
+          return()
+        }
+        
+        tabtemp <- assignClasses(tabtemp, variables)
+        tabtemp <- makePosColumns(tabtemp, basename(x))
+        
+        # add column for release tag, if available
+        tabtemp$release <- rep(NA, nrow(tabtemp))
+        dir.splitName <- strsplit(dirname(x), split = "\\.")
+        pubd <- grep("[0-9]{8}T[0-9]{6}Z", dir.splitName[[1]])
+        if(identical(as.integer(pubd), 
+                     as.integer(length(dir.splitName[[1]])-1))) {
+          tabtemp$release <- rep(dir.splitName[[1]][length(dir.splitName[[1]])],
+                                 nrow(tabtemp))
+        } else {
+          tabtemp$release <- rep("undetermined", nrow(tabtemp))
+        }
+        
+        return(tabtemp)
+      }, variables=variables)
+      
+      stackedDf <- data.table::rbindlist(stackingList, fill=T)
 
       data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
                          nThread = nCores)
@@ -267,6 +284,10 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
           if("publicationDate" %in% names(stackedDf)) {
             vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
                                            c(table=tables[i], added_fields[5,])), fill=TRUE)
+          }
+          if("release" %in% names(stackedDf)) {
+            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                           c(table=tables[i], added_fields[6,])), fill=TRUE)
           }
         }
       }

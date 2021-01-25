@@ -130,8 +130,16 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     names(df18) <- c('easting','northing')
 
     sp::coordinates(df18) <- c('easting', 'northing')
-    sp::proj4string(df18) <- sp::CRS('+proj=utm +zone=18N ellps=WGS84')
-    df18conv <- sp::spTransform(df18, sp::CRS('+proj=utm +zone=17N ellps=WGS84'))
+    
+    epsg.z <- relevant_EPSG$code[grep("+proj=utm +zone=17", 
+                                      relevant_EPSG$prj4, fixed=T)]
+    if(utils::packageVersion("sp")<"1.4.2") {
+      sp::proj4string(df18) <- sp::CRS('+proj=utm +zone=18N ellps=WGS84')
+      df18conv <- sp::spTransform(df18, sp::CRS('+proj=utm +zone=17N ellps=WGS84'))
+    } else {
+      raster::crs(df18) <- sp::CRS("+proj=utm +zone=18")
+      df18conv <- sp::spTransform(df18, sp::CRS(paste("+init=epsg:", epsg.z, sep='')))
+    }
 
     easting <- c(easting17, df18conv$easting)
     northing <- c(northing17, df18conv$northing)

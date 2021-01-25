@@ -14,6 +14,7 @@
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
 #' @param avg Deprecated; use timeIndex
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
+#' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
@@ -42,7 +43,8 @@
 ##############################################################################################
 
 zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          timeIndex="all", check.size=TRUE, savepath=NA, load=F, token=NA, avg=NA) {
+                          timeIndex="all", tabl="all", check.size=TRUE, savepath=NA, 
+                          load=F, token=NA_character_, avg=NA) {
 
   messages <- NA
 
@@ -80,6 +82,33 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     cat('Input parameter avg is deprecated; use timeIndex to download by time interval.\n')
   } else {
     avg <- timeIndex
+  }
+  
+  # error message if using timeIndex & tabl
+  if(avg!="all" & tabl!="all") {
+    stop("Either timeIndex or tabl can be specified, but not both.")
+  }
+  
+  # check and warning message if using tabl=
+  if(tabl!="all") {
+    message(paste("Warning: Downloading only table ", tabl, ". Downloading by table is not recommended unless you are already familiar with the data product and its contents.\n", sep=""))
+    if(!tabl %in% table_types$tableName) {
+      message(paste("Warning: ", tabl, " is not in list of known tables. Download will be attempted, but check name and check neonUtilities for updates.\n", sep=""))
+    } else {
+      if(!dpID %in% table_types$productID[which(table_types$tableName==tabl)]) {
+        stop(paste(tabl, " is a table in ", 
+                   paste(table_types$productID[which(table_types$tableName==tabl)], collapse=" "), 
+                   ", not in ", dpID, 
+                   ". Verify input parameters.", sep=""))
+      }
+      if("lab-current" %in% table_types$tableType[which(table_types$tableName==tabl)] | 
+         "lab-all" %in% table_types$tableType[which(table_types$tableName==tabl)]) {
+        stop(paste("Download by table is not available for lab metadata tables. To get the complete dataset for table ", 
+                   tabl, ", download the most recently published site and month of data for ", 
+                   paste(table_types$productID[which(table_types$tableName==tabl)], collapse=" or "), 
+                   ".", sep=""))
+      }
+    }
   }
 
   # error for Phenocam data
@@ -210,8 +239,10 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("There are no data at the selected date(s).")
   }
 
-  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
-    tidyr::drop_na()
+  zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, tabl=tabl,
+                         messages=messages, token=token)
+  if(is.null(zip.urls)) { return(invisible()) }
+  zip.urls <- tidyr::drop_na(zip.urls)
 
   downld.size <- convByteSize(sum(as.numeric(zip.urls$size), na.rm=T))
 
@@ -261,8 +292,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         if(inherits(t, "error")) {
           writeLines(paste0(zip.urls$name[j], " could not be downloaded. URLs may have expired. Trying new URLs."))
 
-          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token) %>%
-                              tidyr::drop_na())
+          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, tabl=tabl, dpID=dpID, messages=messages, token = token))
+          zip.urls <- tidyr::drop_na(zip.urls)
 
           counter <- counter + 1
 

@@ -11,10 +11,11 @@ loadByProduct(
   enddate = NA,
   package = "basic",
   timeIndex = "all",
+  tabl = "all",
   check.size = TRUE,
   nCores = 1,
   forceParallel = FALSE,
-  token = NA,
+  token = NA_character_,
   avg = NA
 )
 }
@@ -30,6 +31,8 @@ loadByProduct(
 \item{package}{Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.}
 
 \item{timeIndex}{Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
+
+\item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
 
 \item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 

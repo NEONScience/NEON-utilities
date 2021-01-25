@@ -75,7 +75,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
 
   if(folder==TRUE){
     files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
-    if(length(files) == 0){
+    if(length(files)==0) {
       stop("Data files are not present in specified filepath.")
     }
   }
@@ -119,7 +119,17 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     saveUnzippedFiles = TRUE
     writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.\n")
   }
-
+  
+  # warning about soil sensor data
+  if(dpID %in% c("DP1.00094.001","DP1.00041.001") & length(files)>24) {
+    message("Attempting to stack soil sensor data. Note that due to the number of soil sensors at each site, data volume is very high for these data. Consider dividing data processing into chunks, using the nCores= parameter to parallelize stacking, and/or using a high-performance system.")
+  }
+  
+  # warning about saveUnzippedFiles loss of file structure in 2.0
+  if(saveUnzippedFiles==TRUE & folder!="ls") {
+    message("saveUnzippedFiles behavior has changed in v2.0; site-month folder structure is not retained. If an organized local record of NEON files is desired, the neonstore package is recommended, and can be used with stackFromStore() in the neonUtilities package.")
+  }
+  
   #### If all checks pass, unzip and stack files ####
   envt <- 0
   if(folder==FALSE) {
@@ -130,6 +140,11 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
     if(length(grep(files, pattern = ".zip")) > 0){
       zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
+    } else {
+      if(!dir.exists(savepath)){dir.create(savepath)}
+      utils::unzip(zipfile=filepath, exdir=savepath, junkpaths=T)
+      zipList <- list.files(savepath)
+      zipList <- zipList[grep("NEON.", zipList, fixed=T)]
     }
   }
 
@@ -143,7 +158,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
     } else {
-      if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
+      if(filepath!=savepath) {
         if(!dir.exists(savepath)){dir.create(savepath)}
         for(i in files) {
           file.copy(paste(filepath, i, sep="/"), savepath)
@@ -190,11 +205,10 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   stackDataFilesParallel(savepath, nCores, dpID)
   getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
 
-  if(saveUnzippedFiles == FALSE){
-    zipList <- zipList %>%
-      unlist() %>%
-      basename() %>%
-      gsub('.zip', '', .)
+  if(saveUnzippedFiles == FALSE & envt!=1){
+    zipList <- unlist(zipList)
+    zipList <- basename(zipList)
+    zipList <- gsub('.zip', '', zipList)
 
     cleanUp(savepath, zipList)
   }
