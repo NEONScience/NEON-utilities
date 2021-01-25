@@ -147,6 +147,7 @@ Enhancements:
 Bug fixes:
 * `stackFromStore()` now includes the full range of input options for sensor and SAE data
 * if empty files are downloaded, `stackByTable()` skips them instead of failing. Note this is rare, the result of error in NEON publication systems.
+* coordinate conversion for BLAN locations in `byTileAOP()` updated to use latest versions of spatial packages
 
 
 #### 2021-01-06 v1.3.9
