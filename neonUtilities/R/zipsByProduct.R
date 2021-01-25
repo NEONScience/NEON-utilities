@@ -292,7 +292,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         if(inherits(t, "error")) {
           writeLines(paste0(zip.urls$name[j], " could not be downloaded. URLs may have expired. Trying new URLs."))
 
-          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, messages=messages, token = token))
+          zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, tabl=tabl, dpID=dpID, messages=messages, token = token))
           zip.urls <- tidyr::drop_na(zip.urls)
 
           counter <- counter + 1

@@ -133,6 +133,22 @@ Disclaimer
 Change Log
 ----------
 
+#### 2021-01-25 v2.0.0
+Major version update, corresponding to the first Release of static, DOI-citable NEON data. Older versions of neonUtilities may not work correctly with Released data. For more information, see [Releases web page](https://www.neonscience.org/data-samples/data-management/data-revisions-releases).
+
+Major changes:
+* `stackByTable()` and `stackEddy()` updated to work with new zip folder structure
+* `zipsByProduct()` updated to use `packages` API endpoint instead of pre-packaged zip files
+
+Enhancements:
+* `stackByTable()` adds release tag to stacked data when possible
+* `getDatatable()` is deprecated and functionality is moved to `loadByProduct()`. Note download by table is not recommended for new users; familiarity with the data is a prerequisite.
+
+Bug fixes:
+* `stackFromStore()` now includes the full range of input options for sensor and SAE data
+* if empty files are downloaded, `stackByTable()` skips them instead of failing. Note this is rare, the result of error in NEON publication systems.
+
+
 #### 2021-01-06 v1.3.9
 Bug fixes:
 * fix bug in handling of .gz files in `stackEddy()`
