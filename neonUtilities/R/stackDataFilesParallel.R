@@ -140,6 +140,11 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
             return(outputj)
             }, filepaths=filepaths), fill=TRUE)
+          
+          # sometimes lab data get published with the same time stamp in many download packages
+          if(length(duplicated(outputLab$uid))>0) {
+            outputLab <- outputLab[!duplicated(outputLab$uid),]
+          }
         
         data.table::fwrite(outputLab, paste0(folder, "/stackedFiles/", labTables[j], ".csv"))
         n <- n + 1

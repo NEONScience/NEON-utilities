@@ -129,7 +129,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   if(saveUnzippedFiles==TRUE & folder!="ls") {
     message("saveUnzippedFiles behavior has changed in v2.0; site-month folder structure is not retained. If an organized local record of NEON files is desired, the neonstore package is recommended, and can be used with stackFromStore() in the neonUtilities package.")
   }
-
+  
   #### If all checks pass, unzip and stack files ####
   envt <- 0
   if(folder==FALSE) {
