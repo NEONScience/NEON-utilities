@@ -132,12 +132,9 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
     } else {
       if(!dir.exists(savepath)){dir.create(savepath)}
-      if(envt==1) {
-        utils::unzip(zipfile=filepath, exdir=savepath)
-      } else {
-        utils::unzip(zipfile=filepath, exdir=savepath, junkpaths=T)
-      }
-      zipList <- list.files(savepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
+      utils::unzip(zipfile=filepath, exdir=savepath, junkpaths=T)
+      zipList <- list.files(savepath)
+      zipList <- zipList[grep("NEON.", zipList, fixed=T)]
     }
   }
 
