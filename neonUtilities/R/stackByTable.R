@@ -95,9 +95,22 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
     }
   } else {
-    dpID <- substr(basename(files[1]), 15, 27)
-    package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
-    if(package == "anded"){package <- "expanded"}
+    # this regexpr allows for REV = .001 or .002
+    dpID <- unique(regmatches(basename(files), 
+                       regexpr("DP[1-4][.][0-9]{5}[.]00[1-2]", 
+                               basename(files))))
+    if(!identical(length(dpID), as.integer(1))) {
+      stop("Data product ID could not be determined. Check that filepath contains data files, from a single NEON data product.")
+    }
+    pack.files <- unique(regmatches(basename(files), 
+                                 regexpr("basic|expanded",
+                                         basename(files))))
+    # expanded package can contain basic files
+    if(any(pack.files=="expanded")) { 
+      package <- "expanded"
+    } else {
+      package <- "basic"
+    }
   }
   
   # error message if dpID isn't formatted as expected
@@ -126,7 +139,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
   
   # warning about saveUnzippedFiles loss of file structure in 2.0
-  if(saveUnzippedFiles==TRUE & !folder) {
+  if(saveUnzippedFiles==TRUE & identical(folder, FALSE)) {
     message("saveUnzippedFiles behavior has changed in v2.0; site-month folder structure is not retained in all cases. If an organized local record of NEON files is desired, the neonstore package is recommended, and can be used with stackFromStore() in the neonUtilities package.")
   }
   
