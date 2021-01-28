@@ -18,14 +18,27 @@
 
 ##############################################################################################
 getRecentPublication <- function(inList) {
-  path_dates <-  lapply(inList, function(x) {
+  
+  # if file dates are available, use file dates
+  file_dates <-  lapply(basename(inList), function(x) {
     regmatches(x, regexpr("[0-9]{8}T[0-9]{6}Z", x))
   })
-  # if dates can't be found, use "max" of input file names. This should be rare.
-  if(length(unlist(path_dates))==0) {
-    path_dates <- inList
+  # if dates can't be found, move to dates in file path - for release 2021, these are all identical
+  if(length(unlist(file_dates))==0) {
+    
+    path_dates <-  lapply(inList, function(x) {
+      regmatches(x, regexpr("[0-9]{8}T[0-9]{6}Z", x))
+    })
+    # if dates can't be found, use "max" of input file names. This should be very rare.
+    if(length(unlist(path_dates))==0) {
+      file_dates <- inList
+    } else {
+      file_dates <- path_dates
+    }
+    
   }
-  outList <- inList[grep(max(unlist(path_dates)), inList)][1]
-  return(list(outList, ifelse(nchar(path_dates[[1]])==16, max(unlist(path_dates)),
+  
+  outList <- inList[grep(max(unlist(file_dates)), inList)][1]
+  return(list(outList, ifelse(nchar(file_dates[[1]])==16, max(unlist(file_dates)),
                               "undetermined")))
 }
