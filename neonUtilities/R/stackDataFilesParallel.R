@@ -185,13 +185,18 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
                                     colClasses = list(character = c('HOR.VER','start','end',
                                                                     'referenceStart',
                                                                     'referenceEnd')))
+        if(identical(nrow(outTbl), as.integer(0))) {
+          return()
+        }
         outTbl <- makePosColumns(outTbl, sppath, x)
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
       
-      data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
-      messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
-      m <- m + 1
+      if(!identical(nrow(outputSensorPositions), as.integer(0))) {
+        data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
+        messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
+        m <- m + 1
+      }
     }
     
     if(nCores > parallel::detectCores()) {
@@ -241,7 +246,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         tabtemp <- suppressWarnings(data.table::fread(x, header=T, 
                                                       encoding="UTF-8", keepLeadingZeros=T))
         # skip if file is empty - rare publication error
-        if(length(tabtemp)==0) {
+        if(identical(nrow(tabtemp), as.integer(0))) {
           return()
         }
         
@@ -265,30 +270,32 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       
       stackedDf <- data.table::rbindlist(stackingList, fill=T)
 
-      data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
-                         nThread = nCores)
-      
-      # add location and publication field names to variables file
-      if(!is.null(vlist)) {
-        vtable <- which(names(vlist)==tables[i])
-        if(length(vtable==1)) {
-          if("horizontalPosition" %in% names(stackedDf)) {
-            vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
-                                                                                 added_fields[1:4,])), 
-                                           vlist[[vtable]]), fill=TRUE)
-          }
-          if("publicationDate" %in% names(stackedDf)) {
-            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
-                                           c(table=tables[i], added_fields[5,])), fill=TRUE)
-          }
-          if("release" %in% names(stackedDf)) {
-            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
-                                           c(table=tables[i], added_fields[6,])), fill=TRUE)
+      if(!identical(nrow(stackedDf), as.integer(0))) {
+        data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
+                           nThread = nCores)
+        
+        # add location and publication field names to variables file
+        if(!is.null(vlist)) {
+          vtable <- which(names(vlist)==tables[i])
+          if(length(vtable==1)) {
+            if("horizontalPosition" %in% names(stackedDf)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
+                                                                                   added_fields[1:4,])), 
+                                                            vlist[[vtable]]), fill=TRUE)
+            }
+            if("publicationDate" %in% names(stackedDf)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=tables[i], added_fields[5,])), fill=TRUE)
+            }
+            if("release" %in% names(stackedDf)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=tables[i], added_fields[6,])), fill=TRUE)
+            }
           }
         }
+        invisible(rm(stackedDf))
+        n <- n + 1
       }
-      invisible(rm(stackedDf))
-      n <- n + 1
     }
     
     # write out complete variables file
