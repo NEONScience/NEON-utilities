@@ -249,6 +249,22 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   close(pb2)
   
+  # convert all time stamps to time format, then filter out instances with:
+  # 1) only one record for a day
+  # 2) all values = NaN
+  # these are instances when a sensor was offline, and they don't join correctly
+  err <- FALSE
+  timeMergList <- lapply(timeMergList, function(x) {
+    tabtemp <- eddyStampCheck(x)
+    if(tabtemp[[2]]) {
+      err <- TRUE
+    }
+    return(tabtemp[[1]])
+  })
+  if(err) {
+    message("Some time stamps could not be converted. Variable join may be affected; check data carefully for disjointed time stamps.")
+  }
+  
   # for dp01 and dp02, stack tower levels and calibration gases
   if(level=="dp01" | level=="dp02") {
     namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)), 
@@ -314,8 +330,16 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     }
 
     # initiate the table with time stamps
-    # turbulent flux end time stamps don't match the others
-    varMergTabl <- timeMergPerSite[[grep("turb", names(timeMergList), invert=T)[1]]][,nameSet]
+    timeSet <- timeMergPerSite[grep("qfqm", names(timeMergList), invert=T)]
+    # turbulent flux end time stamps don't quite match the others
+    timeSet <- timeSet[grep("turb", names(timeSet), invert=T)]
+    timeSetInit <- data.table::as.data.table(timeSet[[1]][,nameSet])
+    for(q in 2:length(timeSet)) {
+      timeSetTemp <- data.table::as.data.table(timeSet[[q]][,nameSet])
+      timeSetInit <- data.table::funion(timeSetInit, timeSetTemp)
+    }
+    
+    varMergTabl <- as.data.frame(timeSetInit)
     
     # merge individual variable tables into one
     for(l in 1:length(timeMergPerSite)) {
@@ -329,7 +353,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
 
       varMergTabl <- base::merge(varMergTabl, 
                            timeMergPerSite[[l]][,-which(names(timeMergPerSite[[l]])=="timeEnd")],
-                           by=mergSet, all=T)
+                           by=mergSet, all.x=T, all.y=F)
       idx <- idx + 1
       utils::setTxtProgressBar(pb3, idx/(length(timeMergPerSite)*length(sites)))
     }
