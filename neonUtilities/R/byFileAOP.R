@@ -135,14 +135,13 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current)-1))
 
-  counter<- 1
+  counter <- 1
 
   while(j <= nrow(file.urls.current)) {
-    counter<- counter + 1
 
-    if (counter > 3) {
-      cat(paste0("\nRefresh did not solve the isse. URL query for site (", site, ') and year (', year,
-                  ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+    if (counter > 2) {
+      cat(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current$name[j],
+                  " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n"))
 
       j <- j + 1
       counter <- 1
@@ -164,17 +163,37 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
         }, error = function(e) { e } )
 
       if(inherits(t, "error")) {
-        writeLines("File could not be downloaded. URLs may have expired. Refreshing URLs list.")
-        file.urls.new <- getFileUrls(month.urls, token = token)
-        file.urls.current <- file.urls.new
+        
+        # re-attempt download once with no changes
+        if(counter < 2) {
+          writeLines(paste0("\n", file.urls.current$name[j], " could not be downloaded. Re-attempting."))
+          t <- tryCatch(
+            {
+              suppressWarnings(downloader::download(file.urls.current$URL[j],
+                                                    paste(newpath, file.urls.current$name[j], sep="/"),
+                                                    mode="wb", quiet=T))
+            }, error = function(e) { e } )
+          if(inherits(t, "error")) {
+            counter <- counter + 1
+          } else {
+            messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
+            j <- j + 1
+            counter <- 1
+          }
+        } else {
+          writeLines(paste0("\n", file.urls.current$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
+          file.urls.new <- getFileUrls(month.urls, token = token)
+          file.urls.current <- file.urls.new
+          counter <- counter + 1
+        }
 
       } else {
         messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
         j <- j + 1
         counter <- 1
+        utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
       }
-
-      utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
+      
     }
   }
   utils::setTxtProgressBar(pb, 1)
