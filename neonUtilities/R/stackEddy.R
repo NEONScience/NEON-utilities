@@ -44,12 +44,17 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # check for vector of files as input
   if(length(filepath)>1) {
-    if(length(grep(".zip", filepath))==length(filepath) |
-       length(grep(".h5", filepath))==length(filepath)) {
+    if(length(grep(".h5$", filepath))==length(filepath)) {
       files <- filepath
-      filepath <- dirname(files[1]) #### is this too restrictive?
+      dirs <- unique(dirname(files))
+      if(length(dirs)>1) {
+        stop("Input list of files must all be in the same directory.")
+      } else {
+        filepath <- dirs
+        files <- basename(files)
+      }
     } else {
-      stop("Input list of files must be either site-month zip files or .h5 files.")
+      stop("Input list of files must be .h5 files.")
     }
     if(any(!file.exists(files))) {
       stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
@@ -80,7 +85,9 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
                                                                    split="/", fixed=T)))-1)],
                        collapse="/")
   } else {
-    files <- list.files(filepath, recursive=F)
+    if(any(!exists("files"))) {
+      files <- list.files(filepath, recursive=F)
+    }
   }
   
   # unzip files if necessary
