@@ -329,10 +329,14 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
       mergSet <- "timeBgn"
     }
 
-    # initiate the table with time stamps
+    # get a set of time stamps to initiate the table. leave out qfqm to exclude 
+    # filler records created as placeholders for days with no data
     timeSet <- timeMergPerSite[grep("qfqm", names(timeMergList), invert=T)]
-    # turbulent flux end time stamps don't quite match the others
+    # turbulent flux and footprint end time stamps don't quite match the others
     timeSet <- timeSet[grep("turb", names(timeSet), invert=T)]
+    timeSet <- timeSet[grep("foot", names(timeSet), invert=T)]
+    
+    # initiate the table with consensus set of time stamps
     timeSetInit <- data.table::as.data.table(timeSet[[1]][,nameSet])
     for(q in 2:length(timeSet)) {
       timeSetTemp <- data.table::as.data.table(timeSet[[q]][,nameSet])
