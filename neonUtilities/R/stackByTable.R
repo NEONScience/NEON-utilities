@@ -138,11 +138,6 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     message("Attempting to stack soil sensor data. Note that due to the number of soil sensors at each site, data volume is very high for these data. Consider dividing data processing into chunks, using the nCores= parameter to parallelize stacking, and/or using a high-performance system.")
   }
   
-  # warning about saveUnzippedFiles loss of file structure in 2.0
-  if(saveUnzippedFiles==TRUE & identical(folder, FALSE)) {
-    message("saveUnzippedFiles behavior has changed in v2.0; site-month folder structure is not retained in all cases. If an organized local record of NEON files is desired, the neonstore package is recommended, and can be used with stackFromStore() in the neonUtilities package.")
-  }
-  
   #### If all checks pass, unzip and stack files ####
   envt <- 0
   if(folder==FALSE) {

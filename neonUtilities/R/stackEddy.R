@@ -46,13 +46,6 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   if(length(filepath)>1) {
     if(length(grep(".h5$", filepath))==length(filepath)) {
       files <- filepath
-      dirs <- unique(dirname(files))
-      if(length(dirs)>1) {
-        stop("Input list of files must all be in the same directory.")
-      } else {
-        filepath <- dirs
-        files <- basename(files)
-      }
     } else {
       stop("Input list of files must be .h5 files.")
     }
@@ -77,33 +70,27 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # allow for a single H5 file
   if(any(!exists("files")) & substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
-    files <- unlist(strsplit(filepath, split="/", 
-                             fixed=T))[length(unlist(strsplit(filepath, 
-                                                              split="/", fixed=T)))]
-    filepath <- paste0(unlist(strsplit(filepath, split="/", 
-                                fixed=T))[1:I(length(unlist(strsplit(filepath, 
-                                                                   split="/", fixed=T)))-1)],
-                       collapse="/")
+    files <- filepath
   } else {
     if(any(!exists("files"))) {
-      files <- list.files(filepath, recursive=F)
+      files <- list.files(filepath, recursive=F, full.names=T)
     }
   }
   
   # unzip files if necessary
   if(length(grep(".zip", files))==length(files)) {
     lapply(files, function(x) {
-      utils::unzip(paste(filepath, x, sep="/"), exdir=filepath)
+      utils::unzip(x, exdir=filepath)
     })
-    files <- list.files(filepath, recursive=F)
+    files <- list.files(filepath, recursive=F, full.names=T)
   }
   
   # after unzipping, check for .gz
   if(length(grep(".h5.gz", files))>0) {
     lapply(files[grep(".h5.gz", files)], function(x) {
-      R.utils::gunzip(paste(filepath, x, sep="/"))
+      R.utils::gunzip(x)
     })
-    files <- list.files(filepath, recursive=F)
+    files <- list.files(filepath, recursive=F, full.names=T)
   }
   
   # only need the H5 files for data extraction
@@ -122,7 +109,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # make empty, named list for the data tables
   tableList <- vector("list", length(files))
-  names(tableList) <- substring(files, 1, nchar(files)-3)
+  names(tableList) <- substring(basename(files), 1, nchar(basename(files))-3)
   
   # set up progress bar
   writeLines(paste0("Extracting data"))
@@ -132,10 +119,10 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   # extract data from each file
   for(i in 1:length(files)) {
     
-    listObj <- base::try(rhdf5::h5ls(paste(filepath, files[i], sep="/")), silent=T)
+    listObj <- base::try(rhdf5::h5ls(files[i]), silent=T)
     
     if(class(listObj)=="try-error") {
-      cat(paste("\n", paste(filepath, files[i], sep="/"), " could not be read.", sep=""))
+      cat(paste("\n", paste(files[i], " could not be read.", sep="")))
       next
     }
     
@@ -180,7 +167,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     
     # add extracted data to the list
     tableList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=paste(filepath, files[i], sep="/"), read.attributes=T)
+                                 file=files[i], read.attributes=T)
     base::names(tableList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
     
     utils::setTxtProgressBar(pb, i/length(files))
@@ -338,7 +325,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
 
     # get a set of time stamps to initiate the table. leave out qfqm to exclude 
     # filler records created as placeholders for days with no data
-    timeSet <- timeMergPerSite[grep("qfqm", names(timeMergList), invert=T)]
+    timeSet <- timeMergPerSite[grep("qfqm", names(timeMergPerSite), invert=T)]
     # turbulent flux and footprint end time stamps don't quite match the others
     timeSet <- timeSet[grep("turb", names(timeSet), invert=T)]
     timeSet <- timeSet[grep("foot", names(timeSet), invert=T)]
@@ -379,7 +366,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   close(pb3)
 
   # get one objDesc table and add it and variables table to list
-  objDesc <- base::try(rhdf5::h5read(paste(filepath, files[1], sep="/"), name="//objDesc"), silent=T)
+  objDesc <- base::try(rhdf5::h5read(files[1], name="//objDesc"), silent=T)
   # if processing gets this far without failing, don't fail here, just return data without objDesc table
   if(class(objDesc)=="try-error") {
     objDesc <- NA
