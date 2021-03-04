@@ -134,6 +134,14 @@ Disclaimer
 Change Log
 ----------
 
+#### 2021-01-25 v2.0.1
+Bug fixes:
+* Release tag assignment in `stackByTable()` resolved in portal data downloads
+* Identification of most recent sensor positions files and lab files in `stackByTable()` resolved
+* Improved handling of failed downloads in download functions
+* Empty filler records for single days with no data removed in `stackEddy()`
+
+
 #### 2021-01-25 v2.0.0
 Major version update, corresponding to the first Release of static, DOI-citable NEON data. Older versions of neonUtilities may not work correctly with Released data. For more information, see [Releases web page](https://www.neonscience.org/data-samples/data-management/data-revisions-releases).
 

@@ -55,7 +55,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # get list of files, unzipping if necessary
-  if(any(!exists("files")) & substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+  if(any(!exists("files")) & identical(substring(filepath, nchar(filepath)-3, nchar(filepath)), ".zip")) {
     outpath <- gsub(".zip", "", filepath)
     if(!dir.exists(outpath)) {
       dir.create(outpath)
@@ -69,7 +69,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # allow for a single H5 file
-  if(any(!exists("files")) & substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
+  if(any(!exists("files")) & identical(substring(filepath, nchar(filepath)-2, nchar(filepath)), ".h5")) {
     files <- filepath
   } else {
     if(any(!exists("files"))) {
