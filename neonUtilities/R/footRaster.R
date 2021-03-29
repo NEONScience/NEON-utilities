@@ -68,7 +68,7 @@ footRaster <- function(filepath) {
   # unzip files if necessary
   if(length(grep(".zip$", files))==length(files)) {
     for(i in 1:length(files)) {
-      utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
+      utils::unzip(files[i], exdir=filepath)
     }
     files <- list.files(filepath, recursive=F, full.names=T)
   }
@@ -201,7 +201,7 @@ footRaster <- function(filepath) {
   allGrids <- unlist(gridList, recursive=F)
   
   # check that data come from only one site
-  site <- unique(substring(names(allGrids), 10, 13))
+  site <- unique(base::gsub( pattern = ".*([A-Z]{4})[.DP4].*", "\\1", names(allGrids)))
   if(length(site)>1) {
     stop(paste(filepath, " contains files from more than one site.", sep=""))
   }
