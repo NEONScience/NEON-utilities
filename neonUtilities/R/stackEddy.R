@@ -332,9 +332,13 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     
     # initiate the table with consensus set of time stamps
     timeSetInit <- data.table::as.data.table(timeSet[[1]][,nameSet])
-    for(q in 2:length(timeSet)) {
-      timeSetTemp <- data.table::as.data.table(timeSet[[q]][,nameSet])
-      timeSetInit <- data.table::funion(timeSetInit, timeSetTemp)
+    if(length(timeSet)==1) {
+      timeSetInit <- timeSet
+    } else {
+      for(q in 2:length(timeSet)) {
+        timeSetTemp <- data.table::as.data.table(timeSet[[q]][,nameSet])
+        timeSetInit <- data.table::funion(timeSetInit, timeSetTemp)
+      }
     }
     
     varMergTabl <- as.data.frame(timeSetInit)
