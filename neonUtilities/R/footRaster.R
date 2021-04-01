@@ -54,19 +54,13 @@ footRaster <- function(filepath) {
   
   # allow for a single H5 file
   if(substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
-    files <- unlist(strsplit(filepath, split="/", 
-                             fixed=T))[length(unlist(strsplit(filepath, 
-                                                              split="/", fixed=T)))]
-    filepath <- paste0(unlist(strsplit(filepath, split="/", 
-                                fixed=T))[1:I(length(unlist(strsplit(filepath, 
-                                                                   split="/", fixed=T)))-1)],
-                       collapse="/")
+    files <- filepath
   } else {
     files <- list.files(filepath, recursive=F, full.names=T)
   }
   
   # unzip files if necessary
-  if(length(grep(".zip$", files))==length(files)) {
+  if(length(grep(".zip", files))==length(files)) {
     for(i in 1:length(files)) {
       utils::unzip(files[i], exdir=filepath)
     }
