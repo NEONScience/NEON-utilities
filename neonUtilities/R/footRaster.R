@@ -62,18 +62,38 @@ footRaster <- function(filepath) {
                                                                    split="/", fixed=T)))-1)],
                        collapse="/")
   } else {
-    files <- list.files(filepath, recursive=F)
+    files <- list.files(filepath, recursive=F, full.names=T)
   }
   
   # unzip files if necessary
   if(length(grep(".zip$", files))==length(files)) {
     for(i in 1:length(files)) {
-      utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
+      utils::unzip(files[i], exdir=filepath)
     }
-    files <- list.files(filepath, recursive=F)
+    files <- list.files(filepath, recursive=F, full.names=T)
   }
   
+  # after unzipping, check for .gz
+  if(length(grep(".h5.gz", files))>0) {
+    lapply(files[grep(".h5.gz", files)], function(x) {
+      R.utils::gunzip(x)
+    })
+    files <- list.files(filepath, recursive=F, full.names=T)
+  }
+  
+  # only need the H5 files for data extraction
   files <- files[grep(".h5$", files)]
+  
+  # check for duplicate files and use the most recent
+  fileDups <- gsub("[0-9]{8}T[0-9]{6}Z.h5", "", files)
+  if(any(base::duplicated(fileDups))) {
+    maxFiles <- character()
+    for(i in unique(fileDups)) {
+      maxFiles <- c(maxFiles, 
+                    max(files[grep(i, files)]))
+    }
+    files <- maxFiles
+  }
   
   # make empty, named list for the footprint grids
   gridList <- vector("list", length(files))
@@ -93,10 +113,10 @@ footRaster <- function(filepath) {
   # extract footprint data from each file
   for(i in 1:length(files)) {
     
-    listObj <- base::try(rhdf5::h5ls(paste(filepath, files[i], sep="/")), silent=T)
+    listObj <- base::try(rhdf5::h5ls(files[i]), silent=T)
     
     if(class(listObj)=="try-error") {
-      stop(paste("\n", paste(filepath, files[i], sep="/"), " could not be read.", sep=""))
+      stop(paste("\n", files[i], " could not be read.", sep=""))
     }
     
     listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
@@ -123,15 +143,15 @@ footRaster <- function(filepath) {
     
     # get footprints for each half hour
     gridList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=paste(filepath, files[i], sep="/"), read.attributes=T)
+                                 file=files[i], read.attributes=T)
     base::names(gridList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
     
     # get location data on first pass
     if(i==1) {
-      locAttr <- rhdf5::h5readAttributes(file=paste(filepath, files[i], sep="/"), name=listObj$group[2])
+      locAttr <- rhdf5::h5readAttributes(file=files[i], name=listObj$group[2])
       
       # get grid cell dimensions
-      oriAttr <- rhdf5::h5read(file=paste(filepath, files[i], sep="/"),
+      oriAttr <- rhdf5::h5read(file=files[i],
                                name=paste(listDataObj$group[intersect(grep('/dp04/data/foot', 
                                                                            listDataObj$group),
                                                                       grep('stat',
@@ -149,8 +169,8 @@ footRaster <- function(filepath) {
     
     # after first pass, check for consistency
     if(i!=1) {
-      newAttr <- rhdf5::h5readAttributes(file=paste(filepath, files[i], sep="/"), name=listObj$group[2])
-      newOri <- rhdf5::h5read(file=paste(filepath, files[i], sep="/"),
+      newAttr <- rhdf5::h5readAttributes(file=files[i], name=listObj$group[2])
+      newOri <- rhdf5::h5read(file=files[i],
                                name=paste(listDataObj$group[intersect(grep('/dp04/data/foot', 
                                                                            listDataObj$group),
                                                                       grep('stat',
@@ -181,7 +201,7 @@ footRaster <- function(filepath) {
   allGrids <- unlist(gridList, recursive=F)
   
   # check that data come from only one site
-  site <- unique(substring(names(allGrids), 10, 13))
+  site <- unique(base::gsub( pattern = ".*([A-Z]{4})[.DP4].*", "\\1", names(allGrids)))
   if(length(site)>1) {
     stop(paste(filepath, " contains files from more than one site.", sep=""))
   }
