@@ -42,13 +42,22 @@ footRaster <- function(filepath) {
     stop("Package raster is required for this function to work. Install and re-try.")
   }
   
+  # check for vector of filepaths: not currently supported
+  if(length(filepath)>1) {
+    stop("This function requires a single filepath as input; vector of filepaths is not currently supported.")
+  }
+  
   # get list of files, unzipping if necessary
   if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
     outpath <- gsub(".zip", "", filepath)
     if(!dir.exists(outpath)) {
       dir.create(outpath)
     }
-    utils::unzip(filepath, exdir=outpath)
+    if(length(grep(".zip", utils::unzip(filepath, list=T)$Name, fixed=T))>0) {
+      utils::unzip(filepath, exdir=outpath)
+    } else {
+      utils::unzip(filepath, exdir=outpath, junkpaths=T)
+    }
     filepath <- outpath
   }
   
@@ -61,9 +70,9 @@ footRaster <- function(filepath) {
   
   # unzip files if necessary
   if(length(grep(".zip", files))==length(files)) {
-    for(i in 1:length(files)) {
-      utils::unzip(files[i], exdir=filepath)
-    }
+    lapply(files, function(x) {
+      utils::unzip(x, exdir=filepath)
+    })
     files <- list.files(filepath, recursive=F, full.names=T)
   }
   
@@ -211,7 +220,7 @@ footRaster <- function(filepath) {
     LatLong <- data.frame(X = locAttr$LonTow, Y = locAttr$LatTow)
     sp::coordinates(LatLong) <- ~ X + Y # longitude first
     epsg.z <- relevant_EPSG$code[grep(paste("+proj=utm +zone=", 
-                                            locAttr$ZoneUtm, sep=""), 
+                                            locAttr$ZoneUtm, " ", sep=""), 
                                       relevant_EPSG$prj4, fixed=T)]
     if(utils::packageVersion("sp")<"1.4.2") {
       sp::proj4string(LatLong) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
