@@ -257,7 +257,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     # rename 2D wind tables
     if(length(grep("^2D", names(stacked_list)))>0) {
       names(stacked_list) <- gsub(pattern="^2D", replacement="twoD", x=names(stacked_list))
-      message("'2D' has been replaced by 'twoD' in table names to conform with R object rules.")
+      message("'2D' has been replaced by 'twoD' in table names to conform to R object rules.")
     }
 
     # remove temporary directory

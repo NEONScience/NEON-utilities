@@ -243,6 +243,9 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       
       stackingList <- pbapply::pblapply(tblfls, function(x, variables) {
         
+        if(nchar(x) > 260 & Sys.info()[["sysname"]]=="Windows") {
+          warning(paste("Filepath", x, "is", nchar(x), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
+        }
         tabtemp <- suppressWarnings(data.table::fread(x, header=T, 
                                                       encoding="UTF-8", keepLeadingZeros=T))
         # skip if file is empty - rare publication error
