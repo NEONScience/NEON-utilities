@@ -97,7 +97,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   } else {
     # this regexpr allows for REV = .001 or .002
     dpID <- unique(regmatches(basename(files), 
-                       regexpr("DP[1-4][.][0-9]{5}[.]00[1-2]", 
+                       regexpr("DP[1-4][.][0-9]{5}[.]00[1-2]{1}", 
                                basename(files))))
     if(!identical(length(dpID), as.integer(1))) {
       stop("Data product ID could not be determined. Check that filepath contains data files, from a single NEON data product.")
@@ -115,7 +115,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.00[0-9]{1}",dpID)!=1) {
-    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001, where the first placeholder must be between 1 and 4.", sep=" "))
+    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#, where the first placeholder must be between 1 and 4.", sep=" "))
   }
 
   # error message for AOP data

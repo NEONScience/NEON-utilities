@@ -42,6 +42,11 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
          \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
   }
   
+  # check for existence of a variable called 'files'
+  if(exists("files")) {
+    stop("Sorry, stackEddy() will not run correctly if an object named 'files' is present in the R environment. Please rename the object and re-try.")
+  }
+  
   # check for vector of files as input
   if(length(filepath)>1) {
     if(length(grep(".h5$", filepath))==length(filepath)) {
