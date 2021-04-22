@@ -136,7 +136,13 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
           writeLines(paste0("Stacking table ", labTables[j]))
           
           outputLab <- data.table::rbindlist(pbapply::pblapply(as.list(tablesj), function(x, filepaths) {
+            
             labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
+            
+            if(nchar(labpath[[1]]) > 260 & Sys.info()[["sysname"]]=="Windows") {
+              warning(paste("Filepath", labpath[[1]], "is", nchar(labpath[[1]]), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
+            }
+            
             outputj <- data.table::fread(labpath[[1]], header=TRUE, encoding="UTF-8")
             outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
             return(outputj)
