@@ -149,6 +149,9 @@ footRaster <- function(filepath) {
                                  file=files[i], read.attributes=T)
     base::names(gridList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
     
+    # transpose: eddy4R transposes the data to make them compatible with Python and other systems; need to be transposed back in R
+    gridList[[i]] <- base::t(gridList[[i]])
+    
     # get location data on first pass
     if(i==1) {
       locAttr <- rhdf5::h5readAttributes(file=files[i], name=listObj$group[2])
