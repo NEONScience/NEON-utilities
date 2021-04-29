@@ -42,11 +42,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
          \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
   }
   
-  # check for existence of a variable called 'files'
-  if(exists("files")) {
-    stop("Sorry, stackEddy() will not run correctly if an object named 'files' is present in the R environment. Please rename the object and re-try.")
-  }
-  
+  files <- NA
   # check for vector of files as input
   if(length(filepath)>1) {
     if(length(grep(".h5$", filepath))==length(filepath)) {
@@ -60,7 +56,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # get list of files, unzipping if necessary
-  if(any(!exists("files")) & identical(substring(filepath, nchar(filepath)-3, nchar(filepath)), ".zip")) {
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-3, nchar(filepath)), ".zip")) {
     outpath <- gsub(".zip", "", filepath)
     if(!dir.exists(outpath)) {
       dir.create(outpath)
@@ -74,10 +70,10 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # allow for a single H5 file
-  if(any(!exists("files")) & identical(substring(filepath, nchar(filepath)-2, nchar(filepath)), ".h5")) {
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-2, nchar(filepath)), ".h5")) {
     files <- filepath
   } else {
-    if(any(!exists("files"))) {
+    if(any(is.na(files))) {
       files <- list.files(filepath, recursive=F, full.names=T)
     }
   }
