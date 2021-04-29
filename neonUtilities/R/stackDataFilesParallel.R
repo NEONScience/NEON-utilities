@@ -50,6 +50,14 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   # filenames with full path
   filepaths <- findDatatables(folder = folder, fnames = T)
   
+  # handle per-sample tables separately
+  if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", "DP1.20141.001") & 
+     length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
+    framefiles <- filepaths[grep("^NEON.", basename(filenames), invert=TRUE)]
+    filepaths <- filepaths[grep("^NEON.", basename(filenames))]
+    filenames <- filenames[grep("^NEON.", basename(filenames))]
+  }
+  
   # make a list, where filenames are the keys to the filepath values
   filelist <- stats::setNames(as.list(filepaths), filenames)
   
