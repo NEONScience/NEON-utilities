@@ -9,7 +9,7 @@
 #'
 #' @param filepath One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file [character]
 #' @param level The level of data to extract; one of dp01, dp02, dp03, dp04 [character]
-#' @param var The variable set to extract, e.g. co2Turb [character]
+#' @param var The variable set to extract. Can be any of the variables in the "name" level of the H5 file; use the getVarsEddy() function to see the available variables. [character]
 #' @param avg The averaging interval to extract, in minutes [numeric]
 
 #' @details Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
