@@ -51,11 +51,19 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   filepaths <- findDatatables(folder = folder, fnames = T)
   
   # handle per-sample tables separately
-  if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", "DP1.20141.001") & 
+  if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", "DP1.20141.001",
+                 "DP1.20126.001", "DP1.20221.001") & 
      length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
     framefiles <- filepaths[grep("^NEON.", basename(filenames), invert=TRUE)]
     filepaths <- filepaths[grep("^NEON.", basename(filenames))]
     filenames <- filenames[grep("^NEON.", basename(filenames))]
+    
+    # stack frame files
+    writeLines("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
+    if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
+    
+    frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), data.table::fread), fill=TRUE)
+    data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
   }
   
   # make a list, where filenames are the keys to the filepath values

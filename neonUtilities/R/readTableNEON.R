@@ -67,7 +67,7 @@ readTableNEON <- function(dataFile, varFile){
     stop('Variables file does not match data file.\n')
   }
   if(m>6) {
-    cat(paste(m, ' fieldNames are present in data file but not in variables file. Some data types may not be assigned correctly.\n'))
+    cat(paste(m, 'fieldNames are present in data file but not in variables file. Some data types may not be assigned correctly.\n'))
   }
   
   # fieldNames each have a unique dataType - don't need to match table
