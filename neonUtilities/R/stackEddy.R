@@ -259,7 +259,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   if(err) {
     message("Some time stamps could not be converted. Variable join may be affected; check data carefully for disjointed time stamps.")
   }
-  
+
   # for dp01 and dp02, stack tower levels and calibration gases
   if(level=="dp01" | level=="dp02") {
     namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)), 
@@ -334,7 +334,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     # initiate the table with consensus set of time stamps
     timeSetInit <- data.table::as.data.table(timeSet[[1]][,nameSet])
     if(length(timeSet)==1) {
-      timeSetInit <- timeSet
+      timeSetInit <- timeSetInit
     } else {
       for(q in 2:length(timeSet)) {
         timeSetTemp <- data.table::as.data.table(timeSet[[q]][,nameSet])
