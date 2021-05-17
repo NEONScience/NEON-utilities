@@ -12,6 +12,7 @@
 #' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
+#' @param release The data release to be downloaded; either 'current' or the name of a release, e.g. 'RELEASE-2021'. 'current' returns provisional data in addition to the most recent release. To download only provisional data, use release='PROVISIONAL'. Defaults to 'current'.
 #' @param avg Deprecated; use timeIndex
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
@@ -42,8 +43,9 @@
 ##############################################################################################
 
 loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          timeIndex="all", tabl="all", check.size=TRUE, nCores=1, 
-                          forceParallel=FALSE, token=NA_character_, avg=NA) {
+                          release="current", timeIndex="all", tabl="all", 
+                          check.size=TRUE, nCores=1, forceParallel=FALSE, 
+                          token=NA_character_, avg=NA) {
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -76,8 +78,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   # pass the request to zipsByProduct() to download
   zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
-                avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, savepath=temppath, 
-                load=TRUE, token=token)
+                release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, 
+                savepath=temppath, load=TRUE, token=token)
 
   # stack and load the downloaded files using stackByTable
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),

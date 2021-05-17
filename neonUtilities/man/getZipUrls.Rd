@@ -9,6 +9,7 @@ getZipUrls(
   avg,
   package,
   dpID,
+  release,
   messages,
   tabl,
   token = NA_character_
@@ -22,6 +23,8 @@ getZipUrls(
 \item{package}{Global varaible for package type (basic or expanded)}
 
 \item{dpID}{Global variable for data product ID}
+
+\item{release}{Data release to be downloaded}
 
 \item{messages}{Error/warning messages from previous steps}
 
