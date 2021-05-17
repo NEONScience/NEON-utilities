@@ -233,7 +233,7 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = N
         flhd <- httr::headers(h)
         flnm <- gsub('\"', '', flhd$`content-disposition`, fixed=T)
         flnm <- gsub("inline; filename=", "", flnm, fixed=T)
-        sz <- sum(tmp.files[[i]]$data$files$size[which(tmp.files[[i]]$data$packages$type==pk)], 
+        sz <- sum(tmp.files[[i]]$data$files$size[grep(pk, tmp.files[[i]]$data$files$name)], 
                   na.rm=T)
         
         zip.urls <- rbind(zip.urls, cbind(flnm, z, sz))

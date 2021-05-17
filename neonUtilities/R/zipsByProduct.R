@@ -115,6 +115,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
   }
+  
+  # error for DHP expanded package
+  if(dpID=="DP1.10017.001" & package=="expanded") {
+    stop("Digital hemispherical images expanded file packages exceed R download limits. Either download from the data portal, or download the basic package and use the URLs in the data to download the images themselves. Follow instructions in the Data Product User Guide for image file naming.")
+  }
 
   # error message for individual SAE products
   if(dpID %in% c('DP1.00007.001','DP1.00010.001','DP1.00034.001','DP1.00035.001',
