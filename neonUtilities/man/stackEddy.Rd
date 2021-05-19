@@ -11,7 +11,7 @@ stackEddy(filepath, level = "dp04", var = NA, avg = NA)
 
 \item{level}{The level of data to extract; one of dp01, dp02, dp03, dp04 [character]}
 
-\item{var}{The variable set to extract, e.g. co2Turb [character]}
+\item{var}{The variable set to extract. Can be any of the variables in the "name" level of the H5 file; use the getVarsEddy() function to see the available variables. [character]}
 
 \item{avg}{The averaging interval to extract, in minutes [numeric]}
 }

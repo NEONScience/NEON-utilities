@@ -12,6 +12,7 @@
 #' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.
 #' @param package Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.
+#' @param release The data release to be downloaded; either 'current' or the name of a release, e.g. 'RELEASE-2021'. 'current' returns provisional data in addition to the most recent release. To download only provisional data, use release='PROVISIONAL'. Defaults to 'current'.
 #' @param avg Deprecated; use timeIndex
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
@@ -43,8 +44,8 @@
 ##############################################################################################
 
 zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          timeIndex="all", tabl="all", check.size=TRUE, savepath=NA, 
-                          load=F, token=NA_character_, avg=NA) {
+                          release="current", timeIndex="all", tabl="all", check.size=TRUE, 
+                          savepath=NA, load=F, token=NA_character_, avg=NA) {
 
   messages <- NA
 
@@ -114,6 +115,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   # error for Phenocam data
   if(dpID %in% c("DP1.00033.001", "DP1.00042.001")) {
     stop(paste(dpID, "is a phenological image product, data are hosted by Phenocam.", sep=" "))
+  }
+  
+  # error for DHP expanded package
+  if(dpID=="DP1.10017.001" & package=="expanded") {
+    stop("Digital hemispherical images expanded file packages exceed R download limits. Either download from the data portal, or download the basic package and use the URLs in the data to download the images themselves. Follow instructions in the Data Product User Guide for image file naming.")
   }
 
   # error message for individual SAE products
@@ -240,7 +246,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, tabl=tabl,
-                         messages=messages, token=token)
+                         release=release, messages=messages, token=token)
   if(is.null(zip.urls)) { return(invisible()) }
   zip.urls <- tidyr::drop_na(zip.urls)
 
@@ -315,7 +321,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           } else {
             writeLines(paste0("\n", zip.urls$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
             
-            zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, tabl=tabl, dpID=dpID, messages=messages, token = token))
+            zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, tabl=tabl, 
+                                                 dpID=dpID, release=release, messages=messages, token=token))
             zip.urls <- tidyr::drop_na(zip.urls)
             
             counter <- counter + 1

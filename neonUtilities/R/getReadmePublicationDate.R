@@ -55,7 +55,7 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
   txt_file <- txt_file[!stringr::str_detect(txt_file, pattern="Date-Time")]
 
   qInd <- grep('QUERY', txt_file)
-  dPackInd <- grep('PACKAGE CONTENTS', txt_file)
+  dPackInd <- grep('CONTENTS', txt_file)
   downPackInd <- grep('Basic download package', txt_file)
 
   tables <- table_types[which(table_types$productID==dpID),]

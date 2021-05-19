@@ -9,7 +9,7 @@
 #'
 #' @param filepath One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file [character]
 #' @param level The level of data to extract; one of dp01, dp02, dp03, dp04 [character]
-#' @param var The variable set to extract, e.g. co2Turb [character]
+#' @param var The variable set to extract. Can be any of the variables in the "name" level of the H5 file; use the getVarsEddy() function to see the available variables. [character]
 #' @param avg The averaging interval to extract, in minutes [numeric]
 
 #' @details Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
@@ -42,6 +42,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
          \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
   }
   
+  files <- NA
   # check for vector of files as input
   if(length(filepath)>1) {
     if(length(grep(".h5$", filepath))==length(filepath)) {
@@ -55,7 +56,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # get list of files, unzipping if necessary
-  if(any(!exists("files")) & identical(substring(filepath, nchar(filepath)-3, nchar(filepath)), ".zip")) {
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-3, nchar(filepath)), ".zip")) {
     outpath <- gsub(".zip", "", filepath)
     if(!dir.exists(outpath)) {
       dir.create(outpath)
@@ -69,10 +70,10 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   
   # allow for a single H5 file
-  if(any(!exists("files")) & identical(substring(filepath, nchar(filepath)-2, nchar(filepath)), ".h5")) {
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-2, nchar(filepath)), ".h5")) {
     files <- filepath
   } else {
-    if(any(!exists("files"))) {
+    if(any(is.na(files))) {
       files <- list.files(filepath, recursive=F, full.names=T)
     }
   }
@@ -258,7 +259,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   if(err) {
     message("Some time stamps could not be converted. Variable join may be affected; check data carefully for disjointed time stamps.")
   }
-  
+
   # for dp01 and dp02, stack tower levels and calibration gases
   if(level=="dp01" | level=="dp02") {
     namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)), 
@@ -333,7 +334,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     # initiate the table with consensus set of time stamps
     timeSetInit <- data.table::as.data.table(timeSet[[1]][,nameSet])
     if(length(timeSet)==1) {
-      timeSetInit <- timeSet
+      timeSetInit <- timeSetInit
     } else {
       for(q in 2:length(timeSet)) {
         timeSetTemp <- data.table::as.data.table(timeSet[[q]][,nameSet])

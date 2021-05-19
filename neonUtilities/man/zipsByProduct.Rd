@@ -10,6 +10,7 @@ zipsByProduct(
   startdate = NA,
   enddate = NA,
   package = "basic",
+  release = "current",
   timeIndex = "all",
   tabl = "all",
   check.size = TRUE,
@@ -29,6 +30,8 @@ zipsByProduct(
 \item{enddate}{Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA.}
 
 \item{package}{Either 'basic' or 'expanded', indicating which data package to download. Defaults to basic.}
+
+\item{release}{The data release to be downloaded; either 'current' or the name of a release, e.g. 'RELEASE-2021'. 'current' returns provisional data in addition to the most recent release. To download only provisional data, use release='PROVISIONAL'. Defaults to 'current'.}
 
 \item{timeIndex}{Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
 

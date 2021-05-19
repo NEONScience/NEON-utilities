@@ -45,7 +45,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
   # standard error checks
   
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}.[0-9]{5}.00[0-9]{1}",dpID)!=1) {
+  if(regexpr("DP[1-4]{1}[.][0-9]{5}[.]00[0-9]{1}",dpID)!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#.", sep=" "))
   }
   
@@ -114,16 +114,16 @@ stackFromStore <- function(filepaths, dpID, site="all",
     
     files <- list.files(filepaths, full.names=T, recursive=T)
     files <- files[grep(dpID, files)]
+    varFiles <- files[grep("[.]variables[.]", files)]
+    if(length(varFiles)==0 & dpID!="DP4.00200.001") {
+      stop("Variables file not found; required for stacking. Re-download data, or download additional data, to get variables file.")
+    }
     
     if(zipped==T) {
       files <- files[grep(".zip$", files)]
       stop("Files must be unzipped to use this function. Zip file handling may be added in a future version.")
     } else {
       files <- files[grep(".zip$", files, invert=T)]
-    }
-
-    if(!identical(site, "all")) {
-      files <- files[grep(paste(site, collapse="|"), files)]
     }
     
     # check for no files
@@ -133,6 +133,10 @@ stackFromStore <- function(filepaths, dpID, site="all",
     
     # basic vs expanded files are simple for SAE, not for everything else
     if(dpID=="DP4.00200.001") {
+      
+      if(!identical(site, "all")) {
+        files <- files[grep(paste(site, collapse="|"), files)]
+      }
       files <- files[grep(package, files)]
       tabs1 <- "DP4.00200.001.nsae"
       
@@ -140,7 +144,6 @@ stackFromStore <- function(filepaths, dpID, site="all",
       
       # expanded package can contain basic files. find variables file published 
       # most recently, or most recently before pubdate, to check expected contents
-      varFiles <- files[grep("[.]variables[.]", files)]
       varDates <- regmatches(basename(varFiles), 
                              regexpr("[0-9]{8}T[0-9]{6}Z", basename(varFiles)))
       if(is.na(pubdate)) {
@@ -241,6 +244,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
       if(length(sitesactual)==0) {
         files <- files
       } else {
+
         # extract dates from filenames for subsetting
         datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(filesub))
         datadates <- regmatches(basename(filesub), datemat)
@@ -278,16 +282,20 @@ stackFromStore <- function(filepaths, dpID, site="all",
           # but not precisely - pub packages are created and then have to sync to portal, so there is a small delay
           sitedates <- numeric()
           for(j in unique(sitesactual)) {
-            sitemonths <- monthsactual[which(sitesactual==j)]
-            for(k in unique(sitemonths)) {
-              sitemonthfiles <- filesub[intersect(grep(j, filesub), grep(k, filesub))]
-              sitemonthpubs <- pubdatesub[intersect(grep(j, filesub), grep(k, filesub))]
-              maxdate <- max(sitemonthpubs[which(sitemonthpubs <= pubdate)])
-              if(length(maxdate)==0) {
-                sitedates <- sitedates
-              } else {
-                maxdateindex <- which(pubdatesub==maxdate)
-                sitedates <- c(sitedates, maxdateindex)
+            if(!identical(site, "all") & !j %in% site) {
+              next
+            } else {
+              sitemonths <- monthsactual[which(sitesactual==j)]
+              for(k in unique(sitemonths)) {
+                sitemonthfiles <- filesub[intersect(grep(j, filesub), grep(k, filesub))]
+                sitemonthpubs <- pubdatesub[intersect(grep(j, filesub), grep(k, filesub))]
+                maxdate <- max(sitemonthpubs[which(sitemonthpubs <= pubdate)])
+                if(length(maxdate)==0) {
+                  sitedates <- sitedates
+                } else {
+                  maxdateindex <- which(pubdatesub==maxdate)
+                  sitedates <- c(sitedates, maxdateindex)
+                }
               }
             }
           }

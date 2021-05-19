@@ -6,6 +6,8 @@
 
 #' @description
 #' Create a raster of flux footprint data. Specific to expanded package of eddy covariance data product: DP4.00200.001
+#' For definition of a footprint, see Glossary of Meteorology: https://glossary.ametsoc.org/wiki/Footprint
+#' For background information about flux footprints and considerations around the time scale of footprint calculations, see Amiro 1998: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.922.4124&rep=rep1&type=pdf
 #'
 #' @param filepath One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file. Filepath can only contain files for a single site. [character]
 
@@ -27,6 +29,7 @@
 # changelog and author contributions / copyrights
 #   2019-07-04 (Claire Lunch): created
 #   2020-03-06 (Claire Lunch and Chris Florian): updated to apply coordinate system to output raster
+#   2021-05-03 (Claire Lunch): correction; matrix transposed before creating raster
 ##############################################################################################
 
 footRaster <- function(filepath) {
@@ -148,6 +151,9 @@ footRaster <- function(filepath) {
     gridList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
                                  file=files[i], read.attributes=T)
     base::names(gridList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
+    
+    # transpose: eddy4R transposes the data to make them compatible with Python and other systems; need to be transposed back in R
+    gridList[[i]] <- base::t(gridList[[i]])
     
     # get location data on first pass
     if(i==1) {

@@ -11,6 +11,7 @@
 #' @param avg Global variable for averaging interval
 #' @param package Global varaible for package type (basic or expanded)
 #' @param dpID Global variable for data product ID
+#' @param release Data release to be downloaded
 #' @param tabl Table name to get
 #' @param messages Error/warning messages from previous steps
 #' @param token User specific API token (generated within neon.datascience user accounts)
@@ -26,7 +27,7 @@
 
 ##############################################################################################
 
-getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = NA_character_) {
+getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, token = NA_character_) {
 
   writeLines("Finding available files")
   pb <- utils::txtProgressBar(style=3)
@@ -51,6 +52,19 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = N
   
   utils::setTxtProgressBar(pb, 1)
   close(pb)
+  
+  # if a release is selected, subset to the release
+  if(release!="current") {
+    tmp.ind <- lapply(tmp.files, function(x) {
+      x$data$release==release
+    })
+    tmp.files <- tmp.files[which(unlist(tmp.ind))]
+    
+    if(length(tmp.files)==0) {
+      stop(paste("No files found for release ", release, 
+                 " and query parameters. Check release name and dates.", sep=""))
+    }
+  }
 
   # identify index of most recent publication date, and most recent publication date by site
   rdme.nm <- character(length(tmp.files))
@@ -233,7 +247,7 @@ getZipUrls <- function(month.urls, avg, package, dpID, messages, tabl, token = N
         flhd <- httr::headers(h)
         flnm <- gsub('\"', '', flhd$`content-disposition`, fixed=T)
         flnm <- gsub("inline; filename=", "", flnm, fixed=T)
-        sz <- sum(tmp.files[[i]]$data$files$size[which(tmp.files[[i]]$data$packages$type==pk)], 
+        sz <- sum(tmp.files[[i]]$data$files$size[grep(pk, tmp.files[[i]]$data$files$name)], 
                   na.rm=T)
         
         zip.urls <- rbind(zip.urls, cbind(flnm, z, sz))

@@ -134,6 +134,20 @@ Disclaimer
 Change Log
 ----------
 
+#### 2021-05-19 v2.1.0
+Enhancements:
+* download by release in `zipsByProduct()` and `loadByProduct()`
+* per sample files, found in microbe community composition and field spectra, are stacked in `stackByTable()`
+* `stackFromStore()` updated to work with `neonstore` v0.4.3
+
+Bug fixes:
+* `stackEddy()` handles scenarios with only one instance of a given variable
+* `footRaster()` coordinate conversion for Alaska and Hawaii fixed
+* `footRaster()` orientation corrected
+* leading digit in 2D wind data tables is translated, with an alert, in `loadByProduct()`
+* warning message in `stackByTable()` when file paths are longer than 260 characters in Windows
+
+
 #### 2021-01-25 v2.0.1
 Bug fixes:
 * Release tag assignment in `stackByTable()` resolved in portal data downloads

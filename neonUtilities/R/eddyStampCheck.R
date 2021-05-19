@@ -61,17 +61,13 @@ eddyStampCheck <- function(tab){
       emptyDays <- numeric()
       for(i in 1:length(dayDup)) {
         if(all(tabN[dayDup[i], base::setdiff(names(tabN), c('timeBgn', 'timeEnd'))]=='NaN', na.rm=T)) {
-          emptyDays <- c(emptyDays, dayDup)
+          emptyDays <- c(emptyDays, dayDup[i])
         }
       }
       if(length(emptyDays)==0) {
         tabN <- tabN
       } else {
-        if(length(emptyDays)==nrow(tabN)) {
-          tabN <- NULL
-        } else {
-          tabN <- tabN[-emptyDays,]
-        }
+        tabN <- tabN[-emptyDays,]
       }
     }
   }
