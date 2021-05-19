@@ -277,28 +277,25 @@ stackFromStore <- function(filepaths, dpID, site="all",
           sitesactual <- regmatches(basename(filesub), sitemat)
           sitesactual <- gsub(".", "", sitesactual, fixed=T)
           
-          # subset to selected sites
-          sitesactual <- sitesactual[which(sitesactual %in% site)]
-          if(length(sitesactual)==0) {
-            message(paste("No data found for table ", tabs1, " and selected parameters", sep=""))
-            next
-          }
-          
           # get most recent publication date *before* pubdate for each site and month
           # this mimics behavior as if data had been downloaded from portal or API on pubdate
           # but not precisely - pub packages are created and then have to sync to portal, so there is a small delay
           sitedates <- numeric()
           for(j in unique(sitesactual)) {
-            sitemonths <- monthsactual[which(sitesactual==j)]
-            for(k in unique(sitemonths)) {
-              sitemonthfiles <- filesub[intersect(grep(j, filesub), grep(k, filesub))]
-              sitemonthpubs <- pubdatesub[intersect(grep(j, filesub), grep(k, filesub))]
-              maxdate <- max(sitemonthpubs[which(sitemonthpubs <= pubdate)])
-              if(length(maxdate)==0) {
-                sitedates <- sitedates
-              } else {
-                maxdateindex <- which(pubdatesub==maxdate)
-                sitedates <- c(sitedates, maxdateindex)
+            if(!identical(site, "all") & !j %in% site) {
+              next
+            } else {
+              sitemonths <- monthsactual[which(sitesactual==j)]
+              for(k in unique(sitemonths)) {
+                sitemonthfiles <- filesub[intersect(grep(j, filesub), grep(k, filesub))]
+                sitemonthpubs <- pubdatesub[intersect(grep(j, filesub), grep(k, filesub))]
+                maxdate <- max(sitemonthpubs[which(sitemonthpubs <= pubdate)])
+                if(length(maxdate)==0) {
+                  sitedates <- sitedates
+                } else {
+                  maxdateindex <- which(pubdatesub==maxdate)
+                  sitedates <- c(sitedates, maxdateindex)
+                }
               }
             }
           }
