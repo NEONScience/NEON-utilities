@@ -114,16 +114,16 @@ stackFromStore <- function(filepaths, dpID, site="all",
     
     files <- list.files(filepaths, full.names=T, recursive=T)
     files <- files[grep(dpID, files)]
+    varFiles <- files[grep("[.]variables[.]", files)]
+    if(length(varFiles)==0 & dpID!="DP4.00200.001") {
+      stop("Variables file not found; required for stacking. Re-download data, or download additional data, to get variables file.")
+    }
     
     if(zipped==T) {
       files <- files[grep(".zip$", files)]
       stop("Files must be unzipped to use this function. Zip file handling may be added in a future version.")
     } else {
       files <- files[grep(".zip$", files, invert=T)]
-    }
-
-    if(!identical(site, "all")) {
-      files <- files[grep(paste(site, collapse="|"), files)]
     }
     
     # check for no files
@@ -133,6 +133,10 @@ stackFromStore <- function(filepaths, dpID, site="all",
     
     # basic vs expanded files are simple for SAE, not for everything else
     if(dpID=="DP4.00200.001") {
+      
+      if(!identical(site, "all")) {
+        files <- files[grep(paste(site, collapse="|"), files)]
+      }
       files <- files[grep(package, files)]
       tabs1 <- "DP4.00200.001.nsae"
       
@@ -140,7 +144,6 @@ stackFromStore <- function(filepaths, dpID, site="all",
       
       # expanded package can contain basic files. find variables file published 
       # most recently, or most recently before pubdate, to check expected contents
-      varFiles <- files[grep("[.]variables[.]", files)]
       varDates <- regmatches(basename(varFiles), 
                              regexpr("[0-9]{8}T[0-9]{6}Z", basename(varFiles)))
       if(is.na(pubdate)) {
@@ -241,6 +244,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
       if(length(sitesactual)==0) {
         files <- files
       } else {
+
         # extract dates from filenames for subsetting
         datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(filesub))
         datadates <- regmatches(basename(filesub), datemat)
@@ -272,6 +276,13 @@ stackFromStore <- function(filepaths, dpID, site="all",
           sitemat <- regexpr("[.][A-Z]{4}[.]", basename(filesub))
           sitesactual <- regmatches(basename(filesub), sitemat)
           sitesactual <- gsub(".", "", sitesactual, fixed=T)
+          
+          # subset to selected sites
+          sitesactual <- sitesactual[which(sitesactual %in% site)]
+          if(length(sitesactual)==0) {
+            message(paste("No data found for table ", tabs1, " and selected parameters", sep=""))
+            next
+          }
           
           # get most recent publication date *before* pubdate for each site and month
           # this mimics behavior as if data had been downloaded from portal or API on pubdate
