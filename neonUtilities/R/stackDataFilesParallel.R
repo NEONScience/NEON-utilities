@@ -62,7 +62,11 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     writeLines("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
-    frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), data.table::fread), fill=TRUE)
+    frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), function(x) {
+      tempf <- data.table::fread(x)
+      tempf$fileName <- rep(basename(x), nrow(tempf))
+      return(tempf)
+      }), fill=TRUE)
     data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
   }
   

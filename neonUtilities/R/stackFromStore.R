@@ -151,7 +151,10 @@ stackFromStore <- function(filepaths, dpID, site="all",
       } else {
         pubdateP <- as.POSIXct(pubdate, format="%Y-%m-%d", tz="GMT")
         varDatesP <- as.POSIXct(varDates, format="%Y%m%dT%H%M%SZ", tz="GMT")
-        varInd <- which(varDatesP==max(varDatesP[which(varDatesP < pubdateP)], na.rm=T))[1]
+        if(length(which(varDatesP <= pubdateP))==0) {
+          stop(paste("No files published before pubdate ", pubdate, sep=""))
+        }
+        varInd <- which(varDatesP==max(varDatesP[which(varDatesP <= pubdateP)], na.rm=T))[1]
         varFile <- varFiles[varInd]
       }
       
