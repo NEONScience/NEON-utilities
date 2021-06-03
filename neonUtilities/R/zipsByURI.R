@@ -159,7 +159,9 @@ zipsByURI <- function(filepath,
   for(i in URLsToDownload) {
     dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), quiet = TRUE, mode = "wb"))
     if(!is.null(attr(dl, "class")) && attr(dl, "class") == "try-error"){
-      cat("Unable to download data for URL:",i,"\n")
+      message(paste("Unable to download data for URL: ",i,"\n", sep=""))
+      message(paste("This may be a timeout error. Current timeout setting is", getOption("timeout"), 
+                    "seconds. Timeout can be increased using options() function.\n", sep=" "))
       next
     }
     numDownloads <- numDownloads + 1
