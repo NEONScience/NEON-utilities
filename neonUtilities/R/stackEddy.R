@@ -190,7 +190,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
         } else {
           var.nm <- cbind(var.nm, 
                           attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
-                                                                       %in% c("timeBgn","timeEnd"))])
+                                                                       %in% c("index","timeBgn","timeEnd"))])
         }
         var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$unit)
         variables <- rbind(variables, var.nm)
@@ -268,10 +268,11 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
                               into=c("hor", "ver", "tmi"), 
                               sep="_", fill="left")
     
-    # add ver index to tables
+    # add hor and ver index to tables
     for(n in 1:length(timeMergList)) {
       verticalPosition <- rep(verSpl$ver[n], nrow(timeMergList[[n]]))
-      timeMergList[[n]] <- cbind(verticalPosition, timeMergList[[n]])
+      horizontalPosition <- rep(verSpl$hor[n], nrow(timeMergList[[n]]))
+      timeMergList[[n]] <- cbind(horizontalPosition, verticalPosition, timeMergList[[n]])
     }
     
     # next: stack everything with names that match when index is excluded
@@ -317,8 +318,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
 
     if(level=="dp01" | level=="dp02") {
-      nameSet <- c("timeBgn","timeEnd","verticalPosition")
-      mergSet <- c("verticalPosition","timeBgn")
+      nameSet <- c("timeBgn","timeEnd","horizontalPosition","verticalPosition")
+      mergSet <- c("horizontalPosition","verticalPosition","timeBgn")
     } else {
       nameSet <- c("timeBgn","timeEnd")
       mergSet <- "timeBgn"
@@ -361,7 +362,9 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
       utils::setTxtProgressBar(pb3, idx/(length(timeMergPerSite)*length(sites)))
     }
     if(level=="dp01" | level=="dp02") {
-      varMergTabl <- varMergTabl[order(varMergTabl$verticalPosition, varMergTabl$timeBgn),]
+      varMergTabl <- varMergTabl[order(varMergTabl$horizontalPosition, 
+                                       varMergTabl$verticalPosition, 
+                                       varMergTabl$timeBgn),]
     } else {
       varMergTabl <- varMergTabl[order(varMergTabl$timeBgn),]
     }
