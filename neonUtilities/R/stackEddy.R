@@ -188,9 +188,14 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
         if(length(attributes(tableList[[1]][[p]])$unit)==length(attributes(tableList[[1]][[p]])$names)) {
           var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$names)
         } else {
-          var.nm <- cbind(var.nm, 
-                          attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
-                                                                       %in% c("index","timeBgn","timeEnd"))])
+          if("index" %in% attributes(tableList[[1]][[p]])$names) {
+            var.nm <- cbind(var.nm, 
+                            attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names=="index")])
+          } else {
+            var.nm <- cbind(var.nm, 
+                            attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
+                                                                         %in% c("timeBgn","timeEnd"))])
+          }
         }
         var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$unit)
         variables <- rbind(variables, var.nm)
