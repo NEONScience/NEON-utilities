@@ -290,7 +290,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
     if (counter > 2) {
       cat(paste0("\nRefresh did not solve the isse. URL query for file ", zip.urls$name[j],
-                 " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n"))
+                 " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
+                 "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
       j <- j + 1
       counter <- 1
     } else {

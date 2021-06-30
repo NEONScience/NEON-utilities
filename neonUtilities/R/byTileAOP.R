@@ -267,7 +267,8 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
 
     if (counter > 2) {
       cat(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current$name[j],
-                  " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n"))
+                  " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
+                 "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
 
       j <- j + 1
       counter <- 1
