@@ -153,7 +153,7 @@ footRaster <- function(filepath) {
     base::names(gridList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
     
     # transpose: eddy4R transposes the data to make them compatible with Python and other systems; need to be transposed back in R
-    gridList[[i]] <- base::t(gridList[[i]])
+    gridList[[i]] <- base::lapply(gridList[[i]], base::t)
     
     # get location data on first pass
     if(i==1) {
