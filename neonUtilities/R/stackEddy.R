@@ -9,7 +9,7 @@
 #'
 #' @param filepath One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file [character]
 #' @param level The level of data to extract; one of dp01, dp02, dp03, dp04 [character]
-#' @param var The variable set to extract. Can be any of the variables in the "name" level of the H5 file; use the getVarsEddy() function to see the available variables. [character]
+#' @param var The variable set to extract. Can be any of the variables in the "name" level or the "system" level of the H5 file; use the getVarsEddy() function to see the available variables. From the inputs, all variables from "name" and all variables from "system" will be returned, but if variables from both "name" and "system" are specified, the function will return only the intersecting set. This allows the user to, e.g., return only the pressure data ("pres") from the CO2 storage system ("co2Stor"), instead of all the pressure data from all instruments.  [character]
 #' @param avg The averaging interval to extract, in minutes [numeric]
 
 #' @details Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
@@ -129,12 +129,29 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     
     listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
     listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
+    listObjSpl <- tidyr::separate(listDataObj, col="group", 
+                                  into=c(NA, "site", "level", "category", "system", "horvertmi"), 
+                                  sep="/", fill="right")
     
     # filter by variable/level selections
     levelInd <- grep(level, listDataName)
     
     if(level!="dp04" & level!="dp03" & level!="dp02" & !all(is.na(var))) {
-      varInd <- which(listDataObj$name %in% var)
+      if(length(which(listObjSpl$system %in% var))>0) {
+        if(length(which(listDataObj$name %in% var))>0) {
+          varInd <- base::intersect(which(listDataObj$name %in% var), 
+                                    which(listObjSpl$system %in% var))
+        } else {
+          varInd <- which(listObjSpl$system %in% var)
+        }
+      } else {
+        if(length(which(listDataObj$name %in% var))>0) {
+          varInd <- which(listObjSpl$name %in% var)
+        } else {
+          stop(paste("No data found for variables ", paste(var, collapse=" "), sep=""))
+        }
+      }
+      
     } else {
       varInd <- 1:length(listDataName)
     }
@@ -161,7 +178,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     # check that you haven't filtered to nothing
     if(length(ind)==0) {
       stop(paste("There are no data meeting the criteria level ", level, 
-                 ", averaging interval ", avg, ", and variables ", var, sep=""))
+                 ", averaging interval ", avg, ", and variables ", 
+                 paste(var, collapse=" "), sep=""))
     }
     
     listDataName <- listDataName[ind]
@@ -338,13 +356,23 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     timeSet <- timeSet[grep("foot", names(timeSet), invert=T)]
     
     # initiate the table with consensus set of time stamps
-    timeSetInit <- data.table::as.data.table(timeSet[[1]][,nameSet])
+    timeSetInit <- timeSet[[1]][,nameSet]
     if(length(timeSet)==1) {
       timeSetInit <- timeSetInit
     } else {
       for(q in 2:length(timeSet)) {
-        timeSetTemp <- data.table::as.data.table(timeSet[[q]][,nameSet])
-        timeSetInit <- data.table::funion(timeSetInit, timeSetTemp)
+        # check for additional start time stamps
+        timeSetTemp <- timeSet[[q]][,nameSet]
+        timeSetTempMerg <- data.table::as.data.table(timeSetTemp[,mergSet])
+        timeSetInitMerg <- data.table::as.data.table(timeSetInit[,mergSet])
+        misTime <- data.table::fsetdiff(timeSetTempMerg, timeSetInitMerg)
+        if(nrow(misTime)==0) {
+          timeSetInit <- timeSetInit
+        } else {
+          # combine all, then de-dup
+          allTime <- data.table::rbindlist(list(timeSetInit, timeSetTemp), fill=TRUE)
+          timeSetInit <- unique(allTime, by=mergSet)
+        }
       }
     }
     

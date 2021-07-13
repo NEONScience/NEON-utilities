@@ -11,7 +11,7 @@ stackEddy(filepath, level = "dp04", var = NA, avg = NA)
 
 \item{level}{The level of data to extract; one of dp01, dp02, dp03, dp04 [character]}
 
-\item{var}{The variable set to extract. Can be any of the variables in the "name" level of the H5 file; use the getVarsEddy() function to see the available variables. [character]}
+\item{var}{The variable set to extract. Can be any of the variables in the "name" level or the "system" level of the H5 file; use the getVarsEddy() function to see the available variables. From the inputs, all variables from "name" and all variables from "system" will be returned, but if variables from both "name" and "system" are specified, the function will return only the intersecting set. This allows the user to, e.g., return only the pressure data ("pres") from the CO2 storage system ("co2Stor"), instead of all the pressure data from all instruments.  [character]}
 
 \item{avg}{The averaging interval to extract, in minutes [numeric]}
 }
