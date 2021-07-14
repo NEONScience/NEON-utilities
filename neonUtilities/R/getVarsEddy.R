@@ -44,7 +44,8 @@ getVarsEddy <- function(filepath) {
   listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
   
   listObjSpl <- tidyr::separate(listDataObj, col="group", 
-                         into=c(NA, "site", "level", "category", "system", "horvertmi"), 
+                         into=c(NA, "site", "level", "category", "system", 
+                                "horvertmi", "subsys"), 
                          sep="/", fill="right")
   listObjSpl <- tidyr::separate(listObjSpl, col="horvertmi", 
                                 into=c("hor", "ver", "tmi"), 

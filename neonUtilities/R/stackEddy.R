@@ -130,7 +130,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
     listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
     listObjSpl <- tidyr::separate(listDataObj, col="group", 
-                                  into=c(NA, "site", "level", "category", "system", "horvertmi"), 
+                                  into=c(NA, "site", "level", "category", "system", 
+                                         "horvertmi", "subsys"), 
                                   sep="/", fill="right")
     
     # filter by variable/level selections
