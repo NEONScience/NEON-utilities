@@ -24,7 +24,8 @@ readTableNEON <- function(dataFile, varFile){
   
   # read in variables file
   if(class(varFile)=='character') {
-    v <- utils::read.csv(varFile, header = T, stringsAsFactors = F)
+    v <- utils::read.csv(varFile, header = T, stringsAsFactors = F,
+                         na.strings=c('NA',''), encoding='UTF-8')
   } else {
     v <- try(as.data.frame(varFile), silent=T)
     if(class(v)=='try-error') {

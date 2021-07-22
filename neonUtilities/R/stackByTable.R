@@ -243,11 +243,13 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
         fls <- suppressMessages(readr::read_table(x, col_names = FALSE))
         } else if(length(grep("variables", basename(x)))>0 | length(grep("validation", basename(x)))>0 |
                   length(grep("categoricalCodes", basename(x)))>0) {
-          fls <- suppressWarnings(data.table::fread(x, sep=','))
+          fls <- suppressWarnings(data.table::fread(x, sep=",", header=TRUE, 
+                                                    encoding="UTF-8", keepLeadingZeros=TRUE))
         } else {
           fls <- try(readTableNEON(x, v), silent=T)
           if(class(fls)=='try-error') {
-            fls <- suppressWarnings(data.table::fread(x, sep=','))
+            fls <- suppressWarnings(data.table::fread(x, sep=",", header=TRUE, 
+                                                      encoding="UTF-8", keepLeadingZeros=TRUE))
           }
           return(fls)
       }
