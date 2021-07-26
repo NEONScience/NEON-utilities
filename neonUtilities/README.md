@@ -134,6 +134,17 @@ Disclaimer
 Change Log
 ----------
 
+#### 2021-07-25 v2.1.1
+Enhancements:
+* more options in `stackEddy()` variable inputs; see function documentation
+
+Bug fixes:
+* `readr` package dependency removed to resolve incompatibility with readr 2.0.0
+* rare Windows bug for special characters fixed
+* `footRaster()` orientation correction in 2.1.0 did not work; corrected again
+* `stackEddy()` time stamp handling improved for profile sensors
+
+
 #### 2021-05-19 v2.1.0
 Enhancements:
 * download by release in `zipsByProduct()` and `loadByProduct()`
