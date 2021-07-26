@@ -3,7 +3,7 @@ Version: 2.1.1
 Date: 2021-07-25
 Title: Utilities for Working with NEON Data
 Authors@R: c(person("Claire","Lunch",email="clunch@battelleecology.org",role=c("aut","cre","ctb")), person("Christine","Laney",role=c("aut","ctb")), person("Nathan","Mietkiewicz",role=c("aut","ctb")), person("Eric","Sokol",role=c("aut","ctb")), person("Kaelin","Cawley",role=c("aut","ctb")), person("NEON (National Ecological Observatory Network)", role="aut"))
-Description: NEON data packages can be accessed through the NEON Data Portal <https://data.neonscience.org/data-products/explore>
+Description: NEON data packages can be accessed through the NEON Data Portal <https://data.neonscience.org>
     or through the NEON Data API (see <https://data.neonscience.org/data-api> for documentation). Data delivered from
     the Data Portal are provided as monthly zip files packaged within a parent zip file, while individual files
     can be accessed from the API. This package provides tools that aid in discovering, downloading, and reformatting 
