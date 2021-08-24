@@ -38,16 +38,18 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
     txt_file <- utils::read.delim(readme_recent, header=FALSE)
     txt_file <- txt_file$V1[grep("Date-Time", txt_file$V1, invert=TRUE)]
 
-    qInd <- grep('QUERY', txt_file)
-    dPackInd <- grep('CONTENTS', txt_file)
-    downPackInd <- grep('Basic download package', txt_file)
     tables <- table_types[which(table_types$productID==dpID),]
-  
-    txt_file[I(dPackInd+3)] <- paste('This data product contains up to', nrow(tables), 'data tables:')
-    txt_file[I(dPackInd+5):I(dPackInd+4+nrow(tables))] <- paste(tables$tableName, tables$tableDesc, sep=' - ')
-    txt_file[I(dPackInd+5+nrow(tables))] <- 'If data are unavailable for the particular sites and dates queried, some tables may be absent.'
-    txt_file <- txt_file[-c(qInd:I(dPackInd-2), I(dPackInd+6+nrow(tables)):I(downPackInd-1))]
-
+    if(nrow(tables)>0) {
+      qInd <- grep('QUERY', txt_file)
+      dPackInd <- grep('CONTENTS', txt_file)
+      downPackInd <- grep('Basic download package', txt_file)
+      
+      txt_file[I(dPackInd+3)] <- paste('This data product contains up to', nrow(tables), 'data tables:')
+      txt_file[I(dPackInd+5):I(dPackInd+4+nrow(tables))] <- paste(tables$tableName, tables$tableDesc, sep=' - ')
+      txt_file[I(dPackInd+5+nrow(tables))] <- 'If data are unavailable for the particular sites and dates queried, some tables may be absent.'
+      txt_file <- txt_file[-c(qInd:I(dPackInd-2), I(dPackInd+6+nrow(tables)):I(downPackInd-1))]
+    }
+    
     cat("###################################\n", file = out_filepath_name)
     cat("########### Disclaimer ############\n", file = out_filepath_name, append=TRUE)
     cat('This is the most recent readme publication based on all site-date combinations used during stackByTable.\nInformation specific to the query, including sites and dates, has been removed. The remaining content reflects general metadata for the data product.\n', file = out_filepath_name, append=TRUE)

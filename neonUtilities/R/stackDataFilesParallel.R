@@ -32,11 +32,6 @@
 stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   starttime <- Sys.time()
-  requireNamespace('stringr', quietly = TRUE)
-  requireNamespace('dplyr', quietly = TRUE)
-  requireNamespace("magrittr", quietly = TRUE)
-  requireNamespace('data.table', quietly = TRUE)
-  
   messages <- character()
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
@@ -241,7 +236,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     } else {
       cl <- parallel::makeCluster(getOption("cl.cores", nCores),
                                   setup_strategy='sequential')
-      parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
+      parallel::clusterEvalQ(cl, library(data.table)) 
       writeLines(paste0("Parallelizing stacking operation across ", nCores, " cores."))
       # If error, crash, or completion , closes all clusters
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
