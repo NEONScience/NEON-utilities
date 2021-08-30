@@ -53,7 +53,7 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}[.][0-9]{5}[.]00[1-2]{1}", dpID)!=1) {
+  if(regexpr("DP[1-4]{1}[.][0-9]{5}[.]00[1-2]{1}", dpID)[1]!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#", sep=" "))
   }
 

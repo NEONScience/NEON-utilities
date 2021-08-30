@@ -55,7 +55,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}.[0-9]{5}.00[0-9]{1}",dpID)!=1) {
+  if(regexpr("DP[1-4]{1}.[0-9]{5}.00[0-9]{1}",dpID)[1]!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#", sep=" "))
   }
 
@@ -193,6 +193,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
        dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001")) {
       cat(paste(dpID, " is not a streaming sensor (IS) data product; cannot subset by averaging interval. Proceeding to download all available data.\n",
                 sep=""))
+      avg <- "all"
   } else {
     # exceptions for water quality, SAE, summary weather statistics
     if(dpID %in% c("DP1.20288.001","DP4.00001.001","DP4.00200.001")) {

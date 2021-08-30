@@ -31,8 +31,8 @@ getAvg <- function(dpID, token = NA_character_) {
   cat("getAvg() is deprecated; use getTimeIndex() in future\n")
   
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
-    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
+  if(regexpr("DP[1-4]{1}.[0-9]{5}.[0-9]{3}",dpID)!=1) {
+    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.###", sep=" "))
   }
   
   # error message if dpID is the EC product
