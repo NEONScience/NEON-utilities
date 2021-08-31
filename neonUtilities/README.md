@@ -109,6 +109,8 @@ byTileAOP(dpID="DP3.30026.001", site="SJER", year="2017", easting=easting, north
 
 For a tutorial explaining how to use the `neonUtilities` package in more detail, including additional input options, view the [*Use the neonUtilities Package to Access NEON Data* tutorial](https://www.neonscience.org/resources/learning-hub/tutorials/neondatastackr).
 
+A cheat sheet for the `neonUtilities` package is available [here](https://www.neonscience.org/sites/default/files/cheat-sheet-neonUtilities.pdf).
+
 ### Known issues
 * `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
 * On Windows, file paths are limited to 260 characters. In some cases, NEON data file names plus local directories will exceed this length; this is most likely when working with lab quality assurance files, which include the name of the lab in the file name. If this happens, you will see an error saying "cannot open file". Usually, you can get around this by using zipsByProduct() -> stackByTable() -> readTableNEON() to download data and load it to R, taking care to download the files to a short file directory.
@@ -133,6 +135,12 @@ Disclaimer
 <!-- ****** Change Log ****** -->
 Change Log
 ----------
+
+#### 2021-09-01 v2.1.2
+Bug fixes:
+* readme file handling in `stackByTable()` was failing on new data products; fixed.
+* clean up of package dependencies
+
 
 #### 2021-07-25 v2.1.1
 Enhancements:
