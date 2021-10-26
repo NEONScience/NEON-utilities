@@ -334,6 +334,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   if(!curl::has_internet()) {
     messages <- c(messages, "No internet connection, issue log file not accessed. Issue log can be found in the readme file.")
   } else {
+    # token not used here, since token is not otherwise used/accessible in this function
     issues <- getIssueLog(dpID=dpID)
     utils::write.csv(issues, paste0(folder, "/stackedFiles/issueLog_", dpnum, ".csv"),
                      row.names=FALSE)
