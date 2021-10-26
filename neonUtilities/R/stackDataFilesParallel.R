@@ -330,6 +330,16 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     
   }
   
+  # get issue log
+  if(!curl::has_internet()) {
+    messages <- c(messages, "No internet connection, issue log file not accessed. Issue log can be found in the readme file.")
+  } else {
+    issues <- getIssueLog(dpID=dpID)
+    utils::write.csv(issues, paste0(folder, "/stackedFiles/issueLog_", dpnum, ".csv"),
+                     row.names=FALSE)
+    m <- m + 1
+  }
+  
   writeLines(paste0(messages, collapse = "\n"))
   writeLines(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
   endtime <- Sys.time()
