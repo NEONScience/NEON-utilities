@@ -31,16 +31,21 @@ getIssueLog <- function(dpID=NA, token=NA_character_) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#", sep=" "))
   }
   
-  req <- getAPI(apiURL = paste0("http://data.neonscience.org/api/v0/products/", dpID), 
+  if(dpID=="DP4.00200.001") {
+    issuelog <- getEddyLog(token=token)
+  } else {
+    req <- getAPI(apiURL = paste0("http://data.neonscience.org/api/v0/products/", dpID), 
                   token = token)
-  
-  if(is.null(req)) {
-    return(invisible())
+    
+    if(is.null(req)) {
+      return(invisible())
+    }
+    
+    allproductinfo <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
+                                         simplifyDataFrame=TRUE, flatten=TRUE)
+    
+    issuelog <- allproductinfo[["data"]]$changeLogs
   }
   
-  allproductinfo <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
-                              simplifyDataFrame=TRUE, flatten=TRUE)
-  
-  issuelog <- allproductinfo[["data"]]$changeLogs
   return(issuelog)
 }

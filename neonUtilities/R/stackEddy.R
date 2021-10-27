@@ -327,8 +327,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   # join the concatenated tables
 
   sites <- unique(substring(names(timeMergList), 1, 4))
-  varMergList <- vector("list", length(sites)+2)
-  names(varMergList) <- c(sites, "variables", "objDesc")
+  varMergList <- vector("list", length(sites)+3)
+  names(varMergList) <- c(sites, "variables", "objDesc", "issueLog")
   
   # set up progress bar
   writeLines(paste0("Joining data variables"))
@@ -337,7 +337,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   idx <- 0
   
   # make one merged table per site
-  for(m in 1:I(length(varMergList)-2)) {
+  for(m in 1:I(length(varMergList)-3)) {
     
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
 
@@ -415,6 +415,14 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   }
   varMergList[["variables"]] <- variables
   varMergList[["objDesc"]] <- objDesc
+  
+  # get issue log
+  if(!curl::has_internet()) {
+    message("No internet connection, issue log file not accessed. Issue log can be found on the data product details pages.")
+  } else {
+    # token not used here, since token is not otherwise used/accessible in this function
+    varMergList[["issueLog"]] <- getIssueLog(dpID="DP4.00200.001")
+  }
   
   return(varMergList)
 }
