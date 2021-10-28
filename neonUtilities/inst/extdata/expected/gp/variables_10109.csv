@@ -73,3 +73,4 @@
 "mga_soilGroupAbundances","remarks","Technician notes; free text comments accompanying the record","string",NA,"basic",NA,NA,NA
 "mga_soilGroupAbundances","dataQF","Data quality flag","string",NA,"expanded",NA,NA,NA
 "mga_soilGroupAbundances","publicationDate","Date of data publication on the NEON data portal","dateTime",NA,"appended by stackByTable",NA,"N",""
+"mga_soilGroupAbundances","release","Identifier for data release","string",NA,"appended by stackByTable",NA,"N",""
