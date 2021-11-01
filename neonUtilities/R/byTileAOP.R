@@ -325,6 +325,10 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
   utils::setTxtProgressBar(pb, 1)
   close(pb)
+  
+  issues <- getIssueLog(dpID=dpID, token=token)
+  utils::write.csv(issues, paste0(filepath, "/issueLog_", dpID, ".csv"),
+                   row.names=FALSE)
 
   writeLines(paste("Successfully downloaded ", length(messages), " files."))
   writeLines(paste0(messages, collapse = "\n"))
