@@ -31,6 +31,11 @@ findTablesByFormat <- function(datatables){
       }
     }
   }
+  
+  if(length(t)==0) {
+    stop("No data tables found, only metadata. Try downloading expanded package, and check availability on the NEON data portal.")
+  }
+  
   tn <- unique(t)
   tt <- character(length(tn))
   
