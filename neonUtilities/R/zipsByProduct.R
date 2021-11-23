@@ -168,8 +168,13 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   # query the products endpoint for the product requested
-  prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
-                                    dpID, sep=""), token = token)
+  if(release=="current") {
+    prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
+                                      dpID, sep=""), token = token)
+  } else {
+    prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
+                                      dpID, "?release=", release, sep=""), token = token)
+  }
 
   avail <- jsonlite::fromJSON(httr::content(prod.req, as='text', encoding='UTF-8'), 
                               simplifyDataFrame=TRUE, flatten=TRUE)

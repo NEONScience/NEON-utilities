@@ -37,7 +37,7 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
   tmp.files <- list(length(month.urls))
   for(j in 1:length(month.urls)) {
 
-    tmp.files[[j]] <- getAPI(month.urls[j], token)
+    tmp.files[[j]] <- getAPI(month.urls[j], token=token)
     
     if(tmp.files[[j]]$status_code==500) {
       messages <- c(messages, paste("Query for url ", month.urls[j],
