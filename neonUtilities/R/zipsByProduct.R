@@ -217,6 +217,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   # get the urls for months with data available
   month.urls <- unlist(avail$data$siteCodes$availableDataUrls)
+  
+  # error message if nothing is available
+  if(length(month.urls)==0) {
+    stop("There are no data matching the search criteria.")
+  }
 
   # subset by sites if requested
   if(!"all" %in% site) {
