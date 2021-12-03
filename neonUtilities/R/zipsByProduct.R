@@ -167,6 +167,14 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     }
   }
 
+  # redirect for veg structure and sediment data product bundles
+  if(dpID %in% other_bundles$product & release!="RELEASE-2021") {
+    newDPID <- other_bundles$homeProduct[which(other_bundles$product==dpID)]
+    stop(paste("Except in RELEASE-2021, ", dpID, " has been bundled with ", newDPID, 
+               " and is not available independently. Please download ", 
+               newDPID, sep=""))
+  }
+  
   # query the products endpoint for the product requested
   if(release=="current") {
     prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
@@ -308,22 +316,42 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     } else {
       zip_out <- paste(filepath, zip.urls$name[j], sep="/")
       if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out)) {
-        t <- tryCatch(
-          {
-            suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
-                                                  mode="wb", quiet=T))
-          }, error = function(e) { e } )
+        if(is.na(token)) {
+          t <- tryCatch(
+            {
+              suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
+                                                    mode="wb", quiet=T))
+            }, error = function(e) { e } )
+        } else {
+          t <- tryCatch(
+            {
+              suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
+                                                    mode="wb", quiet=T,
+                                                    headers=c("X-API-Token"=token)))
+            }, error = function(e) { e } )
+        }
 
         if(inherits(t, "error")) {
           
           # re-attempt download once with no changes
           if(counter < 2) {
             writeLines(paste0("\n", zip.urls$name[j], " could not be downloaded. Re-attempting."))
-            t <- tryCatch(
-              {
-                suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
-                                                      mode="wb", quiet=T))
-              }, error = function(e) { e } )
+            
+            if(is.na(token)) {
+              t <- tryCatch(
+                {
+                  suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
+                                                        mode="wb", quiet=T))
+                }, error = function(e) { e } )
+            } else {
+              t <- tryCatch(
+                {
+                  suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
+                                                        mode="wb", quiet=T,
+                                                        headers=c("X-API-Token"=token)))
+                }, error = function(e) { e } )
+            }
+            
             if(inherits(t, "error")) {
               counter <- counter + 1
             } else {
