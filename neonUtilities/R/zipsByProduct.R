@@ -245,7 +245,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
   # subset by dates if requested
   if(!is.na(startdate)) {
-    datelist <- substring(month.urls, nchar(month.urls[1])-6, nchar(month.urls[1]))
+    datelist <- regmatches(month.urls, regexpr("20[0-9]{2}-[0-9]{2}", month.urls))
     month.urls <- month.urls[which(datelist >= startdate)]
   }
 
@@ -255,7 +255,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   if(!is.na(enddate)) {
-    datelist <- substring(month.urls, nchar(month.urls[1])-6, nchar(month.urls[1]))
+    datelist <- regmatches(month.urls, regexpr("20[0-9]{2}-[0-9]{2}", month.urls))
     month.urls <- month.urls[which(datelist <= enddate)]
   }
 
