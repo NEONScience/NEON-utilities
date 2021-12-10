@@ -335,9 +335,11 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   } else {
     # token not used here, since token is not otherwise used/accessible in this function
     issues <- getIssueLog(dpID=dpID)
-    utils::write.csv(issues, paste0(folder, "/stackedFiles/issueLog_", dpnum, ".csv"),
-                     row.names=FALSE)
-    m <- m + 1
+    if(!is.null(issues)) {
+      utils::write.csv(issues, paste0(folder, "/stackedFiles/issueLog_", dpnum, ".csv"),
+                       row.names=FALSE)
+      m <- m + 1
+    }
   }
   
   writeLines(paste0(messages, collapse = "\n"))
