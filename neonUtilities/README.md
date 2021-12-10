@@ -136,6 +136,16 @@ Disclaimer
 Change Log
 ----------
 
+#### 2021-12-09 v2.1.3
+Enhancements:
+* `stackByTable()`, `stackEddy()`, `byTileAOP()`, and `byFileAOP()` include issue log in outputs
+* `getIssueLog()` is also available as an independent function
+
+Bug fixes:
+* improved error messaging when no data are found
+* new error messaging if only metadata files are found
+
+
 #### 2021-09-01 v2.1.2
 Bug fixes:
 * readme file handling in `stackByTable()` was failing on new data products; fixed.
