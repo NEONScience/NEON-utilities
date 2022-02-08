@@ -135,6 +135,31 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     n <- 0
     m <- 0
     
+    
+    # metadata files
+    # copy variables and validation files to /stackedFiles using the most recent publication date
+    if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
+      varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
+      variables <- getVariables(varpath)   # get the variables from the chosen variables file
+      v <- suppressWarnings(data.table::fread(varpath, sep=','))
+      vlist <- base::split(v, v$table)
+    }
+    
+    if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
+      valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])[[1]]
+      file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation_", dpnum, ".csv"))
+      messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles")
+      m <- m + 1
+    }
+    
+    # copy categoricalCodes file to /stackedFiles using the most recent publication date
+    if(TRUE %in% stringr::str_detect(filepaths,'categoricalCodes')) {
+      lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])[[1]]
+      file.copy(from = lovpath, to = paste0(folder, "/stackedFiles/categoricalCodes_", dpnum, ".csv"))
+      messages <- c(messages, "Copied the most recent publication of categoricalCodes file to /stackedFiles")
+      m <- m + 1
+    }
+    
     # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
     labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
     if(length(labTables)>0){
@@ -158,6 +183,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             }
             
             outputj <- data.table::fread(labpath[[1]], header=TRUE, encoding="UTF-8")
+            outputj <- assignClasses(outputj, variables)
             outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
             return(outputj)
             }, filepaths=filepaths), fill=TRUE)
@@ -169,29 +195,6 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       tables <- setdiff(tables, labTables)
     }
 
-    # copy variables and validation files to /stackedFiles using the most recent publication date
-    if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
-      varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
-      variables <- getVariables(varpath)   # get the variables from the chosen variables file
-      v <- suppressWarnings(data.table::fread(varpath, sep=','))
-      vlist <- base::split(v, v$table)
-    }
-    
-    if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
-      valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])[[1]]
-      file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation_", dpnum, ".csv"))
-      messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles")
-      m <- m + 1
-    }
-
-    # copy categoricalCodes file to /stackedFiles using the most recent publication date
-    if(TRUE %in% stringr::str_detect(filepaths,'categoricalCodes')) {
-      lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])[[1]]
-      file.copy(from = lovpath, to = paste0(folder, "/stackedFiles/categoricalCodes_", dpnum, ".csv"))
-      messages <- c(messages, "Copied the most recent publication of categoricalCodes file to /stackedFiles")
-      m <- m + 1
-    }
-    
     # get most recent sensor_positions file for each site and stack
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
