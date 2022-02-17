@@ -4,7 +4,7 @@
 \alias{getAPIHeaders}
 \title{Get only headers from API}
 \usage{
-getAPIHeaders(apiURL, token = NA)
+getAPIHeaders(apiURL, token = NA_character_)
 }
 \arguments{
 \item{apiURL}{The API endpoint URL}

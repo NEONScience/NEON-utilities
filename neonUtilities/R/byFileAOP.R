@@ -35,7 +35,7 @@
 
 ##############################################################################################
 
-byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA) {
+byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_character_) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.00[1-2]{1}",dpID)!=1) {
@@ -50,6 +50,11 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token = NA
   # error message if year is left blank
   if(regexpr('[[:digit:]]{4}', year)!=1) {
     stop("Year is required (e.g. '2017').")
+  }
+  
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
   }
 
   # query the products endpoint for the product requested

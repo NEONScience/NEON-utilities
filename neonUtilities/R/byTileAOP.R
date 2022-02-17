@@ -33,7 +33,7 @@
 ##############################################################################################
 
 byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
-                      check.size=TRUE, savepath=NA, token = NA) {
+                      check.size=TRUE, savepath=NA, token=NA_character_) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.00[1-2]{1}",dpID)!=1) {
@@ -67,6 +67,11 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   # error message if buffer is bigger than a tile
   if(buffer>=1000) {
     stop("Buffer is larger than tile size. Tiles are 1x1 km.")
+  }
+  
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
   }
 
   # query the products endpoint for the product requested

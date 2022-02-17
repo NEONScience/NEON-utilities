@@ -17,11 +17,15 @@
 #   2021-01-24 (Claire Lunch): Adapted from getAPI()
 ##############################################################################################
 
-getAPIHeaders <- function(apiURL, token=NA){
+getAPIHeaders <- function(apiURL, token=NA_character_){
 
   if(!curl::has_internet()) {
     message("No internet connection detected. Cannot access NEON API.")
     return(invisible())
+  }
+  
+  if(identical(token, "")) {
+    token <- NA_character_
   }
   
   if(is.na(token)) {

@@ -175,6 +175,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                newDPID, sep=""))
   }
   
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
+  }
+  
   # query the products endpoint for the product requested
   if(release=="current") {
     prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
