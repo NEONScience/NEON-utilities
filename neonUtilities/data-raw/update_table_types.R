@@ -38,6 +38,10 @@ update_table_types <- function(){
                                   descs[-length(descs)], typs[-length(typs)], tmi))
   colnames(table_types) <- c("productID", "tableName", "tableDesc", 
                              "tableType", "tableTMI")
+  
+  # need to keep table definitions for tables that only exist in RELEASE-2021
+  table_types <- rbind(table_types, release_2021)
+  
   rownames(table_types) <- 1:nrow(table_types)
   
   # term definitions for fields added by stackByTable
@@ -57,7 +61,7 @@ update_table_types <- function(){
                                    primaryKey=rep('N',6),
                                    categoricalCodeName=rep('',6)))
   
-  usethis::use_data(table_types, added_fields, shared_flights, shared_aquatic, 
+  usethis::use_data(table_types, added_fields, shared_flights, shared_aquatic, release_2021,
                     chem_bundles, other_bundles, relevant_EPSG, internal=TRUE, overwrite=TRUE)
   usethis::use_data(table_types, shared_flights, shared_aquatic, chem_bundles, other_bundles, 
                     internal=FALSE, overwrite=TRUE)

@@ -97,10 +97,10 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       message(paste("Warning: ", tabl, " is not in list of known tables. Download will be attempted, but check name and check neonUtilities for updates.\n", sep=""))
     } else {
       if(!dpID %in% table_types$productID[which(table_types$tableName==tabl)]) {
-        stop(paste(tabl, " is a table in ", 
+        message(paste(tabl, " is a table in ", 
                    paste(table_types$productID[which(table_types$tableName==tabl)], collapse=" "), 
                    ", not in ", dpID, 
-                   ". Verify input parameters.", sep=""))
+                   ". Download will be attempted, but check for updates.\n", sep=""))
       }
       if("lab-current" %in% table_types$tableType[which(table_types$tableName==tabl)] | 
          "lab-all" %in% table_types$tableType[which(table_types$tableName==tabl)]) {
