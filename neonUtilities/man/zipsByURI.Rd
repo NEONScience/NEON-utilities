@@ -14,7 +14,7 @@ zipsByURI(
 )
 }
 \arguments{
-\item{filepath}{The location of the NEON data containing URIs}
+\item{filepath}{The location of the NEON data containing URIs. Can be either a local directory containing NEON tabular data or a list object containing tabular data.}
 
 \item{savepath}{The location to save the output files from the ECS bucket, optional. 
 Defaults to creating a "ECS_zipFiles" folder in the filepath directory.}

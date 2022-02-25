@@ -9,7 +9,7 @@
 #' Assumes data tables are in the format resulting from merging files using stackByTable().
 #' File downloads from ECS can be extremely large; be prepared for long download times and large file storage.
 #'
-#' @param filepath The location of the NEON data containing URIs
+#' @param filepath The location of the NEON data containing URIs. Can be either a local directory containing NEON tabular data or a list object containing tabular data.
 #' @param savepath The location to save the output files from the ECS bucket, optional. 
 #' Defaults to creating a "ECS_zipFiles" folder in the filepath directory.
 #' @param pick.files T or F, should the user be told the name of each file before downloading? 
@@ -36,6 +36,8 @@
 # changelog and author contributions / copyrights
 #   Kaelin Cawley (2018-11-01)
 #     original creation, heavily adapted from zipsByProdcut and stackByTable
+#   Claire Lunch (2022-02-25)
+#     added option to use R objects as input data
 ##############################################################################################
 zipsByURI <- function(filepath, 
                       savepath = paste0(filepath, "/ECS_zipFiles"), 
