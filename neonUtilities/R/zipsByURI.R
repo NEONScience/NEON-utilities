@@ -44,18 +44,50 @@ zipsByURI <- function(filepath,
                       unzip = TRUE,
                       saveZippedFiles = FALSE) {
 
+  # check that filepath points to either a directory or an R object
+  if(!identical(class(filepath), "list")) {
+    if(!dir.exists(filepath)) {
+      stop("Input filepath is not a list object in the environment nor an existing file directory.")
+    }
+  }
+  
+  # if filepath is a directory, read in contents
+  if(identical(class(filepath), "list")) {
+    tabList <- filepath
+    if(all(!dir.exists(savepath))) {
+      dc <- try(dir.create(savepath), silent=TRUE)
+      if(identical(class(dc), "try-error")) {
+        message(paste("Could not create savepath directory. Files will be saved to ", 
+                      paste0(getwd(), "/ECS_zipFiles"), sep=""))
+        savepath <- paste0(getwd(), "/ECS_zipFiles")
+      }
+    }
+  } else {
+    files <- list.files(filepath, full.names=TRUE, recursive=FALSE)
+    tabList <- vector("list", length(files))
+    names(tabList) <- files
+    for(j in 1:length(files)) {
+      tabList[[j]] <- try(utils::read.csv(files[j], stringsAsFactors=FALSE), silent=TRUE)
+      if(identical(class(tabList[[j]]), "try-error")) {
+        message(paste("File", files[j], "could not be read.", sep=" "))
+        names(tabList)[j] <- paste("error", j, sep="")
+        next
+      }
+    }
+    tabList <- tabList[grep("error", names(tabList), invert=TRUE)]
+  }
   
   #### Check for the variables file in the filepath
-  files <- list.files(filepath, pattern = "variables")
-  if(length(files) == 0){
-    stop("Variables file is not present in specified filepath.")
+  varList <- grep("variables", names(tabList))
+  if(length(varList) == 0){
+    stop("Variables file was not found in specified filepath.")
   }
-  if(length(files)>1) {
+  if(length(varList)>1) {
     stop("More than one variables file found in filepath.")
   }
+  varFile <- tabList[[grep("variables", names(tabList))]]
   
-  variablesFile <- utils::read.csv(paste(filepath, files, sep = "/"), stringsAsFactors = FALSE)
-  URLs <- variablesFile[variablesFile$dataType == "uri",]
+  URLs <- varFile[varFile$dataType == "uri",]
   
   #All of the tables in the package with URLs to download
   allTables <- unique(URLs$table)
@@ -66,11 +98,7 @@ zipsByURI <- function(filepath,
   if(pick.files==TRUE){
     #Loop through tables
     for(i in seq(along = allTables)){
-      suppressWarnings(tableData <- try(utils::read.csv(paste(filepath,"/",allTables[i],".csv",sep = ""),stringsAsFactors = FALSE),silent = TRUE))
-      if(!is.null(attr(tableData, "class")) && attr(tableData, "class") == "try-error"){
-        cat("Unable to find data for table:",allTables[i],"\n")
-        next
-      }
+      tableData <- tabList[[grep(allTables[i], names(tabList))]]
       URLsPerTable <- names(tableData)[names(tableData)%in%URLs$fieldName]
       
       #Loop through fields
@@ -93,11 +121,7 @@ zipsByURI <- function(filepath,
     #Compile all of the possible URLs from all tables that contain uri type fields
     #Loop through tables
     for(i in seq(along = allTables)){
-      suppressWarnings(tableData <- try(utils::read.csv(paste(filepath,"/",allTables[i],".csv",sep = ""),stringsAsFactors = FALSE),silent = TRUE))
-      if(!is.null(attr(tableData, "class")) && attr(tableData, "class") == "try-error"){
-        cat("Unable to find data for table:",allTables[i],"\n")
-        next
-      }
+      tableData <- tabList[[grep(allTables[i], names(tabList))]]
       URLsPerTable <- which(names(tableData)%in%URLs$fieldName)
       URLsToDownload <- c(URLsToDownload,unlist(tableData[,URLsPerTable]))
     }
