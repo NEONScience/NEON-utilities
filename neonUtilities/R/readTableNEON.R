@@ -23,12 +23,12 @@
 readTableNEON <- function(dataFile, varFile){
   
   # read in variables file
-  if(class(varFile)=='character') {
+  if(inherits(varFile, 'character')) {
     v <- utils::read.csv(varFile, header = T, stringsAsFactors = F,
                          na.strings=c('NA',''), encoding='UTF-8')
   } else {
     v <- try(as.data.frame(varFile), silent=T)
-    if(class(v)=='try-error') {
+    if(inherits(v, 'try-error')) {
       stop('varFile must be either a NEON variables table or a file path to a NEON variables table.\n')
     }
   }
@@ -51,13 +51,13 @@ readTableNEON <- function(dataFile, varFile){
   v <- v[, c("table", "fieldName", "colClass")]
   
   # read in data file
-  if(class(dataFile)=='character') {
+  if(inherits(dataFile, 'character')) {
     d <- suppressWarnings(utils::read.csv(dataFile, header=T, stringsAsFactors=F,
                          colClasses=c(horizontalPosition='character', verticalPosition='character'),
                          na.strings=c('NA',''), encoding='UTF-8'))
   } else {
     d <- try(as.data.frame(dataFile, stringsAsFactors=F), silent=T)
-    if(class(d)=='try-error') {
+    if(inherits(d, 'try-error')) {
       stop('dataFile must be either a NEON data table or a file path to a NEON data table.\n')
     }
   }

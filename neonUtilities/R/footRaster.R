@@ -121,7 +121,7 @@ footRaster <- function(filepath) {
     
     listObj <- base::try(rhdf5::h5ls(files[i]), silent=T)
     
-    if(class(listObj)=="try-error") {
+    if(base::inherits(listObj, "try-error")) {
       stop(paste("\n", files[i], " could not be read.", sep=""))
     }
     

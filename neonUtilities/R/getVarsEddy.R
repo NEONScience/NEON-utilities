@@ -37,7 +37,7 @@ getVarsEddy <- function(filepath) {
   
   listObj <- base::try(rhdf5::h5ls(filepath), silent=T)
     
-  if(class(listObj)=="try-error") {
+  if(inherits(listObj, "try-error")) {
     stop(paste(filepath, " could not be read.", sep=""))
     }
     

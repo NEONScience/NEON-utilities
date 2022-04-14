@@ -122,7 +122,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     
     listObj <- base::try(rhdf5::h5ls(files[i]), silent=T)
     
-    if(class(listObj)=="try-error") {
+    if(inherits(listObj, "try-error")) {
       cat(paste("\n", paste(files[i], " could not be read.", sep="")))
       next
     }
@@ -410,7 +410,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   # get one objDesc table and add it and variables table to list
   objDesc <- base::try(rhdf5::h5read(files[1], name="//objDesc"), silent=T)
   # if processing gets this far without failing, don't fail here, just return data without objDesc table
-  if(class(objDesc)=="try-error") {
+  if(inherits(objDesc, "try-error")) {
     objDesc <- NA
   }
   varMergList[["variables"]] <- variables
