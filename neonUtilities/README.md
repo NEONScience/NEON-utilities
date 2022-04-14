@@ -136,6 +136,16 @@ Disclaimer
 Change Log
 ----------
 
+#### 2022-04-12 v2.1.4
+Enhancements:
+* `getNeonDOI()` function added; finds DOI for a given data product and release
+* `zipsByURI()` can now handle R object inputs
+
+Bug fixes:
+* column class matching fixed for lab tables
+* empty string in API token value handled
+
+
 #### 2021-12-09 v2.1.3
 Enhancements:
 * `stackByTable()`, `stackEddy()`, `byTileAOP()`, and `byFileAOP()` include issue log in outputs
