@@ -45,11 +45,6 @@ footRaster <- function(filepath) {
     stop("Package raster is required for this function to work. Install and re-try.")
   }
   
-  # check for vector of filepaths: not currently supported
-  if(length(filepath)>1) {
-    stop("This function requires a single filepath as input; vector of filepaths is not currently supported.")
-  }
-  
   # get list of files, unzipping if necessary
   if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
     outpath <- gsub(".zip", "", filepath)
