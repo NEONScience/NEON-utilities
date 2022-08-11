@@ -194,7 +194,12 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   
   # error message if product not found
   if(!is.null(avail$error$status)) {
-    stop(paste("No data found for product", dpID, sep=" "))
+    if(release=="LATEST") {
+      stop(paste("No data found for product ", dpID, 
+                 ". LATEST data requested; check that token is valid for LATEST access.", sep=""))
+    } else {
+      stop(paste("No data found for product", dpID, sep=" "))
+    }
   }
   
   # check that token was used

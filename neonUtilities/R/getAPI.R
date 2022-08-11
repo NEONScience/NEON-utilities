@@ -38,7 +38,7 @@ getAPI <- function(apiURL, token=NA_character_){
       req <- try(httr::GET(apiURL), silent=T)
       
       # check for no response
-      if(!identical(class(req), "response")) {
+      if(!inherits(req), "response") {
         message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
         return(invisible())
       }
@@ -73,7 +73,7 @@ getAPI <- function(apiURL, token=NA_character_){
                  silent=T)
       
       # check for no response
-      if(!identical(class(req), "response")) {
+      if(!inherits(req), "response") {
         message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
         return(invisible())
       }
