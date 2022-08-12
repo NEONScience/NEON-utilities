@@ -43,14 +43,16 @@ getFileUrls <- function(m.urls, token=NA){
                                         tmp.files$data$files$url,
                                         tmp.files$data$files$size))
 
-    # get size info
-    file.urls <- data.frame(file.urls, row.names=NULL)
-    colnames(file.urls) <- c("name", "URL", "size")
-    file.urls$URL <- as.character(file.urls$URL)
-    file.urls$name <- as.character(file.urls$name)
-
-    if(length(url.messages) > 0){writeLines(url.messages)}
-    file.urls <- file.urls[-1, ]
-    return(file.urls)
   }
+  
+  # get size info
+  file.urls <- data.frame(file.urls, row.names=NULL)
+  colnames(file.urls) <- c("name", "URL", "size")
+  file.urls$URL <- as.character(file.urls$URL)
+  file.urls$name <- as.character(file.urls$name)
+  
+  if(length(url.messages) > 0){writeLines(url.messages)}
+  file.urls <- file.urls[-1,]
+  return(file.urls)
+  
 }
