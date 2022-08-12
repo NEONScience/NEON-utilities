@@ -240,7 +240,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       if(length(grep("sensor_position", basename(x)))>0) {
         fls <- suppressWarnings(data.table::fread(x, sep=',', keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
       } else if(length(grep("readme", basename(x)))>0) {
-        fls <- suppressMessages(utils::read.delim(x, header=FALSE))
+        fls <- suppressMessages(utils::read.delim(x, header=FALSE, quote=""))
         } else if(length(grep("variables", basename(x)))>0 | length(grep("validation", basename(x)))>0 |
                   length(grep("categoricalCodes", basename(x)))>0) {
           fls <- suppressWarnings(data.table::fread(x, sep=",", header=TRUE, 
