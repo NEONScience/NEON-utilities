@@ -189,6 +189,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                                       dpID, "?release=", release, sep=""), token = token)
   }
 
+  if(is.null(prod.req)) {
+    return(invisible())
+  }
   avail <- jsonlite::fromJSON(httr::content(prod.req, as='text', encoding='UTF-8'), 
                               simplifyDataFrame=TRUE, flatten=TRUE)
   

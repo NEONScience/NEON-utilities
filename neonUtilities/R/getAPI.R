@@ -39,7 +39,7 @@ getAPI <- function(apiURL, token=NA_character_){
       
       # check for no response
       if(!inherits(req, "response")) {
-        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
+        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts. If the problem persists and can't be traced to an outage alert, check your computer for firewall or other security settings preventing R from accessing the internet.")
         return(invisible())
       }
       
@@ -74,7 +74,7 @@ getAPI <- function(apiURL, token=NA_character_){
       
       # check for no response
       if(!inherits(req, "response")) {
-        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
+        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts. If the problem persists and can't be traced to an outage alert, check your computer for firewall or other security settings preventing R from accessing the internet.")
         return(invisible())
       }
 

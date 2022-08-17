@@ -80,6 +80,11 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
                 release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, 
                 savepath=temppath, load=TRUE, token=token)
+  
+  # if zipsByProduct() can't download anything, don't pass to stackByTable()
+  if(length(list.files(temppath))==0) {
+    return(invisible())
+  }
 
   # stack and load the downloaded files using stackByTable
   out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),
