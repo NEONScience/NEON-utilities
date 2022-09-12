@@ -189,6 +189,21 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             }, filepaths=filepaths), fill=TRUE)
           
         data.table::fwrite(outputLab, paste0(folder, "/stackedFiles/", labTables[j], ".csv"))
+        
+        # add publication and release field names to variables file
+        if(!is.null(vlist)) {
+          vtable <- which(names(vlist)==labTables[j])
+          if(length(vtable==1)) {
+            if("publicationDate" %in% names(outputLab)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=labTables[j], added_fields[5,])), fill=TRUE)
+            }
+            if("release" %in% names(outputLab)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=labTables[j], added_fields[6,])), fill=TRUE)
+            }
+          }
+        }
         n <- n + 1
         }
       }
