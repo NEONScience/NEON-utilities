@@ -45,8 +45,21 @@ footRaster <- function(filepath) {
     stop("Package raster is required for this function to work. Install and re-try.")
   }
   
+  files <- NA
+  # check for vector of files as input
+  if(length(filepath)>1) {
+    if(length(grep(".h5$", filepath))==length(filepath)) {
+      files <- filepath
+    } else {
+      stop("Input list of files must be .h5 files.")
+    }
+    if(any(!file.exists(files))) {
+      stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
+    }
+  }
+  
   # get list of files, unzipping if necessary
-  if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-3, nchar(filepath)), ".zip")) {
     outpath <- gsub(".zip", "", filepath)
     if(!dir.exists(outpath)) {
       dir.create(outpath)
@@ -60,10 +73,12 @@ footRaster <- function(filepath) {
   }
   
   # allow for a single H5 file
-  if(substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-2, nchar(filepath)), ".h5")) {
     files <- filepath
   } else {
-    files <- list.files(filepath, recursive=F, full.names=T)
+    if(any(is.na(files))) {
+      files <- list.files(filepath, recursive=F, full.names=T)
+    }
   }
   
   # unzip files if necessary
