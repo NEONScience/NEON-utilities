@@ -31,6 +31,6 @@ getTaxonTable <- function(
   token = NA
   ){
 
-  cat("getTaxonTable() is deprecated in neonUtilities. Use the updated version of this function in the neonOS package.")
+  cat("getTaxonTable() is deprecated in neonUtilities. Use the updated version of this function, renamed to getTaxonList(), in the neonOS package.")
   
 }
