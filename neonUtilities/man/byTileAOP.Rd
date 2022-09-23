@@ -13,7 +13,7 @@ byTileAOP(
   buffer = 0,
   check.size = TRUE,
   savepath = NA,
-  token = NA
+  token = NA_character_
 )
 }
 \arguments{

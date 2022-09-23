@@ -31,6 +31,11 @@ findTablesByFormat <- function(datatables){
       }
     }
   }
+  
+  if(length(t)==0) {
+    stop("No data tables found, only metadata. Try downloading expanded package, and check availability on the NEON data portal.")
+  }
+  
   tn <- unique(t)
   tt <- character(length(tn))
   
@@ -40,7 +45,7 @@ findTablesByFormat <- function(datatables){
     if(length(which(names.k==""))>0) {
       names.k <- names.k[-which(names.k=="")]
     }
-    if(length(names.k)==4) {
+    if(length(names.k)==5) {
       tt[k] <- "lab"
     } else {
       if(length(grep("[0-9]{4}-[0-9]{2}", names.k))>0) {

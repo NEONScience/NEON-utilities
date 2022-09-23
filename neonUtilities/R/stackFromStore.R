@@ -13,6 +13,9 @@
 #' @param startdate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA. [character]
 #' @param enddate Either NA, meaning all available dates, or a character vector in the form YYYY-MM, e.g. 2017-01. Defaults to NA. [character]
 #' @param pubdate The maximum publication date of data to include in stacking, in the form YYYY-MM-DD. If NA, the most recently published data for each product-site-month combination will be selected. Otherwise, the most recent publication date that is older than pubdate will be selected. Thus the data stacked will be the data that would have been accessed on the NEON Data Portal, if it had been downloaded on pubdate. [character]
+#' @param timeIndex Either the string 'all', or the time index of data to be stacked, in minutes. Only applicable to sensor (IS) and eddy covariance data. Defaults to 'all'. [character]
+#' @param level Data product level of data to stack. Only applicable to eddy covariance (SAE) data; see stackEddy() documentation. [character]
+#' @param var Variables to be extracted and stacked from H5 files. Only applicable to eddy covariance (SAE) data; see stackEddy() documentation. [character]
 #' @param zipped Should stacking use data from zipped files or unzipped folders? This option allows zips and their equivalent unzipped folders to be stored in the same directory; stacking will extract whichever is specified. Defaults to FALSE, i.e. stacking using unzipped folders. [logical]
 #' @param package Either "basic" or "expanded", indicating which data package to stack. Defaults to basic. [character]
 #' @param load If TRUE, stacked data are read into the current R environment. If FALSE, stacked data are written to the directory where data files are stored. Defaults to TRUE. [logical]
@@ -30,9 +33,10 @@
 ##############################################################################################
 stackFromStore <- function(filepaths, dpID, site="all", 
                            startdate=NA, enddate=NA, 
-                           pubdate=NA, zipped=FALSE,
-                           package="basic", load=TRUE, 
-                           nCores=1) {
+                           pubdate=NA, timeIndex="all",
+                           level="dp04", var=NA,
+                           zipped=FALSE, package="basic", 
+                           load=TRUE, nCores=1) {
   
   if(any(!file.exists(filepaths))) {
     stop("Files not found in specified file paths.")
@@ -41,7 +45,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
   # standard error checks
   
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}.[0-9]{5}.00[0-9]{1}",dpID)!=1) {
+  if(regexpr("DP[1-4]{1}[.][0-9]{5}[.]00[0-9]{1}",dpID)[1]!=1) {
     stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#.", sep=" "))
   }
   
@@ -88,7 +92,12 @@ stackFromStore <- function(filepaths, dpID, site="all",
       if(load==FALSE) {
         stop("Writing to local directory is not available for DP4.00200.001. Use load=TRUE and assign to a variable name.")
       } else {
-        return(stackEddy(filepaths))
+        if(timeIndex=="all") {
+          avg <- NA
+        } else {
+          avg <- timeIndex
+        }
+        return(stackEddy(filepath=filepaths, level=level, avg=avg, var=var))
       }
     } else {
       if(load==TRUE) {
@@ -105,20 +114,29 @@ stackFromStore <- function(filepaths, dpID, site="all",
     
     files <- list.files(filepaths, full.names=T, recursive=T)
     files <- files[grep(dpID, files)]
+    varFiles <- files[grep("[.]variables[.]", files)]
+    if(length(varFiles)==0 & dpID!="DP4.00200.001") {
+      stop("Variables file not found; required for stacking. Re-download data, or download additional data, to get variables file.")
+    }
     
     if(zipped==T) {
       files <- files[grep(".zip$", files)]
-      stop("Files must be unzipped to use this function. Zip file handling will be added in a future version.")
+      stop("Files must be unzipped to use this function. Zip file handling may be added in a future version.")
     } else {
       files <- files[grep(".zip$", files, invert=T)]
     }
-
-    if(!identical(site, "all")) {
-      files <- files[grep(paste(site, collapse="|"), files)]
+    
+    # check for no files
+    if(length(files)==0) {
+      stop("No files found meeting all input criteria.")
     }
     
     # basic vs expanded files are simple for SAE, not for everything else
     if(dpID=="DP4.00200.001") {
+      
+      if(!identical(site, "all")) {
+        files <- files[grep(paste(site, collapse="|"), files)]
+      }
       files <- files[grep(package, files)]
       tabs1 <- "DP4.00200.001.nsae"
       
@@ -126,7 +144,6 @@ stackFromStore <- function(filepaths, dpID, site="all",
       
       # expanded package can contain basic files. find variables file published 
       # most recently, or most recently before pubdate, to check expected contents
-      varFiles <- files[grep("[.]variables[.]", files)]
       varDates <- regmatches(basename(varFiles), 
                              regexpr("[0-9]{8}T[0-9]{6}Z", basename(varFiles)))
       if(is.na(pubdate)) {
@@ -134,7 +151,10 @@ stackFromStore <- function(filepaths, dpID, site="all",
       } else {
         pubdateP <- as.POSIXct(pubdate, format="%Y-%m-%d", tz="GMT")
         varDatesP <- as.POSIXct(varDates, format="%Y%m%dT%H%M%SZ", tz="GMT")
-        varInd <- which(varDatesP==max(varDatesP[which(varDatesP < pubdateP)], na.rm=T))[1]
+        if(length(which(varDatesP <= pubdateP))==0) {
+          stop(paste("No files published before pubdate ", pubdate, sep=""))
+        }
+        varInd <- which(varDatesP==max(varDatesP[which(varDatesP <= pubdateP)], na.rm=T))[1]
         varFile <- varFiles[varInd]
       }
       
@@ -227,6 +247,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
       if(length(sitesactual)==0) {
         files <- files
       } else {
+
         # extract dates from filenames for subsetting
         datemat <- regexpr("[0-9]{4}-[0-9]{2}", basename(filesub))
         datadates <- regmatches(basename(filesub), datemat)
@@ -264,16 +285,20 @@ stackFromStore <- function(filepaths, dpID, site="all",
           # but not precisely - pub packages are created and then have to sync to portal, so there is a small delay
           sitedates <- numeric()
           for(j in unique(sitesactual)) {
-            sitemonths <- monthsactual[which(sitesactual==j)]
-            for(k in unique(sitemonths)) {
-              sitemonthfiles <- filesub[intersect(grep(j, filesub), grep(k, filesub))]
-              sitemonthpubs <- pubdatesub[intersect(grep(j, filesub), grep(k, filesub))]
-              maxdate <- max(sitemonthpubs[which(sitemonthpubs <= pubdate)])
-              if(length(maxdate)==0) {
-                sitedates <- sitedates
-              } else {
-                maxdateindex <- which(pubdatesub==maxdate)
-                sitedates <- c(sitedates, maxdateindex)
+            if(!identical(site, "all") & !j %in% site) {
+              next
+            } else {
+              sitemonths <- monthsactual[which(sitesactual==j)]
+              for(k in unique(sitemonths)) {
+                sitemonthfiles <- filesub[intersect(grep(j, filesub), grep(k, filesub))]
+                sitemonthpubs <- pubdatesub[intersect(grep(j, filesub), grep(k, filesub))]
+                maxdate <- max(sitemonthpubs[which(sitemonthpubs <= pubdate)])
+                if(length(maxdate)==0) {
+                  sitedates <- sitedates
+                } else {
+                  maxdateindex <- which(pubdatesub==maxdate)
+                  sitedates <- c(sitedates, maxdateindex)
+                }
               }
             }
           }
@@ -287,6 +312,31 @@ stackFromStore <- function(filepaths, dpID, site="all",
       
     }
     
+    # filter by time interval
+    if(timeIndex!="all" & dpID!="DP4.00200.001") {
+      
+      if(all(table_types$tableTMI[which(table_types$productID==dpID)]==0)) {
+        stop(paste("timeIndex is only a valid input for sensor data. ", dpID, 
+                   " is not a time-aggregated product.", sep=""))
+      }
+      
+      if(!timeIndex %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
+        stop(paste(timeIndex, " is not a valid time interval for ", dpID,
+                   ". Use function getTimeIndex() to find valid time intervals.", sep=""))
+      }
+      
+      # drop files with minutes in the name, that aren't the correct number of minutes
+      # do it this way, instead of selecting only the correct number of minutes,
+      # to keep all the metadata files
+      tabInd <- grep("min", files, fixed=T)
+      timeInd <- union(grep(paste(timeIndex, "min", sep=""), files, fixed=T),
+                       grep(paste(timeIndex, "_min", sep=""), files, fixed=T))
+      dropInd <- setdiff(tabInd, timeInd)
+      
+      files <- files[-dropInd]
+      
+    }
+    
     # check for no files
     if(length(files)==0) {
       stop("No files found meeting all input criteria.")
@@ -296,7 +346,12 @@ stackFromStore <- function(filepaths, dpID, site="all",
       if(load==FALSE) {
         stop("Writing to local directory is not available for DP4.00200.001. Use load=TRUE and assign to a variable name.")
       } else {
-        return(stackEddy(files))
+        if(timeIndex=="all") {
+          avg <- NA
+        } else {
+          avg <- timeIndex
+        }
+        return(stackEddy(filepath=files, level=level, avg=avg, var=var))
       }
     } else {
       if(load==TRUE) {

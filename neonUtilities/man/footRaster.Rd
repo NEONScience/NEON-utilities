@@ -14,6 +14,8 @@ A rasterStack object containing all the footprints in the input files, plus one 
 }
 \description{
 Create a raster of flux footprint data. Specific to expanded package of eddy covariance data product: DP4.00200.001
+For definition of a footprint, see Glossary of Meteorology: https://glossary.ametsoc.org/wiki/Footprint
+For background information about flux footprints and considerations around the time scale of footprint calculations, see Amiro 1998: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.922.4124&rep=rep1&type=pdf
 }
 \details{
 Given a filepath containing H5 files of expanded package DP4.00200.001 data, extracts flux footprint data and creates a raster.

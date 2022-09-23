@@ -33,11 +33,11 @@
 ##############################################################################################
 
 byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
-                      check.size=TRUE, savepath=NA, token = NA) {
+                      check.size=TRUE, savepath=NA, token=NA_character_) {
 
   # error message if dpID isn't formatted as expected
-  if(regexpr("DP[1-4]{1}.[0-9]{5}.001",dpID)!=1) {
-    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001", sep=" "))
+  if(regexpr("DP[1-4]{1}.[0-9]{5}.00[1-2]{1}",dpID)!=1) {
+    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#", sep=" "))
   }
 
   # error message if dpID isn't a Level 3 product
@@ -68,6 +68,11 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   if(buffer>=1000) {
     stop("Buffer is larger than tile size. Tiles are 1x1 km.")
   }
+  
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
+  }
 
   # query the products endpoint for the product requested
   prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", dpID, sep=""), 
@@ -96,7 +101,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   # check for sites that are flown under the flight box of a different site
   if(site %in% shared_flights$site) {
     flightSite <- shared_flights$flightSite[which(shared_flights$site==site)]
-    if(site %in% c('TREE','CHEQ','KONA')) {
+    if(site %in% c('TREE','CHEQ','KONA','DCFS')) {
       cat(paste(site, ' is part of the flight box for ', flightSite,
                 '. Downloading data from ', flightSite, '.\n', sep=''))
     } else {
@@ -130,8 +135,16 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     names(df18) <- c('easting','northing')
 
     sp::coordinates(df18) <- c('easting', 'northing')
-    sp::proj4string(df18) <- sp::CRS('+proj=utm +zone=18N ellps=WGS84')
-    df18conv <- sp::spTransform(df18, sp::CRS('+proj=utm +zone=17N ellps=WGS84'))
+    
+    epsg.z <- relevant_EPSG$code[grep("+proj=utm +zone=17", 
+                                      relevant_EPSG$prj4, fixed=T)]
+    if(utils::packageVersion("sp")<"1.4.2") {
+      sp::proj4string(df18) <- sp::CRS('+proj=utm +zone=18N ellps=WGS84')
+      df18conv <- sp::spTransform(df18, sp::CRS('+proj=utm +zone=17N ellps=WGS84'))
+    } else {
+      raster::crs(df18) <- sp::CRS("+proj=utm +zone=18")
+      df18conv <- sp::spTransform(df18, sp::CRS(paste("+init=epsg:", epsg.z, sep='')))
+    }
 
     easting <- c(easting17, df18conv$easting)
     northing <- c(northing17, df18conv$northing)
@@ -256,11 +269,11 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   counter<- 1
 
   while(j <= nrow(file.urls.current)) {
-    counter<- counter + 1
 
-    if (counter > 3) {
-      cat(paste0("\n\nURL query for site (", site, ') and year (', year,
-                  ") failed. The API or data product requested may be unavailable at this time; check data portal (data.neonscience.org/news) for possible outage alert."))
+    if (counter > 2) {
+      cat(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current$name[j],
+                  " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
+                 "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
 
       j <- j + 1
       counter <- 1
@@ -282,23 +295,46 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
         }, error = function(e) { e } )
 
       if(inherits(t, "error")) {
-        writeLines("File could not be downloaded. URLs may have expired. Trying new URLs.")
-        file.urls.new <- getTileUrls(month.urls, tileEasting, tileNorthing)
-        file.urls.current <- file.urls.new
-
-
+        
+        # re-attempt download once with no changes
+        if(counter < 2) {
+          writeLines(paste0("\n", file.urls.current$name[j], " could not be downloaded. Re-attempting."))
+          t <- tryCatch(
+            {
+              suppressWarnings(downloader::download(file.urls.current$URL[j],
+                                                    paste(newpath, file.urls.current$name[j], sep="/"),
+                                                    mode="wb", quiet=T))
+            }, error = function(e) { e } )
+          if(inherits(t, "error")) {
+            counter <- counter + 1
+          } else {
+            messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
+            j <- j + 1
+            counter <- 1
+          }
+        } else {
+          writeLines(paste0("\n", file.urls.current$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
+          file.urls.new <- getTileUrls(month.urls, tileEasting, tileNorthing, token=token)
+          file.urls.current <- file.urls.new
+          counter <- counter + 1
+        }
+        
       } else {
         messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
         j <- j + 1
         counter <- 1
+        utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
       }
 
-      utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
     }
   }
   utils::setTxtProgressBar(pb, 1)
   close(pb)
+  
+  issues <- getIssueLog(dpID=dpID, token=token)
+  utils::write.csv(issues, paste0(filepath, "/issueLog_", dpID, ".csv"),
+                   row.names=FALSE)
 
-  writeLines(paste("Successfully downloaded ", length(messages), " files."))
-  writeLines(paste0(messages, collapse = "\n"))
+  writeLines(paste("Successfully downloaded ", length(messages), " files to ", filepath, sep=""))
+  #writeLines(paste0(messages, collapse = "\n")) # removed in v2.2.0, file lists were excessively long
 }

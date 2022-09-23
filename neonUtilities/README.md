@@ -109,8 +109,11 @@ byTileAOP(dpID="DP3.30026.001", site="SJER", year="2017", easting=easting, north
 
 For a tutorial explaining how to use the `neonUtilities` package in more detail, including additional input options, view the [*Use the neonUtilities Package to Access NEON Data* tutorial](https://www.neonscience.org/resources/learning-hub/tutorials/neondatastackr).
 
+A cheat sheet for the `neonUtilities` package is available [here](https://www.neonscience.org/sites/default/files/cheat-sheet-neonUtilities.pdf).
+
 ### Known issues
 * `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
+* On Windows, file paths are limited to 260 characters. In some cases, NEON data file names plus local directories will exceed this length; this is most likely when working with lab quality assurance files, which include the name of the lab in the file name. If this happens, you will see an error saying "cannot open file". Usually, you can get around this by using zipsByProduct() -> stackByTable() -> readTableNEON() to download data and load it to R, taking care to download the files to a short file directory.
 
 <!-- ****** Acknowledgements ****** -->
 Credits & Acknowledgements
@@ -132,6 +135,82 @@ Disclaimer
 <!-- ****** Change Log ****** -->
 Change Log
 ----------
+
+#### 2022-04-12 v2.1.4
+Enhancements:
+* `getNeonDOI()` function added; finds DOI for a given data product and release
+* `zipsByURI()` can now handle R object inputs
+
+Bug fixes:
+* column class matching fixed for lab tables
+* empty string in API token value handled
+
+
+#### 2021-12-09 v2.1.3
+Enhancements:
+* `stackByTable()`, `stackEddy()`, `byTileAOP()`, and `byFileAOP()` include issue log in outputs
+* `getIssueLog()` is also available as an independent function
+
+Bug fixes:
+* improved error messaging when no data are found
+* new error messaging if only metadata files are found
+
+
+#### 2021-09-01 v2.1.2
+Bug fixes:
+* readme file handling in `stackByTable()` was failing on new data products; fixed.
+* clean up of package dependencies
+
+
+#### 2021-07-25 v2.1.1
+Enhancements:
+* more options in `stackEddy()` variable inputs; see function documentation
+
+Bug fixes:
+* `readr` package dependency removed to resolve incompatibility with readr 2.0.0
+* rare Windows bug for special characters fixed
+* `footRaster()` orientation correction in 2.1.0 did not work; corrected again
+* `stackEddy()` time stamp handling improved for profile sensors
+
+
+#### 2021-05-19 v2.1.0
+Enhancements:
+* download by release in `zipsByProduct()` and `loadByProduct()`
+* per sample files, found in microbe community composition and field spectra, are stacked in `stackByTable()`
+* `stackFromStore()` updated to work with `neonstore` v0.4.3
+
+Bug fixes:
+* `stackEddy()` handles scenarios with only one instance of a given variable
+* `footRaster()` coordinate conversion for Alaska and Hawaii fixed
+* `footRaster()` orientation corrected
+* leading digit in 2D wind data tables is translated, with an alert, in `loadByProduct()`
+* warning message in `stackByTable()` when file paths are longer than 260 characters in Windows
+
+
+#### 2021-01-25 v2.0.1
+Bug fixes:
+* Release tag assignment in `stackByTable()` resolved in portal data downloads
+* Identification of most recent sensor positions files and lab files in `stackByTable()` resolved
+* Improved handling of failed downloads in download functions
+* Empty filler records for single days with no data removed in `stackEddy()`
+
+
+#### 2021-01-25 v2.0.0
+Major version update, corresponding to the first Release of static, DOI-citable NEON data. Older versions of neonUtilities may not work correctly with Released data. For more information, see [Releases web page](https://www.neonscience.org/data-samples/data-management/data-revisions-releases).
+
+Major changes:
+* `stackByTable()` and `stackEddy()` updated to work with new zip folder structure
+* `zipsByProduct()` updated to use `packages` API endpoint instead of pre-packaged zip files
+
+Enhancements:
+* `stackByTable()` adds release tag to stacked data when possible
+* `getDatatable()` is deprecated and functionality is moved to `loadByProduct()`. Note download by table is not recommended for new users; familiarity with the data is a prerequisite.
+
+Bug fixes:
+* `stackFromStore()` now includes the full range of input options for sensor and SAE data
+* if empty files are downloaded, `stackByTable()` skips them instead of failing. Note this is rare, the result of error in NEON publication systems.
+* coordinate conversion for BLAN locations in `byTileAOP()` updated to use latest versions of spatial packages
+
 
 #### 2021-01-06 v1.3.9
 Bug fixes:

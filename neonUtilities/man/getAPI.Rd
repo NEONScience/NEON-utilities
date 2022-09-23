@@ -4,7 +4,7 @@
 \alias{getAPI}
 \title{Get the data from API}
 \usage{
-getAPI(apiURL, token = NA)
+getAPI(apiURL, token = NA_character_)
 }
 \arguments{
 \item{apiURL}{The API endpoint URL}

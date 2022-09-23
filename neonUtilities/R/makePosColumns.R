@@ -26,8 +26,6 @@
 ##############################################################################################
 
 makePosColumns <- function(d, datafl, site){
-  requireNamespace('dplyr', quietly = TRUE)
-  requireNamespace("magrittr", quietly = TRUE)
   
   datafl.splitFile <- strsplit(x = datafl, split = "\\/")
   datafl.splitName <- strsplit(x = datafl.splitFile[[1]][length(datafl.splitFile[[1]])], split = "\\.")
@@ -62,13 +60,12 @@ makePosColumns <- function(d, datafl, site){
         d$referenceStart <- rep(NA, nrow(d))
         d$referenceEnd <- rep(NA, nrow(d))
       }
-      d <- d %>%
-        dplyr::mutate(siteID = site, .before=1)
+      d$siteID <- rep(site, nrow(d))
+      d <- data.table::setcolorder(d, c(ncol(d), 1:I(ncol(d)-1)))
     } else {
       if(!("siteID" %in% names(d))){
-        d <- d %>%
-          dplyr::mutate(domainID = as.character(unlist(datafl.splitName)[2]),
-                        siteID = as.character(unlist(datafl.splitName)[3]))
+        d$domainID <- as.character(unlist(datafl.splitName)[2])
+        d$siteID <- as.character(unlist(datafl.splitName)[3])
       }
       d$horizontalPosition <- as.character(rep(as.character(datafl.splitName[[1]][horPos]), nrow(d)))
       d$verticalPosition <- as.character(rep(as.character(datafl.splitName[[1]][verPos]), nrow(d)))

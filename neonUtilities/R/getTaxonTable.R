@@ -18,15 +18,6 @@
 #'
 #' @return data frame with selected NEON data
 #'
-#' @examples	
-#' # taxonTypeCode must be one of	
-#' # ALGAE, BEETLE, BIRD, FISH,	
-#' # HERPETOLOGY, MACROINVERTEBRATE, 
-#' # MOSQUITO, MOSQUITO_PATHOGENS,	
-#' # SMALL_MAMMAL, PLANT, TICK	
-#' #################################	
-#' # return the first 4 fish records	
-#' taxa_table <- getTaxonTable('FISH', recordReturnLimit = 4)
 #'
 #' @references License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 #'
@@ -40,56 +31,6 @@ getTaxonTable <- function(
   token = NA
   ){
 
-  # set options
-  options(stringsAsFactors = FALSE)
-
-  # required packages
-  requireNamespace('httr')
-  requireNamespace('jsonlite')
-
-  url_prefix = 'http://data.neonscience.org/api/v0/taxonomy?taxonTypeCode=' #hard code endpoint into function
-  url_to_get <- as.character(paste0(url_prefix, taxonType))
-
-  if(!is.na(recordReturnLimit)) url_to_get <- paste0(url_to_get,'&limit=',recordReturnLimit)
-  if(!is.na(stream)) url_to_get <- paste0(url_to_get,'&stream=',stream)
-
-
-  req.df <- data.frame()
-  req <- NULL
-
-  req <- getAPI(apiURL = url_to_get, token = token)
-
-  # request code error handling
-  if(is.null(req)) {
-    message(paste("No data were returned"))
-    return(invisible())
-  }
+  cat("getTaxonTable() is deprecated in neonUtilities. Use the updated version of this function, renamed to getTaxonList(), in the neonOS package.")
   
-  if (req$status_code == 204) {
-    message(paste("No data are available"))
-    return(invisible())
-  }else if (req$status_code == 413) {
-    message(paste("Data GET failed with status code ", req$status_code,
-               ": Payload Too Large. Query a smaller dataset.",
-               sep = ""))
-    return(invisible())
-  }else {
-    if (req$status_code != 200) {
-      message(paste("Data GET failed with status code ", req$status_code,
-                 ". Check the formatting of your inputs.", sep = ""))
-      return(invisible())
-    }
-  }
-
-
-  if(!is.null(req)){
-    taxa_list <- jsonlite::fromJSON(httr::content(req, as='text', encoding="UTF-8"))
-    taxa_table <- taxa_list$data
-
-    # get rid of prefixes in column names on left side of ":"
-    names(taxa_table) <- gsub('.+?\\:','',names(taxa_table))
-  }
-
-  ###########
-  return(taxa_table)
 }

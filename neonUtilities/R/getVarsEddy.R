@@ -37,14 +37,15 @@ getVarsEddy <- function(filepath) {
   
   listObj <- base::try(rhdf5::h5ls(filepath), silent=T)
     
-  if(class(listObj)=="try-error") {
+  if(inherits(listObj, "try-error")) {
     stop(paste(filepath, " could not be read.", sep=""))
     }
     
   listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
   
   listObjSpl <- tidyr::separate(listDataObj, col="group", 
-                         into=c(NA, "site", "level", "category", "system", "horvertmi"), 
+                         into=c(NA, "site", "level", "category", "system", 
+                                "horvertmi", "subsys"), 
                          sep="/", fill="right")
   listObjSpl <- tidyr::separate(listObjSpl, col="horvertmi", 
                                 into=c("hor", "ver", "tmi"), 

@@ -37,6 +37,15 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
 
       pbapply::pblapply(zps, function(z, outpath) {
         o <- paste0(outpath, "/", basename(unlist(z)))
+        
+        l <- utils::unzip(o, list=TRUE)
+        nl <- nchar(l$Name) + nchar(o) - 3
+        if(any(nl>260) & Sys.info()[["sysname"]]=="Windows") {
+          nll <- paste(substr(o, 1, nchar(o)-4), 
+                       l$Name[which(nchar(l$Name)==max(nchar(l$Name)))][1], sep="/")
+          stop(paste("Filepath", nll, "is", nchar(nll), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
+        }
+        
         utils::unzip(o, exdir=substr(o, 1, nchar(o)-4))
         if (file.exists(o)) {
           file.remove(o) }
@@ -61,6 +70,15 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
       pbapply::pblapply(zps, function(z, outpath) {
         o <- paste0(outpath, "/", basename(unlist(z)))
         if(!file.exists(substr(o, 1, nchar(o)-4))) {
+          
+          l <- utils::unzip(z, list=TRUE)
+          nl <- nchar(l$Name) + nchar(o) - 3
+          if(any(nl>260) & Sys.info()[["sysname"]]=="Windows") {
+            nll <- paste(substr(o, 1, nchar(o)-4), 
+                         l$Name[which(nchar(l$Name)==max(nchar(l$Name)))][1], sep="/")
+            stop(paste("Filepath", nll, "is", nchar(nll), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
+          }
+          
           utils::unzip(z, exdir=substr(o, 1, nchar(o)-4))
         } else {
           writeLines(paste0("Skipping ",  z, " because these files have already been unpacked."))

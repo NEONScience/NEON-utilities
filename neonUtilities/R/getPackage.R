@@ -23,14 +23,14 @@
 # Changelog and author contributions / copyrights
 #   2018-01-09 (Christine Laney): Created function
 #   2018-04-10 (Christine Laney): Exported function and added parameter for where to save the downloaded file.
+#   2022-02-07 (Claire Lunch): Original function relied on zip files, which are no longer stored. Redirected to zipsByProduct(), as first step to deprecating.
 ##############################################################################################
 
 getPackage <- function(dpID, site_code, year_month, package="basic", savepath = getwd()){
-  uri <- paste0("http://data.neonscience.org/api/v0/data/", dpID, "/", site_code, "/",
-                year_month, "?package=", package)
-  data_info <- jsonlite::fromJSON(txt = uri)
-  data_info <- data_info[["data"]]
-  data_url <- data_info$files$url[grep(pattern = ".zip", data_info$files$name)]
-  data_name <- data_info$files$name[grep(pattern = ".zip", data_info$files$name)]
-  downloader::download(data_url, paste0(savepath, "/", data_name), mode="wb")
+  
+  message("getPackage() will be deprecated soon, use zipsByProduct(). For back-compatibility, your request has been sent to zipsByProduct().")
+  zipsByProduct(dpID=dpID, site=site_code, startdate=year_month, 
+                enddate=year_month, package=package, 
+                savepath=savepath, check.size=FALSE)
+  
 }

@@ -18,11 +18,15 @@
 #   2020-03-21 (Nate Mietkiewicz): Created original function
 ##############################################################################################
 
-getAPI <- function(apiURL, token=NA){
+getAPI <- function(apiURL, token=NA_character_){
 
   if(!curl::has_internet()) {
     message("No internet connection detected. Cannot access NEON API.")
     return(invisible())
+  }
+  
+  if(identical(token, "")) {
+    token <- NA_character_
   }
   
   if(is.na(token)) {
@@ -34,8 +38,8 @@ getAPI <- function(apiURL, token=NA){
       req <- try(httr::GET(apiURL), silent=T)
       
       # check for no response
-      if(!identical(class(req), "response")) {
-        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
+      if(!inherits(req, "response")) {
+        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts. If the problem persists and can't be traced to an outage alert, check your computer for firewall or other security settings preventing R from accessing the internet.")
         return(invisible())
       }
       
@@ -69,8 +73,8 @@ getAPI <- function(apiURL, token=NA){
                  silent=T)
       
       # check for no response
-      if(!identical(class(req), "response")) {
-        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts.")
+      if(!inherits(req, "response")) {
+        message("No response. NEON API may be unavailable, check NEON data portal for outage alerts. If the problem persists and can't be traced to an outage alert, check your computer for firewall or other security settings preventing R from accessing the internet.")
         return(invisible())
       }
 

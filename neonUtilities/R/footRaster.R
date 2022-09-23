@@ -6,6 +6,8 @@
 
 #' @description
 #' Create a raster of flux footprint data. Specific to expanded package of eddy covariance data product: DP4.00200.001
+#' For definition of a footprint, see Glossary of Meteorology: https://glossary.ametsoc.org/wiki/Footprint
+#' For background information about flux footprints and considerations around the time scale of footprint calculations, see Amiro 1998: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.922.4124&rep=rep1&type=pdf
 #'
 #' @param filepath One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file. Filepath can only contain files for a single site. [character]
 
@@ -27,6 +29,7 @@
 # changelog and author contributions / copyrights
 #   2019-07-04 (Claire Lunch): created
 #   2020-03-06 (Claire Lunch and Chris Florian): updated to apply coordinate system to output raster
+#   2021-05-03 (Claire Lunch): correction; matrix transposed before creating raster
 ##############################################################################################
 
 footRaster <- function(filepath) {
@@ -42,38 +45,71 @@ footRaster <- function(filepath) {
     stop("Package raster is required for this function to work. Install and re-try.")
   }
   
+  files <- NA
+  # check for vector of files as input
+  if(length(filepath)>1) {
+    if(length(grep(".h5$", filepath))==length(filepath)) {
+      files <- filepath
+    } else {
+      stop("Input list of files must be .h5 files.")
+    }
+    if(any(!file.exists(files))) {
+      stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
+    }
+  }
+  
   # get list of files, unzipping if necessary
-  if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-3, nchar(filepath)), ".zip")) {
     outpath <- gsub(".zip", "", filepath)
     if(!dir.exists(outpath)) {
       dir.create(outpath)
     }
-    utils::unzip(filepath, exdir=outpath)
+    if(length(grep(".zip", utils::unzip(filepath, list=T)$Name, fixed=T))>0) {
+      utils::unzip(filepath, exdir=outpath)
+    } else {
+      utils::unzip(filepath, exdir=outpath, junkpaths=T)
+    }
     filepath <- outpath
   }
   
   # allow for a single H5 file
-  if(substring(filepath, nchar(filepath)-2, nchar(filepath))==".h5") {
-    files <- unlist(strsplit(filepath, split="/", 
-                             fixed=T))[length(unlist(strsplit(filepath, 
-                                                              split="/", fixed=T)))]
-    filepath <- paste0(unlist(strsplit(filepath, split="/", 
-                                fixed=T))[1:I(length(unlist(strsplit(filepath, 
-                                                                   split="/", fixed=T)))-1)],
-                       collapse="/")
+  if(any(is.na(files)) & identical(substring(filepath, nchar(filepath)-2, nchar(filepath)), ".h5")) {
+    files <- filepath
   } else {
-    files <- list.files(filepath, recursive=F)
+    if(any(is.na(files))) {
+      files <- list.files(filepath, recursive=F, full.names=T)
+    }
   }
   
   # unzip files if necessary
-  if(length(grep(".zip$", files))==length(files)) {
-    for(i in 1:length(files)) {
-      utils::unzip(paste(filepath, files[i], sep="/"), exdir=filepath)
-    }
-    files <- list.files(filepath, recursive=F)
+  if(length(grep(".zip", files))==length(files)) {
+    lapply(files, function(x) {
+      utils::unzip(x, exdir=filepath)
+    })
+    files <- list.files(filepath, recursive=F, full.names=T)
   }
   
+  # after unzipping, check for .gz
+  if(length(grep(".h5.gz", files))>0) {
+    lapply(files[grep(".h5.gz", files)], function(x) {
+      R.utils::gunzip(x)
+    })
+    files <- list.files(filepath, recursive=F, full.names=T)
+  }
+  
+  # only need the H5 files for data extraction
   files <- files[grep(".h5$", files)]
+  
+  # check for duplicate files and use the most recent
+  fileDups <- gsub("[0-9]{8}T[0-9]{6}Z.h5", "", files)
+  if(any(base::duplicated(fileDups))) {
+    maxFiles <- character()
+    for(i in unique(fileDups)) {
+      maxFiles <- c(maxFiles, 
+                    max(files[grep(i, files)]))
+    }
+    files <- maxFiles
+  }
   
   # make empty, named list for the footprint grids
   gridList <- vector("list", length(files))
@@ -93,10 +129,10 @@ footRaster <- function(filepath) {
   # extract footprint data from each file
   for(i in 1:length(files)) {
     
-    listObj <- base::try(rhdf5::h5ls(paste(filepath, files[i], sep="/")), silent=T)
+    listObj <- base::try(rhdf5::h5ls(files[i]), silent=T)
     
-    if(class(listObj)=="try-error") {
-      stop(paste("\n", paste(filepath, files[i], sep="/"), " could not be read.", sep=""))
+    if(base::inherits(listObj, "try-error")) {
+      stop(paste("\n", files[i], " could not be read.", sep=""))
     }
     
     listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
@@ -123,15 +159,18 @@ footRaster <- function(filepath) {
     
     # get footprints for each half hour
     gridList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=paste(filepath, files[i], sep="/"), read.attributes=T)
+                                 file=files[i], read.attributes=T)
     base::names(gridList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
+    
+    # transpose: eddy4R transposes the data to make them compatible with Python and other systems; need to be transposed back in R
+    gridList[[i]] <- base::lapply(gridList[[i]], base::t)
     
     # get location data on first pass
     if(i==1) {
-      locAttr <- rhdf5::h5readAttributes(file=paste(filepath, files[i], sep="/"), name=listObj$group[2])
+      locAttr <- rhdf5::h5readAttributes(file=files[i], name=listObj$group[2])
       
       # get grid cell dimensions
-      oriAttr <- rhdf5::h5read(file=paste(filepath, files[i], sep="/"),
+      oriAttr <- rhdf5::h5read(file=files[i],
                                name=paste(listDataObj$group[intersect(grep('/dp04/data/foot', 
                                                                            listDataObj$group),
                                                                       grep('stat',
@@ -149,8 +188,8 @@ footRaster <- function(filepath) {
     
     # after first pass, check for consistency
     if(i!=1) {
-      newAttr <- rhdf5::h5readAttributes(file=paste(filepath, files[i], sep="/"), name=listObj$group[2])
-      newOri <- rhdf5::h5read(file=paste(filepath, files[i], sep="/"),
+      newAttr <- rhdf5::h5readAttributes(file=files[i], name=listObj$group[2])
+      newOri <- rhdf5::h5read(file=files[i],
                                name=paste(listDataObj$group[intersect(grep('/dp04/data/foot', 
                                                                            listDataObj$group),
                                                                       grep('stat',
@@ -181,7 +220,7 @@ footRaster <- function(filepath) {
   allGrids <- unlist(gridList, recursive=F)
   
   # check that data come from only one site
-  site <- unique(substring(names(allGrids), 10, 13))
+  site <- unique(base::gsub( pattern = ".*([A-Z]{4})[.DP4].*", "\\1", names(allGrids)))
   if(length(site)>1) {
     stop(paste(filepath, " contains files from more than one site.", sep=""))
   }
@@ -197,7 +236,7 @@ footRaster <- function(filepath) {
     LatLong <- data.frame(X = locAttr$LonTow, Y = locAttr$LatTow)
     sp::coordinates(LatLong) <- ~ X + Y # longitude first
     epsg.z <- relevant_EPSG$code[grep(paste("+proj=utm +zone=", 
-                                            locAttr$ZoneUtm, sep=""), 
+                                            locAttr$ZoneUtm, " ", sep=""), 
                                       relevant_EPSG$prj4, fixed=T)]
     if(utils::packageVersion("sp")<"1.4.2") {
       sp::proj4string(LatLong) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")

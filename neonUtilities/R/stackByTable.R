@@ -75,7 +75,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
 
   if(folder==TRUE){
     files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
-    if(length(files) == 0){
+    if(length(files)==0) {
       stop("Data files are not present in specified filepath.")
     }
   }
@@ -95,14 +95,27 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
     }
   } else {
-    dpID <- substr(basename(files[1]), 15, 27)
-    package <- substr(files[1], nchar(files[1])-25, nchar(files[1])-21)
-    if(package == "anded"){package <- "expanded"}
+    # this regexpr allows for REV = .001 or .002
+    dpID <- unique(regmatches(basename(files), 
+                       regexpr("DP[1-4][.][0-9]{5}[.]00[1-2]{1}", 
+                               basename(files))))
+    if(!identical(length(dpID), as.integer(1))) {
+      stop("Data product ID could not be determined. Check that filepath contains data files, from a single NEON data product.")
+    }
+    pack.files <- unique(regmatches(basename(files), 
+                                 regexpr("basic|expanded",
+                                         basename(files))))
+    # expanded package can contain basic files
+    if(any(pack.files=="expanded")) { 
+      package <- "expanded"
+    } else {
+      package <- "basic"
+    }
   }
   
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.00[0-9]{1}",dpID)!=1) {
-    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.001, where the first placeholder must be between 1 and 4.", sep=" "))
+    stop(paste(dpID, "is not a properly formatted data product ID. The correct format is DP#.#####.00#, where the first placeholder must be between 1 and 4.", sep=" "))
   }
 
   # error message for AOP data
@@ -119,7 +132,12 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     saveUnzippedFiles = TRUE
     writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.\n")
   }
-
+  
+  # warning about soil sensor data
+  if(dpID %in% c("DP1.00094.001","DP1.00041.001") & length(files)>24) {
+    message("Attempting to stack soil sensor data. Note that due to the number of soil sensors at each site, data volume is very high for these data. Consider dividing data processing into chunks, using the nCores= parameter to parallelize stacking, and/or using a high-performance system.")
+  }
+  
   #### If all checks pass, unzip and stack files ####
   envt <- 0
   if(folder==FALSE) {
@@ -130,6 +148,16 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     }
     if(length(grep(files, pattern = ".zip")) > 0){
       zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
+    } else {
+      if(!dir.exists(savepath)){dir.create(savepath)}
+      if(envt==0) {
+        utils::unzip(zipfile=filepath, exdir=dirname(savepath))
+      } else {
+        utils::unzip(zipfile=filepath, exdir=savepath)
+      }
+      zipList <- list.files(savepath)
+      zipList <- zipList[grep("NEON[.]D[0-9]{2}[.][A-Z]{4}[.]DP[0-4]{1}[.]", 
+                              zipList)]
     }
   }
 
@@ -143,7 +171,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
     if(length(grep(files, pattern = ".zip")) > 0){
       unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
     } else {
-      if(length(grep(files, pattern = ".csv"))>0 & filepath!=savepath) {
+      if(filepath!=savepath) {
         if(!dir.exists(savepath)){dir.create(savepath)}
         for(i in files) {
           file.copy(paste(filepath, i, sep="/"), savepath)
@@ -190,11 +218,10 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   stackDataFilesParallel(savepath, nCores, dpID)
   getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
 
-  if(saveUnzippedFiles == FALSE){
-    zipList <- zipList %>%
-      unlist() %>%
-      basename() %>%
-      gsub('.zip', '', .)
+  if(saveUnzippedFiles == FALSE & envt!=1){
+    zipList <- unlist(zipList)
+    zipList <- basename(zipList)
+    zipList <- gsub('.zip', '', zipList)
 
     cleanUp(savepath, zipList)
   }
@@ -213,19 +240,27 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
       if(length(grep("sensor_position", basename(x)))>0) {
         fls <- suppressWarnings(data.table::fread(x, sep=',', keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
       } else if(length(grep("readme", basename(x)))>0) {
-        fls <- suppressMessages(readr::read_table(x, col_names = FALSE))
+        fls <- suppressMessages(utils::read.delim(x, header=FALSE, quote=""))
         } else if(length(grep("variables", basename(x)))>0 | length(grep("validation", basename(x)))>0 |
                   length(grep("categoricalCodes", basename(x)))>0) {
-          fls <- suppressWarnings(data.table::fread(x, sep=','))
+          fls <- suppressWarnings(data.table::fread(x, sep=",", header=TRUE, 
+                                                    encoding="UTF-8", keepLeadingZeros=TRUE))
         } else {
           fls <- try(readTableNEON(x, v), silent=T)
-          if(class(fls)=='try-error') {
-            fls <- suppressWarnings(data.table::fread(x, sep=','))
+          if(inherits(fls, 'try-error')) {
+            fls <- suppressWarnings(data.table::fread(x, sep=",", header=TRUE, 
+                                                      encoding="UTF-8", keepLeadingZeros=TRUE))
           }
           return(fls)
       }
     })
     names(stacked_list) <- substring(basename(stacked_files), 1, nchar(basename(stacked_files))-4)
+    
+    # rename 2D wind tables
+    if(length(grep("^2D", names(stacked_list)))>0) {
+      names(stacked_list) <- gsub(pattern="^2D", replacement="twoD", x=names(stacked_list))
+      message("'2D' has been replaced by 'twoD' in table names to conform to R object rules.")
+    }
 
     # remove temporary directory
     unlink(savepath, recursive=T)

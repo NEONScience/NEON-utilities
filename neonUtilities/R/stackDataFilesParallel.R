@@ -32,11 +32,6 @@
 stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   starttime <- Sys.time()
-  requireNamespace('stringr', quietly = TRUE)
-  requireNamespace('dplyr', quietly = TRUE)
-  requireNamespace("magrittr", quietly = TRUE)
-  requireNamespace('data.table', quietly = TRUE)
-  
   messages <- character()
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
@@ -49,6 +44,25 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   # filenames with full path
   filepaths <- findDatatables(folder = folder, fnames = T)
+  
+  # handle per-sample tables separately
+  if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", "DP1.20141.001") & 
+     length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
+    framefiles <- filepaths[grep("^NEON.", basename(filenames), invert=TRUE)]
+    filepaths <- filepaths[grep("^NEON.", basename(filenames))]
+    filenames <- filenames[grep("^NEON.", basename(filenames))]
+    
+    # stack frame files
+    writeLines("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
+    if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
+    
+    frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), function(x) {
+      tempf <- data.table::fread(x)
+      tempf$fileName <- rep(basename(x), nrow(tempf))
+      return(tempf)
+      }), fill=TRUE)
+    data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+  }
   
   # make a list, where filenames are the keys to the filepath values
   filelist <- stats::setNames(as.list(filepaths), filenames)
@@ -96,7 +110,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # for new tables, always use inferred types. for mismatches, decide based on publication dates
     if(!is.null(nrow(newtables))) {
       cat("Table(s)", newtables[,1], "are unexpected. Stacking will proceed based on inferred table format; check for updates to neonUtilities.\n")
-      ttypes <- plyr::rbind.fill(ttypes, newtables)
+      ttypes <- data.table::rbindlist(list(ttypes, newtables), fill=T)
     }
     
     if(mis>0) {
@@ -105,7 +119,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       for(k in 1:length(filespl)) {
         dats <- c(dats, filespl[[k]][length(filespl[[k]])-1])
       }
-      dats <- as.POSIXct(dats, format="%Y%m%dT%H%M%SZ")
+      dats <- as.Date(dats, format="%Y%m%dT%H%M%SZ")
       if(min(dats, na.rm=T) > utils::packageDate("neonUtilities")) {
         cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed using inference from downloaded data formats. Check results carefully, and check for updates to neonUtilities.\n")
         ttypes <- tableForm
@@ -121,33 +135,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     n <- 0
     m <- 0
     
-    # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
-    labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
-    if(length(labTables)>0){
-      externalLabs <- unique(names(datafls)[grep(paste(paste('[.]', labTables, '[.]', sep=''), 
-                                                       collapse='|'), names(datafls))])
-      
-      for(j in 1:length(labTables)) {
-        
-        tablesj <- externalLabs[grep(paste("[.]", labTables[j], "[.]", sep=""), externalLabs)]
-        if(length(tablesj)>0) {
-
-          writeLines(paste0("Stacking table ", labTables[j]))
-          
-          outputLab <- data.table::rbindlist(pbapply::pblapply(as.list(tablesj), function(x, filepaths) {
-            labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
-            outputj <- data.table::fread(labpath[[1]], header=TRUE, encoding="UTF-8")
-            outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
-            return(outputj)
-            }, filepaths=filepaths), fill=TRUE)
-        
-        data.table::fwrite(outputLab, paste0(folder, "/stackedFiles/", labTables[j], ".csv"))
-        n <- n + 1
-        }
-      }
-      tables <- setdiff(tables, labTables)
-    }
-
+    
+    # metadata files
     # copy variables and validation files to /stackedFiles using the most recent publication date
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
@@ -162,7 +151,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles")
       m <- m + 1
     }
-
+    
     # copy categoricalCodes file to /stackedFiles using the most recent publication date
     if(TRUE %in% stringr::str_detect(filepaths,'categoricalCodes')) {
       lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])[[1]]
@@ -171,14 +160,61 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       m <- m + 1
     }
     
+    # find external lab tables (lab-current, lab-all) and stack the most recently published file from each lab
+    labTables <- tables[which(tables %in% ttypes$tableName[grep("lab", ttypes$tableType)])]
+    if(length(labTables)>0){
+      externalLabs <- names(datafls)[grep(paste(paste('[.]', labTables, '[.]', sep=''), 
+                                                       collapse='|'), names(datafls))]
+      externalLabs <- unique(gsub("[0-9]{8}T[0-9]{6}Z.csv", "", externalLabs))
+      
+      for(j in 1:length(labTables)) {
+        
+        tablesj <- externalLabs[grep(paste("[.]", labTables[j], "[.]", sep=""), externalLabs)]
+        if(length(tablesj)>0) {
+
+          writeLines(paste0("Stacking table ", labTables[j]))
+          
+          outputLab <- data.table::rbindlist(pbapply::pblapply(as.list(tablesj), function(x, filepaths) {
+            
+            labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
+            
+            if(nchar(labpath[[1]]) > 260 & Sys.info()[["sysname"]]=="Windows") {
+              warning(paste("Filepath", labpath[[1]], "is", nchar(labpath[[1]]), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
+            }
+            
+            outputj <- data.table::fread(labpath[[1]], header=TRUE, encoding="UTF-8")
+            outputj <- assignClasses(outputj, variables)
+            outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
+            return(outputj)
+            }, filepaths=filepaths), fill=TRUE)
+          
+        data.table::fwrite(outputLab, paste0(folder, "/stackedFiles/", labTables[j], ".csv"))
+        
+        # add publication and release field names to variables file
+        if(!is.null(vlist)) {
+          vtable <- which(names(vlist)==labTables[j])
+          if(length(vtable==1)) {
+            if("publicationDate" %in% names(outputLab)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=labTables[j], added_fields[5,])), fill=TRUE)
+            }
+            if("release" %in% names(outputLab)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=labTables[j], added_fields[6,])), fill=TRUE)
+            }
+          }
+        }
+        n <- n + 1
+        }
+      }
+      tables <- setdiff(tables, labTables)
+    }
+
     # get most recent sensor_positions file for each site and stack
     if(TRUE %in% stringr::str_detect(filepaths,'sensor_position')) {
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
-      uniqueSites <- unique(basename(sensorPositionList)) %>%
-        stringr::str_split('\\.') %>%
-        lapply(`[`, 3) %>%
-        unlist() %>% 
-        unique(.)
+      uniqueSites <- stringr::str_split(unique(basename(sensorPositionList)), "\\.")
+      uniqueSites <- unique(unlist(lapply(uniqueSites, "[", 3)))
 
       outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
         
@@ -186,14 +222,19 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
                                     colClasses = list(character = c('HOR.VER','start','end',
                                                                     'referenceStart',
-                                                                    'referenceEnd'))) %>%
-          makePosColumns(., sppath, x)
+                                                                    'referenceEnd')))
+        if(identical(nrow(outTbl), as.integer(0))) {
+          return()
+        }
+        outTbl <- makePosColumns(outTbl, sppath, x)
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
       
-      data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
-      messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
-      m <- m + 1
+      if(!identical(nrow(outputSensorPositions), as.integer(0))) {
+        data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
+        messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
+        m <- m + 1
+      }
     }
     
     if(nCores > parallel::detectCores()) {
@@ -212,7 +253,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     } else {
       cl <- parallel::makeCluster(getOption("cl.cores", nCores),
                                   setup_strategy='sequential')
-      parallel::clusterEvalQ(cl, c(library(dplyr), library(magrittr), library(data.table))) 
+      parallel::clusterEvalQ(cl, library(data.table)) 
       writeLines(paste0("Parallelizing stacking operation across ", nCores, " cores."))
       # If error, crash, or completion , closes all clusters
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
@@ -238,40 +279,64 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         tblfls <- file_list
       }
       
-      stackedDf <- do.call(plyr::rbind.fill, pbapply::pblapply(tblfls, function(x, tables_i, variables, assignClasses, 
-                                                      makePosColumns) {
-
-        stackedDf <- suppressWarnings(data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)) %>%
-          assignClasses(., variables) %>%
-          makePosColumns(., basename(x))
+      stackingList <- pbapply::pblapply(tblfls, function(x, variables) {
         
-        return(stackedDf)
-      },
-      tables_i=tables[i], variables=variables,
-      assignClasses=assignClasses,
-      makePosColumns=makePosColumns, cl=cl
-      ))
-
-      data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
-                         nThread = nCores)
+        if(nchar(x) > 260 & Sys.info()[["sysname"]]=="Windows") {
+          warning(paste("Filepath", x, "is", nchar(x), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
+        }
+        tabtemp <- suppressWarnings(data.table::fread(x, header=T, 
+                                                      encoding="UTF-8", keepLeadingZeros=T))
+        # skip if file is empty - rare publication error
+        if(identical(nrow(tabtemp), as.integer(0))) {
+          return()
+        }
+        
+        tabtemp <- assignClasses(tabtemp, variables)
+        tabtemp <- makePosColumns(tabtemp, basename(x))
+        
+        # add column for release tag, if available
+        tabtemp$release <- rep(NA, nrow(tabtemp))
+        dir.splitName <- strsplit(dirname(x), split = "\\.")
+        pubd <- grep("[0-9]{8}T[0-9]{6}Z", dir.splitName[[1]])
+        if(identical(as.integer(pubd), 
+                     as.integer(length(dir.splitName[[1]])-1))) {
+          tabtemp$release <- rep(dir.splitName[[1]][length(dir.splitName[[1]])],
+                                 nrow(tabtemp))
+        } else {
+          tabtemp$release <- rep("undetermined", nrow(tabtemp))
+        }
+        
+        return(tabtemp)
+      }, variables=variables)
       
-      # add location and publication field names to variables file
-      if(!is.null(vlist)) {
-        vtable <- which(names(vlist)==tables[i])
-        if(length(vtable==1)) {
-          if("horizontalPosition" %in% names(stackedDf)) {
-            vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
-                                                                                 added_fields[1:4,])), 
-                                           vlist[[vtable]]), fill=TRUE)
-          }
-          if("publicationDate" %in% names(stackedDf)) {
-            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
-                                           c(table=tables[i], added_fields[5,])), fill=TRUE)
+      stackedDf <- data.table::rbindlist(stackingList, fill=T)
+
+      if(!identical(nrow(stackedDf), as.integer(0))) {
+        data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
+                           nThread = nCores)
+        
+        # add location and publication field names to variables file
+        if(!is.null(vlist)) {
+          vtable <- which(names(vlist)==tables[i])
+          if(length(vtable==1)) {
+            if("horizontalPosition" %in% names(stackedDf)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
+                                                                                   added_fields[1:4,])), 
+                                                            vlist[[vtable]]), fill=TRUE)
+            }
+            if("publicationDate" %in% names(stackedDf)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=tables[i], added_fields[5,])), fill=TRUE)
+            }
+            if("release" %in% names(stackedDf)) {
+              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                            c(table=tables[i], added_fields[6,])), fill=TRUE)
+            }
           }
         }
+        invisible(rm(stackedDf))
+        n <- n + 1
       }
-      invisible(rm(stackedDf))
-      n <- n + 1
     }
     
     # write out complete variables file
@@ -280,6 +345,19 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles")
     m <- m + 1
     
+  }
+  
+  # get issue log
+  if(!curl::has_internet()) {
+    messages <- c(messages, "No internet connection, issue log file not accessed. Issue log can be found in the readme file.")
+  } else {
+    # token not used here, since token is not otherwise used/accessible in this function
+    issues <- getIssueLog(dpID=dpID)
+    if(!is.null(issues)) {
+      utils::write.csv(issues, paste0(folder, "/stackedFiles/issueLog_", dpnum, ".csv"),
+                       row.names=FALSE)
+      m <- m + 1
+    }
   }
   
   writeLines(paste0(messages, collapse = "\n"))
