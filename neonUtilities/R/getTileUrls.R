@@ -29,7 +29,13 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing, token=NA_character_){
   url.messages <- character()
   file.urls <- c(NA, NA, NA)
   for(i in 1:length(m.urls)) {
-    tmp <- getAPI(m.urls[i], token)
+    tmp <- getAPI(m.urls[i], token=token)
+    if(tmp$status_code!=200) {
+      message(paste("Data file retrieval failed with code ", tmp$status_code, 
+                    ". Check NEON data portal for outage alerts.", sep=""))
+      return(invisible())
+    }
+    
     tmp.files <- jsonlite::fromJSON(httr::content(tmp, as="text", encoding="UTF-8"),
                                     simplifyDataFrame=T, flatten=T)
 

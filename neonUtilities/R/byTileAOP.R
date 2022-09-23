@@ -236,6 +236,10 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   file.urls.current <- getTileUrls(month.urls,
                                    format(tileEasting, scientific=F, justified='none'),
                                    format(tileNorthing, scientific=F, justified='none'))
+  if(is.null(file.urls.current)) {
+    message("No data files found.")
+    return(invisible())
+  }
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- convByteSize(downld.size)
 

@@ -108,6 +108,10 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
   }
 
   file.urls.current <- getFileUrls(month.urls, token = token)
+  if(is.null(file.urls.current)) {
+    message("No data files found.")
+    return(invisible())
+  }
   downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
   downld.size.read <- convByteSize(downld.size)
 
