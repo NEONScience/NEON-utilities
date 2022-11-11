@@ -61,8 +61,9 @@ update_table_types <- function(){
                                    primaryKey=rep('N',6),
                                    categoricalCodeName=rep('',6)))
   
-  usethis::use_data(table_types, added_fields, shared_flights, shared_aquatic, release_2021,
-                    chem_bundles, other_bundles, relevant_EPSG, internal=TRUE, overwrite=TRUE)
+  usethis::use_data(table_types, added_fields, science_review_variables, shared_flights, 
+                    shared_aquatic, release_2021, chem_bundles, other_bundles, relevant_EPSG, 
+                    internal=TRUE, overwrite=TRUE)
   usethis::use_data(table_types, shared_flights, shared_aquatic, chem_bundles, other_bundles, 
                     internal=FALSE, overwrite=TRUE)
 }

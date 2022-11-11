@@ -142,6 +142,14 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
       variables <- getVariables(varpath)   # get the variables from the chosen variables file
       v <- suppressWarnings(data.table::fread(varpath, sep=','))
+      
+      # if science review flags are present but missing from variables file, add variables
+      if(!"science_review_flags" %in% v$table) {
+        if(length(grep("science_review_flags", filepaths))>0) {
+          v <- rbind(v, science_review_variables)
+        }
+      }
+      
       vlist <- base::split(v, v$table)
     }
     
@@ -216,7 +224,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       uniqueSites <- stringr::str_split(unique(basename(sensorPositionList)), "\\.")
       uniqueSites <- unique(unlist(lapply(uniqueSites, "[", 3)))
 
-      outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), function(x, sensorPositionList) {
+      outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), 
+                                                                       function(x, sensorPositionList) {
         
         sppath <- getRecentPublication(sensorPositionList[grep(x, sensorPositionList)])[[1]]
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
@@ -233,6 +242,31 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       if(!identical(nrow(outputSensorPositions), as.integer(0))) {
         data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
         messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
+        m <- m + 1
+      }
+    }
+    
+    # get most recent science_review_flags file for each site and stack
+    if(TRUE %in% stringr::str_detect(filepaths,'science_review_flags')) {
+      scienceReviewList <- unique(filepaths[grep("science_review_flags", filepaths)])
+      uniqueSites <- stringr::str_split(unique(basename(scienceReviewList)), "\\.")
+      uniqueSites <- unique(unlist(lapply(uniqueSites, "[", 3)))
+      
+      outputScienceReview <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), 
+                                                                     function(x, scienceReviewList) {
+        
+        sppath <- getRecentPublication(scienceReviewList[grep(x, scienceReviewList)])[[1]]
+        outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)
+        if(identical(nrow(outTbl), as.integer(0))) {
+          return()
+        }
+        outTbl <- makePosColumns(outTbl, sppath, x)
+        return(outTbl)
+      }, scienceReviewList=scienceReviewList), fill=TRUE)
+      
+      if(!identical(nrow(outputScienceReview), as.integer(0))) {
+        data.table::fwrite(outputScienceReview, paste0(folder, "/stackedFiles/science_review_flags_", dpnum, ".csv"))
+        messages <- c(messages, "Merged the most recent publication of science review flag files for each site and saved to /stackedFiles")
         m <- m + 1
       }
     }
