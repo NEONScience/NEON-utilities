@@ -114,6 +114,7 @@ A cheat sheet for the `neonUtilities` package is available [here](https://www.ne
 ### Known issues
 * `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
 * On Windows, file paths are limited to 260 characters. In some cases, NEON data file names plus local directories will exceed this length; this is most likely when working with lab quality assurance files, which include the name of the lab in the file name. If this happens, you will see an error saying "cannot open file". Usually, you can get around this by using zipsByProduct() -> stackByTable() -> readTableNEON() to download data and load it to R, taking care to download the files to a short file directory.
+* On slow networks, data download can sometimes time out, particularly for the largest files, usually the remote sensing data. If your downloads take a long time and ultimately fail, try increasing the timeout in your R environment: `options(timeout=300)`. The `timeout` value is in seconds, and defaults to 60.
 
 <!-- ****** Acknowledgements ****** -->
 Credits & Acknowledgements
@@ -135,6 +136,19 @@ Disclaimer
 <!-- ****** Change Log ****** -->
 Change Log
 ----------
+
+#### 2022-11-15 v2.2.0
+Enhancements:
+* verbose output from `byFileAOP()` and `byTileAOP()` removed
+* updated lists of co-located terrestrial sites used for aquatic site meteorology, and co-located sites flown together by AOP
+* `getTaxonTable()` is deprecated; moved to `neonOS` package as `getTaxonList()`
+* new Science Review Flag table handling added
+
+Bug fixes:
+* `footRaster()` now allows a vector of .h5 files as input; handling updated to match `stackEddy()`
+* `byFileAOP()` and `byTileAOP()` now correctly handle the rare occurrence of multiple months of data per year
+* improved error messaging for all functions when API does not respond
+
 
 #### 2022-04-12 v2.1.4
 Enhancements:

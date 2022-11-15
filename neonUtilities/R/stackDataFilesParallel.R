@@ -256,7 +256,10 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
                                                                      function(x, scienceReviewList) {
         
         sppath <- getRecentPublication(scienceReviewList[grep(x, scienceReviewList)])[[1]]
-        outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE)
+        outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
+                                    colClasses = list(character = c('startDateTime','endDateTime',
+                                                                    'createDateTime',
+                                                                    'lastUpdateDateTime')))
         if(identical(nrow(outTbl), as.integer(0))) {
           return()
         }
