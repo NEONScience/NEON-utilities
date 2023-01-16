@@ -97,6 +97,14 @@ zipsByURI <- function(filepath,
   #Loop through tables and fields to compile a list of URLs to download
   URLsToDownload <- NA
   URLsNotToDownload <- NA #Avoids asking about duplicates
+  
+  # Remove allTables values that aren't in tabList
+  allTables <- allTables[allTables %in% names(tabList)]
+  
+  if(length(allTables) < 1){
+    stop('No tables with URIs available in download package contents.')
+  }
+  
   if(pick.files==TRUE){
     #Loop through tables
     for(i in seq(along = allTables)){
@@ -162,7 +170,7 @@ zipsByURI <- function(filepath,
       fileSize[idx] <- as.numeric(httr::headers(response)[["Content-Length"]])
     }
   }
-  totalFileSize <- convByteSize(sum(fileSize, na.rm = TRUE))
+  totalFileSize <- neonUtilities::convByteSize(sum(fileSize, na.rm = TRUE))
   
   if(check.size==TRUE) {
     resp <- readline(paste("Continuing will download",length(URLsToDownload), "files totaling approximately",
