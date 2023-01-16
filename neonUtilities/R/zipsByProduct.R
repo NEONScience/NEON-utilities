@@ -202,7 +202,12 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       stop(paste("No data found for product ", dpID, 
                  ". LATEST data requested; check that token is valid for LATEST access.", sep=""))
     } else {
-      stop(paste("No data found for product", dpID, sep=" "))
+      if(any(grepl("Release not found", avail$error$detail))) {
+        stop(paste("Release not found. Valid releases for product ", dpID, 
+                   " are ", paste0(avail$data$validReleases, collapse=" "), sep=""))
+      } else {
+        stop(paste("No data found for product", dpID, sep=" "))
+      }
     }
   }
   
