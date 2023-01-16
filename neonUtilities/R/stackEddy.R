@@ -427,7 +427,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   
   # aggregate the science_review_flags files
   if(length(scienceReviewList)>0) {
-    outputScienceReview <- data.table::rbindlist(pbapply::pblapply(scienceReviewList, 
+    outputScienceReview <- data.table::rbindlist(lapply(scienceReviewList, 
                                                                    function(x) {
                                                                      
               outTbl <- data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
@@ -462,8 +462,6 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
         outputScienceReview <- outputScienceReview[,origNames]
       }
     }
-  }
-  if(!identical(nrow(outputScienceReview), as.integer(0))) {
     varMergList[["scienceReviewFlags"]] <- outputScienceReview
   } else {
     varMergList <- varMergList[-grep("scienceReviewFlags", names(varMergList))]
