@@ -109,6 +109,11 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     files <- maxFiles
   }
   
+  # check for no files
+  if(identical(length(files), as.integer(0))) {
+    stop("No .h5 files found in specified file path. Check the inputs and file contents.")
+  }
+  
   # make empty, named list for the data tables
   tableList <- vector("list", length(files))
   names(tableList) <- substring(basename(files), 1, nchar(basename(files))-3)
