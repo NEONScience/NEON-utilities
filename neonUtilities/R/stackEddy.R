@@ -333,8 +333,9 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   # join the concatenated tables
 
   sites <- unique(substring(names(timeMergList), 1, 4))
-  varMergList <- vector("list", length(sites)+4)
-  names(varMergList) <- c(sites, "variables", "objDesc", "issueLog", "scienceReviewFlags")
+  varMergList <- vector("list", length(sites)+5)
+  names(varMergList) <- c(sites, "variables", "objDesc", "siteAttributes", 
+                          "issueLog", "scienceReviewFlags")
   
   # set up progress bar
   writeLines(paste0("Joining data variables"))
@@ -343,7 +344,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   idx <- 0
   
   # make one merged table per site
-  for(m in 1:I(length(varMergList)-4)) {
+  for(m in 1:I(length(varMergList)-5)) {
     
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
 
@@ -413,6 +414,34 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   utils::setTxtProgressBar(pb3, 1)
   close(pb3)
 
+  
+  # site attributes, objDesc, SRF table, and issue log
+  writeLines(paste0("Getting metadata tables"))
+  pb4 <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb4, 0)
+  
+  # get site attributes
+  siteAttr <- vector("list", length=length(sites))
+  for(p in 1:length(sites)) {
+    files.p <- files[grep(sites[p], files)]
+    siteAttr[[p]] <- base::try(rhdf5::h5readAttributes(files.p[1], name=sites[p]), silent=T)
+    if(inherits(siteAttr[[p]], "try-error")) {
+      siteAttr[[p]] <- sites[p]
+      names(siteAttr[[p]]) <- 'site'
+    } else {
+      if(any(lapply(siteAttr[[p]], length)>1)) {
+        for(i in which(lapply(siteAttr[[p]], length)>1)) {
+          siteAttr[[p]][i] <- paste0(siteAttr[[p]][i], collapse=",")
+        }
+      }
+      siteAttr[[p]] <- c(sites[[p]], siteAttr[[p]])
+      names(siteAttr[[p]])[1] <- 'site'
+    }
+  }
+  siteAttributes <- data.table::rbindlist(siteAttr, fill=T)
+  varMergList[["siteAttributes"]] <- siteAttributes
+  utils::setTxtProgressBar(pb4, 0.25)
+  
   # get one objDesc table and add it and variables table to list
   objDesc <- base::try(rhdf5::h5read(files[1], name="//objDesc"), silent=T)
   # if processing gets this far without failing, don't fail here, just return data without objDesc table
@@ -422,6 +451,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   varMergList[["variables"]] <- variables
   varMergList[["objDesc"]] <- objDesc
   
+  utils::setTxtProgressBar(pb4, 0.5)
+  
   # get issue log
   if(!curl::has_internet()) {
     message("No internet connection, issue log file not accessed. Issue log can be found on the data product details pages.")
@@ -429,6 +460,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     # token not used here, since token is not otherwise used/accessible in this function
     varMergList[["issueLog"]] <- getIssueLog(dpID="DP4.00200.001")
   }
+  
+  utils::setTxtProgressBar(pb4, 0.75)
   
   # aggregate the science_review_flags files
   if(length(scienceReviewList)>0) {
@@ -471,6 +504,9 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   } else {
     varMergList <- varMergList[-grep("scienceReviewFlags", names(varMergList))]
   }
+  
+  utils::setTxtProgressBar(pb4, 1)
+  close(pb4)
   
   return(varMergList)
 }
