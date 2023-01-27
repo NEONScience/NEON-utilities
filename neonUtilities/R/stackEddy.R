@@ -426,7 +426,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
     files.p <- files[grep(sites[p], files)]
     siteAttr[[p]] <- base::try(rhdf5::h5readAttributes(files.p[1], name=sites[p]), silent=T)
     if(inherits(siteAttr[[p]], "try-error")) {
-      siteAttr[[p]] <- sites[p]
+      siteAttr[[p]] <- data.frame(sites[p])
       names(siteAttr[[p]]) <- 'site'
     } else {
       if(any(lapply(siteAttr[[p]], length)>1)) {
