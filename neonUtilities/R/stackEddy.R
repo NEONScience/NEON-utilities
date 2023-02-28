@@ -333,8 +333,8 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   # join the concatenated tables
 
   sites <- unique(substring(names(timeMergList), 1, 4))
-  varMergList <- vector("list", length(sites)+5)
-  names(varMergList) <- c(sites, "variables", "objDesc", "siteAttributes", 
+  varMergList <- vector("list", length(sites)+4)
+  names(varMergList) <- c(sites, "variables", "objDesc", 
                           "issueLog", "scienceReviewFlags")
   
   # set up progress bar
@@ -344,7 +344,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   idx <- 0
   
   # make one merged table per site
-  for(m in 1:I(length(varMergList)-5)) {
+  for(m in 1:I(length(varMergList)-4)) {
     
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
 
@@ -419,28 +419,6 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   writeLines(paste0("Getting metadata tables"))
   pb4 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb4, 0)
-  
-  # get site attributes
-  siteAttr <- vector("list", length=length(sites))
-  for(p in 1:length(sites)) {
-    files.p <- files[grep(sites[p], files)]
-    siteAttr[[p]] <- base::try(rhdf5::h5readAttributes(files.p[1], name=sites[p]), silent=T)
-    if(inherits(siteAttr[[p]], "try-error")) {
-      siteAttr[[p]] <- data.frame(sites[p])
-      names(siteAttr[[p]]) <- 'site'
-    } else {
-      if(any(lapply(siteAttr[[p]], length)>1)) {
-        for(i in which(lapply(siteAttr[[p]], length)>1)) {
-          siteAttr[[p]][i] <- paste0(siteAttr[[p]][i], collapse=",")
-        }
-      }
-      siteAttr[[p]] <- c(sites[[p]], siteAttr[[p]])
-      names(siteAttr[[p]])[1] <- 'site'
-    }
-  }
-  siteAttributes <- data.table::rbindlist(siteAttr, fill=T)
-  varMergList[["siteAttributes"]] <- siteAttributes
-  utils::setTxtProgressBar(pb4, 0.25)
   
   # get one objDesc table and add it and variables table to list
   objDesc <- base::try(rhdf5::h5read(files[1], name="//objDesc"), silent=T)
