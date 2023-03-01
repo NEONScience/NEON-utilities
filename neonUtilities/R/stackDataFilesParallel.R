@@ -223,6 +223,19 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
       uniqueSites <- stringr::str_split(unique(basename(sensorPositionList)), "\\.")
       uniqueSites <- unique(unlist(lapply(uniqueSites, "[", 3)))
+      sensorPosNames <- c("HOR.VER","sensorLocationID","sensorLocationDescription",
+                          "positionStartDateTime","positionEndDateTime","referenceLocationID",
+                          "referenceLocationIDDescription","referenceLocationIDStartDateTime",
+                          "referenceLocationIDEndDateTime","xOffset","yOffset","zOffset","pitch",
+                          "roll","azimuth","locationReferenceLatitude","locationReferenceLongitude",
+                          "locationReferenceElevation","eastOffset","northOffset",
+                          "xAzimuth","yAzimuth")
+      oldSensorPosNames <- c("HOR.VER","name","description","start","end","referenceName",
+                             "referenceDescription","referenceStart","referenceEnd",
+                             "xOffset","yOffset","zOffset","pitch","roll","azimuth",
+                             "referenceLatitude","referenceLongitude","referenceElevation",
+                             "eastOffset","northOffset","xAzimuth","yAzimuth")
+      posErr <- FALSE
 
       outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), 
                                                                        function(x, sensorPositionList) {
@@ -231,13 +244,39 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
                                     colClasses = list(character = c('HOR.VER','start','end',
                                                                     'referenceStart',
-                                                                    'referenceEnd')))
+                                                                    'referenceEnd',
+                                                                    'positionStartDateTime',
+                                                                    'positionEndDateTime',
+                                                                    'referenceLocationIDStartDateTime',
+                                                                    'referenceLocationIDEndDateTime')))
         if(identical(nrow(outTbl), as.integer(0))) {
           return()
         }
         outTbl <- makePosColumns(outTbl, sppath, x)
+        # check column names, names updated in March 2023
+        if(any(!names(outTbl) %in% sensorPosNames)) {
+          if(all(names(outTbl) %in% oldSensorPosNames)) {
+            names(outTbl)[which(names(outTbl)=="name")] <- "sensorLocationID"
+            names(outTbl)[which(names(outTbl)=="description")] <- "sensorLocationDescription"
+            names(outTbl)[which(names(outTbl)=="start")] <- "positionStartDateTime"
+            names(outTbl)[which(names(outTbl)=="end")] <- "positionEndDateTime"
+            names(outTbl)[which(names(outTbl)=="referenceName")] <- "referenceLocationID"
+            names(outTbl)[which(names(outTbl)=="referenceDescription")] <- "referenceLocationIDDescription"
+            names(outTbl)[which(names(outTbl)=="referenceStart")] <- "referenceLocationIDStartDateTime"
+            names(outTbl)[which(names(outTbl)=="referenceEnd")] <- "referenceLocationIDEndDateTime"
+            names(outTbl)[which(names(outTbl)=="referenceLatitude")] <- "locationReferenceLatitude"
+            names(outTbl)[which(names(outTbl)=="referenceLongitude")] <- "locationReferenceLongitude"
+            names(outTbl)[which(names(outTbl)=="referenceElevation")] <- "locationReferenceElevation"
+          }
+          else {
+            posErr <- TRUE
+          }
+        }
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
+      if(posErr) {
+        messages <- c(messages, "There was an error in stacking one or more sensor positions files. Sensor positions table may be missing metadata from one or more sites.")
+      }
       
       if(!identical(nrow(outputSensorPositions), as.integer(0))) {
         data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
