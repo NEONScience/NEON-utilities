@@ -235,7 +235,6 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
                              "xOffset","yOffset","zOffset","pitch","roll","azimuth",
                              "referenceLatitude","referenceLongitude","referenceElevation",
                              "eastOffset","northOffset","xAzimuth","yAzimuth","publicationDate")
-      posErr <- FALSE
 
       outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), 
                                                                        function(x, sensorPositionList) {
@@ -269,22 +268,23 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             names(outTbl)[which(names(outTbl)=="referenceLatitude")] <- "locationReferenceLatitude"
             names(outTbl)[which(names(outTbl)=="referenceLongitude")] <- "locationReferenceLongitude"
             names(outTbl)[which(names(outTbl)=="referenceElevation")] <- "locationReferenceElevation"
-          }
-          else {
-            posErr <- TRUE
+          } else {
+            outTbl <- invisible()
           }
         }
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
-      if(posErr) {
-        messages <- c(messages, "There was an error in stacking one or more sensor positions files. Sensor positions table may be missing metadata from one or more sites.")
-      }
-      
+
       if(!identical(nrow(outputSensorPositions), as.integer(0))) {
         data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
         messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
         m <- m + 1
+        if(length(unique(outputSensorPositions$siteID))!=length(uniqueSites)) {
+          messages <- c(messages, "There was an error in stacking one or more sensor positions files. Sensor positions table may be missing metadata from one or more sites.")
+        }
+        
       }
+      
     }
     
     # aggregate the science_review_flags files

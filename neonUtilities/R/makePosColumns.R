@@ -45,21 +45,6 @@ makePosColumns <- function(d, datafl, site){
       verPos <- 8
     }
     if(TRUE %in% sensor_positions) {
-      # Make sure there is a start/end column, if not create one with NAs
-      if("start" %in% names(d) & "end" %in% names(d)) {
-        d <- d 
-      } else { 
-        d$start <- rep(NA, nrow(d))
-        d$end <- rep(NA, nrow(d))
-      }
-      
-      # Make sure there is a referenceStart/end column, if not create one with NAs
-      if("referenceStart" %in% names(d) & "referenceEnd" %in% names(d)) {
-        d <- d 
-      } else { 
-        d$referenceStart <- rep(NA, nrow(d))
-        d$referenceEnd <- rep(NA, nrow(d))
-      }
       d$siteID <- rep(site, nrow(d))
       d <- data.table::setcolorder(d, c(ncol(d), 1:I(ncol(d)-1)))
     } else {
