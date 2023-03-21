@@ -415,35 +415,18 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   close(pb3)
 
   
-  # site attributes, objDesc, SRF table, and issue log
+  # attributes, objDesc, SRF table, and issue log
   writeLines(paste0("Getting metadata tables"))
   pb4 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb4, 0)
   
   # get site attributes
-  siteAttr <- vector("list", length=length(files))
-  idx <- 1
+  siteAttributes <- vector(mode="list", length=length(sites))
   for(p in 1:length(sites)) {
-    files.p <- files[grep(sites[p], files)]
-    for(q in 1:length(files.p[p])) {
-      siteAttr[[idx]] <- base::try(rhdf5::h5readAttributes(files.p[q], name=sites[p]), silent=T)
-      mnth <- regmatches(files.p[q], regexpr("20[0-9]{2}-[0-9]{2}", files.p[q]))
-      if(inherits(siteAttr[[idx]], "try-error")) {
-        siteAttr[[idx]] <- data.frame(matrix(data=c(sites[p], mnth), ncol=2, nrow=1))
-        names(siteAttr[[idx]]) <- "site"
-      } else {
-        if(any(lapply(siteAttr[[idx]], length)>1)) {
-          for(i in which(lapply(siteAttr[[idx]], length)>1)) {
-            siteAttr[[idx]][i] <- paste0(siteAttr[[idx]][i], collapse=",")
-          }
-        }
-        siteAttr[[idx]] <- c(sites[[p]], mnth, siteAttr[[idx]])
-        names(siteAttr[[idx]])[1:2] <- c("site", "month")
-      }
-      idx <- idx+1
-    }
+    siteAttr <- lapply(files[grep(sites[p], files)], getAttributes, sit=sites[p])
+    siteAttributes[[p]] <- data.table::rbindlist(siteAttr, fill=T)
   }
-  siteAttributes <- data.table::rbindlist(siteAttr, fill=T)
+  siteAttributes <- data.table::rbindlist(siteAttributes, fill=T)
   varMergList[["siteAttributes"]] <- siteAttributes
   utils::setTxtProgressBar(pb4, 0.25)
   
