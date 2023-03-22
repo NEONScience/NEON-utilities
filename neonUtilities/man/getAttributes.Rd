@@ -4,12 +4,16 @@
 \alias{getAttributes}
 \title{Extract attributes from eddy covariance H5 files}
 \usage{
-getAttributes(fil, sit)
+getAttributes(fil, sit, type, valName)
 }
 \arguments{
 \item{fil}{File path to the H5 file to extract attributes from [character]}
 
 \item{sit}{The site, for site attributes. Must match site of file path. [character]}
+
+\item{type}{The type of attributes to retrieve. [character]}
+
+\item{valName}{If CO2 validation metadata are requested, the H5 name of the level where they can be found. [character]}
 }
 \value{
 A data frame with one row containing the extracted attributes
