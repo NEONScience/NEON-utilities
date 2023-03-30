@@ -19,9 +19,9 @@ DP1.00024.001,PARPAR_30min,Photosynthetically Active Radiation averaged over 30 
 DP1.10041.001,mos_pathogenpooling,Mosquito pathogen pool size information from external labs,site-date,0
 DP1.20100.001,ais_maintenanceGroundwater,Information related to groundwater sensor and infrastructure maintenance,site-date,0
 DP1.20190.001,rea_externalLabDataSalt,Reaeration external lab salt data,site-date,0
+DP1.20093.001,swc_fieldSuperParent,Field data for the parent sample of surface water chemistry,site-date,0
 DP1.00040.001,SHF_30min,The amount of thermal energy moving by conduction across an area of soil averaged over 30 minutes,site-date,30
 DP1.20282.001,mmg_swRawDataFiles,Raw sequence data files for microbial marker gene sequencing from surface water samples,site-date,0
-DP1.10033.001,ltr_fielddata,Field collection details and sample tracking,site-date,0
 DP1.20033.001,ais_maintenance,Information related to aquatic sensor and infrastructure maintenance,site-date,0
 DP1.20033.001,ais_sunaCleanAndCal,Record of SUNA cleaning and calibration activities,site-date,0
 DP1.20016.001,ais_maintenance,Information related to aquatic sensor and infrastructure maintenance,site-date,0
@@ -33,9 +33,8 @@ DP1.20015.001,ais_maintenance,Information related to aquatic sensor and infrastr
 DP1.20015.001,ais_maintenanceGroundwater,Information related to groundwater sensor and infrastructure maintenance,site-date,0
 DP1.10022.001,bet_expertTaxonomistIDProcessed,Ground beetle identifications by expert taxonomists - desynonomized,site-date,0
 DP1.10026.001,cfc_LMA,Leaf mass per area measurement of foliar samples,site-date,0
-DP1.20015.001,ais_wellDevelopment,Record of groundwater well development,site-date,0
 DP1.20261.001,ais_maintenance,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-DP1.20042.001,ais_maintenance,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20015.001,ais_wellDevelopment,Record of groundwater well development,site-date,0
 DP1.20193.001,sbd_plateauSampleFieldData,Field data collected at plateau per sample for salt-based discharge,site-date,0
 DP1.20288.001,ais_maintenance,Information related to aquatic sensor and infrastructure maintenance,site-date,0
 DP1.20288.001,ais_multisondeCleanCal,Information related to multisonde cleaning and calibration activities,site-date,0
@@ -43,13 +42,13 @@ DP1.10100.001,bgc_CNiso_externalSummary,Long-term uncertainty values for analysi
 DP1.10108.001,mmg_soilRawDataFiles,Raw sequence data files for microbial marker gene sequencing from soil samples,site-date,0
 DP1.20282.001,mmg_swMarkerGeneSequencing_ITS,Laboratory metadata for microbial ITS marker gene sequencing from surface water samples,site-date,0
 DP1.10098.001,vst_mappingandtagging,"Mapping, identifying and tagging of individual stems for remeasurement",site-all,0
+DP1.20138.001,amc_fieldCellCounts,Aquatic microbes field data specific to sample for cell counts,site-date,0
 DP1.20107.001,fsh_perPass,Fish sampling field data per pass,site-date,0
 DP1.10067.001,bbc_percore,Field data collected per soil core,site-date,0
 DP1.20217.001,ais_wellDevelopment,Record of groundwater well development,site-date,0
 DP1.20053.001,ais_maintenance,Information related to aquatic sensor and infrastructure maintenance,site-date,0
 DP1.00066.001,PARQL_30min,Photosynthetically active radiation (quantum line) averaged over 30 minutes,site-date,30
 DP1.20107.001,fsh_fieldData,Fish sampling field data per sub-sampling reach,site-date,0
-DP1.20066.001,apl_taxonomyProcessed,Aquatic plant bryophyte lichen macroalgae clip harvest identifications by expert taxonomists - desynonimized,site-date,0
 DP1.10003.001,brd_perpoint,Per point metadata for breeding landbirds,site-date,0
 DP1.10067.001,bbc_rootmass,Lab data collected per soil core,site-date,0
 DP1.20107.001,fsh_perFish,Fish sampling field data per specimen captured,site-date,0
@@ -98,7 +97,6 @@ DP1.00038.001,wdi_isoPerSample,Wet deposition H2O stable isotope data per sample
 DP1.00095.001,SCO2C_30_minute,Soil CO2 concentration averaged over 30 minutes,site-date,30
 DP1.20221.001,zoo_dnaExtraction,Ingest of laboratory metadata from DNA extraction for zooplankton analyses,site-date,0
 DP1.20221.001,zoo_pcrAmplification,Ingest of laboratory metadata from PCR amplification of DNA for zooplankton analyses,site-date,0
-DP1.20138.001,amc_fieldCellCounts,Aquatic microbes field data specific to sample for cell counts,site-date,0
 DP1.20221.001,zoo_markerGeneSequencing,Ingest of laboratory metadata for zooplankton marker gene sequencing,site-date,0
 DP1.10066.001,mpr_perpitprofile,Data collected per megapit profile,site-date,0
 DP1.20126.001,inv_dnaExtraction,Ingest of laboratory metadata from DNA extraction for macroinvertebrate analyses,site-date,0
@@ -164,6 +162,7 @@ DP4.00131.001,geo_missingLine,Data associated with missing line workflow,site-da
 DP1.20279.001,amb_fieldParent,Aquatic benthic microbes field data,site-date,0
 DP1.20190.001,sdg_externalLabSummaryData,"Dissolved gas, gas tracer, and salt tracer external lab summary data",lab-current,0
 DP1.20063.001,apl_clipHarvest,Aquatic plant bryophyte lichen macroalgae clip harvest data,site-date,0
+DP1.20072.001,apc_perTaxon,Point transect data for each taxon,site-date,0
 DP1.20097.001,sdg_fieldSuperParent,"Field data for the parent sample of water chemistry, dissolved gas, stable isotopes and surface water microbes for dissolved gas publication",site-date,0
 DP1.10043.001,mos_expertTaxonomistIDRaw,Mosquito identifications by expert taxonomists - raw,site-date,0
 DP1.10043.001,mos_archivepooling,Mosquito archival information from external labs,site-date,0
@@ -190,6 +189,7 @@ DP1.20048.001,dsc_fieldData,Discharge manual wading survey data per site per bou
 DP1.10041.001,mos_pathogenresults,Mosquito pathogen testing results from external labs,site-date,0
 DP1.00013.001,wdp_chemLab,Wet deposition chemistry per sample,site-date,0
 DP1.20254.001,dep_profileHeader,Header information for depth profile field data collection per site per sampling day,site-date,0
+DP1.20066.001,apl_biomass,Domain lab aquatic clip harvest biomass,site-date,0
 DP1.20048.001,dsc_individualFieldData,Discharge manual wading survey data per point per transect,site-date,0
 DP1.10022.001,bet_expertTaxonomistIDRaw,Ground beetle identifications by expert taxonomists - raw,site-date,0
 DP1.10003.001,brd_countdata,Point count data for breeding landbirds,site-date,0
@@ -225,7 +225,6 @@ DP1.20281.001,amc_fieldSuperParent,Field data for the parent sample of surface w
 DP1.20166.001,alg_biovolumes,Biovolumes for algal taxonomy,lab-all,0
 DP1.10092.001,tck_pathogen,Tick pathogen testing data,site-date,0
 DP1.20190.001,rea_backgroundFieldSaltData,Background salt per station per date,site-date,0
-DP1.20281.001,amc_fieldGenetic,Field data for the genetic sample of surface water microbes,site-date,0
 DP1.10092.001,tck_pathogenqa,Tick pathogen testing quality assurance data from external labs,lab-all,0
 DP1.20190.001,rea_widthFieldData,Wetted width per site per date,site-date,0
 DP1.20190.001,rea_externalLabDataGas,Reaeration external lab gas data,site-date,0
@@ -289,7 +288,6 @@ DP1.10033.001,ltr_massdata,Dry mass of litter and fine woody debris components p
 DP1.10033.001,ltr_pertrap,"Record of trap establishment, contains date, trap type and location",site-all,0
 DP1.10033.001,ltr_chemistrySubsampling,Identifiers for subsamples created for chemical analyses or archive,site-date,0
 DP1.00026.001,ais_aquaticLocationRecord,Aquatic location tracking record information,site-date,0
-DP1.20072.001,apc_perTaxon,Point transect data for each taxon,site-date,0
 DP1.20206.001,asi_externalLabPOMSummaryData,"Plant, algae and POM chemistry external lab summary data",lab-all,0
 DP1.20194.001,asc_externalLabData,Sediment chemical and physical properties external lab data,site-date,0
 DP1.20194.001,asc_externalLabSummary,Sediment chemistry external lab long-term summary data,lab-current,0
@@ -312,13 +310,14 @@ DP1.20277.001,mga_batchResults,Batch-level results of analysis of gene copy numb
 DP1.20277.001,mga_labSummary,Summary data on laboratory methods for qPCR results in benthic aquatic samples,lab-all,0
 DP1.20276.001,asi_externalLabSummaryData,H2O stable isotopes external lab summary data,lab-all,0
 DP1.20066.001,apl_taxonomyRaw,Aquatic plant bryophyte lichen macroalgae clip harvest identifications by expert taxonomists - raw,site-date,0
+DP1.20066.001,apl_taxonomyProcessed,Aquatic plant bryophyte lichen macroalgae clip harvest identifications by expert taxonomists - desynonimized,site-date,0
 DP1.10086.001,sls_soilChemistry,External lab analysis of carbon and nitrogen concentrations in soil,site-date,0
 DP4.00001.001,wss_daily_shortRad,Daily weather summary statistics,site-date,24
 DP1.20276.001,gsi_externalLabH2OIsotopes,Groundwater H2O stable isotopes external lab data,site-date,0
+DP1.10033.001,ltr_fielddata,Field collection details and sample tracking,site-date,0
 DP1.20066.001,apl_clipHarvest,Aquatic plant bryophyte lichen macroalgae clip harvest data,site-date,0
 DP1.20126.001,inv_markerGeneSequencingStandard,Ingest of laboratory metadata for macroinvertebrate standard sample marker gene sequencing,lab-all,0
 DP1.00096.001,mgp_permegapit,Data collected per megapit,site-date,0
-DP1.20066.001,apl_biomass,Domain lab aquatic clip harvest biomass,site-date,0
 DP1.20097.001,sdg_fieldData,Dissolved gas field data per station per date,site-date,0
 DP1.20097.001,sdg_fieldDataAir,Dissolved gas reference air collection per site per date,site-date,0
 DP1.20097.001,sdg_fieldDataProc,Dissolved gas field sample processing per site per date,site-date,0
@@ -344,6 +343,7 @@ DP1.10108.001,mmg_soilPcrAmplification_16S,Laboratory metadata from 16S PCR ampl
 DP1.10108.001,mmg_soilPcrAmplification_ITS,Laboratory metadata from ITS PCR amplification of DNA from soil samples for microbial analyses,site-date,0
 DP1.10108.001,mmg_soilMarkerGeneSequencing_16S,Laboratory metadata for microbial 16S marker gene sequencing from soil samples,site-date,0
 DP1.20280.001,mmg_benthicRawDataFiles,Raw sequence data files for microbial marker gene sequencing from aquatic benthic samples,site-date,0
+DP1.20042.001,ais_maintenance,Information related to aquatic sensor and infrastructure maintenance,site-date,0
 DP1.20217.001,ais_maintenanceGroundwater,Information related to groundwater sensor and infrastructure maintenance,site-date,0
 DP1.20282.001,mmg_swPcrAmplification_16S,Laboratory metadata from 16S PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
 DP1.20282.001,mmg_swPcrAmplification_ITS,Laboratory metadata from ITS PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
@@ -382,9 +382,9 @@ DP1.10086.001,sls_bgcSubsampling,Processing data for soil subsamples for biogeoc
 DP1.10086.001,sls_soilCoreCollection,Field data of soils collected for microbial or biogeochemistry sampling,site-date,0
 DP1.20281.001,mms_swMetagenomeDnaExtraction,Laboratory metadata from surface water DNA extraction for metagenomics sequencing,site-date,0
 DP1.20138.001,amc_fieldSuperParent,Field data for the parent sample of surface water microbes,site-date,0
+DP1.20281.001,amc_fieldGenetic,Field data for the genetic sample of surface water microbes,site-date,0
 DP1.20193.001,sbd_conductivityFieldData,Reaeration logger field data for salt-based discharge,site-date,0
 DP1.20092.001,gwc_fieldSuperParent,Field data for the parent sample of groundwater chemistry,site-date,0
-DP1.20093.001,swc_fieldSuperParent,Field data for the parent sample of surface water chemistry,site-date,0
 DP1.20093.001,swc_domainLabData,Surface water chemistry ALK and ANC domain lab data summary data,site-date,0
 DP1.20092.001,gwc_domainLabData,Groundwater chemistry ALK and ANC domain lab data summary data,site-date,0
 DP4.00131.001,geo_misclosureInfo,Data associated with misclosures,site-date,0
@@ -402,6 +402,7 @@ DP1.20063.001,apl_biomass,Domain lab aquatic clip harvest biomass,site-date,0
 DP1.20252.001,dep_secchi,Secchi field data collection per site per sampling day,site-date,0
 DP1.10086.001,sls_soilpH,Soil pH data for microbial and biogeochemical samples,site-date,0
 DP1.10098.001,vst_non-woody,"Biomass and productivity measurements of non-herbaceous perennial plants (e.g. cacti, ferns)",site-date,0
+DP1.30012.001,fsp_boutMetadata,Instrument parameters for field spectral measurements,site-date,0
 DP1.10003.001,brd_references,"Identification references used to identify birds, by site and year",site-all,0
 DP1.20264.001,TSD_1_min,Temperature at specific depths of surface water taken every 1 minute,site-date,1
 DP1.10033.001,ltr_litterCarbonNitrogen,External lab analysis of carbon and nitrogen concentrations in litter,site-date,0
@@ -410,9 +411,8 @@ DP1.10020.001,bet_BOLDtaxonomy,Ground beetle sequences DNA barcode - taxonomy,si
 DP1.20141.001,mcc_swSeqVariantMetadata_16S,Taxon table metadata for surface water microbes from sequence variant data analysis of the 16S marker gene,site-date,0
 DP1.20048.001,dsc_ratingCurveIDByEventID,All rating curve IDs in which a discharge measurement is included in long format,site-date,0
 DP4.00131.001,geo_pebbleFieldData,Data associated with pebble count distributions,site-date,0
-DP1.30012.001,fsp_boutMetadata,Instrument parameters for field spectral measurements,site-date,0
-DP1.30012.001,fsp_sampleMetadata,Foliar sample metaddata,site-date,0
 DP1.20093.001,swc_fieldData,Surface water chemistry summary data per site per bout,site-date,0
+DP1.30012.001,fsp_sampleMetadata,Foliar sample metaddata,site-date,0
 DP1.30012.001,fsp_spectralData,Spectral data reference and metadata,site-date,0
 DP1.20107.001,fsh_invertBycatch,Fish sampling macroinvertebrate bycatch,site-date,0
 DP1.20141.001,mcc_swSeqVariantMetadata_ITS,Taxon table metadata for surface water microbes from sequence variant data analysis of the ITS marker gene,site-date,0
