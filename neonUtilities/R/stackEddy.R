@@ -119,6 +119,23 @@ stackEddy <- function(filepath,
     stop("No .h5 files found in specified file path. Check the inputs and file contents.")
   }
   
+  # determine basic vs expanded package and check for inconsistencies
+  pkglist <- regmatches(files, regexpr("basic", files))
+  if(length(pkglist)==length(files)) {
+    pkg <- "basic"
+  } else {
+    if(length(pkglist)==0) {
+      pkglist <- regmatches(files, regexpr("expanded", files))
+      pkg <- "expanded"
+    }
+  }
+  if(length(pkglist)!=length(files)) {
+    stop("File path contains a mixture of basic and expanded package files.")
+  }
+  if(pkg=="basic" & metadata) {
+    message("For the basic package, attribute metadata are the values from the beginning of the month. To get attributes for each day, use the expanded package.")
+  }
+  
   # make empty, named list for the data tables
   tableList <- vector("list", length(files))
   names(tableList) <- substring(basename(files), 1, nchar(basename(files))-3)
