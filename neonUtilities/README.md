@@ -137,6 +137,11 @@ Disclaimer
 Change Log
 ----------
 
+#### 2023-03-09 v2.2.1
+* Science Review Flag table added to stackEddy() outputs
+* updates to sensor position file handling to match new variable names
+
+
 #### 2022-11-15 v2.2.0
 Enhancements:
 * verbose output from `byFileAOP()` and `byTileAOP()` removed

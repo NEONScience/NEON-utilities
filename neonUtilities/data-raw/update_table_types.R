@@ -66,6 +66,16 @@ update_table_types <- function(){
                     internal=TRUE, overwrite=TRUE)
   usethis::use_data(table_types, shared_flights, shared_aquatic, chem_bundles, other_bundles, 
                     internal=FALSE, overwrite=TRUE)
+  
+  # write tables to repo for use outside package
+  data.table::fwrite(added_fields, paste(Sys.getenv('NU_REPO'), 'helper_files/added_fields.csv', sep='/'))
+  data.table::fwrite(chem_bundles, paste(Sys.getenv('NU_REPO'), 'helper_files/chem_bundles.csv', sep='/'))
+  data.table::fwrite(other_bundles, paste(Sys.getenv('NU_REPO'), 'helper_files/other_bundles.csv', sep='/'))
+  data.table::fwrite(release_2021, paste(Sys.getenv('NU_REPO'), 'helper_files/release_2021.csv', sep='/'))
+  data.table::fwrite(shared_aquatic, paste(Sys.getenv('NU_REPO'), 'helper_files/shared_aquatic.csv', sep='/'))
+  data.table::fwrite(shared_flights, paste(Sys.getenv('NU_REPO'), 'helper_files/shared_flights.csv', sep='/'))
+  data.table::fwrite(table_types, paste(Sys.getenv('NU_REPO'), 'helper_files/table_types.csv', sep='/'))
+  
 }
 
 update_table_types()

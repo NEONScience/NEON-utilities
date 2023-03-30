@@ -1,0 +1,8 @@
+productID,tableName,tableDesc,tableType,tableTMI
+DP1.10045.001,vst_perplotperyear,"Per plot sampling metadata, including presence/absence of each growthForm",site-date,0
+DP1.10045.001,nst_perindividual,"Field measurements of individual non-herbaceous perennial plants (e.g. cacti, ferns)",site-date,0
+DP1.20197.001,asc_fieldDataPoint,Point level sediment collection field data,site-date,0
+DP1.20197.001,asc_fieldDataZone,Zone level sediment collection field data,site-date,0
+DP1.20197.001,asc_fieldDataStation,Station level sediment collection field data,site-date,0
+DP1.20197.001,asp_externalLabData,Sediment physical properties external lab data,site-date,0
+DP1.20197.001,asc_externalLabSummary,Sediment chemistry external lab long-term summary data,lab-current,0

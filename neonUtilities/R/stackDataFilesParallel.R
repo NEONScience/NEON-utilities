@@ -223,27 +223,68 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       sensorPositionList <- unique(filepaths[grep("sensor_position", filepaths)])
       uniqueSites <- stringr::str_split(unique(basename(sensorPositionList)), "\\.")
       uniqueSites <- unique(unlist(lapply(uniqueSites, "[", 3)))
+      sensorPosNames <- c("siteID","HOR.VER","sensorLocationID","sensorLocationDescription",
+                          "positionStartDateTime","positionEndDateTime","referenceLocationID",
+                          "referenceLocationIDDescription","referenceLocationIDStartDateTime",
+                          "referenceLocationIDEndDateTime","xOffset","yOffset","zOffset","pitch",
+                          "roll","azimuth","locationReferenceLatitude","locationReferenceLongitude",
+                          "locationReferenceElevation","eastOffset","northOffset",
+                          "xAzimuth","yAzimuth","publicationDate")
+      oldSensorPosNames <- c("siteID","HOR.VER","name","description","start","end","referenceName",
+                             "referenceDescription","referenceStart","referenceEnd",
+                             "xOffset","yOffset","zOffset","pitch","roll","azimuth",
+                             "referenceLatitude","referenceLongitude","referenceElevation",
+                             "eastOffset","northOffset","xAzimuth","yAzimuth","publicationDate")
 
       outputSensorPositions <- data.table::rbindlist(pbapply::pblapply(as.list(uniqueSites), 
                                                                        function(x, sensorPositionList) {
         
         sppath <- getRecentPublication(sensorPositionList[grep(x, sensorPositionList)])[[1]]
         outTbl <- data.table::fread(sppath, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                    colClasses = list(character = c('HOR.VER','start','end',
-                                                                    'referenceStart',
-                                                                    'referenceEnd')))
+                                    colClasses = list(character = c('HOR.VER')))
         if(identical(nrow(outTbl), as.integer(0))) {
           return()
         }
+        if('start' %in% names(outTbl)) {outTbl$start <- as.character(outTbl$start)}
+        if('end' %in% names(outTbl)) {outTbl$end <- as.character(outTbl$end)}
+        if('referenceStart' %in% names(outTbl)) {outTbl$referenceStart <- as.character(outTbl$referenceStart)}
+        if('referenceEnd' %in% names(outTbl)) {outTbl$referenceEnd <- as.character(outTbl$referenceEnd)}
+        if('positionStartDateTime' %in% names(outTbl)) {outTbl$positionStartDateTime <- as.character(outTbl$positionStartDateTime)}
+        if('positionEndDateTime' %in% names(outTbl)) {outTbl$positionEndDateTime <- as.character(outTbl$positionEndDateTime)}
+        if('referenceLocationIDStartDateTime' %in% names(outTbl)) {outTbl$referenceLocationIDStartDateTime <- as.character(outTbl$referenceLocationIDStartDateTime)}
+        if('referenceLocationIDEndDateTime' %in% names(outTbl)) {outTbl$referenceLocationIDEndDateTime <- as.character(outTbl$referenceLocationIDEndDateTime)}
         outTbl <- makePosColumns(outTbl, sppath, x)
+        # check column names, names updated in March 2023
+        if(any(!names(outTbl) %in% sensorPosNames)) {
+          if(all(names(outTbl) %in% oldSensorPosNames)) {
+            names(outTbl)[which(names(outTbl)=="name")] <- "sensorLocationID"
+            names(outTbl)[which(names(outTbl)=="description")] <- "sensorLocationDescription"
+            names(outTbl)[which(names(outTbl)=="start")] <- "positionStartDateTime"
+            names(outTbl)[which(names(outTbl)=="end")] <- "positionEndDateTime"
+            names(outTbl)[which(names(outTbl)=="referenceName")] <- "referenceLocationID"
+            names(outTbl)[which(names(outTbl)=="referenceDescription")] <- "referenceLocationIDDescription"
+            names(outTbl)[which(names(outTbl)=="referenceStart")] <- "referenceLocationIDStartDateTime"
+            names(outTbl)[which(names(outTbl)=="referenceEnd")] <- "referenceLocationIDEndDateTime"
+            names(outTbl)[which(names(outTbl)=="referenceLatitude")] <- "locationReferenceLatitude"
+            names(outTbl)[which(names(outTbl)=="referenceLongitude")] <- "locationReferenceLongitude"
+            names(outTbl)[which(names(outTbl)=="referenceElevation")] <- "locationReferenceElevation"
+          } else {
+            outTbl <- invisible()
+          }
+        }
         return(outTbl)
       }, sensorPositionList=sensorPositionList), fill=TRUE)
-      
+
       if(!identical(nrow(outputSensorPositions), as.integer(0))) {
         data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
         messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
         m <- m + 1
+        if(length(unique(outputSensorPositions$siteID))!=length(uniqueSites)) {
+          messages <- c(messages, "There was an error in stacking one or more sensor positions files. Sensor positions table may be missing metadata from one or more sites.")
+        }
+        
       }
+      
     }
     
     # aggregate the science_review_flags files

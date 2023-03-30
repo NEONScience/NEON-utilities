@@ -216,7 +216,8 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
 
   stackDataFilesParallel(savepath, nCores, dpID)
-  getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID)
+  try(getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID), 
+      silent=T)
 
   if(saveUnzippedFiles == FALSE & envt!=1){
     zipList <- unlist(zipList)

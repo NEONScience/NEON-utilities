@@ -1,0 +1,7 @@
+fieldName,description,dataType,units,downloadPkg,pubFormat,primaryKey,categoricalCodeName
+domainID,Unique identifier of the NEON domain,string,,appended by stackByTable,,N,""
+siteID,NEON site code,string,,appended by stackByTable,,N,""
+horizontalPosition,Index of horizontal location at a NEON site,string,,appended by stackByTable,,N,""
+verticalPosition,Index of vertical location at a NEON site,string,,appended by stackByTable,,N,""
+publicationDate,Date of data publication on the NEON data portal,dateTime,,appended by stackByTable,,N,""
+release,Identifier for data release,string,,appended by stackByTable,,N,""
