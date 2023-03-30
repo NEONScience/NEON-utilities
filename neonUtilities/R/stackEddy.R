@@ -130,7 +130,7 @@ stackEddy <- function(filepath,
     }
   }
   if(length(pkglist)!=length(files)) {
-    stop("File path contains a mixture of basic and expanded package files.")
+    stop("File path contains both basic and expanded package files, these can't be stacked together.")
   }
   if(pkg=="basic" & metadata) {
     message("For the basic package, attribute metadata are the values from the beginning of the month. To get attributes for each day, use the expanded package.")
