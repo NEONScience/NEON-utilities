@@ -2,18 +2,20 @@
 % Please edit documentation in R/getCitation.R
 \name{getCitation}
 \alias{getCitation}
-\title{Get a Bibtex citation for NEON data with a DOI}
+\title{Get a Bibtex citation for NEON data with a DOI, or generate a provisional Bibtex citation}
 \usage{
-getCitation(doi)
+getCitation(doi = NA_character_, dpID = NA_character_)
 }
 \arguments{
 \item{doi}{The DOI of the data to be cited [character]}
+
+\item{dpID}{The data product ID of the data to be cited [character]}
 }
 \value{
 A character string containing the Bibtex citation
 }
 \description{
-Use the DOI Foundation API to get Bibtex-formatted citations for NEON data. Technically this function will work for any DOI, but is not exported since there are much more thorough wrappers for DOI APIs.
+Use the DOI Foundation API to get Bibtex-formatted citations for NEON data, or use a template to generate a Bibtex citation for provisional data. Helper function to download and stacking functions.
 }
 \examples{
 \dontrun{
