@@ -11,6 +11,7 @@
 #' @param level The level of data to extract; one of dp01, dp02, dp03, dp04 [character]
 #' @param var The variable set to extract. Can be any of the variables in the "name" level or the "system" level of the H5 file; use the getVarsEddy() function to see the available variables. From the inputs, all variables from "name" and all variables from "system" will be returned, but if variables from both "name" and "system" are specified, the function will return only the intersecting set. This allows the user to, e.g., return only the pressure data ("pres") from the CO2 storage system ("co2Stor"), instead of all the pressure data from all instruments.  [character]
 #' @param avg The averaging interval to extract, in minutes [numeric]
+#' @param metadata Should the output include metadata from the attributes of the H5 files? Defaults to false. Even when false, variable definitions, issue logs, and science review flags will be included. [logical]
 
 #' @details Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
 #' For data product levels 2-4 (dp02, dp03, dp04), joins all available data, except for the flux footprint data in the expanded package.
@@ -34,7 +35,11 @@
 #     partially adapted from eddy4R.base::def.hdf5.extr() authored by David Durden
 ##############################################################################################
 
-stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
+stackEddy <- function(filepath, 
+                      level="dp04", 
+                      var=NA, 
+                      avg=NA,
+                      metadata=FALSE) {
   
   # first check for rhdf5 package
   if(!requireNamespace("rhdf5", quietly=T)) {
@@ -112,6 +117,23 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   # check for no files
   if(identical(length(files), as.integer(0))) {
     stop("No .h5 files found in specified file path. Check the inputs and file contents.")
+  }
+  
+  # determine basic vs expanded package and check for inconsistencies
+  pkglist <- regmatches(files, regexpr("basic", files))
+  if(length(pkglist)==length(files)) {
+    pkg <- "basic"
+  } else {
+    if(length(pkglist)==0) {
+      pkglist <- regmatches(files, regexpr("expanded", files))
+      pkg <- "expanded"
+    }
+  }
+  if(length(pkglist)!=length(files)) {
+    stop("File path contains both basic and expanded package files, these can't be stacked together.")
+  }
+  if(pkg=="basic" & metadata) {
+    message("For the basic package, attribute metadata are the values from the beginning of the month. To get attributes for each day, use the expanded package.")
   }
   
   # make empty, named list for the data tables
@@ -330,12 +352,28 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
 
   }
   
-  # join the concatenated tables
-
+  # set up tables for data and metadata
   sites <- unique(substring(names(timeMergList), 1, 4))
-  varMergList <- vector("list", length(sites)+4)
-  names(varMergList) <- c(sites, "variables", "objDesc", 
-                          "issueLog", "scienceReviewFlags")
+  if(metadata) {
+    if(any(grepl("rtioMoleDryCo2Vali", names(timeMergList)))) {
+      varNames <- c(sites, "variables", "objDesc", "siteAttributes", 
+                    "codeAttributes", "validationAttributes", 
+                    "issueLog", "scienceReviewFlags")
+      numTabs <- 7
+    } else {
+      varNames <- c(sites, "variables", "objDesc", "siteAttributes", 
+                    "codeAttributes", "issueLog", "scienceReviewFlags")
+      numTabs <- 6
+    }
+    
+  } else {
+    varNames <- c(sites, "variables", "objDesc", 
+                  "issueLog", "scienceReviewFlags")
+    numTabs <- 4
+  }
+  
+  varMergList <- vector("list", length(sites)+numTabs)
+  names(varMergList) <- varNames
   
   # set up progress bar
   writeLines(paste0("Joining data variables"))
@@ -344,7 +382,7 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   idx <- 0
   
   # make one merged table per site
-  for(m in 1:I(length(varMergList)-4)) {
+  for(m in 1:I(length(varMergList)-numTabs)) {
     
     timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
 
@@ -415,10 +453,56 @@ stackEddy <- function(filepath, level="dp04", var=NA, avg=NA) {
   close(pb3)
 
   
-  # site attributes, objDesc, SRF table, and issue log
+  # attributes, objDesc, SRF table, and issue log
   writeLines(paste0("Getting metadata tables"))
   pb4 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb4, 0)
+  
+  # attributes are only included if metadata==TRUE
+  if(metadata) {
+    
+    # get site attributes
+    siteAttributes <- vector(mode="list", length=length(sites))
+    for(p in 1:length(sites)) {
+      siteAttr <- lapply(files[grep(sites[p], files)], getAttributes, sit=sites[p], type="site")
+      siteAttributes[[p]] <- data.table::rbindlist(siteAttr, fill=T)
+    }
+    siteAttributes <- data.table::rbindlist(siteAttributes, fill=T)
+    varMergList[["siteAttributes"]] <- siteAttributes
+    utils::setTxtProgressBar(pb4, 0.15)
+    
+    # get attributes from root level
+    codeAttributes <- vector(mode="list", length=length(sites))
+    for(p in 1:length(sites)) {
+      codeAttr <- lapply(files[grep(sites[p], files)], getAttributes, sit=sites[p], type="root")
+      codeAttributes[[p]] <- data.table::rbindlist(codeAttr, fill=T)
+    }
+    codeAttributes <- data.table::rbindlist(codeAttributes, fill=T)
+    varMergList[["codeAttributes"]] <- codeAttributes
+    utils::setTxtProgressBar(pb4, 0.25)
+    
+    # get CO2 validation attributes if CO2 variables were extracted
+    if("validationAttributes" %in% varNames) {
+      
+      valAttributes <- vector(mode="list", length=length(sites))
+      for(p in 1:length(sites)) {
+        tbls <- tableList[grep(sites[p], names(tableList))]
+        fls <- grep(sites[p], files, value=T)
+        valAttr <- vector(mode="list", length=length(fls))
+        for(q in 1:length(fls)) {
+          valAttr[[q]] <- getAttributes(fls[q], sit=sites[p], type="val",
+                                        valName=grep("rtioMoleDryCo2Vali", 
+                                                     names(tbls[[q]]), value=T))
+        }
+        valAttributes[[p]] <- data.table::rbindlist(valAttr, fill=T)
+      }
+      valAttributes <- data.table::rbindlist(valAttributes, fill=T)
+      varMergList[["validationAttributes"]] <- valAttributes
+      utils::setTxtProgressBar(pb4, 0.35)
+      
+    }
+    
+  }
   
   # get one objDesc table and add it and variables table to list
   objDesc <- base::try(rhdf5::h5read(files[1], name="//objDesc"), silent=T)

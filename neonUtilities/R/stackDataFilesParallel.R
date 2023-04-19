@@ -33,6 +33,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   starttime <- Sys.time()
   messages <- character()
+  releases <- character()
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
   #data("table_types")
@@ -429,6 +430,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             if("release" %in% names(stackedDf)) {
               vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
                                                             c(table=tables[i], added_fields[6,])), fill=TRUE)
+              releases <- c(releases, unique(stackedDf$release))
             }
           }
         }
@@ -455,6 +457,32 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       utils::write.csv(issues, paste0(folder, "/stackedFiles/issueLog_", dpnum, ".csv"),
                        row.names=FALSE)
       m <- m + 1
+    }
+  }
+  
+  # get DOIs and generate citation(s)
+  releases <- unique(releases)
+  if("PROVISIONAL" %in% releases) {
+    cit <- try(getCitation(dpID=dpID), silent=TRUE)
+    if(!inherits(cit, "try-error")) {
+      base::write(cit, paste0(folder, "/stackedFiles/citation_", dpnum, "_PROVISIONAL", ".txt"))
+    }
+  }
+  if(length(grep("RELEASE", releases))==0) {
+    releases <- releases
+  } else {
+    if(length(grep("RELEASE", releases))>1) {
+      unlink(paste0(folder, "/stackedFiles/"), recursive=TRUE)
+      stop("Multiple data releases were stacked together. This is not appropriate, check your input data.")
+    } else {
+      rel <- releases[grep("RELEASE", releases)]
+      doi <- try(getNeonDOI(dpID=dpID, release=rel), silent=TRUE)
+      if(!inherits(doi, "try-error")) {
+        cit <- try(getCitation(doi=doi$DOI), silent=TRUE)
+        if(!inherits(cit, "try-error")) {
+          base::write(cit, paste0(folder, "/stackedFiles/citation_", dpnum, "_", rel, ".txt"))
+        }
+      }
     }
   }
   
