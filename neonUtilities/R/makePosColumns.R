@@ -32,7 +32,8 @@ makePosColumns <- function(d, datafl, site){
 
   sensor_positions <- grepl('sensor_positions', datafl.splitName)
   
-  if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130")){return(d)}
+  if((datafl.splitName[[1]][4]=="DP4") && (datafl.splitName[[1]][5]=="00130") &
+     FALSE %in% sensor_positions){return(d)}
   
   nc <- ncol(d)
   if(length(datafl.splitName[[1]]) %in% c(12,14) || (TRUE %in% sensor_positions)){
