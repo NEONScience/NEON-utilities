@@ -59,6 +59,7 @@ getFileUrls <- function(m.urls, token=NA){
   
   if(length(url.messages) > 0){writeLines(url.messages)}
   file.urls <- file.urls[-1,]
-  return(file.urls)
+  release <- tmp.files$data$release
+  return(list(file.urls, release))
   
 }

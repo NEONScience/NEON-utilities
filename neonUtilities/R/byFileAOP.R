@@ -56,6 +56,8 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
   if(identical(token, "")) {
     token <- NA_character_
   }
+  
+  releases <- character()
 
   # query the products endpoint for the product requested
   req <- getAPI(paste("http://data.neonscience.org/api/v0/products/", dpID, sep=""), token)
@@ -112,13 +114,13 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
     message("No data files found.")
     return(invisible())
   }
-  downld.size <- sum(as.numeric(as.character(file.urls.current$size)), na.rm=T)
+  downld.size <- sum(as.numeric(as.character(file.urls.current[[1]]$size)), na.rm=T)
   downld.size.read <- convByteSize(downld.size)
 
   # ask user if they want to proceed
   # can disable this with check.size=F
   if(check.size==TRUE) {
-    resp <- readline(paste("Continuing will download ", nrow(file.urls.current), " files totaling approximately ",
+    resp <- readline(paste("Continuing will download ", nrow(file.urls.current[[1]]), " files totaling approximately ",
                            downld.size.read, ". Do you want to proceed y/n: ", sep=""))
     if(!(resp %in% c("y","Y"))) {
       stop("Download halted.")
@@ -140,23 +142,23 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
   # copy zip files into folder
   j <- 1
   messages <- list()
-  writeLines(paste("Downloading ", nrow(file.urls.current), " files", sep=""))
+  writeLines(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current)-1))
+  utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current[[1]])-1))
 
   counter <- 1
 
-  while(j <= nrow(file.urls.current)) {
+  while(j <= nrow(file.urls.current[[1]])) {
 
     if (counter > 2) {
-      cat(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current$name[j],
+      cat(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current[[1]]$name[j],
                   " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
                  "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
 
       j <- j + 1
       counter <- 1
     } else {
-      path1 <- strsplit(file.urls.current$URL[j], "\\?")[[1]][1]
+      path1 <- strsplit(file.urls.current[[1]]$URL[j], "\\?")[[1]][1]
       pathparts <- strsplit(path1, "\\/")
       path2 <- paste(pathparts[[1]][4:(length(pathparts[[1]])-1)], collapse="/")
       newpath <- paste0(filepath, "/", path2)
@@ -167,8 +169,8 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
 
       t <- tryCatch(
         {
-          suppressWarnings(downloader::download(file.urls.current$URL[j],
-                                                paste(newpath, file.urls.current$name[j], sep="/"),
+          suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
+                                                paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
                                                 mode="wb", quiet=T))
         }, error = function(e) { e } )
 
@@ -176,32 +178,33 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
         
         # re-attempt download once with no changes
         if(counter < 2) {
-          writeLines(paste0("\n", file.urls.current$name[j], " could not be downloaded. Re-attempting."))
+          writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. Re-attempting."))
           t <- tryCatch(
             {
-              suppressWarnings(downloader::download(file.urls.current$URL[j],
-                                                    paste(newpath, file.urls.current$name[j], sep="/"),
+              suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
+                                                    paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
                                                     mode="wb", quiet=T))
             }, error = function(e) { e } )
           if(inherits(t, "error")) {
             counter <- counter + 1
           } else {
-            messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
+            messages[j] <- paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" ")
             j <- j + 1
             counter <- 1
           }
         } else {
-          writeLines(paste0("\n", file.urls.current$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
+          writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
           file.urls.new <- getFileUrls(month.urls, token = token)
           file.urls.current <- file.urls.new
           counter <- counter + 1
         }
 
       } else {
-        messages[j] <- paste(file.urls.current$name[j], "downloaded to", newpath, sep=" ")
+        messages[j] <- paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" ")
         j <- j + 1
         counter <- 1
-        utils::setTxtProgressBar(pb, j/(nrow(file.urls.current)-1))
+        releases <- c(releases, file.urls.current[[2]])
+        utils::setTxtProgressBar(pb, j/(nrow(file.urls.current[[1]])-1))
       }
       
     }
@@ -209,9 +212,33 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
   utils::setTxtProgressBar(pb, 1)
   close(pb)
   
+  # get issue log and write to file
   issues <- getIssueLog(dpID=dpID, token=token)
   utils::write.csv(issues, paste0(filepath, "/issueLog_", dpID, ".csv"),
                    row.names=FALSE)
+  
+  # get DOIs and generate citation(s)
+  releases <- unique(releases)
+  if("PROVISIONAL" %in% releases) {
+    cit <- try(getCitation(dpID=dpID), silent=TRUE)
+    if(!inherits(cit, "try-error")) {
+      base::write(cit, paste0(filepath, "/citation_", dpID, "_PROVISIONAL", ".txt"))
+    }
+  }
+  if(length(grep("RELEASE", releases))==0) {
+    releases <- releases
+  } else {
+    if(length(grep("RELEASE", releases))==1) {
+      rel <- releases[grep("RELEASE", releases)]
+      doi <- try(getNeonDOI(dpID=dpID, release=rel), silent=TRUE)
+      if(!inherits(doi, "try-error")) {
+        cit <- try(getCitation(doi=doi$DOI), silent=TRUE)
+        if(!inherits(cit, "try-error")) {
+          base::write(cit, paste0(filepath, "/citation_", dpID, "_", rel, ".txt"))
+        }
+      }
+    }
+  }
 
   writeLines(paste("Successfully downloaded ", length(messages), " files to ", filepath, sep=""))
   #writeLines(paste0(messages, collapse = "\n")) # removed in v2.2.0, file lists were excessively long
