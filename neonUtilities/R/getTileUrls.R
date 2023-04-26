@@ -28,6 +28,7 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing, token=NA_character_){
 
   url.messages <- character()
   file.urls <- c(NA, NA, NA)
+  releases <- character()
   for(i in 1:length(m.urls)) {
     tmp <- getAPI(m.urls[i], token=token)
     if(tmp$status_code!=200) {
@@ -46,6 +47,9 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing, token=NA_character_){
       next
     }
 
+    # get release info
+    releases <- c(releases, tmp.files$data$release)
+    
     # filter to only files for the relevant tiles
     ind <- numeric()
     for(j in 1:length(tileEasting)) {
@@ -76,6 +80,7 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing, token=NA_character_){
   
   if(length(url.messages) > 0){writeLines(url.messages)}
   file.urls <- file.urls[-1,]
-  return(file.urls)
+  release <- unique(releases)
+  return(list(file.urls, release))
   
 }

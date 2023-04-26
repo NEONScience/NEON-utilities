@@ -25,6 +25,7 @@
 getFileUrls <- function(m.urls, token=NA){
   url.messages <- character()
   file.urls <- c(NA, NA, NA)
+  releases <- character()
   for(i in 1:length(m.urls)) {
 
     tmp <- getAPI(apiURL = m.urls[i], token = token)
@@ -44,6 +45,9 @@ getFileUrls <- function(m.urls, token=NA){
                                             "and year", tmp.files$data$month, sep=" "))
       next
     }
+    
+    # get release info
+    releases <- c(releases, tmp.files$data$release)
 
     file.urls <- rbind(file.urls, cbind(tmp.files$data$files$name,
                                         tmp.files$data$files$url,
@@ -59,7 +63,7 @@ getFileUrls <- function(m.urls, token=NA){
   
   if(length(url.messages) > 0){writeLines(url.messages)}
   file.urls <- file.urls[-1,]
-  release <- tmp.files$data$release
+  release <- unique(releases)
   return(list(file.urls, release))
   
 }
