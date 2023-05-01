@@ -93,7 +93,7 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
   }
 
   # stash the URLs for just the zips in an object
-  zip.urls <- c(NA, NA, NA)
+  zip.urls <- c(NA, NA, NA, NA)
   for(i in 1:length(tmp.files)) {
 
     # check for no files
@@ -120,7 +120,9 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
         } else {
           zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.var],
                                             tmp.files[[i]]$data$files$url[which.var],
-                                            tmp.files[[i]]$data$files$size[which.var]))
+                                            tmp.files[[i]]$data$files$size[which.var],
+                                            rep(tmp.files[[i]]$data$release, 
+                                                length(tmp.files[[i]]$data$files$name[which.var]))))
         }
         
         which.read <- grep("readme", tmp.files[[i]]$data$files$name, fixed=T)[1]
@@ -129,7 +131,9 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
         } else {
           zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.read],
                                             tmp.files[[i]]$data$files$url[which.read],
-                                            tmp.files[[i]]$data$files$size[which.read]))
+                                            tmp.files[[i]]$data$files$size[which.read],
+                                            rep(tmp.files[[i]]$data$release, 
+                                                length(tmp.files[[i]]$data$files$name[which.read]))))
         }
         
       }
@@ -143,7 +147,9 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
         } else {
           zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.sens],
                                             tmp.files[[i]]$data$files$url[which.sens],
-                                            tmp.files[[i]]$data$files$size[which.sens]))
+                                            tmp.files[[i]]$data$files$size[which.sens],
+                                            rep(tmp.files[[i]]$data$release, 
+                                                length(tmp.files[[i]]$data$files$name[which.sens]))))
         }
         
       }
@@ -206,7 +212,9 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
 
       zip.urls <- rbind(zip.urls, cbind(unique.files$name[which.file],
                                         unique.files$url[which.file],
-                                        unique.files$size[which.file]))
+                                        unique.files$size[which.file],
+                                        rep(tmp.files[[i]]$data$release, 
+                                            length(unique.files$name[which.file]))))
 
     # if downloading everything for product-site-month, instead of specific files, get zips
     } else {
@@ -249,8 +257,9 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
         flnm <- gsub("inline; filename=", "", flnm, fixed=T)
         sz <- sum(tmp.files[[i]]$data$files$size[grep(pk, tmp.files[[i]]$data$files$name)], 
                   na.rm=T)
+        rel <- rep(tmp.files[[1]]$data$release, length(flnm))
         
-        zip.urls <- rbind(zip.urls, cbind(flnm, z, sz))
+        zip.urls <- rbind(zip.urls, cbind(flnm, z, sz, rel))
         
       } else {
       
@@ -294,7 +303,9 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
 
       zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.zip],
                                         tmp.files[[i]]$data$files$url[which.zip],
-                                        tmp.files[[i]]$data$files$size[which.zip]))
+                                        tmp.files[[i]]$data$files$size[which.zip],
+                                        rep(tmp.files[[i]]$data$release, 
+                                            length(tmp.files[[i]]$data$files$name[which.zip]))))
     }
     }
   }
@@ -311,10 +322,11 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
 
   # get size info
   zip.urls <- data.frame(zip.urls, row.names=NULL)
-  colnames(zip.urls) <- c("name", "URL", "size")
+  colnames(zip.urls) <- c("name", "URL", "size", "release")
   zip.urls$URL <- as.character(zip.urls$URL)
   zip.urls$name <- as.character(zip.urls$name)
   zip.urls$size <- as.character(zip.urls$size)
+  zip.urls$release <- as.character(zip.urls$release)
   
   # check for bad table name
   if(tabl!="all" & length(grep(paste("[.]", tabl, "[.]", sep=""), zip.urls$name))==0) {
