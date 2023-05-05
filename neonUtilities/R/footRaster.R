@@ -30,6 +30,8 @@
 #   2019-07-04 (Claire Lunch): created
 #   2020-03-06 (Claire Lunch and Chris Florian): updated to apply coordinate system to output raster
 #   2021-05-03 (Claire Lunch): correction; matrix transposed before creating raster
+#   2023-05-05 (Claire Lunch): Modified coordinate reference code to use sf and terra packages instead of sp and raster
+
 ##############################################################################################
 
 footRaster <- function(filepath) {
@@ -40,9 +42,9 @@ footRaster <- function(filepath) {
          \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
   }
   
-  # also check for raster package
-  if(!requireNamespace("raster", quietly=T)) {
-    stop("Package raster is required for this function to work. Install and re-try.")
+  # also check for terra package
+  if(!requireNamespace("terra", quietly=T)) {
+    stop("Package terra is required for this function to work. Install and re-try.")
   }
   
   files <- NA
@@ -226,39 +228,32 @@ footRaster <- function(filepath) {
   }
   
   # make raster stack of everything
-  rasterList <- lapply(allGrids, raster::raster)
-  masterRaster <- raster::stack(rasterList)
+  rasterList <- lapply(allGrids, terra::rast)
+  masterRaster <- terra::rast(rasterList)
   
   # if location data were consistent, apply scaling to stack
   if(locAttr$distReso!=0) {
     
     # set up location data to scale rasters
-    LatLong <- data.frame(X = locAttr$LonTow, Y = locAttr$LatTow)
-    sp::coordinates(LatLong) <- ~ X + Y # longitude first
+    LatLong <- cbind(longitude = locAttr$LonTow, latitude = locAttr$LatTow)
+    LatLong <- terra::vect(LatLong, crs="+proj=longlat +datum=WGS84")
     epsg.z <- relevant_EPSG$code[grep(paste("+proj=utm +zone=", 
                                             locAttr$ZoneUtm, " ", sep=""), 
                                       relevant_EPSG$prj4, fixed=T)]
-    if(utils::packageVersion("sp")<"1.4.2") {
-      sp::proj4string(LatLong) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
-      utmTow <- sp::spTransform(LatLong, sp::CRS(paste0("+proj=utm +zone=", 
-                                                        locAttr$ZoneUtm, "N +ellps=WGS84")))
-    } else {
-      raster::crs(LatLong) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
-      utmTow <- sp::spTransform(LatLong, sp::CRS(paste("+init=epsg:", epsg.z, sep='')))
-    }
-    
+    utmTow <- terra::project(LatLong, y=paste("EPSG:", epsg.z, sep=""))
+
     # adjust extent and coordinate system of raster stack
-    raster::extent(masterRaster) <- rbind(c(xmn = raster::xmin(utmTow) - 150.5*locAttr$distReso, 
-                                            xmx = raster::xmax(utmTow) + 150.5*locAttr$distReso),
-                                          c(ymn = raster::ymin(utmTow) - 150.5*locAttr$distReso, 
-                                            ymx = raster::ymax(utmTow) + 150.5*locAttr$distReso))
-    raster::crs(masterRaster) <- paste("+init=epsg:", epsg.z, sep='')
+    terra::ext(masterRaster) <- c(xmn = terra::ext(utmTow)[1] - 150.5*locAttr$distReso, 
+                                  xmx = terra::ext(utmTow)[2] + 150.5*locAttr$distReso,
+                                  ymn = terra::ext(utmTow)[3] - 150.5*locAttr$distReso, 
+                                  ymx = terra::ext(utmTow)[4] + 150.5*locAttr$distReso)
+    terra::crs(masterRaster) <- paste("EPSG:", epsg.z, sep="")
   }
   
   # add top layer raster to stack: mean of all layers
-  summaryRaster <- raster::mean(masterRaster, na.rm=T)
-  masterRaster <- raster::addLayer(summaryRaster, masterRaster)
-  names(masterRaster)[1] <- paste(site, "summary")
+  summaryRaster <- terra::mean(masterRaster, na.rm=T)
+  masterRaster <- c(summaryRaster, masterRaster)
+  names(masterRaster)[1] <- paste(site, "summary", sep=".")
   
   cat(messages)
   

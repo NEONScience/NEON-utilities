@@ -29,6 +29,7 @@
 # Changelog and author contributions / copyrights
 #   Claire Lunch (2018-02-19): original creation
 #   Christine Laney (2018-03-05): Added functionality to get new list of URLs if the old ones expire, during the download stream.
+#   Claire Lunch (2023-05-05): Modified UTM conversion at BLAN to use sf and terra packages instead of sp and raster
 
 ##############################################################################################
 
@@ -126,6 +127,12 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   # convert easting & northing coordinates for Blandy (BLAN)
   # Blandy contains plots in 18N and plots in 17N; flight data are all in 17N
   if(site=='BLAN' & length(which(easting<=250000))>0) {
+    
+    # check for spatial packages
+    if(!requireNamespace("terra", quietly=T)) {
+      stop("Package terra is required for this function to work at the BLAN site. Install and re-try.")
+    }
+    
     easting17 <- easting[which(easting>250000)]
     northing17 <- northing[which(easting>250000)]
 
@@ -133,23 +140,17 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     northing18 <- northing[which(easting<=250000)]
 
     df18 <- cbind(easting18, northing18)
-    df18 <- data.frame(df18)
-    names(df18) <- c('easting','northing')
+    colnames(df18) <- c("easting","northing")
 
-    sp::coordinates(df18) <- c('easting', 'northing')
-    
     epsg.z <- relevant_EPSG$code[grep("+proj=utm +zone=17", 
                                       relevant_EPSG$prj4, fixed=T)]
-    if(utils::packageVersion("sp")<"1.4.2") {
-      sp::proj4string(df18) <- sp::CRS('+proj=utm +zone=18N ellps=WGS84')
-      df18conv <- sp::spTransform(df18, sp::CRS('+proj=utm +zone=17N ellps=WGS84'))
-    } else {
-      raster::crs(df18) <- sp::CRS("+proj=utm +zone=18")
-      df18conv <- sp::spTransform(df18, sp::CRS(paste("+init=epsg:", epsg.z, sep='')))
-    }
 
-    easting <- c(easting17, df18conv$easting)
-    northing <- c(northing17, df18conv$northing)
+    df18 <- terra::vect(df18, crs="+proj=utm +zone=18")
+    df18conv <- terra::project(df18, y=paste("EPSG:", epsg.z, sep=""))
+    df18coords <- data.frame(terra::crds(df18conv))
+    
+    easting <- c(easting17, df18coords$x)
+    northing <- c(northing17, df18coords$y)
 
     cat('Blandy (BLAN) plots include two UTM zones, flight data are all in 17N.
         Coordinates in UTM zone 18N have been converted to 17N to download the correct tiles.
