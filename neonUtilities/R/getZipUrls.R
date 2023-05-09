@@ -257,7 +257,7 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
         flnm <- gsub("inline; filename=", "", flnm, fixed=T)
         sz <- sum(tmp.files[[i]]$data$files$size[grep(pk, tmp.files[[i]]$data$files$name)], 
                   na.rm=T)
-        rel <- rep(tmp.files[[1]]$data$release, length(flnm))
+        rel <- rep(tmp.files[[i]]$data$release, length(flnm))
         
         zip.urls <- rbind(zip.urls, cbind(flnm, z, sz, rel))
         
