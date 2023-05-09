@@ -395,6 +395,17 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
 
     }
   }
+  
+  # get release for each site-month downloaded
+  sit <- regmatches(zip.urls$name, regexpr(pattern="[.][A-Z]{4}[.]", zip.urls$name))
+  sit <- regmatches(sit, regexpr(pattern="[A-Z]{4}", sit))
+  dat <- regmatches(zip.urls$name, regexpr(pattern="20[0-9]{2}-[0-9]{2}", zip.urls$name))
+  rel <- data.frame(sit, dat)
+  rel$release <- zip.urls$release
+  rel <- unique(rel)
+  utils::write.csv(rel, file=paste(filepath, "/release_status_", 
+                            paste0(gsub("\\D", "", Sys.time()), collapse=""), ".csv", sep=""),
+                   row.names=F)
 
   utils::setTxtProgressBar(pb, 1)
   close(pb)
