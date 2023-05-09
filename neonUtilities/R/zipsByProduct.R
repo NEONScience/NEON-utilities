@@ -396,16 +396,21 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     }
   }
   
-  # get release for each site-month downloaded
-  sit <- regmatches(zip.urls$name, regexpr(pattern="[.][A-Z]{4}[.]", zip.urls$name))
-  sit <- regmatches(sit, regexpr(pattern="[A-Z]{4}", sit))
-  dat <- regmatches(zip.urls$name, regexpr(pattern="20[0-9]{2}-[0-9]{2}", zip.urls$name))
-  rel <- data.frame(sit, dat)
-  rel$release <- zip.urls$release
-  rel <- unique(rel)
-  utils::write.csv(rel, file=paste(filepath, "/release_status_", 
-                            paste0(gsub("\\D", "", Sys.time()), collapse=""), ".csv", sep=""),
-                   row.names=F)
+  # # get release for each site-month downloaded
+  # # this isn't actually the right move. For individual file downloads, need to get the 
+  # # release status of each file. Also, this will fail on site-all and lab files.
+  # # Does it work to do this for individual files and use the containing folder if 
+  # # zips were downloaded? I think that covers everything except neonstore
+  # # This currently fails in loadByProduct() because the .csv can't be unzipped
+  # sit <- regmatches(zip.urls$name, regexpr(pattern="[.][A-Z]{4}[.]", zip.urls$name))
+  # sit <- regmatches(sit, regexpr(pattern="[A-Z]{4}", sit))
+  # dat <- regmatches(zip.urls$name, regexpr(pattern="20[0-9]{2}-[0-9]{2}", zip.urls$name))
+  # rel <- data.frame(sit, dat)
+  # rel$release <- zip.urls$release
+  # rel <- unique(rel)
+  # utils::write.csv(rel, file=paste(filepath, "/release_status_", 
+  #                           paste0(gsub("\\D", "", Sys.time()), collapse=""), ".csv", sep=""),
+  #                  row.names=F)
 
   utils::setTxtProgressBar(pb, 1)
   close(pb)
