@@ -1,6 +1,6 @@
 Package: neonUtilities
-Version: 2.2.3.9000
-Date: 2023-05-05
+Version: 2.3.0.9000
+Date: 2023-05-11
 Title: Utilities for Working with NEON Data
 Authors@R: c(person("Claire","Lunch",email="clunch@battelleecology.org",role=c("aut","cre","ctb")), person("Christine","Laney",role=c("aut","ctb")), person("Nathan","Mietkiewicz",role=c("aut","ctb")), person("Eric","Sokol",role=c("aut","ctb")), person("Kaelin","Cawley",role=c("aut","ctb")), person("NEON (National Ecological Observatory Network)", role="aut"))
 Description: NEON data packages can be accessed through the NEON Data Portal <https://www.neonscience.org>
@@ -9,7 +9,7 @@ Description: NEON data packages can be accessed through the NEON Data Portal <ht
     can be accessed from the API. This package provides tools that aid in discovering, downloading, and reformatting 
     data prior to use in analyses. This includes downloading data via the API, merging data tables by type, and 
     converting formats. For more information, see the readme file at <https://github.com/NEONScience/NEON-utilities>.
-Depends: R (>= 3.6.0)
+Depends: R (>= 4.0.0)
 Imports: httr, jsonlite, downloader, data.table, utils, R.utils, stats, tidyr, stringr, pbapply, parallel, curl
 Suggests: rhdf5, terra, testthat
 License: AGPL-3

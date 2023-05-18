@@ -417,12 +417,12 @@ stackEddy <- function(filepath,
         } else {
           # combine all, then de-dup
           allTime <- data.table::rbindlist(list(timeSetInit, timeSetTemp), fill=TRUE)
-          timeSetInit <- unique(allTime, by=mergSet)
+          timeSetInit <- as.data.frame(unique(allTime, by=mergSet))
         }
       }
     }
     
-    varMergTabl <- as.data.frame(timeSetInit)
+    varMergTabl <- data.table::as.data.table(timeSetInit)
     
     # merge individual variable tables into one
     for(l in 1:length(timeMergPerSite)) {
@@ -433,9 +433,12 @@ stackEddy <- function(filepath,
       names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <- 
         substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)], 
                   11, nchar(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)]))
+      
+      timeMergPerSite[[l]] <- data.table::as.data.table(timeMergPerSite[[l]]
+                                                        [,-which(names(timeMergPerSite[[l]])=="timeEnd")])
 
       varMergTabl <- base::merge(varMergTabl, 
-                           timeMergPerSite[[l]][,-which(names(timeMergPerSite[[l]])=="timeEnd")],
+                           timeMergPerSite[[l]],
                            by=mergSet, all.x=T, all.y=F)
       idx <- idx + 1
       utils::setTxtProgressBar(pb3, idx/(length(timeMergPerSite)*length(sites)))
