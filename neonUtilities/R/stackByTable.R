@@ -74,7 +74,7 @@ stackByTable <- function(filepath, savepath=NA, folder=FALSE, saveUnzippedFiles=
   }
 
   if(folder==TRUE){
-    files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")
+    files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.|release_status")
     if(length(files)==0) {
       stop("Data files are not present in specified filepath.")
     }

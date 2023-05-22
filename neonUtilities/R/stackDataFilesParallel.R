@@ -46,6 +46,15 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   # filenames with full path
   filepaths <- findDatatables(folder = folder, fnames = T)
   
+  # get release file, if it exists
+  relfl <- grep("release_status", filepaths)
+  if(length(relfl)==1) {
+    reltab <- data.table::fread(filepaths[relfl],
+                                header=TRUE, encoding="UTF-8")
+  } else {
+    reltab <- NA
+  }
+  
   # handle per-sample tables separately
   if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", "DP1.20141.001") & 
      length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
@@ -194,6 +203,28 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             outputj <- data.table::fread(labpath[[1]], header=TRUE, encoding="UTF-8")
             outputj <- assignClasses(outputj, variables)
             outputj$publicationDate <- rep(labpath[[2]], nrow(outputj))
+            
+            # add column for release tag, if available
+            outputj$release <- rep(NA, nrow(outputj))
+            dir.splitName <- strsplit(dirname(filepaths[grep(x, filepaths)]), split = "\\.")
+            relind <- grep("RELEASE|PROVISIONAL|LATEST", dir.splitName[[1]])
+            if(length(relind)>0) {
+              outputj$release <- rep(dir.splitName[[1]][relind],
+                                     nrow(outputj))
+            } else {
+              if(all(!is.na(reltab))) {
+                if(basename(filepaths[grep(x, filepaths)]) %in% reltab$name) {
+                  outputj$release <- rep(reltab$release[which(reltab$name==
+                                                                basename(filepaths[grep(x, filepaths)]))],
+                                         nrow(outputj))
+                } else {
+                  outputj$release <- rep("undetermined", nrow(outputj))
+                }
+              } else {
+                outputj$release <- rep("undetermined", nrow(outputj))
+              }
+            }
+            
             return(outputj)
             }, filepaths=filepaths), fill=TRUE)
           
@@ -396,13 +427,21 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         # add column for release tag, if available
         tabtemp$release <- rep(NA, nrow(tabtemp))
         dir.splitName <- strsplit(dirname(x), split = "\\.")
-        pubd <- grep("[0-9]{8}T[0-9]{6}Z", dir.splitName[[1]])
-        if(identical(as.integer(pubd), 
-                     as.integer(length(dir.splitName[[1]])-1))) {
-          tabtemp$release <- rep(dir.splitName[[1]][length(dir.splitName[[1]])],
+        relind <- grep("RELEASE|PROVISIONAL|LATEST", dir.splitName[[1]])
+        if(length(relind)==1) {
+          tabtemp$release <- rep(dir.splitName[[1]][relind],
                                  nrow(tabtemp))
         } else {
-          tabtemp$release <- rep("undetermined", nrow(tabtemp))
+          if(all(!is.na(reltab))) {
+            if(basename(x) %in% reltab$name) {
+              tabtemp$release <- rep(reltab$release[which(reltab$name==basename(x))],
+                                     nrow(tabtemp))
+            } else {
+              tabtemp$release <- rep("undetermined", nrow(tabtemp))
+            }
+          } else {
+            tabtemp$release <- rep("undetermined", nrow(tabtemp))
+          }
         }
         
         return(tabtemp)
