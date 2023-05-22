@@ -347,7 +347,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   # get DOIs and generate citation(s)
   releases <- unique(releases)
   if("PROVISIONAL" %in% releases) {
-    cit <- try(getCitation(dpID=dpID), silent=TRUE)
+    cit <- try(getCitation(dpID=dpID, release="PROVISIONAL"), silent=TRUE)
     if(!inherits(cit, "try-error")) {
       base::write(cit, paste0(filepath, "/citation_", dpID, "_PROVISIONAL", ".txt"))
     }
@@ -357,12 +357,9 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   } else {
     if(length(grep("RELEASE", releases))==1) {
       rel <- releases[grep("RELEASE", releases)]
-      doi <- try(getNeonDOI(dpID=dpID, release=rel), silent=TRUE)
-      if(!inherits(doi, "try-error")) {
-        cit <- try(getCitation(doi=doi$DOI), silent=TRUE)
-        if(!inherits(cit, "try-error")) {
-          base::write(cit, paste0(filepath, "/citation_", dpID, "_", rel, ".txt"))
-        }
+      cit <- try(getCitation(dpID=dpID, release=rel), silent=TRUE)
+      if(!inherits(cit, "try-error")) {
+        base::write(cit, paste0(filepath, "/citation_", dpID, "_", rel, ".txt"))
       }
     }
   }

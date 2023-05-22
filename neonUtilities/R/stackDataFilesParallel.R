@@ -502,7 +502,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   # get DOIs and generate citation(s)
   releases <- unique(releases)
   if("PROVISIONAL" %in% releases) {
-    cit <- try(getCitation(dpID=dpID), silent=TRUE)
+    cit <- try(getCitation(dpID=dpID, release="PROVISIONAL"), silent=TRUE)
     if(!inherits(cit, "try-error")) {
       base::write(cit, paste0(folder, "/stackedFiles/citation_", dpnum, "_PROVISIONAL", ".txt"))
     }
@@ -515,12 +515,9 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       stop("Multiple data releases were stacked together. This is not appropriate, check your input data.")
     } else {
       rel <- releases[grep("RELEASE", releases)]
-      doi <- try(getNeonDOI(dpID=dpID, release=rel), silent=TRUE)
-      if(!inherits(doi, "try-error")) {
-        cit <- try(getCitation(doi=doi$DOI), silent=TRUE)
-        if(!inherits(cit, "try-error")) {
-          base::write(cit, paste0(folder, "/stackedFiles/citation_", dpnum, "_", rel, ".txt"))
-        }
+      cit <- try(getCitation(dpID=dpID, release=rel), silent=TRUE)
+      if(!inherits(cit, "try-error")) {
+        base::write(cit, paste0(folder, "/stackedFiles/citation_", dpnum, "_", rel, ".txt"))
       }
     }
   }
