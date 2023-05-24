@@ -9,6 +9,9 @@
 #'
 #' @keywords internal
 #' @param tab A table of SAE data
+#' @param use_fasttime Logical as to whether to use fasttime::fastPOSIXct to do
+#'                     datetime conversions. Increased speed does come at cost of
+#'                     decreased precision at the milliseconds level.
 #' @return The same table of SAE data, with time stamps converted and empty records representing a single day (filler records inserted during processing) removed.
 
 #' @references
@@ -18,21 +21,30 @@
 #   Claire Lunch (2019-11-08)
 ##############################################################################################
 
-eddyStampCheck <- function(tab){
+eddyStampCheck <- function(tab,
+                           use_fasttime = FALSE){
 
   # convert time stamps
   tBgnErr <- FALSE
   tEndErr <- FALSE
-  
-  tabBP <- try(fasttime::fastPOSIXct(tab$timeBgn, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+
+  if (use_fasttime) {
+    tabBP <- try(fasttime::fastPOSIXct(tab$timeBgn, tz='GMT'), silent=T)
+  } else {
+    tabBP <- try(as.POSIXct(tab$timeBgn, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+  }
   if(any(c(class(tabBP)=='try-error', all(is.na(tabBP))))) {
     tBgnErr <- TRUE
   }
-  tabEP <- try(fasttime::fastPOSIXct(tab$timeEnd, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+  if (use_fasttime) {
+    tabEP <- try(fasttime::fastPOSIXct(tab$timeEnd, tz='GMT'), silent=T)
+  } else {
+    tabEP <- try(as.POSIXct(tab$timeEnd, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+  }
   if(any(c(class(tabEP)=='try-error', all(is.na(tabEP))))) {
     tEndErr <- TRUE
   }
-  
+
   # if conversion failed, keep character time stamps and pass along message
   tabN <- tab
   err <- FALSE
@@ -41,19 +53,19 @@ eddyStampCheck <- function(tab){
   } else {
     tabN$timeBgn <- tabBP
   }
- 
+
   if(tEndErr) {
     err <- TRUE
   } else {
     tabN$timeEnd <- tabEP
   }
-  
+
   # if conversion was successful, check for single-day empty records
   if(err) {
     tabN <- tabN
   } else {
     days <- as.Date(tabN$timeBgn)
-    dayDup <- intersect(which(!base::duplicated(days)), 
+    dayDup <- intersect(which(!base::duplicated(days)),
                         which(!base::duplicated(days, fromLast=T)))
     if(length(dayDup)==0) {
       tabN <- tabN
@@ -71,7 +83,7 @@ eddyStampCheck <- function(tab){
       }
     }
   }
-  
+
   return(list(tabN, err))
 }
 

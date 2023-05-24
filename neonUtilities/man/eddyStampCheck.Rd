@@ -4,10 +4,14 @@
 \alias{eddyStampCheck}
 \title{Convert date stamps from character and check for only one record in a day}
 \usage{
-eddyStampCheck(tab)
+eddyStampCheck(tab, use_fasttime = FALSE)
 }
 \arguments{
 \item{tab}{A table of SAE data}
+
+\item{use_fasttime}{Logical as to whether to use fasttime::fastPOSIXct to do
+datetime conversions. Increased speed does come at cost of
+decreased precision at the milliseconds level.}
 }
 \value{
 The same table of SAE data, with time stamps converted and empty records representing a single day (filler records inserted during processing) removed.
