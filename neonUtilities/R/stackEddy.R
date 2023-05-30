@@ -260,6 +260,70 @@ stackEddy <- function(filepath,
     rownames(variables) <- 1:nrow(variables)
   }
   
+  # convert all time stamps to time format, then filter out instances with:
+  # 1) only one record for a day
+  # 2) all values = NaN
+  # these are instances when a sensor was offline, and they don't join correctly
+  err <- FALSE
+  for(ti in 1:length(tableList)) {
+    tableList[[ti]] <- lapply(tableList[[ti]], function(x) {
+      tabtemp <- eddyStampCheck(x)
+      if(tabtemp[[2]]) {
+        err <- TRUE
+      }
+      return(tabtemp[[1]])
+    })
+  }
+  if(err) {
+    message("Some time stamps could not be converted. Variable join may be affected; check data carefully for disjointed time stamps.")
+  }
+  
+  # within each site-month set, join matching tables
+  # need to set up list for outputs - each item in tableList will have several output tables. nested list?
+  for(tb in 1:length(tableList)) {
+    
+    namesSpl <- data.frame(matrix(unlist(strsplit(names(tableList[[tb]]), split="/", fixed=T)), 
+                                  nrow=length(names(tableList[[tb]])), byrow=T))
+    nc <- ncol(namesSpl)
+    
+    # dp01 and dp02 have sensor levels
+    if(nc==6) {
+      
+      # find sensor level sets
+      sens <- unique(namesSpl$X5)
+      
+      # join for each sensor level
+      for(si in sens) {
+        
+        # get all tables for a sensor level and get variable names
+        inds <- which(namesSpl$X5==si)
+        tbsub <- tableList[[tb]][inds]
+        nmsub <- paste(namesSpl$X3[inds], namesSpl$X4[inds], namesSpl$X6[inds], sep=".")
+        
+        # get consensus time stamps
+        mergTabl <- timeStampSet(tbsub)
+        
+        # rename and merge
+        for(ib in 1:length(tbsub)) {
+          names(tbsub[[ib]])[grep("timeBgn|timeEnd", names(tbsub[[ib]]), invert=TRUE)] <-
+            paste(nmsub[ib], names(tbsub[[ib]])[grep("timeBgn|timeEnd", names(tbsub[[ib]]), invert=TRUE)],
+                  sep=".")
+          
+          tbsub[[ib]] <- data.table::as.data.table(tbsub[[ib]][,-which(names(tbsub[[ib]])=="timeEnd")])
+          
+          mergTabl <- base::merge(mergTabl, 
+                                  tbsub[[ib]],
+                                  by="timeBgn", all.x=T, all.y=F)
+          # need to retain sensor position index, it's lost after this
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+  
   # make empty, named list for the merged data tables
   tabs <- character()
   for(k in 1:length(tableList)) {
@@ -296,22 +360,6 @@ stackEddy <- function(filepath,
   }
   close(pb2)
   
-  # convert all time stamps to time format, then filter out instances with:
-  # 1) only one record for a day
-  # 2) all values = NaN
-  # these are instances when a sensor was offline, and they don't join correctly
-  err <- FALSE
-  timeMergList <- lapply(timeMergList, function(x) {
-    tabtemp <- eddyStampCheck(x)
-    if(tabtemp[[2]]) {
-      err <- TRUE
-    }
-    return(tabtemp[[1]])
-  })
-  if(err) {
-    message("Some time stamps could not be converted. Variable join may be affected; check data carefully for disjointed time stamps.")
-  }
-
   # for dp01 and dp02, stack tower levels and calibration gases
   if(level=="dp01" | level=="dp02") {
     namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)), 

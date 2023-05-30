@@ -25,11 +25,11 @@ eddyStampCheck <- function(tab){
   tEndErr <- FALSE
   
   tabBP <- try(as.POSIXct(tab$timeBgn, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
-  if(any(c(class(tabBP)=='try-error', all(is.na(tabBP))))) {
+  if(any(c(inherits(tabBP,'try-error'), all(is.na(tabBP))))) {
     tBgnErr <- TRUE
   }
   tabEP <- try(as.POSIXct(tab$timeEnd, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
-  if(any(c(class(tabEP)=='try-error', all(is.na(tabEP))))) {
+  if(any(c(inherits(tabBP,'try-error'), all(is.na(tabEP))))) {
     tEndErr <- TRUE
   }
   
