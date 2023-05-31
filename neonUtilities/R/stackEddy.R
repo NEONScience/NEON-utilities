@@ -261,6 +261,7 @@ stackEddy <- function(filepath,
     nc <- ncol(namesSpl)
     
     # dp01 and dp02 have sensor levels
+    # need to add code for dp03 and dp04 - not handled at all yet
     if(nc==6) {
       
       # find sensor level sets
@@ -289,6 +290,7 @@ stackEddy <- function(filepath,
           
           tbsub[[ib]] <- data.table::as.data.table(tbsub[[ib]][,-which(names(tbsub[[ib]])=="timeEnd")])
           
+          # switch to data.table merge
           mergTabl <- base::merge(mergTabl, 
                                   tbsub[[ib]],
                                   by="timeBgn", all.x=T, all.y=F)
