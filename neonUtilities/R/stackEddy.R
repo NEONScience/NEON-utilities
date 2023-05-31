@@ -224,41 +224,7 @@ stackEddy <- function(filepath,
   close(pb)
   
   # get variable units
-  variables <- character(5)
-  for(p in 1:length(tableList[[1]])) {
-    if(!is.null(attributes(tableList[[1]][[p]])$unit)) {
-      var.nm <- strsplit(names(tableList[[1]])[p], 
-                         split="/", fixed=T)[[1]][c(3,4,length(strsplit(names(tableList[[1]])[p], 
-                                                             split="/", fixed=T)[[1]]))]
-      if(length(attributes(tableList[[1]][[p]])$unit)>1) {
-        var.nm <- matrix(var.nm, ncol=3, nrow=length(attributes(tableList[[1]][[p]])$unit), byrow=T)
-        if(length(attributes(tableList[[1]][[p]])$unit)==length(attributes(tableList[[1]][[p]])$names)) {
-          var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$names)
-        } else {
-          if("index" %in% attributes(tableList[[1]][[p]])$names) {
-            var.nm <- cbind(var.nm, 
-                            attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names=="index")])
-          } else {
-            var.nm <- cbind(var.nm, 
-                            attributes(tableList[[1]][[p]])$names[-which(attributes(tableList[[1]][[p]])$names 
-                                                                         %in% c("timeBgn","timeEnd"))])
-          }
-        }
-        var.nm <- cbind(var.nm, attributes(tableList[[1]][[p]])$unit)
-        variables <- rbind(variables, var.nm)
-      } else {
-        variables <- rbind(variables, c(var.nm, "", attributes(tableList[[1]][[p]])$unit))
-      }
-    }
-  }
-  variables <- data.frame(unique(variables))
-  if(nrow(variables)==1) {
-    variables <- NA
-  } else {
-    variables <- variables[-1,]
-    colnames(variables) <- c("category","system","variable","stat","units")
-    rownames(variables) <- 1:nrow(variables)
-  }
+  variables <- getVariablesEddy(tableList)
   
   # convert all time stamps to time format, then filter out instances with:
   # 1) only one record for a day
@@ -279,7 +245,15 @@ stackEddy <- function(filepath,
   }
   
   # within each site-month set, join matching tables
-  # need to set up list for outputs - each item in tableList will have several output tables. nested list?
+  # create empty, named list for the tables
+  mergTableList <- vector("list", length(tableList))
+  names(mergTableList) <- names(tableList)
+  
+  # set up progress bar
+  writeLines(paste0("Joining data variables by file"))
+  pb2 <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb2, 0)
+  
   for(tb in 1:length(tableList)) {
     
     namesSpl <- data.frame(matrix(unlist(strsplit(names(tableList[[tb]]), split="/", fixed=T)), 
@@ -291,6 +265,10 @@ stackEddy <- function(filepath,
       
       # find sensor level sets
       sens <- unique(namesSpl$X5)
+      
+      # create list for merged tables, nested in mergTableList
+      mergTableList[[tb]] <- vector("list", length(sens))
+      names(mergTableList[[tb]]) <- sens
       
       # join for each sensor level
       for(si in sens) {
@@ -314,96 +292,61 @@ stackEddy <- function(filepath,
           mergTabl <- base::merge(mergTabl, 
                                   tbsub[[ib]],
                                   by="timeBgn", all.x=T, all.y=F)
-          # need to retain sensor position index, it's lost after this
         }
+        
+        mergTableList[[tb]][[si]] <- mergTabl
         
       }
       
     }
+    utils::setTxtProgressBar(pb2, tb/length(tableList))
     
-  }
-  
-  
-  # make empty, named list for the merged data tables
-  tabs <- character()
-  for(k in 1:length(tableList)) {
-    tabs <- c(tabs, names(tableList[[k]]))
-  }
-  tabs <- unique(tabs)
-  timeMergList <- vector("list", length(tabs))
-  names(timeMergList) <- tabs
-
-  # set up progress bar
-  writeLines(paste0("Stacking data tables by month"))
-  pb2 <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb2, 0)
-  
-  # concatenate tables
-  for(j in 1:length(timeMergList)) {
-    
-    # table to concatenate
-    nm <- base::names(timeMergList)[j]
-    
-    # subset to one site at a time
-    tableListSub <- tableList[base::grep(substring(nm, 1, 4), base::names(tableList))]
-
-    # go through list of tables for the site, extract the table that matches current table name
-    tableListToMerge <- vector('list', length(tableListSub))
-    for(k in 1:length(tableListSub)) {
-      tableListToMerge[[k]] <- tableListSub[[k]][[nm]]
-    }
-    
-    # stack list of tables with matching table name
-    timeMergList[[j]] <- data.frame(data.table::rbindlist(tableListToMerge, fill=T))
-    
-    utils::setTxtProgressBar(pb2, j/length(timeMergList))
   }
   close(pb2)
   
   # for dp01 and dp02, stack tower levels and calibration gases
   if(level=="dp01" | level=="dp02") {
-    namesSpl <- data.frame(matrix(unlist(strsplit(names(timeMergList), split="/", fixed=T)), 
-                       nrow=length(names(timeMergList)), byrow=T))
-    verSpl <- tidyr::separate(namesSpl, col="X5", 
-                              into=c("hor", "ver", "tmi"), 
-                              sep="_", fill="left")
     
-    # add hor and ver index to tables
-    for(n in 1:length(timeMergList)) {
-      verticalPosition <- rep(verSpl$ver[n], nrow(timeMergList[[n]]))
-      horizontalPosition <- rep(verSpl$hor[n], nrow(timeMergList[[n]]))
-      timeMergList[[n]] <- cbind(horizontalPosition, verticalPosition, timeMergList[[n]])
+    for(ni in 1:length(mergTableList)) {
+      for(mi in 1:length(mergTableList[[ni]])) {
+
+        # get indices from table names
+        verSpl <- tidyr::separate_wider_delim(data.frame(x=names(mergTableList[[ni]])[mi]), 
+                                              cols=x,
+                                              delim="_", names=c("hor", "ver", "tmi"),
+                                              too_few="align_end")
+        
+        # append columns with indices
+        verticalPosition <- rep(verSpl$ver, nrow(mergTableList[[ni]][[mi]]))
+        horizontalPosition <- rep(verSpl$hor, nrow(mergTableList[[ni]][[mi]]))
+        mergTableList[[ni]][[mi]] <- cbind(horizontalPosition, verticalPosition, mergTableList[[ni]][[mi]])
+      }
     }
     
-    # next: stack everything with names that match when index is excluded
-    # timeMergList becomes list of the stacked, renamed objects
-    profNames <- apply(verSpl[,grep("X", names(verSpl))], 1, paste0, collapse="/")
-    profTabs <- unique(profNames)
+    # stack everything within site and month into a new list
+    verMergList <- vector("list", length(mergTableList))
+    names(verMergList) <- names(mergTableList)
     
-    # make empty, named list for the merged data tables
-    verMergList <- vector("list", length(profTabs))
-    names(verMergList) <- profTabs
-    
-    for(o in 1:length(verMergList)) {
-
-      # table to concatenate
-      nm <- names(verMergList)[o]
-      
-      # get matching tables
-      verListSub <- timeMergList[which(profNames==nm)]
-      
-      # stack contents
-      verMergList[[o]] <- data.frame(data.table::rbindlist(verListSub, fill=T))
+    for(vi in 1:length(verMergList)) {
+      verMergList[[vi]] <- data.table::rbindlist(mergTableList[[vi]], fill=TRUE)
     }
     
-    timeMergList <- verMergList
-
+  } else {
+    
+    verMergList <- mergTableList # not quite right - tables are nested one level too deep
+    
   }
   
   # set up tables for data and metadata
-  sites <- unique(substring(names(timeMergList), 1, 4))
+  # stack months within each site
+  sites <- regmatches(x=names(verMergList), m=regexpr(pattern="[.][A-Z]{4}[.]", text=names(verMergList)))
+  sites <- gsub(pattern=".", replacement="", x=sites, fixed=TRUE)
+  sites <- unique(sites)
+  
+  # which attributes should be extracted?
+  vNames <- unique(unlist(lapply(verMergList, names)))
   if(metadata) {
-    if(any(grepl("rtioMoleDryCo2Vali", names(timeMergList)))) {
+    if(any(grepl("rtioMoleDryCo2Vali", vNames))) {
       varNames <- c(sites, "variables", "objDesc", "siteAttributes", 
                     "codeAttributes", "validationAttributes", 
                     "issueLog", "scienceReviewFlags")
@@ -420,89 +363,30 @@ stackEddy <- function(filepath,
     numTabs <- 4
   }
   
+  # set up progress bar
+  writeLines(paste0("Stacking files by month"))
+  pb3 <- utils::txtProgressBar(style=3)
+  utils::setTxtProgressBar(pb3, 0)
+  
+  # set up final list
   varMergList <- vector("list", length(sites)+numTabs)
   names(varMergList) <- varNames
   
-  # set up progress bar
-  writeLines(paste0("Joining data variables"))
-  pb3 <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb3, 0)
-  idx <- 0
-  
-  # make one merged table per site
-  for(m in 1:I(length(varMergList)-numTabs)) {
+  for(o in 1:length(sites)) {
     
-    timeMergPerSite <- timeMergList[grep(sites[m], names(timeMergList))]
-
+    mergSubList <- verMergList[grep(o, names(verMergList))]
+    varMergList[[o]] <- data.table::rbindlist(mergSubList, fill=TRUE)
     if(level=="dp01" | level=="dp02") {
-      nameSet <- c("timeBgn","timeEnd","horizontalPosition","verticalPosition")
-      mergSet <- c("horizontalPosition","verticalPosition","timeBgn")
+      varMergList[[o]] <- varMergList[[o]][order(varMergList[[o]]$horizontalPosition, 
+                                                 varMergList[[o]]$verticalPosition, 
+                                                 varMergList[[o]]$timeBgn),]
     } else {
-      nameSet <- c("timeBgn","timeEnd")
-      mergSet <- "timeBgn"
-    }
-
-    # get a set of time stamps to initiate the table. leave out qfqm to exclude 
-    # filler records created as placeholders for days with no data
-    timeSet <- timeMergPerSite[grep("qfqm", names(timeMergPerSite), invert=T)]
-    # turbulent flux and footprint end time stamps don't quite match the others
-    timeSet <- timeSet[grep("turb", names(timeSet), invert=T)]
-    timeSet <- timeSet[grep("foot", names(timeSet), invert=T)]
-    
-    # initiate the table with consensus set of time stamps
-    timeSetInit <- timeSet[[1]][,nameSet]
-    if(length(timeSet)==1) {
-      timeSetInit <- timeSetInit
-    } else {
-      for(q in 2:length(timeSet)) {
-        # check for additional start time stamps
-        timeSetTemp <- timeSet[[q]][,nameSet]
-        timeSetTempMerg <- data.table::as.data.table(timeSetTemp[,mergSet])
-        timeSetInitMerg <- data.table::as.data.table(timeSetInit[,mergSet])
-        misTime <- data.table::fsetdiff(timeSetTempMerg, timeSetInitMerg)
-        if(nrow(misTime)==0) {
-          timeSetInit <- timeSetInit
-        } else {
-          # combine all, then de-dup
-          allTime <- data.table::rbindlist(list(timeSetInit, timeSetTemp), fill=TRUE)
-          timeSetInit <- as.data.frame(unique(allTime, by=mergSet))
-        }
-      }
+      varMergList[[o]] <- varMergList[[o]][order(varMergList[[o]]$timeBgn),]
     }
     
-    varMergTabl <- data.table::as.data.table(timeSetInit)
-    
-    # merge individual variable tables into one
-    for(l in 1:length(timeMergPerSite)) {
-      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <- 
-        paste(names(timeMergPerSite)[l], names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)],
-              sep=".")
-      names(timeMergPerSite[[l]]) <- gsub("/", ".", names(timeMergPerSite[[l]]), fixed=T)
-      names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)] <- 
-        substring(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)], 
-                  11, nchar(names(timeMergPerSite[[l]])[which(!names(timeMergPerSite[[l]]) %in% nameSet)]))
-      
-      timeMergPerSite[[l]] <- data.table::as.data.table(timeMergPerSite[[l]]
-                                                        [,-which(names(timeMergPerSite[[l]])=="timeEnd")])
-
-      varMergTabl <- base::merge(varMergTabl, 
-                           timeMergPerSite[[l]],
-                           by=mergSet, all.x=T, all.y=F)
-      idx <- idx + 1
-      utils::setTxtProgressBar(pb3, idx/(length(timeMergPerSite)*length(sites)))
-    }
-    if(level=="dp01" | level=="dp02") {
-      varMergTabl <- varMergTabl[order(varMergTabl$horizontalPosition, 
-                                       varMergTabl$verticalPosition, 
-                                       varMergTabl$timeBgn),]
-    } else {
-      varMergTabl <- varMergTabl[order(varMergTabl$timeBgn),]
-    }
-    varMergList[[m]] <- varMergTabl
+    utils::setTxtProgressBar(pb3, o/length(sites))
   }
-  utils::setTxtProgressBar(pb3, 1)
   close(pb3)
-
   
   # attributes, objDesc, SRF table, and issue log
   writeLines(paste0("Getting metadata tables"))

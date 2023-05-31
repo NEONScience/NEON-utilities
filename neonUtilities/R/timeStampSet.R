@@ -37,15 +37,15 @@ timeStampSet <- function(tabList){
     for(q in 2:length(timeSet)) {
       # check for additional start time stamps
       timeSetTemp <- timeSet[[q]][,nameSet]
-      timeSetTempMerg <- data.table::as.data.table(timeSetTemp[,mergSet])
-      timeSetInitMerg <- data.table::as.data.table(timeSetInit[,mergSet])
+      timeSetTempMerg <- data.table::as.data.table(timeSetTemp[,"timeBgn"])
+      timeSetInitMerg <- data.table::as.data.table(timeSetInit[,"timeBgn"])
       misTime <- data.table::fsetdiff(timeSetTempMerg, timeSetInitMerg)
       if(nrow(misTime)==0) {
         timeSetInit <- timeSetInit
       } else {
         # combine all, then de-dup
         allTime <- data.table::rbindlist(list(timeSetInit, timeSetTemp), fill=TRUE)
-        timeSetInit <- as.data.frame(unique(allTime, by=mergSet))
+        timeSetInit <- as.data.frame(unique(allTime, by="timeBgn"))
       }
     }
   }
