@@ -261,7 +261,6 @@ stackEddy <- function(filepath,
     nc <- ncol(namesSpl)
     
     # dp01 and dp02 have sensor levels
-    # need to add code for dp03 and dp04 - not handled at all yet
     if(nc==6) {
       
       # find sensor level sets
@@ -290,7 +289,6 @@ stackEddy <- function(filepath,
           
           tbsub[[ib]] <- data.table::as.data.table(tbsub[[ib]][,-which(names(tbsub[[ib]])=="timeEnd")])
           
-          # switch to data.table merge
           mergTabl <- base::merge(mergTabl, 
                                   tbsub[[ib]],
                                   by="timeBgn", all.x=T, all.y=F)
@@ -299,6 +297,30 @@ stackEddy <- function(filepath,
         mergTableList[[tb]][[si]] <- mergTabl
         
       }
+      
+    } else {
+      
+      # dp03 and dp04 - no sensor levels
+      
+      # get consensus time stamps
+      tbsub <- tableList[[tb]]
+      mergTabl <- timeStampSet(tbsub)
+      nmsub <- paste(namesSpl$X3, namesSpl$X4, namesSpl$X5, sep=".")
+      
+      # rename and merge
+      for(ibl in 1:length(tbsub)) {
+        names(tbsub[[ibl]])[grep("timeBgn|timeEnd", names(tbsub[[ibl]]), invert=TRUE)] <-
+          paste(nmsub[ibl], names(tbsub[[ibl]])[grep("timeBgn|timeEnd", names(tbsub[[ibl]]), invert=TRUE)],
+                sep=".")
+        
+        tbsub[[ibl]] <- data.table::as.data.table(tbsub[[ibl]][,-which(names(tbsub[[ibl]])=="timeEnd")])
+        
+        mergTabl <- base::merge(mergTabl, 
+                                tbsub[[ibl]],
+                                by="timeBgn", all.x=T, all.y=F)
+      }
+      
+      mergTableList[[tb]] <- mergTabl
       
     }
     utils::setTxtProgressBar(pb2, tb/length(tableList))
@@ -314,7 +336,7 @@ stackEddy <- function(filepath,
 
         # get indices from table names
         verSpl <- tidyr::separate_wider_delim(data.frame(x=names(mergTableList[[ni]])[mi]), 
-                                              cols=x,
+                                              cols="x",
                                               delim="_", names=c("hor", "ver", "tmi"),
                                               too_few="align_end")
         
@@ -335,7 +357,7 @@ stackEddy <- function(filepath,
     
   } else {
     
-    verMergList <- mergTableList # not quite right - tables are nested one level too deep
+    verMergList <- mergTableList
     
   }
   
@@ -376,14 +398,14 @@ stackEddy <- function(filepath,
   
   for(o in 1:length(sites)) {
     
-    mergSubList <- verMergList[grep(o, names(verMergList))]
+    mergSubList <- verMergList[grep(sites[o], names(verMergList))]
     varMergList[[o]] <- data.table::rbindlist(mergSubList, fill=TRUE)
     if(level=="dp01" | level=="dp02") {
-      varMergList[[o]] <- varMergList[[o]][order(varMergList[[o]]$horizontalPosition, 
+      varMergList[[o]] <- as.data.frame(varMergList[[o]][order(varMergList[[o]]$horizontalPosition, 
                                                  varMergList[[o]]$verticalPosition, 
-                                                 varMergList[[o]]$timeBgn),]
+                                                 varMergList[[o]]$timeBgn),])
     } else {
-      varMergList[[o]] <- varMergList[[o]][order(varMergList[[o]]$timeBgn),]
+      varMergList[[o]] <- as.data.frame(varMergList[[o]][order(varMergList[[o]]$timeBgn),])
     }
     
     utils::setTxtProgressBar(pb3, o/length(sites))
