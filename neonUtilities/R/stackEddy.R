@@ -12,6 +12,7 @@
 #' @param var The variable set to extract. Can be any of the variables in the "name" level or the "system" level of the H5 file; use the getVarsEddy() function to see the available variables. From the inputs, all variables from "name" and all variables from "system" will be returned, but if variables from both "name" and "system" are specified, the function will return only the intersecting set. This allows the user to, e.g., return only the pressure data ("pres") from the CO2 storage system ("co2Stor"), instead of all the pressure data from all instruments.  [character]
 #' @param avg The averaging interval to extract, in minutes [numeric]
 #' @param metadata Should the output include metadata from the attributes of the H5 files? Defaults to false. Even when false, variable definitions, issue logs, and science review flags will be included. [logical]
+#' @param use_fasttime Should the fasttime package be used to convert time stamps to time format? Decreases stacking time but can introduce imprecision at the millisecond level. Defaults to false. [logical]
 
 #' @details Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
 #' For data product levels 2-4 (dp02, dp03, dp04), joins all available data, except for the flux footprint data in the expanded package.
@@ -39,12 +40,18 @@ stackEddy <- function(filepath,
                       level="dp04", 
                       var=NA, 
                       avg=NA,
-                      metadata=FALSE) {
+                      metadata=FALSE,
+                      use_fasttime=FALSE) {
   
   # first check for rhdf5 package
   if(!requireNamespace("rhdf5", quietly=T)) {
     stop("Package rhdf5 is required for this function to work.
          \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
+  }
+  
+  # also check for fasttime package, if used
+  if(use_fasttime & !requireNamespace("fasttime", quietly=T)) {
+    stop("Parameter use_fasttime is TRUE but fasttime package is not installed. Install and re-try.")
   }
   
   files <- NA
@@ -233,7 +240,7 @@ stackEddy <- function(filepath,
   err <- FALSE
   for(ti in 1:length(tableList)) {
     tableList[[ti]] <- lapply(tableList[[ti]], function(x) {
-      tabtemp <- eddyStampCheck(x)
+      tabtemp <- eddyStampCheck(x, use_fasttime=use_fasttime)
       if(tabtemp[[2]]) {
         err <- TRUE
       }

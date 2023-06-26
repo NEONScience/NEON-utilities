@@ -9,6 +9,7 @@
 #'
 #' @keywords internal
 #' @param tab A table of SAE data
+#' @param use_fasttime Should the fasttime package be used to convert time stamps?
 #' @return The same table of SAE data, with time stamps converted and empty records representing a single day (filler records inserted during processing) removed.
 
 #' @references
@@ -18,17 +19,25 @@
 #   Claire Lunch (2019-11-08)
 ##############################################################################################
 
-eddyStampCheck <- function(tab){
+eddyStampCheck <- function(tab, 
+                           use_fasttime=FALSE){
 
   # convert time stamps
   tBgnErr <- FALSE
   tEndErr <- FALSE
   
-  tabBP <- try(as.POSIXct(tab$timeBgn, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+  if(use_fasttime) {
+    tabBP <- try(fasttime::fastPOSIXct(tab$timeBgn, tz='GMT'), silent=T)
+    tabEP <- try(fasttime::fastPOSIXct(tab$timeEnd, tz='GMT'), silent=T)
+  } else {
+    tabBP <- try(as.POSIXct(tab$timeBgn, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+    tabEP <- try(as.POSIXct(tab$timeEnd, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+  }
+  
   if(any(c(inherits(tabBP,'try-error'), all(is.na(tabBP))))) {
     tBgnErr <- TRUE
   }
-  tabEP <- try(as.POSIXct(tab$timeEnd, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+  
   if(any(c(inherits(tabBP,'try-error'), all(is.na(tabEP))))) {
     tEndErr <- TRUE
   }
@@ -48,7 +57,7 @@ eddyStampCheck <- function(tab){
     tabN$timeEnd <- tabEP
   }
   
-  # if conversion was successful, check for single-day empty records
+  # if conversion was successful, check for single-day empty records and remove
   if(err) {
     tabN <- tabN
   } else {
