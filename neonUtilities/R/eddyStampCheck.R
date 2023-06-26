@@ -52,9 +52,9 @@ eddyStampCheck <- function(tab){
   if(err) {
     tabN <- tabN
   } else {
-    days <- as.Date(tabN$timeBgn)
-    dayDup <- intersect(which(!base::duplicated(days)), 
-                        which(!base::duplicated(days, fromLast=T)))
+    dayDiff <- base::as.difftime(tabEP - tabBP)
+    secDiff <- base::abs(base::as.numeric(dayDiff, units="secs"))
+    dayDup <- which(secDiff >= 86399)
     if(length(dayDup)==0) {
       tabN <- tabN
     } else {
