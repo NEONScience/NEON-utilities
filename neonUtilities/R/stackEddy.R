@@ -55,6 +55,7 @@ stackEddy <- function(filepath,
   }
   
   files <- NA
+  releases <- NA
   # check for vector of files as input
   if(length(filepath)>1) {
     if(length(grep(".h5$", filepath))==length(filepath)) {
@@ -73,9 +74,27 @@ stackEddy <- function(filepath,
     if(!dir.exists(outpath)) {
       dir.create(outpath)
     }
-    if(length(grep(".zip", utils::unzip(filepath, list=T)$Name, fixed=T))>0) {
+    if(length(grep(".zip", utils::unzip(filepath, list=TRUE)$Name, fixed=TRUE))>0) {
       utils::unzip(filepath, exdir=outpath)
     } else {
+      # get release info before discarding file paths
+      allDirs <- dirname(utils::unzip(filepath, list=TRUE)$Name)
+      dir.splitName <- strsplit(allDirs, split = "\\.")
+      release.files <- unlist(lapply(dir.splitName, 
+                                       FUN=function(x){grep(pattern="RELEASE|PROVISIONAL|LATEST", 
+                                                            x=x, value=TRUE)}))
+      relind <- grep(pattern="RELEASE|PROVISIONAL|LATEST", x=allDirs)
+      release.status <- cbind(allDirs[relind], release.files)
+      names(release.status) <- c("name","release")
+      releases <- unique(release.files)
+      
+      # write release status file
+      utils::write.csv(release.status, file=paste(outpath, "/release_status_",
+                                           paste0(gsub("\\D", "", Sys.time()), 
+                                                  collapse=""), ".csv", sep=""),
+                       row.names=FALSE)
+      
+      # unzip
       utils::unzip(filepath, exdir=outpath, junkpaths=T)
     }
     filepath <- outpath
@@ -124,6 +143,45 @@ stackEddy <- function(filepath,
   # check for no files
   if(identical(length(files), as.integer(0))) {
     stop("No .h5 files found in specified file path. Check the inputs and file contents.")
+  }
+  
+  # check for original zip files and use to determine releases and citations
+  if(all(is.na(releases))) {
+    allFiles <- list.files(filepath, recursive=TRUE, full.names=TRUE)
+    relfl <- grep(pattern="release_status", x=allFiles, value=TRUE)
+    if(length(relfl)==1) {
+      reltab <- data.table::fread(relfl,
+                                  header=TRUE, encoding="UTF-8")
+      releases <- unique(reltab$release)
+    } else {
+      splitName <- strsplit(allFiles, split = "\\.")
+      releases <- unique(unlist(lapply(splitName, 
+                                       FUN=function(x){grep(pattern="RELEASE|PROVISIONAL|LATEST", 
+                                                            x=x, value=TRUE)})))
+    }
+  }
+  
+  # get DOIs and generate citation(s)
+  citP <- NA
+  citR <- NA
+  if("PROVISIONAL" %in% releases) {
+    citP <- try(getCitation(dpID="DP4.00200.001", release="PROVISIONAL"), silent=TRUE)
+    if(inherits(citP, "try-error")) {
+      citP <- NA
+    }
+  }
+  if(length(grep("RELEASE", releases))==0) {
+    releases <- releases
+  } else {
+    if(length(grep("RELEASE", releases))>1) {
+      stop("Attempting to stack multiple data releases together. This is not appropriate, check your input data.")
+    } else {
+      rel <- releases[grep("RELEASE", releases)]
+      citR <- try(getCitation(dpID="DP4.00200.001", release=rel), silent=TRUE)
+      if(inherits(citR, "try-error")) {
+        citR <- NA
+      }
+    }
   }
   
   # determine basic vs expanded package and check for inconsistencies
@@ -535,6 +593,18 @@ stackEddy <- function(filepath,
   
   utils::setTxtProgressBar(pb4, 1)
   close(pb4)
+  
+  # add citations to output
+  if(!is.na(citP)) {
+    vlen <- length(varMergList)
+    varMergList[[vlen+1]] <- citP
+    names(varMergList)[vlen+1] <- "citation_00200_PROVISIONAL"
+  }
+  if(!is.na(citR)) {
+    vlen <- length(varMergList)
+    varMergList[[vlen+1]] <- citR
+    names(varMergList)[vlen+1] <- paste("citation_00200_", rel, sep="")
+  }
   
   return(varMergList)
 }
