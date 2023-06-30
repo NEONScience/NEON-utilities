@@ -9,9 +9,11 @@ The `neonUtilities` R package provides utilities for discovering, downloading, a
 
 `neonUtilities` is available [on CRAN](https://CRAN.R-project.org/package=neonUtilities) and most users will want to install it from there. If you want to use the current development version, you can install from GitHub, but be warned that the version here may not be stable.
 
-This package was developed on top of the deprecated `neonDataStackR` package; change logs from that package are included below.
+A cheat sheet for the `neonUtilities` package is available [here](https://www.neonscience.org/sites/default/files/cheat-sheet-neonUtilities.pdf).
 
-This package is under development - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
+See [NEON Data Tutorials](https://www.neonscience.org/resources/learning-hub/tutorials) for more information, particularly the [Download and Explore](https://www.neonscience.org/resources/learning-hub/tutorials/download-explore-neon-data) and [neonUtilities](https://www.neonscience.org/resources/learning-hub/tutorials/neondatastackr) tutorials.
+
+This package is actively maintained - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
 To get citation details for citing the `neonUtilities` package in a publication, run `citation("neonUtilities")` in R.
 
@@ -39,8 +41,6 @@ library(neonUtilities)
 * `footRaster()` Makes a raster of the flux footprint data provided in the expanded data package for eddy covaraince.
 
 #### Short examples
-
-See [NEON Data Tutorials](https://www.neonscience.org/resources/learning-hub/tutorials) for more information, particularly the [Download and Explore](https://www.neonscience.org/resources/learning-hub/tutorials/download-explore-neon-data) and [neonUtilities](https://www.neonscience.org/resources/learning-hub/tutorials/neondatastackr) tutorials.
 
 `stackByTable()` unzips monthly packages, finds the CSV data files, and joins them by table (e.g., 2DWSD_2min, 2DWSD_30min for 2D Wind Speed and Direction). For data products from instrumented systems that have multiple sensors placed at various heights (or depths) and/or horizontal positions away from the supporting tower, this function will create 2 columns in addition to the existing columns, one for horizontalPosition and the other for verticalPosition. This function will only work for data products that organize data in CSV files. Other data file types, such as HDF5 files from the eddy covariance system and remote sensing airborne observing platform (AOP) are not supported.
 
@@ -109,12 +109,12 @@ byTileAOP(dpID="DP3.30026.001", site="SJER", year="2017", easting=easting, north
 
 For a tutorial explaining how to use the `neonUtilities` package in more detail, including additional input options, view the [*Use the neonUtilities Package to Access NEON Data* tutorial](https://www.neonscience.org/resources/learning-hub/tutorials/neondatastackr).
 
-A cheat sheet for the `neonUtilities` package is available [here](https://www.neonscience.org/sites/default/files/cheat-sheet-neonUtilities.pdf).
 
 ### Known issues
-* `zipsByProduct()` and `byFileAOP()` use the `download.file()` function, wrapped by the `downloader` package, and we've found in testing that `download.file()` can be finicky. Using R version > 3.4 seems to help, and if you're on Windows, using Windows 10. Feel free to contact us if you run into problems!
-* On Windows, file paths are limited to 260 characters. In some cases, NEON data file names plus local directories will exceed this length; this is most likely when working with lab quality assurance files, which include the name of the lab in the file name. If this happens, you will see an error saying "cannot open file". Usually, you can get around this by using zipsByProduct() -> stackByTable() -> readTableNEON() to download data and load it to R, taking care to download the files to a short file directory.
+* On Windows, file paths are limited to 260 characters. In some cases, NEON data file names plus local directories will exceed this length; this is most likely when working with lab quality assurance files, which include the name of the lab in the file name. If this happens, you will see an error saying "cannot open file". Usually, you can get around this by using zipsByProduct() -> stackByTable() -> readTableNEON() to download data and load it to R, taking care to download the files to a short file directory. Reportedly, R v4.3.0+ avoids this problem; we are still testing to evaluate this.
 * On slow networks, data download can sometimes time out, particularly for the largest files, usually the remote sensing data. If your downloads take a long time and ultimately fail, try increasing the timeout in your R environment: `options(timeout=300)`. The `timeout` value is in seconds, and defaults to 60.
+* Some software security systems prevent R from downloading data from the internet. This is fairly unusual, but if you're unable to download any data using neonUtilities, and increasing the timeout doesn't help, check your security settings.
+
 
 <!-- ****** Acknowledgements ****** -->
 Credits & Acknowledgements
