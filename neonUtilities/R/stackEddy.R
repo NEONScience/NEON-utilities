@@ -427,18 +427,20 @@ stackEddy <- function(filepath,
   }
   
   # check for weird isotope joining
-  if(avg==9 | avg=="9" | avg=="09") {
-    allNm <- unique(unlist(lapply(X=verMergList, FUN=names)))
-    if(length(grep(pattern="dlta13CCo2", x=allNm))>0 &
-       length(grep(pattern="dlta18OH2o|dlta2HH2o", x=allNm))>0) {
-      dup.iso.list <- lapply(X=verMergList, FUN=function(x){
-        dup.temp <- base::as.difftime(x$timeEnd[1:20] - x$timeBgn[1:20])
-        dup.diff <- mean(base::as.numeric(dup.temp, units="secs"), na.rm=TRUE)
-        return(dup.diff<537)
-      })
-      dup.iso <- any(unlist(dup.iso.list))
-      if(dup.iso) {
-        warning("Stacking appears to include both carbon and water isotopes, with inconsistent time stamps. Carbon isotopes are measured every 6 minutes, water isotopes every 9 minutes. This issue affects RELEASE-2023 and provisional data published between RELEASE-2023 and RELEASE-2024. Check data carefully. The recommended workflow is to stack the carbon and water isotope data separately.")
+  if(level=="dp01") {
+    if(avg==9 | avg=="9" | avg=="09") {
+      allNm <- unique(unlist(lapply(X=verMergList, FUN=names)))
+      if(length(grep(pattern="dlta13CCo2", x=allNm))>0 &
+         length(grep(pattern="dlta18OH2o|dlta2HH2o", x=allNm))>0) {
+        dup.iso.list <- lapply(X=verMergList, FUN=function(x){
+          dup.temp <- base::as.difftime(x$timeEnd[1:20] - x$timeBgn[1:20])
+          dup.diff <- mean(base::as.numeric(dup.temp, units="secs"), na.rm=TRUE)
+          return(dup.diff<537)
+        })
+        dup.iso <- any(unlist(dup.iso.list))
+        if(dup.iso) {
+          warning("Stacking appears to include both carbon and water isotopes, with inconsistent time stamps. Carbon isotopes are measured every 6 minutes, water isotopes every 9 minutes. This issue affects RELEASE-2023 and provisional data published between RELEASE-2023 and RELEASE-2024. Check data carefully. The recommended workflow is to stack the carbon and water isotope data separately.")
+        }
       }
     }
   }
