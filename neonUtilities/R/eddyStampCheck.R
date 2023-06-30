@@ -9,7 +9,7 @@
 #'
 #' @keywords internal
 #' @param tab A table of SAE data
-#' @param use_fasttime Should the fasttime package be used to convert time stamps?
+#' @param useFasttime Should the fasttime package be used to convert time stamps?
 #' @return The same table of SAE data, with time stamps converted and empty records representing a single day (filler records inserted during processing) removed.
 
 #' @references
@@ -20,13 +20,13 @@
 ##############################################################################################
 
 eddyStampCheck <- function(tab, 
-                           use_fasttime=FALSE){
+                           useFasttime=FALSE){
 
   # convert time stamps
   tBgnErr <- FALSE
   tEndErr <- FALSE
   
-  if(use_fasttime) {
+  if(useFasttime) {
     tabBP <- try(fasttime::fastPOSIXct(tab$timeBgn, tz='GMT'), silent=T)
     tabEP <- try(fasttime::fastPOSIXct(tab$timeEnd, tz='GMT'), silent=T)
   } else {

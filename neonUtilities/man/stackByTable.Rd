@@ -11,7 +11,8 @@ stackByTable(
   saveUnzippedFiles = FALSE,
   dpID = NA,
   package = NA,
-  nCores = 1
+  nCores = 1,
+  useFasttime = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ stackByTable(
 \item{package}{Data download package, either basic or expanded. Ignored and determined from data unless input is a vector of files, generally via stackFromStore().}
 
 \item{nCores}{The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.}
+
+\item{useFasttime}{Should the fasttime package be used to read date-time variables? Only relevant if savepath="envt". Defaults to false.}
 }
 \value{
 All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
