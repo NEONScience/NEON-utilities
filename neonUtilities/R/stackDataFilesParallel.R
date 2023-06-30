@@ -197,7 +197,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
             labpath <- getRecentPublication(filepaths[grep(x, filepaths)])
             
             if(nchar(labpath[[1]]) > 260 & Sys.info()[["sysname"]]=="Windows") {
-              warning(paste("Filepath", labpath[[1]], "is", nchar(labpath[[1]]), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
+              warning(paste("Filepath", labpath[[1]], "is", nchar(labpath[[1]]), "characters long. Filepaths longer than 260 characters can cause problems in Windows operating systems. Updating to R version 4.3.0 and higher resolves this issue. If updating R is not an option, move files closer to the root directory, or, if you are using loadByProduct(), switch to using zipsByProduct() followed by stackByTable()."))
             }
             
             outputj <- data.table::fread(labpath[[1]], header=TRUE, encoding="UTF-8")
