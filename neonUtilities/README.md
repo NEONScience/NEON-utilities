@@ -137,6 +137,17 @@ Disclaimer
 Change Log
 ----------
 
+#### 2023-06-30 v2.3.0
+Enhancements:
+* option in stackEddy() to retrieve site, code, and CO2 validation data from H5 file attributes
+* recommended data citation added to output of download and stacking functions
+* performance improvements to stackEddy()
+* option to use the fasttime package for conversion of dates to POSIXct in stacking functions
+
+Other changes:
+* update to byTileAOP() and footRaster() to use terra package for spatial data handling; replaces raster package
+
+
 #### 2023-03-09 v2.2.1
 * Science Review Flag table added to stackEddy() outputs
 * updates to sensor position file handling to match new variable names
