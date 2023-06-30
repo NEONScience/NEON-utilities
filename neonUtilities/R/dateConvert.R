@@ -8,7 +8,8 @@
 #' Attempt to convert date stamps from character, iterating through known NEON date formats
 #'
 #' @keywords internal
-#' @param dates A vector of date values in character format
+#' @param dates A vector of date values in character format [character]
+#' @param use_fasstime Should the fasttime package be used for date conversion? Defaults to false. [logical]
 #' @return A POSIXct vector, if possible; if conversion was unsuccessful, the original vector is returned
 
 #' @references
@@ -16,21 +17,39 @@
 
 # Changelog and author contributions / copyrights
 #   Claire Lunch (2019-11-08)
+#   Claire Lunch 2023-06-30: Add fasttime option
 ##############################################################################################
 
-dateConvert <- function(dates){
-  d <- try(as.POSIXct(dates, format='%Y-%m-%dT%H:%M:%S', tz='GMT'), silent=T)
-  if(any(c(class(d)=='try-error', all(is.na(d))))) {
-    d <- try(as.POSIXct(dates, format='%Y-%m-%dT%H:%M', tz='GMT'), silent=T)
-  }
-  if(any(c(class(d)=='try-error', all(is.na(d))))) {
-    d <- try(as.POSIXct(dates, format='%Y-%m-%dT%H', tz='GMT'), silent=T)
-  }
-  if(any(c(class(d)=='try-error', all(is.na(d))))) {
-    d <- try(as.POSIXct(dates, format='%Y-%m-%d', tz='GMT'), silent=T)
-  }
-  if(any(c(class(d)=='try-error', all(is.na(d))))) {
-    d <- dates
+dateConvert <- function(dates, useFasttime=FALSE){
+  
+  if(useFasttime) {
+    d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%dT%H:%M:%S', tz='GMT'), silent=T)
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%dT%H:%M', tz='GMT'), silent=T)
+    }
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%dT%H', tz='GMT'), silent=T)
+    }
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%d', tz='GMT'), silent=T)
+    }
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- dates
+    }
+  } else {
+    d <- try(as.POSIXct(dates, format='%Y-%m-%dT%H:%M:%S', tz='GMT'), silent=T)
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- try(as.POSIXct(dates, format='%Y-%m-%dT%H:%M', tz='GMT'), silent=T)
+    }
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- try(as.POSIXct(dates, format='%Y-%m-%dT%H', tz='GMT'), silent=T)
+    }
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- try(as.POSIXct(dates, format='%Y-%m-%d', tz='GMT'), silent=T)
+    }
+    if(any(c(class(d)=='try-error', all(is.na(d))))) {
+      d <- dates
+    }
   }
   return(d)
 }

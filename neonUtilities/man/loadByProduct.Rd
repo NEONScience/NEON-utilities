@@ -17,6 +17,7 @@ loadByProduct(
   nCores = 1,
   forceParallel = FALSE,
   token = NA_character_,
+  useFasttime = FALSE,
   avg = NA
 )
 }
@@ -44,6 +45,8 @@ loadByProduct(
 \item{forceParallel}{If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.}
 
 \item{token}{User specific API token (generated within neon.datascience user accounts)}
+
+\item{useFasttime}{Should the fasttime package be used to read date-time fields? Defaults to false.}
 
 \item{avg}{Deprecated; use timeIndex}
 }

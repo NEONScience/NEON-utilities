@@ -9,6 +9,7 @@
 #'
 #' @param dataFile A data frame containing a NEON data table, or the filepath to a data table to load
 #' @param varFile A data frame containing the corresponding NEON variables file, or the filepath to the variables file
+#' @param useFasttime Should the fasttime package be used to read date-time variables? Defaults to false.
 #' @return A data frame of a NEON data table, with column classes assigned by data type
 
 #' @references
@@ -20,7 +21,12 @@
 #   Claire Lunch (2019-11-08)
 ##############################################################################################
 
-readTableNEON <- function(dataFile, varFile){
+readTableNEON <- function(dataFile, varFile, useFasttime=FALSE){
+  
+  # check for fasttime package, if used
+  if(useFasttime & !requireNamespace("fasttime", quietly=T)) {
+    stop("Parameter useFasttime is TRUE but fasttime package is not installed. Install and re-try.")
+  }
   
   # read in variables file
   if(inherits(varFile, 'character')) {
@@ -84,7 +90,7 @@ readTableNEON <- function(dataFile, varFile){
         d[,i] <- as.character(d[,i])
       }
       if(type=='date') {
-        d[,i] <- dateConvert(d[,i])
+        d[,i] <- dateConvert(d[,i], useFasttime=useFasttime)
       }
     }
   }

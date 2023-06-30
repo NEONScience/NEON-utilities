@@ -4,7 +4,14 @@
 \alias{stackEddy}
 \title{Extract eddy covariance data from HDF5 format}
 \usage{
-stackEddy(filepath, level = "dp04", var = NA, avg = NA, metadata = FALSE)
+stackEddy(
+  filepath,
+  level = "dp04",
+  var = NA,
+  avg = NA,
+  metadata = FALSE,
+  useFasttime = FALSE
+)
 }
 \arguments{
 \item{filepath}{One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file [character]}
@@ -16,6 +23,8 @@ stackEddy(filepath, level = "dp04", var = NA, avg = NA, metadata = FALSE)
 \item{avg}{The averaging interval to extract, in minutes [numeric]}
 
 \item{metadata}{Should the output include metadata from the attributes of the H5 files? Defaults to false. Even when false, variable definitions, issue logs, and science review flags will be included. [logical]}
+
+\item{useFasttime}{Should the fasttime package be used to convert time stamps to time format? Decreases stacking time but can introduce imprecision at the millisecond level. Defaults to false. [logical]}
 }
 \value{
 A named list of data frames. One data frame per site, plus one data frame containing the metadata (objDesc) table and one data frame containing units for each variable (variables).

@@ -4,12 +4,14 @@
 \alias{readTableNEON}
 \title{Read a NEON data table with correct data types for each variable}
 \usage{
-readTableNEON(dataFile, varFile)
+readTableNEON(dataFile, varFile, useFasttime = FALSE)
 }
 \arguments{
 \item{dataFile}{A data frame containing a NEON data table, or the filepath to a data table to load}
 
 \item{varFile}{A data frame containing the corresponding NEON variables file, or the filepath to the variables file}
+
+\item{useFasttime}{Should the fasttime package be used to read date-time variables? Defaults to false.}
 }
 \value{
 A data frame of a NEON data table, with column classes assigned by data type

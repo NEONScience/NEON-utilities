@@ -4,10 +4,12 @@
 \alias{dateConvert}
 \title{Convert date stamps from character}
 \usage{
-dateConvert(dates)
+dateConvert(dates, useFasttime = FALSE)
 }
 \arguments{
-\item{dates}{A vector of date values in character format}
+\item{dates}{A vector of date values in character format [character]}
+
+\item{use_fasstime}{Should the fasttime package be used for date conversion? Defaults to false. [logical]}
 }
 \value{
 A POSIXct vector, if possible; if conversion was unsuccessful, the original vector is returned

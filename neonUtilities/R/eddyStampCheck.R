@@ -9,6 +9,7 @@
 #'
 #' @keywords internal
 #' @param tab A table of SAE data
+#' @param useFasttime Should the fasttime package be used to convert time stamps?
 #' @return The same table of SAE data, with time stamps converted and empty records representing a single day (filler records inserted during processing) removed.
 
 #' @references
@@ -18,18 +19,26 @@
 #   Claire Lunch (2019-11-08)
 ##############################################################################################
 
-eddyStampCheck <- function(tab){
+eddyStampCheck <- function(tab, 
+                           useFasttime=FALSE){
 
   # convert time stamps
   tBgnErr <- FALSE
   tEndErr <- FALSE
   
-  tabBP <- try(as.POSIXct(tab$timeBgn, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
-  if(any(c(class(tabBP)=='try-error', all(is.na(tabBP))))) {
+  if(useFasttime) {
+    tabBP <- try(fasttime::fastPOSIXct(tab$timeBgn, tz='GMT'), silent=T)
+    tabEP <- try(fasttime::fastPOSIXct(tab$timeEnd, tz='GMT'), silent=T)
+  } else {
+    tabBP <- try(as.POSIXct(tab$timeBgn, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+    tabEP <- try(as.POSIXct(tab$timeEnd, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
+  }
+  
+  if(any(c(inherits(tabBP,'try-error'), all(is.na(tabBP))))) {
     tBgnErr <- TRUE
   }
-  tabEP <- try(as.POSIXct(tab$timeEnd, format='%Y-%m-%dT%H:%M:%OS', tz='GMT'), silent=T)
-  if(any(c(class(tabEP)=='try-error', all(is.na(tabEP))))) {
+  
+  if(any(c(inherits(tabBP,'try-error'), all(is.na(tabEP))))) {
     tEndErr <- TRUE
   }
   
@@ -48,27 +57,17 @@ eddyStampCheck <- function(tab){
     tabN$timeEnd <- tabEP
   }
   
-  # if conversion was successful, check for single-day empty records
+  # if conversion was successful, check for single-day empty records and remove
   if(err) {
     tabN <- tabN
   } else {
-    days <- as.Date(tabN$timeBgn)
-    dayDup <- intersect(which(!base::duplicated(days)), 
-                        which(!base::duplicated(days, fromLast=T)))
+    dayDiff <- base::as.difftime(tabEP - tabBP)
+    secDiff <- base::abs(base::as.numeric(dayDiff, units="secs"))
+    dayDup <- which(secDiff >= 86399)
     if(length(dayDup)==0) {
       tabN <- tabN
     } else {
-      emptyDays <- numeric()
-      for(i in 1:length(dayDup)) {
-        if(all(tabN[dayDup[i], base::setdiff(names(tabN), c('timeBgn', 'timeEnd'))]=='NaN', na.rm=T)) {
-          emptyDays <- c(emptyDays, dayDup[i])
-        }
-      }
-      if(length(emptyDays)==0) {
-        tabN <- tabN
-      } else {
-        tabN <- tabN[-emptyDays,]
-      }
+      tabN <- tabN[-dayDup,]
     }
   }
   
