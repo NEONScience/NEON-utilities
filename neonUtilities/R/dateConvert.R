@@ -23,16 +23,7 @@
 dateConvert <- function(dates, useFasttime=FALSE){
   
   if(useFasttime) {
-    d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%dT%H:%M:%S', tz='GMT'), silent=T)
-    if(any(c(class(d)=='try-error', all(is.na(d))))) {
-      d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%dT%H:%M', tz='GMT'), silent=T)
-    }
-    if(any(c(class(d)=='try-error', all(is.na(d))))) {
-      d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%dT%H', tz='GMT'), silent=T)
-    }
-    if(any(c(class(d)=='try-error', all(is.na(d))))) {
-      d <- try(fasttime::fastPOSIXct(dates, format='%Y-%m-%d', tz='GMT'), silent=T)
-    }
+    d <- try(fasttime::fastPOSIXct(dates, tz='GMT'), silent=T)
     if(any(c(class(d)=='try-error', all(is.na(d))))) {
       d <- dates
     }
