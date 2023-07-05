@@ -35,7 +35,7 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
   } else {
 
     readme_recent <- getRecentPublication(readme_list)[[1]]
-    txt_file <- utils::read.delim(readme_recent, header=FALSE, quote="")
+    txt_file <- utils::read.delim(readme_recent, header=FALSE, quote="", stringsAsFactors=FALSE)
     txt_file <- txt_file$V1[grep("Date-Time", txt_file$V1, invert=TRUE)]
 
     tables <- table_types[which(table_types$productID==dpID),]
