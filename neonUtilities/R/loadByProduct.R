@@ -17,6 +17,7 @@
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param include.provisional T or F, should provisional data be included in the download? Defaults to F.
 #' @param nCores The number of cores to parallelize the stacking procedure. By default it is set to a single core.
 #' @param forceParallel If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.
 #' @param token User specific API token (generated within neon.datascience user accounts)
@@ -45,8 +46,9 @@
 
 loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
                           release="current", timeIndex="all", tabl="all", 
-                          check.size=TRUE, nCores=1, forceParallel=FALSE, 
-                          token=NA_character_, useFasttime=FALSE, avg=NA) {
+                          check.size=TRUE, include.provisional=FALSE,
+                          nCores=1, forceParallel=FALSE, token=NA_character_, 
+                          useFasttime=FALSE, avg=NA) {
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -85,7 +87,7 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   # pass the request to zipsByProduct() to download
   zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
                 release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, 
-                savepath=temppath, load=TRUE, token=token)
+                savepath=temppath, include.provisional=include.provisional, load=TRUE, token=token)
   
   # if zipsByProduct() can't download anything, don't pass to stackByTable()
   if(length(list.files(temppath))==0) {

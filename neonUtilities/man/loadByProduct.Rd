@@ -14,6 +14,7 @@ loadByProduct(
   timeIndex = "all",
   tabl = "all",
   check.size = TRUE,
+  include.provisional = FALSE,
   nCores = 1,
   forceParallel = FALSE,
   token = NA_character_,
@@ -39,6 +40,8 @@ loadByProduct(
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
 
 \item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
+
+\item{include.provisional}{T or F, should provisional data be included in the download? Defaults to F.}
 
 \item{nCores}{The number of cores to parallelize the stacking procedure. By default it is set to a single core.}
 

@@ -17,6 +17,7 @@
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
+#' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
 #' @param token User specific API token (generated within neon.datascience user accounts). Optional.
@@ -45,7 +46,8 @@
 
 zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
                           release="current", timeIndex="all", tabl="all", check.size=TRUE, 
-                          savepath=NA, load=F, token=NA_character_, avg=NA) {
+                          include.provisional=FALSE, savepath=NA, load=F, 
+                          token=NA_character_, avg=NA) {
 
   messages <- NA
 
@@ -289,7 +291,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, tabl=tabl,
-                         release=release, messages=messages, token=token)
+                         release=release, messages=messages, 
+                         include.provisional=include.provisional,
+                         token=token)
   if(is.null(zip.urls)) { return(invisible()) }
   zip.urls <- tidyr::drop_na(zip.urls)
 

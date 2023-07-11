@@ -12,6 +12,7 @@ getZipUrls(
   release,
   messages,
   tabl,
+  include.provisional,
   token = NA_character_
 )
 }
@@ -29,6 +30,8 @@ getZipUrls(
 \item{messages}{Error/warning messages from previous steps}
 
 \item{tabl}{Table name to get}
+
+\item{include.provisional}{Should provisional data be included?}
 
 \item{token}{User specific API token (generated within neon.datascience user accounts)}
 }

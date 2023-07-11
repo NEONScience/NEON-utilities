@@ -14,6 +14,7 @@
 #' @param release Data release to be downloaded
 #' @param tabl Table name to get
 #' @param messages Error/warning messages from previous steps
+#' @param include.provisional Should provisional data be included?
 #' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
@@ -27,11 +28,13 @@
 
 ##############################################################################################
 
-getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, token = NA_character_) {
+getZipUrls <- function(month.urls, avg, package, dpID, 
+                       release, messages, tabl, include.provisional,
+                       token = NA_character_) {
 
   writeLines("Finding available files")
   pb <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb, 1/length(month.urls))
+  utils::setTxtProgressBar(pb, 0)
   
   # get all the file names
   tmp.files <- list(length(month.urls))
@@ -63,6 +66,18 @@ getZipUrls <- function(month.urls, avg, package, dpID, release, messages, tabl, 
     if(length(tmp.files)==0) {
       stop(paste("No files found for release ", release, 
                  " and query parameters. Check release name and dates.", sep=""))
+    }
+  }
+  
+  # if include.provisional==F, exclude provisional data
+  if(!include.provisional) {
+    tmp.ind <- lapply(tmp.files, function(x) {
+      x$data$release!="PROVISIONAL"
+    })
+    tmp.files <- tmp.files[which(unlist(tmp.ind))]
+    
+    if(length(tmp.files)==0) {
+      stop("All files found were provisional. Modify download query (dates and/or sites) or, if you want to use provisional data, use input parameter include.provisional=TRUE.")
     }
   }
 

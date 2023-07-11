@@ -14,6 +14,7 @@ zipsByProduct(
   timeIndex = "all",
   tabl = "all",
   check.size = TRUE,
+  include.provisional = FALSE,
   savepath = NA,
   load = F,
   token = NA_character_,
@@ -38,6 +39,8 @@ zipsByProduct(
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
 
 \item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
+
+\item{include.provisional}{T or F, should provisional data be included in downloaded files? Defaults to F.}
 
 \item{savepath}{The location to save the output files to}
 
