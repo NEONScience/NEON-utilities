@@ -183,6 +183,17 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                newDPID, sep=""))
   }
   
+  # check for incompatible values of release= and include.provisional=
+  if(release=="PROVISIONAL" & isFALSE(include.provisional)) {
+    stop("Download request is for release=PROVISIONAL. To download PROVISIONAL data, enter input parameter include.provisional=TRUE.")
+  }
+  if(grepl(pattern="RELEASE", x=release) & isTRUE(include.provisional)) {
+    warning(paste("Download request is for release=", release, 
+                  " but include.provisional=TRUE. Only data in ", release, 
+                  " will be downloaded."), 
+            sep="")
+  }
+  
   # if token is an empty string, set to NA
   if(identical(token, "")) {
     token <- NA_character_
