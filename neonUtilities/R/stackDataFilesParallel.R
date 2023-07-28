@@ -56,7 +56,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   }
   
   # handle per-sample tables separately
-  if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", "DP1.20141.001") & 
+  if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", 
+                 "DP1.20141.001", "DP1.20190.001", "DP1.20193.001") & 
      length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
     framefiles <- filepaths[grep("^NEON.", basename(filenames), invert=TRUE)]
     filepaths <- filepaths[grep("^NEON.", basename(filenames))]
