@@ -72,7 +72,13 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       tempf$fileName <- rep(basename(x), nrow(tempf))
       return(tempf)
       }), fill=TRUE)
-    data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+    
+    if(dpID %in% c("DP1.20190.001", "DP1.20193.001")) {
+      data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "rea_conductivityRawData", ".csv"))
+    } else {
+      data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+    }
+    
   }
   
   # make a list, where filenames are the keys to the filepath values
