@@ -8,6 +8,7 @@
 #' @description Used to generate a data frame of available AOP files.
 #'
 #' @param m.urls The monthly API URL for the AOP files
+#' @param include.provisional T or F, should provisional data be included in downloaded files?
 #' @param token User specific API token (generated within neon.datascience user accounts)
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
@@ -22,10 +23,11 @@
 ##############################################################################################
 
 # get and stash the file names, S3 URLs, file size, and download status (default = 0) in a data frame
-getFileUrls <- function(m.urls, token=NA){
+getFileUrls <- function(m.urls, include.provisional, token=NA){
   url.messages <- character()
   file.urls <- c(NA, NA, NA)
   releases <- character()
+  prov.message <- "no"
   for(i in 1:length(m.urls)) {
 
     tmp <- getAPI(apiURL = m.urls[i], token = token)
@@ -47,12 +49,25 @@ getFileUrls <- function(m.urls, token=NA){
     }
     
     # get release info
-    releases <- c(releases, tmp.files$data$release)
-
-    file.urls <- rbind(file.urls, cbind(tmp.files$data$files$name,
-                                        tmp.files$data$files$url,
-                                        tmp.files$data$files$size))
-
+    if(isFALSE(include.provisional) & tmp.files$data$release=="PROVISIONAL") {
+      file.urls <- file.urls
+      releases <- releases
+      prov.message <- "yes"
+    } else {
+      releases <- c(releases, tmp.files$data$release)
+      
+      file.urls <- rbind(file.urls, cbind(tmp.files$data$files$name,
+                                          tmp.files$data$files$url,
+                                          tmp.files$data$files$size))
+    }
+  }
+  
+  if(all(is.na(file.urls)) & prov.message=="yes") {
+    stop("All files found were provisional. Modify download query (dates and/or sites) or, if you want to use provisional data, use input parameter include.provisional=TRUE.")
+  }
+  
+  if(prov.message=="yes") {
+    message("Provisional data were excluded from available files list. To download provisional data, use input parameter include.provisional=TRUE.")
   }
   
   # get size info

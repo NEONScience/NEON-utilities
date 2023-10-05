@@ -4,7 +4,13 @@
 \alias{getTileUrls}
 \title{Get and store the file names, S3 URLs, file size, and download status (default = 0) in a data frame}
 \usage{
-getTileUrls(m.urls, tileEasting, tileNorthing, token = NA_character_)
+getTileUrls(
+  m.urls,
+  tileEasting,
+  tileNorthing,
+  include.provisional,
+  token = NA_character_
+)
 }
 \arguments{
 \item{m.urls}{The monthly API URL for the AOP tile.}
@@ -12,6 +18,8 @@ getTileUrls(m.urls, tileEasting, tileNorthing, token = NA_character_)
 \item{tileEasting}{A vector containing the easting UTM coordinates of the locations to download.}
 
 \item{tileNorthing}{A vector containing the northing UTM coordinates of the locations to download.}
+
+\item{include.provisional}{T or F, should provisional data be included in downloaded files?}
 
 \item{token}{User specific API token (generated within neon.datascience user accounts). Optional.}
 }

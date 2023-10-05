@@ -15,6 +15,7 @@
 #' @param easting A vector containing the easting UTM coordinates of the locations to download.
 #' @param northing A vector containing the northing UTM coordinates of the locations to download.
 #' @param buffer Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0. If easting and northing coordinates are the centroids of NEON TOS plots, use buffer=20.
+#' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
 #' @param token User specific API token (generated within neon.datascience user accounts)
@@ -34,7 +35,8 @@
 ##############################################################################################
 
 byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
-                      check.size=TRUE, savepath=NA, token=NA_character_) {
+                      include.provisional=FALSE, check.size=TRUE, 
+                      savepath=NA, token=NA_character_) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.00[1-2]{1}",dpID)!=1) {
@@ -237,6 +239,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
 
   file.urls.current <- getTileUrls(month.urls,
+                                   include.provisional=include.provisional,
                                    format(tileEasting, scientific=F, justified='none'),
                                    format(tileNorthing, scientific=F, justified='none'))
   if(is.null(file.urls.current[[1]])) {

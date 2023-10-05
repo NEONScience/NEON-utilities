@@ -12,9 +12,10 @@
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param site The four-letter code of a single NEON site, e.g. 'CLBJ'.
 #' @param year The four-digit year to search for data. Defaults to 2017.
+#' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience user accounts)
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
 
@@ -35,7 +36,10 @@
 
 ##############################################################################################
 
-byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_character_) {
+byFileAOP <- function(dpID, site, year, 
+                      include.provisional=FALSE,
+                      check.size=TRUE, savepath=NA, 
+                      token=NA_character_) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.00[1-2]{1}",dpID)!=1) {
@@ -109,7 +113,9 @@ byFileAOP <- function(dpID, site, year, check.size=TRUE, savepath=NA, token=NA_c
     stop("There are no data at the selected site and year.")
   }
 
-  file.urls.current <- getFileUrls(month.urls, token = token)
+  file.urls.current <- getFileUrls(month.urls, 
+                                   include.provisional=include.provisional, 
+                                   token=token)
   if(is.null(file.urls.current)) {
     message("No data files found.")
     return(invisible())

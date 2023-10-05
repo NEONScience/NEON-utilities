@@ -73,10 +73,14 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       return(tempf)
       }), fill=TRUE)
     
-    if(dpID %in% c("DP1.20190.001", "DP1.20193.001")) {
+    if(dpID=="DP1.20190.001") {
       data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "rea_conductivityRawData", ".csv"))
     } else {
+      if(dpID=="DP1.20193.001") {
+        data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "sbd_conductivityRawData", ".csv"))
+      } else {
       data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+      }
     }
     
   }

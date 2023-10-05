@@ -11,6 +11,7 @@ byTileAOP(
   easting,
   northing,
   buffer = 0,
+  include.provisional = FALSE,
   check.size = TRUE,
   savepath = NA,
   token = NA_character_
@@ -28,6 +29,8 @@ byTileAOP(
 \item{northing}{A vector containing the northing UTM coordinates of the locations to download.}
 
 \item{buffer}{Size, in meters, of the buffer to be included around the coordinates when determining which tiles to download. Defaults to 0. If easting and northing coordinates are the centroids of NEON TOS plots, use buffer=20.}
+
+\item{include.provisional}{T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.}
 
 \item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
