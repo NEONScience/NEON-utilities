@@ -8,7 +8,7 @@
 #' Use the variables file to assign classes to each column in each data file
 #'
 #' @keywords internal
-#' @param df A data frame
+#' @param dt A data frame
 #' @param inVars The variables expected in the df
 #' @return A data frame with corrected column classes
 

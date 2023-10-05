@@ -7,9 +7,9 @@
 assignClasses(dt, inVars)
 }
 \arguments{
-\item{inVars}{The variables expected in the df}
+\item{dt}{A data frame}
 
-\item{df}{A data frame}
+\item{inVars}{The variables expected in the df}
 }
 \value{
 A data frame with corrected column classes

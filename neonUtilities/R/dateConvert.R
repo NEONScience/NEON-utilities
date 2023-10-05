@@ -9,7 +9,7 @@
 #'
 #' @keywords internal
 #' @param dates A vector of date values in character format [character]
-#' @param use_fasstime Should the fasttime package be used for date conversion? Defaults to false. [logical]
+#' @param useFasttime Should the fasttime package be used for date conversion? Defaults to false. [logical]
 #' @return A POSIXct vector, if possible; if conversion was unsuccessful, the original vector is returned
 
 #' @references
