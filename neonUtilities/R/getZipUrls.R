@@ -74,6 +74,9 @@ getZipUrls <- function(month.urls, avg, package, dpID,
     tmp.ind <- lapply(tmp.files, function(x) {
       x$data$release!="PROVISIONAL"
     })
+    if(length(tmp.ind)>0) {
+      messages <- c(messages, "Provisional data were excluded from available files list. To download provisional data, use input parameter include.provisional=TRUE.")
+    }
     tmp.files <- tmp.files[which(unlist(tmp.ind))]
     
     if(length(tmp.files)==0) {
