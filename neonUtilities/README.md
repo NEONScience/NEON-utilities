@@ -103,7 +103,7 @@ byFileAOP(dpID = "DP3.30001.001", site = "SRER", year = "2017", check.size = T)
 byTileAOP(dpID="DP3.30026.001", site="SJER", year="2017", easting=easting, northing=northing, buffer=20)
 ```
 
-`transformFileToGeoCSV()` takes any single NEON csv data file plus its respective variables file, and generates a new CSV with [GeoCSV](http://geows.ds.iris.edu/documents/GeoCSV.pdf) headers. This makes the data similar in format to data provided by organizations such as UNAVCO, and is good for embedding in a repeating script.
+`transformFileToGeoCSV()` takes any single NEON csv data file plus its respective variables file, and generates a new CSV with GeoCSV headers. This makes the data similar in format to data provided by organizations such as UNAVCO, and is good for embedding in a repeating script.
 
 ### Getting help with this package
 
