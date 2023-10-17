@@ -1,3 +1,13 @@
+# version 2.4.0
+
+Released 2023-10-17
+
+## Changes
+
+* Data download functions now default to not returning provisional data. This applies to zipsByProduct(), loadByProduct(), byFileAOP(), and byTileAOP(). To download provisional data, add the new parameter `include.provisional=TRUE` to the function call.
+* Data stacking has been updated to handle the new formatting of the Reaeration (DP1.20190.001) and Salt-based discharge (DP1.20193.001) data products. The conductivity data tables in these two products have been converted to separate files per sampling event. This update enables stackByTable() and loadByProduct() to work with both the previous and current formats.
+
+
 # version 2.3.0
 
 Released 2023-07-05

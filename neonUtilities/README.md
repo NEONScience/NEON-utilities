@@ -137,6 +137,12 @@ Disclaimer
 Change Log
 ----------
 
+#### 2023-10-17 v2.4.0
+Changes:
+* new parameter in download functions: include.provisional defaults to FALSE, provisional data are not included in download unless set to TRUE
+* conductivity files in reaeration and salt-based discharge data products have been re-formatted; stacking functions updated to handle these
+
+
 #### 2023-06-30 v2.3.0
 Enhancements:
 * option in stackEddy() to retrieve site, code, and CO2 validation data from H5 file attributes
