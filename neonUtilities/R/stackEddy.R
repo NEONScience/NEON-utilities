@@ -43,7 +43,7 @@ stackEddy <- function(filepath,
                       avg=NA,
                       metadata=FALSE,
                       useFasttime=FALSE,
-                      runLocal=TRUE) {
+                      runLocal=FALSE) {
   
   # first check for rhdf5 package
   if(!requireNamespace("rhdf5", quietly=T)) {

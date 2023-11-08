@@ -269,6 +269,11 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
   if(dir.exists(filepath) == F) {dir.create(filepath, showWarnings=F)}
 
+  # set user agent
+  usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
+                 R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
+                 " ", R.Version()$platform, sep="")
+  
   # copy zip files into folder
   j <- 1
   messages <- list()
@@ -301,7 +306,8 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
         {
           suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
                                                 paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                mode="wb", quiet=T))
+                                                mode="wb", quiet=T,
+                                                headers=c("User-Agent"=usera)))
         }, error = function(e) { e } )
 
       if(inherits(t, "error")) {
@@ -313,7 +319,8 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
             {
               suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
                                                     paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                    mode="wb", quiet=T))
+                                                    mode="wb", quiet=T,
+                                                    headers=c("User-Agent"=usera)))
             }, error = function(e) { e } )
           if(inherits(t, "error")) {
             counter <- counter + 1

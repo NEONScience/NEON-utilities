@@ -11,7 +11,7 @@ stackEddy(
   avg = NA,
   metadata = FALSE,
   useFasttime = FALSE,
-  runLocal = TRUE
+  runLocal = FALSE
 )
 }
 \arguments{
