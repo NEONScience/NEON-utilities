@@ -178,13 +178,24 @@ byFileAOP <- function(dpID, site, year,
         dir.create(newpath, recursive = TRUE)
       }
 
-      t <- tryCatch(
-        {
-          suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
-                                                paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                mode="wb", quiet=T, 
-                                                headers=c("User-Agent"=usera)))
-        }, error = function(e) { e } )
+      if(is.na(token)) {
+        t <- tryCatch(
+          {
+            suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
+                                                  paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
+                                                  mode="wb", quiet=T, 
+                                                  headers=c("User-Agent"=usera)))
+          }, error = function(e) { e } )
+      } else {
+        t <- tryCatch(
+          {
+            suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
+                                                  paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
+                                                  mode="wb", quiet=T, 
+                                                  headers=c("User-Agent"=usera,
+                                                            "X-API-Token"=token)))
+          }, error = function(e) { e } )
+      }
 
       if(inherits(t, "error")) {
         
