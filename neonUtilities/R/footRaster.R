@@ -237,9 +237,13 @@ footRaster <- function(filepath) {
     # set up location data to scale rasters
     LatLong <- cbind(longitude = locAttr$LonTow, latitude = locAttr$LatTow)
     LatLong <- terra::vect(LatLong, crs="+proj=longlat +datum=WGS84")
-    epsg.z <- relevant_EPSG$code[grep(paste("+proj=utm +zone=", 
-                                            locAttr$ZoneUtm, " ", sep=""), 
-                                      relevant_EPSG$prj4, fixed=T)]
+    if(base::substring(locAttr$ZoneUtm, nchar(locAttr$ZoneUtm), nchar(locAttr$ZoneUtm))=="N") {
+      loc.z <- base::substring(locAttr$ZoneUtm, 1, nchar(locAttr$ZoneUtm)-1)
+    } else {
+      loc.z <- locAttr$ZoneUtm
+    }
+    epsg.c <- paste("+proj=utm +zone=", loc.z, " ", sep="")
+    epsg.z <- relevant_EPSG$code[grep(epsg.c, relevant_EPSG$prj4, fixed=T)]
     utmTow <- terra::project(LatLong, y=paste("EPSG:", epsg.z, sep=""))
 
     # adjust extent and coordinate system of raster stack
