@@ -113,49 +113,12 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     tableForm <- findTablesByFormat(names(datafls))
     tables <- tableForm$tableName
     
-    # check against table_types. use grep() since format only identifies to 'lab'
-    mis <- 0
-    newtables <- character()
-    for(j in 1:nrow(tableForm)) {
-      ind <- which(ttypes$tableName==tableForm$tableName[j])
-      if(length(ind)==0) {
-        newtables <- rbind(newtables, tableForm[j,])
-        next
-        }
-      indt <- grep(tableForm$tableType[j], ttypes$tableType[ind])
-      if(length(indt)==0) {
-        mis <- mis+1
-      }
-    }
-    
-    # for new tables, always use inferred types. for mismatches, decide based on publication dates
-    if(!is.null(nrow(newtables))) {
-      cat("Table(s)", newtables[,1], "are unexpected. Stacking will proceed based on inferred table format; check for updates to neonUtilities.\n")
-      ttypes <- data.table::rbindlist(list(ttypes, newtables), fill=T)
-    }
-    
-    if(mis>0) {
-      dats <- character()
-      filespl <- strsplit(filenames, "\\.")
-      for(k in 1:length(filespl)) {
-        dats <- c(dats, filespl[[k]][length(filespl[[k]])-1])
-      }
-      dats <- as.Date(dats, format="%Y%m%dT%H%M%SZ")
-      if(min(dats, na.rm=T) > utils::packageDate("neonUtilities")) {
-        cat("Downloaded data formats do not match expected formats. Data publication dates are more recent than neonUtilities version. Stacking will proceed using inference from downloaded data formats. Check results carefully, and check for updates to neonUtilities.\n")
-        ttypes <- tableForm
-      } else {
-        if(max(dats, na.rm=T) < utils::packageDate("neonUtilities")) {
-          cat("Downloaded data formats do not match expected formats. neonUtilities version is more recent than data publication dates. Stacking will proceed based on neonUtilities expectations. Check results carefully, and consider re-downloading data.\n")
-        } else {
-        cat("Downloaded data formats do not match expected formats. Data publication dates include both older and more recent data than neonUtilities package version. Stacking will proceed based on neonUtilities expectations. Check results carefully, and check for updates to neonUtilities.\n")
-      }
-      }
-    }
+    # as of v2.4.1, removing table type check - follow the type inferred by publication format
+    # keeping table_types updated in the package for reference
+    ttypes <- tableForm
     
     n <- 0
     m <- 0
-    
     
     # metadata files
     # copy variables and validation files to /stackedFiles using the most recent publication date

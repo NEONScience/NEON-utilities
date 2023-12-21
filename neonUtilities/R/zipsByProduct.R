@@ -200,7 +200,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
   
   # query the products endpoint for the product requested
-  if(release=="current") {
+  if(release=="current" | release=="PROVISIONAL") {
     prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
                                       dpID, sep=""), token = token)
   } else {
