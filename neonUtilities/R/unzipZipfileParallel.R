@@ -25,6 +25,11 @@
 unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zippath)-4), level="all", nCores=1){
 
   if(level == "all") {
+    tl <- utils::unzip(zipfile = zippath, list=TRUE)
+    if(any(nchar(tl)>260) & Sys.info()[["sysname"]]=="Windows") {
+      stop(paste("Longest filepath is", max(nchar(tl)), "characters long. Filepaths on Windows are limited to 260 characters. Move files closer to the root directory."))
+    }
+    
     utils::unzip(zipfile = zippath, exdir=outpath)
     zps <- listZipfiles(zippath)
     writeLines(paste0("Unpacking zip files using ", nCores, " cores."))
