@@ -137,6 +137,15 @@ Disclaimer
 Change Log
 ----------
 
+#### 2024-01-09 v2.4.1
+Enhancements:
+* stackEddy() can be run without API calls, using input parameter runLocal=TRUE
+
+Bug fixes:
+* stackByTable() can now handle changes to data table publication paradigm over time. As of this date this affects only DP1.10003.001, DP4.00131.001, and DP4.00132.001
+* footRaster() has been updated to handle both current and past formatting of UTM zone in DP4.00200.001 metadata
+
+
 #### 2023-10-17 v2.4.0
 Changes:
 * new parameter in download functions: include.provisional defaults to FALSE, provisional data are not included in download unless set to TRUE

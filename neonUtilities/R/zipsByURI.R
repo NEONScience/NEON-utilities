@@ -19,6 +19,7 @@
 #' @param unzip T or F, indicates if the downloaded zip files from ECS buckets should be 
 #' unzipped into the same directory, defaults to T. Supports .zip and .tar.gz files currently.
 #' @param saveZippedFiles T or F: should the zip files be retained after unzipping? Defaults to F.
+#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all files meeting query criteria.
 
@@ -38,19 +39,27 @@
 #     original creation, heavily adapted from zipsByProdcut and stackByTable
 #   Claire Lunch (2022-02-25)
 #     added option to use R objects as input data
+#   Claire Lunch (2024-01-03)
+#     added token and user agent
 ##############################################################################################
 zipsByURI <- function(filepath, 
                       savepath = paste0(filepath, "/ECS_zipFiles"), 
                       pick.files=FALSE,
                       check.size=TRUE,
                       unzip = TRUE,
-                      saveZippedFiles = FALSE) {
+                      saveZippedFiles = FALSE,
+                      token = NA_character_) {
 
   # check that filepath points to either a directory or an R object
   if(!identical(class(filepath), "list")) {
     if(!dir.exists(filepath)) {
       stop("Input filepath is not a list object in the environment nor an existing file directory.")
     }
+  }
+  
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
   }
   
   # if filepath is a directory, read in contents
@@ -100,6 +109,11 @@ zipsByURI <- function(filepath,
   
   # Remove allTables values that aren't in tabList
   allTables <- allTables[allTables %in% names(tabList)]
+  
+  # set user agent
+  usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
+                 R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
+                 " ", R.Version()$platform, sep="")
   
   if(length(allTables) < 1){
     stop('No tables with URIs available in download package contents.')
@@ -159,7 +173,7 @@ zipsByURI <- function(filepath,
   for(i in URLsToDownload) {
     idx <- idx + 1
     # get file metadata
-    response <- httr::HEAD(i)
+    response <- httr::HEAD(i, httr::user_agent(usera))
     
     # check for file found
     if(is.null(httr::headers(response)[["Content-Length"]])) {
@@ -191,7 +205,15 @@ zipsByURI <- function(filepath,
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(length(URLsToDownload)-1))
   for(i in URLsToDownload) {
-    dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), quiet = TRUE, mode = "wb"))
+    if(is.na(token)) {
+      dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), 
+                                     quiet = TRUE, mode = "wb", headers=c("User-Agent"=usera)))
+    } else {
+      dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), 
+                                     quiet = TRUE, mode = "wb", headers=c("User-Agent"=usera,
+                                                                          "X-API-Token"=token)))
+    }
+    
     if(!is.null(attr(dl, "class")) && attr(dl, "class") == "try-error"){
       message(paste("Unable to download data for URL: ",i,"\n", sep=""))
       message(paste("This may be a timeout error. Current timeout setting is", getOption("timeout"), 

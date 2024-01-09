@@ -62,7 +62,7 @@ byFileAOP <- function(dpID, site, year,
   }
   
   releases <- character()
-
+  
   # query the products endpoint for the product requested
   req <- getAPI(paste("http://data.neonscience.org/api/v0/products/", dpID, sep=""), token)
   avail <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
@@ -143,7 +143,12 @@ byFileAOP <- function(dpID, site, year,
   }
   if(dir.exists(filepath) == F) {
     dir.create(filepath, showWarnings=F)
-    }
+  }
+  
+  # set user agent
+  usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
+                 R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
+                 " ", R.Version()$platform, sep="")
 
   # copy zip files into folder
   j <- 1
@@ -173,12 +178,24 @@ byFileAOP <- function(dpID, site, year,
         dir.create(newpath, recursive = TRUE)
       }
 
-      t <- tryCatch(
-        {
-          suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
-                                                paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                mode="wb", quiet=T))
-        }, error = function(e) { e } )
+      if(is.na(token)) {
+        t <- tryCatch(
+          {
+            suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
+                                                  paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
+                                                  mode="wb", quiet=T, 
+                                                  headers=c("User-Agent"=usera)))
+          }, error = function(e) { e } )
+      } else {
+        t <- tryCatch(
+          {
+            suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
+                                                  paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
+                                                  mode="wb", quiet=T, 
+                                                  headers=c("User-Agent"=usera,
+                                                            "X-API-Token"=token)))
+          }, error = function(e) { e } )
+      }
 
       if(inherits(t, "error")) {
         
@@ -189,7 +206,8 @@ byFileAOP <- function(dpID, site, year,
             {
               suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
                                                     paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                    mode="wb", quiet=T))
+                                                    mode="wb", quiet=T,
+                                                    headers=c("User-Agent"=usera)))
             }, error = function(e) { e } )
           if(inherits(t, "error")) {
             counter <- counter + 1

@@ -200,7 +200,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
   
   # query the products endpoint for the product requested
-  if(release=="current") {
+  if(release=="current" | release=="PROVISIONAL") {
     prod.req <- getAPI(apiURL = paste("http://data.neonscience.org/api/v0/products/", 
                                       dpID, sep=""), token = token)
   } else {
@@ -337,6 +337,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     message(paste(filepath, " already exists. Download will proceed, but check for duplicate files.", sep=""))
   }
   
+  # set user agent
+  usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
+                 R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
+                 " ", R.Version()$platform, sep="")
+  
   writeLines(paste("Downloading ", nrow(zip.urls), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
@@ -359,14 +364,16 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           t <- tryCatch(
             {
               suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
-                                                    mode="wb", quiet=T))
+                                                    mode="wb", quiet=T,
+                                                    headers=c("User-Agent"=usera)))
             }, error = function(e) { e } )
         } else {
           t <- tryCatch(
             {
               suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
                                                     mode="wb", quiet=T,
-                                                    headers=c("X-API-Token"=token)))
+                                                    headers=c("User-Agent"=usera,
+                                                              "X-API-Token"=token)))
             }, error = function(e) { e } )
         }
 
@@ -380,14 +387,16 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
               t <- tryCatch(
                 {
                   suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
-                                                        mode="wb", quiet=T))
+                                                        mode="wb", quiet=T,
+                                                        headers=c("User-Agent"=usera)))
                 }, error = function(e) { e } )
             } else {
               t <- tryCatch(
                 {
                   suppressWarnings(downloader::download(zip.urls$URL[j], destfile=zip_out,
                                                         mode="wb", quiet=T,
-                                                        headers=c("X-API-Token"=token)))
+                                                        headers=c("User-Agent"=usera,
+                                                                  "X-API-Token"=token)))
                 }, error = function(e) { e } )
             }
             

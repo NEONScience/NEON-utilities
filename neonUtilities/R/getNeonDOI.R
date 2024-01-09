@@ -30,10 +30,15 @@
 
 getNeonDOI <- function(dpID=NA_character_, release=NA_character_) {
   
+  usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
+                 R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
+                 " ", R.Version()$platform, sep="")
+  
   if(is.na(dpID)) {
     
     # query DataCite API for NEON prefix
-    req <- httr::GET("https://api.datacite.org/dois?query=prefix:10.48443&page[size]=1000")
+    req <- httr::GET("https://api.datacite.org/dois?query=prefix:10.48443&page[size]=1000",
+                     httr::user_agent(usera))
     
     # check for no or empty response
     if(is.null(req)) {
@@ -80,7 +85,7 @@ getNeonDOI <- function(dpID=NA_character_, release=NA_character_) {
     
     # query NEON API for product
     req <- httr::GET(paste("https://data.neonscience.org/api/v0/products/", 
-                           dpID, sep=""))
+                           dpID, sep=""), httr::user_agent(usera))
     
     # check for no or empty response
     if(is.null(req)) {

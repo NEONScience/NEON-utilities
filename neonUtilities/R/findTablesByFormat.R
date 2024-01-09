@@ -40,21 +40,30 @@ findTablesByFormat <- function(datatables){
   tt <- character(length(tn))
   
   for(k in 1:length(tn)) {
-    names.k <- splitNames[union(grep(paste(".", tn[k], ".", sep=""), dt, fixed=T),
-                                grep(paste(".", tn[k], "_pub.", sep=""), dt, fixed=T))][[1]]
-    if(length(which(names.k==""))>0) {
-      names.k <- names.k[-which(names.k=="")]
-    }
-    if(length(names.k)==5) {
-      tt[k] <- "lab"
-    } else {
-      if(length(grep("[0-9]{4}-[0-9]{2}", names.k))>0) {
-        tt[k] <- "site-date"
+    names.k.all <- splitNames[union(grep(paste(".", tn[k], ".", sep=""), dt, fixed=T),
+                                grep(paste(".", tn[k], "_pub.", sep=""), dt, fixed=T))]
+    tt.all <- lapply(names.k.all, function(xn) {
+      if(length(which(xn==""))>0) {
+        xn <- xn[-which(xn=="")]
       }
-      else {
-        tt[k] <- "site-all"
+      if(length(xn)==5) {
+        return("lab")
+      } else {
+        if(length(grep("[0-9]{4}-[0-9]{2}", xn))>0) {
+          return("site-date")
+        }
+        else {
+          return("site-all")
+        }
       }
+    })
+    tt.temp <- unique(unlist(tt.all))
+    if(length(tt.temp)>1) {
+      stop(paste("In files to be stacked, table ", tn[k], 
+                 " has been published under conflicting schedules. To avoid this problem, either work only with released data, or stack released and provisional data separately.", 
+                 sep=""))
     }
+    tt[k] <- tt.temp
   }
   
   tf <- cbind(tn,tt)

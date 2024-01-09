@@ -29,13 +29,17 @@ getAPI <- function(apiURL, token=NA_character_){
     token <- NA_character_
   }
   
+  usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
+                 R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
+                 " ", R.Version()$platform, sep="")
+  
   if(is.na(token)) {
     
     # make 5 attempts to access - if rate limit is reached every time, give up
     j <- 1
     while(j < 6) {
 
-      req <- try(httr::GET(apiURL), silent=T)
+      req <- try(httr::GET(apiURL, httr::user_agent(usera)), silent=T)
       
       # check for no response
       if(!inherits(req, "response")) {
@@ -67,7 +71,7 @@ getAPI <- function(apiURL, token=NA_character_){
     j <- 1
     while(j < 6) {
 
-      req <- try(httr::GET(apiURL,
+      req <- try(httr::GET(apiURL, httr::user_agent(usera),
                        httr::add_headers(.headers = c('X-API-Token'= token,
                                                       'accept' = 'application/json'))),
                  silent=T)

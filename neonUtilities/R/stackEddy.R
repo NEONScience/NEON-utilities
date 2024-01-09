@@ -13,6 +13,7 @@
 #' @param avg The averaging interval to extract, in minutes [numeric]
 #' @param metadata Should the output include metadata from the attributes of the H5 files? Defaults to false. Even when false, variable definitions, issue logs, and science review flags will be included. [logical]
 #' @param useFasttime Should the fasttime package be used to convert time stamps to time format? Decreases stacking time but can introduce imprecision at the millisecond level. Defaults to false. [logical]
+#' @param runLocal Set to TRUE to omit any calls to the NEON API. Data are extracted and reformatted from local files, but citation and issue log are not retrieved. [logical]
 
 #' @details Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
 #' For data product levels 2-4 (dp02, dp03, dp04), joins all available data, except for the flux footprint data in the expanded package.
@@ -41,7 +42,8 @@ stackEddy <- function(filepath,
                       var=NA, 
                       avg=NA,
                       metadata=FALSE,
-                      useFasttime=FALSE) {
+                      useFasttime=FALSE,
+                      runLocal=FALSE) {
   
   # first check for rhdf5 package
   if(!requireNamespace("rhdf5", quietly=T)) {
@@ -162,24 +164,26 @@ stackEddy <- function(filepath,
   }
   
   # get DOIs and generate citation(s)
-  citP <- NA
-  citR <- NA
-  if("PROVISIONAL" %in% releases) {
-    citP <- try(getCitation(dpID="DP4.00200.001", release="PROVISIONAL"), silent=TRUE)
-    if(inherits(citP, "try-error")) {
-      citP <- NA
+  if(!runLocal) {
+    citP <- NA
+    citR <- NA
+    if("PROVISIONAL" %in% releases) {
+      citP <- try(getCitation(dpID="DP4.00200.001", release="PROVISIONAL"), silent=TRUE)
+      if(inherits(citP, "try-error")) {
+        citP <- NA
+      }
     }
-  }
-  if(length(grep("RELEASE", releases))==0) {
-    releases <- releases
-  } else {
-    if(length(grep("RELEASE", releases))>1) {
-      stop("Attempting to stack multiple data releases together. This is not appropriate, check your input data.")
+    if(length(grep("RELEASE", releases))==0) {
+      releases <- releases
     } else {
-      rel <- releases[grep("RELEASE", releases)]
-      citR <- try(getCitation(dpID="DP4.00200.001", release=rel), silent=TRUE)
-      if(inherits(citR, "try-error")) {
-        citR <- NA
+      if(length(grep("RELEASE", releases))>1) {
+        stop("Attempting to stack multiple data releases together. This is not appropriate, check your input data.")
+      } else {
+        rel <- releases[grep("RELEASE", releases)]
+        citR <- try(getCitation(dpID="DP4.00200.001", release=rel), silent=TRUE)
+        if(inherits(citR, "try-error")) {
+          citR <- NA
+        }
       }
     }
   }
@@ -559,11 +563,15 @@ stackEddy <- function(filepath,
   utils::setTxtProgressBar(pb4, 0.5)
   
   # get issue log
-  if(!curl::has_internet()) {
-    message("No internet connection, issue log file not accessed. Issue log can be found on the data product details pages.")
+  if(!runLocal) {
+    if(!curl::has_internet()) {
+      message("No internet connection, issue log file not accessed. Issue log can be found on the data product details pages.")
+    } else {
+      # token not used here, since token is not otherwise used/accessible in this function
+      varMergList[["issueLog"]] <- getIssueLog(dpID="DP4.00200.001")
+    }
   } else {
-    # token not used here, since token is not otherwise used/accessible in this function
-    varMergList[["issueLog"]] <- getIssueLog(dpID="DP4.00200.001")
+    varMergList <- varMergList[-grep("issueLog", names(varMergList))]
   }
   
   utils::setTxtProgressBar(pb4, 0.75)
@@ -614,15 +622,17 @@ stackEddy <- function(filepath,
   close(pb4)
   
   # add citations to output
-  if(!is.na(citP)) {
-    vlen <- length(varMergList)
-    varMergList[[vlen+1]] <- citP
-    names(varMergList)[vlen+1] <- "citation_00200_PROVISIONAL"
-  }
-  if(!is.na(citR)) {
-    vlen <- length(varMergList)
-    varMergList[[vlen+1]] <- citR
-    names(varMergList)[vlen+1] <- paste("citation_00200_", rel, sep="")
+  if(!runLocal) {
+    if(!is.na(citP)) {
+      vlen <- length(varMergList)
+      varMergList[[vlen+1]] <- citP
+      names(varMergList)[vlen+1] <- "citation_00200_PROVISIONAL"
+    }
+    if(!is.na(citR)) {
+      vlen <- length(varMergList)
+      varMergList[[vlen+1]] <- citR
+      names(varMergList)[vlen+1] <- paste("citation_00200_", rel, sep="")
+    }
   }
   
   return(varMergList)

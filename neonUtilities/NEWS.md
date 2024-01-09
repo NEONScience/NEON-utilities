@@ -1,3 +1,17 @@
+# version 2.4.1
+
+Released 2024-01-09
+
+## Enhancements
+
+* New option to run stackEddy() only on already-downloaded data, without pinging the NEON API. Using this option blocks retrieval of the issue log and citation files; its use is not recommended unless you need to run code offline or otherwise need to avoid API calls. Toggle this option using the input `runLocal=`, which defaults to FALSE.
+
+## Bug fixes
+
+* Data tables in Breeding landbird point counts (DP1.10003.001), Bathymetric and morphological maps (DP4.00132.001), and Stream morphology map (DP4.00131.001) have changed publication paradigm over time (e.g., from publication only in the site and month when collection occurred, to publication in all months with data for the relevant site). stackByTable() and loadByProduct() have been updated to accommodate both current data and past releases.
+* Surface-atmosphere exchange (Eddy covariance bundle, DP4.00200.001) metadata have updated the formatting of UTM zone reporting; footRaster() has been updated to handle both current and past formatting. 
+
+
 # version 2.4.0
 
 Released 2023-10-17

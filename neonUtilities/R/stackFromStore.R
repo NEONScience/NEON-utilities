@@ -348,6 +348,9 @@ stackFromStore <- function(filepaths, dpID, site="all",
       } else {
         if(timeIndex=="all") {
           avg <- NA
+          if(level=="dp01") {
+            stop("If level=='dp01', timeIndex is a required input and cannot be 'all'.")
+          }
         } else {
           avg <- timeIndex
         }
