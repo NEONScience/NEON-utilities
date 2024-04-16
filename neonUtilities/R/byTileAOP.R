@@ -342,7 +342,8 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
           }
         } else {
           writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
-          file.urls.new <- getTileUrls(month.urls, tileEasting, tileNorthing, token=token)
+          file.urls.new <- getTileUrls(month.urls, tileEasting, tileNorthing, 
+                                       include.provisional=include.provisional, token=token)
           file.urls.current <- file.urls.new
           counter <- counter + 1
         }

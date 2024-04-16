@@ -218,7 +218,8 @@ byFileAOP <- function(dpID, site, year,
           }
         } else {
           writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
-          file.urls.new <- getFileUrls(month.urls, token = token)
+          file.urls.new <- getFileUrls(month.urls, include.provisional=include.provisional, 
+                                       token=token)
           file.urls.current <- file.urls.new
           counter <- counter + 1
         }
