@@ -275,9 +275,11 @@ stackEddy <- function(filepath,
     
     # check that you haven't filtered to nothing
     if(length(ind)==0) {
-      stop(paste("There are no data meeting the criteria level ", level, 
+      message(paste("There are no data meeting the criteria level ", level, 
                  ", averaging interval ", avg, ", and variables ", 
-                 paste(var, collapse=" "), sep=""))
+                 paste(var, collapse=" "), " in file ", files[i], sep=""))
+      names(tableList)[i] <- paste("skip", i, sep="")
+      next
     }
     
     listDataName <- listDataName[ind]
@@ -291,6 +293,13 @@ stackEddy <- function(filepath,
     
   }
   close(pb)
+  
+  tableList <- tableList[-grep(pattern="skip", x=names(tableList))]
+  
+  # check for no data left
+  if(length(tableList)==0) {
+    stop("No data met requested criteria in any file.")
+  }
   
   # get variable units
   variables <- getVariablesEddy(tableList)
