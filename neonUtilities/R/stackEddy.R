@@ -294,7 +294,10 @@ stackEddy <- function(filepath,
   }
   close(pb)
   
-  tableList <- tableList[-grep(pattern="skip", x=names(tableList))]
+  # remove skipped files from table list
+  if(any(grepl(pattern="skip", x=names(tableList)))) {
+    tableList <- tableList[-grep(pattern="skip", x=names(tableList))]
+  }
   
   # check for no data left
   if(length(tableList)==0) {
