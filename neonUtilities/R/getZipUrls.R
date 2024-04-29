@@ -172,8 +172,21 @@ getZipUrls <- function(month.urls, avg, package, dpID,
         
       }
       
+      # get science review flag files
+      if(any(grepl("science_review_flags", tmp.files[[i]]$data$files$name, fixed=T))) {
+        which.srf <- grep("science_review_flags", tmp.files[[i]]$data$files$name, fixed=T)[1]
+        zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.srf],
+                                          tmp.files[[i]]$data$files$url[which.srf],
+                                          tmp.files[[i]]$data$files$size[which.srf],
+                                          rep(tmp.files[[i]]$data$release, 
+                                              length(tmp.files[[i]]$data$files$name[which.srf]))))
+      }
+      
       # drop duplicate files by hash
-      unique.files <- tmp.files[[i]]$data$files[!base::duplicated(tmp.files[[i]]$data$files$md5),]
+      # this should be unnecessary, and may lead to conflicts if the wrong package's file is dropped
+      # removed in 2.4.2
+      #unique.files <- tmp.files[[i]]$data$files[!base::duplicated(tmp.files[[i]]$data$files$md5),]
+      unique.files <- tmp.files[[i]]$data$files
       
       # select files by averaging interval
       if(avg!="all") {
