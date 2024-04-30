@@ -1,3 +1,14 @@
+# version 2.4.2
+
+Released 2024-04-30
+
+## Bug fixes
+
+* stackEddy() had been erroring out any time it encountered a file that was incompatible with the input criteria (e.g., a variable requested in the var= parameter was not present in an h5 file). Now it skips the file and moves on to the next.
+* Download functions (zipsByProduct(), loadByProduct(), byFileAOP(), byTileAOP()) include a re-attempt routine if the first download attempt fails. include.provisional= was not handled correctly in the re-attempt code and resulted in the download erroring out. This is now fixed.
+* Downloads by averaging interval (timeIndex=) in zipsByProduct() and loadByProduct() were not retrieving science review flag files. This is now fixed.
+
+
 # version 2.4.1
 
 Released 2024-01-09

@@ -137,6 +137,13 @@ Disclaimer
 Change Log
 ----------
 
+#### 2024-04-30 v2.4.2
+Bug fixes:
+* stackEddy() skips files that don't match variables requested, rather than erroring out
+* Download re-attempts in all download functions now handle include.provisional correctly
+* Downloads by averaging interval (timeIndex) for sensor data now include science review flag files
+
+
 #### 2024-01-09 v2.4.1
 Enhancements:
 * stackEddy() can be run without API calls, using input parameter runLocal=TRUE

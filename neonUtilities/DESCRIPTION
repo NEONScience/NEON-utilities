@@ -1,6 +1,6 @@
 Package: neonUtilities
-Version: 2.4.2.9000
-Date: 2024-04-16
+Version: 2.4.2
+Date: 2024-04-30
 Title: Utilities for Working with NEON Data
 Authors@R: c(person("Claire","Lunch",email="clunch@battelleecology.org",role=c("aut","cre","ctb")), person("Christine","Laney",role=c("aut","ctb")), person("Nathan","Mietkiewicz",role=c("aut","ctb")), person("Eric","Sokol",role=c("aut","ctb")), person("Kaelin","Cawley",role=c("aut","ctb")), person("NEON (National Ecological Observatory Network)", role="aut"))
 Description: NEON data packages can be accessed through the NEON Data Portal <https://www.neonscience.org>
