@@ -41,7 +41,7 @@ readTableNEON <- function(dataFile, varFile, useFasttime=FALSE){
   
   # check this is a valid variables file
   if(any(c('category','system','stat') %in% names(v))) {
-    stop('varFile appears to match DP4.00200.001. Automated matching of data types to variables is not available for this data product; we hope to add this in a future release.')
+    stop('varFile appears to match DP4.00200.001. Use the stackEddy() function to work with surface-atmosphere exchange data.')
   } else {
     if(any(!c('table','fieldName','dataType') %in% names(v))) {
       stop('varFile is not a variables file, or is missing critical values.\n')
