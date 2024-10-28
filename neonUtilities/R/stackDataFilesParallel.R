@@ -57,7 +57,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   # handle per-sample tables separately
   if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", 
-                 "DP1.20141.001", "DP1.20190.001", "DP1.20193.001") & 
+                 "DP1.20141.001", "DP1.20190.001", "DP1.20193.001",
+                 "DP1.10081.002", "DP1.20086.002", "DP1.20141.002") & 
      length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
     framefiles <- filepaths[grep("^NEON.", basename(filenames), invert=TRUE)]
     filepaths <- filepaths[grep("^NEON.", basename(filenames))]
@@ -67,20 +68,68 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     writeLines("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
-    frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), function(x) {
-      tempf <- data.table::fread(x)
-      tempf$fileName <- rep(basename(x), nrow(tempf))
-      return(tempf)
+    # this is clunky - streamline in v3.0
+    # stacking for everything except community taxonomy
+    if(!dpID %in% c("DP1.10081.002", "DP1.20086.002", "DP1.20141.002")) {
+      frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), function(x) {
+        tempf <- data.table::fread(x)
+        tempf$fileName <- rep(basename(x), nrow(tempf))
+        return(tempf)
       }), fill=TRUE)
-    
-    if(dpID=="DP1.20190.001") {
-      data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "rea_conductivityRawData", ".csv"))
-    } else {
-      if(dpID=="DP1.20193.001") {
-        data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "sbd_conductivityRawData", ".csv"))
+      
+      if(dpID=="DP1.20190.001") {
+        data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "rea_conductivityRawData", ".csv"))
       } else {
-      data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+        if(dpID=="DP1.20193.001") {
+          data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "sbd_conductivityRawData", ".csv"))
+        } else {
+          data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+        }
       }
+    } else {
+      fungifiles <- grep("[_]ITS[_]", framefiles, value=TRUE)
+      bacteriafiles <- grep("[_]16S[_]", framefiles, value=TRUE)
+      
+      # stack ITS data
+      if(length(fungifiles)>0) {
+        fungifrm <- data.table::rbindlist(pbapply::pblapply(as.list(fungifiles), function(x) {
+          tempf <- data.table::fread(x)
+          tempf$fileName <- rep(basename(x), nrow(tempf))
+          return(tempf)
+        }), fill=TRUE)
+        
+        if(nrow(fungifrm)>0) {
+          if(dpID=="DP1.10081.002") {
+            data.table::fwrite(fungifrm, paste0(folder, "/stackedFiles/", "mct_soilPerSampleTaxonomy_ITS", ".csv"))
+          }
+          if(dpID=="DP1.20086.002") {
+            data.table::fwrite(fungifrm, paste0(folder, "/stackedFiles/", "mct_benthicPerSampleTaxonomy_ITS", ".csv"))
+          }
+          if(dpID=="DP1.20141.002") {
+            data.table::fwrite(fungifrm, paste0(folder, "/stackedFiles/", "mct_surfaceWaterPerSampleTaxonomy_ITS", ".csv"))
+          }
+        }
+      }
+      
+      # stack 16S data
+      if(length(bacteriafiles)>0) {
+        bactfrm <- data.table::rbindlist(pbapply::pblapply(as.list(bacteriafiles), function(x) {
+          tempf <- data.table::fread(x)
+          tempf$fileName <- rep(basename(x), nrow(tempf))
+          return(tempf)
+        }), fill=TRUE)
+        
+        if(dpID=="DP1.10081.002") {
+          data.table::fwrite(bactfrm, paste0(folder, "/stackedFiles/", "mct_soilPerSampleTaxonomy_16S", ".csv"))
+        }
+        if(dpID=="DP1.20086.002") {
+          data.table::fwrite(bactfrm, paste0(folder, "/stackedFiles/", "mct_benthicPerSampleTaxonomy_16S", ".csv"))
+        }
+        if(dpID=="DP1.20141.002") {
+          data.table::fwrite(bactfrm, paste0(folder, "/stackedFiles/", "mct_surfaceWaterPerSampleTaxonomy_16S", ".csv"))
+        }
+      }
+      
     }
     
   }
