@@ -58,7 +58,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
   # handle per-sample tables separately
   if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", 
                  "DP1.20141.001", "DP1.20190.001", "DP1.20193.001",
-                 "DP1.10081.002", "DP1.20086.002", "DP1.20141.002") & 
+                 "DP1.10081.002", "DP1.20086.002", "DP1.20141.002",
+                 "DP4.00132.001") & 
      length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
     framefiles <- filepaths[grep("^NEON.", basename(filenames), invert=TRUE)]
     filepaths <- filepaths[grep("^NEON.", basename(filenames))]
@@ -83,7 +84,11 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         if(dpID=="DP1.20193.001") {
           data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "sbd_conductivityRawData", ".csv"))
         } else {
-          data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+          if(dpID=="DP4.00132.001") {
+            data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "bat_processedSonarFile", ".csv"))
+          } else {
+            data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
+          }
         }
       }
     } else {
