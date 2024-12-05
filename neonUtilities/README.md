@@ -11,7 +11,7 @@ The `neonUtilities` R package provides utilities for discovering, downloading, a
 
 A cheat sheet for the `neonUtilities` package is available [here](https://www.neonscience.org/sites/default/files/cheat-sheet-neonUtilities.pdf).
 
-See [NEON Data Tutorials](https://www.neonscience.org/resources/learning-hub/tutorials) for more information, particularly the [Download and Explore](https://www.neonscience.org/resources/learning-hub/tutorials/download-explore-neon-data) and [neonUtilities](https://www.neonscience.org/resources/learning-hub/tutorials/neondatastackr) tutorials.
+See [NEON Data Tutorials](https://www.neonscience.org/resources/learning-hub/tutorials) for more information, particularly the [Get Started](https://www.neonscience.org/resources/learning-hub/tutorials/get-started-neon-data-series-data-tutorials) tutorial series.
 
 This package is actively maintained - please post any issues [here](https://github.com/NEONScience/NEON-utilities/issues) and tag @chrlaney and/or @cklunch.
 
@@ -136,6 +136,10 @@ Disclaimer
 <!-- ****** Change Log ****** -->
 Change Log
 ----------
+
+#### 2024-12-05 v2.4.3
+* stackByTable() updated to work with data product revisions and updates affecting DP4.00132.001, DP1.20046.001, DP1.10081.002, DP1.20086.002, and DP1.20141.002
+
 
 #### 2024-04-30 v2.4.2
 Bug fixes:

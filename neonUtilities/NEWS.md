@@ -1,3 +1,12 @@
+# version 2.4.3
+
+Released 2024-12-04
+
+## Changes
+
+* stackByTable() and loadByProduct() updated to handle new files associated with Bathymetric and morphological maps (DP4.00132.001) and the three revised microbe community data products (DP1.10081.002, DP1.20086.002, and DP1.20141.002)
+
+
 # version 2.4.2
 
 Released 2024-04-30

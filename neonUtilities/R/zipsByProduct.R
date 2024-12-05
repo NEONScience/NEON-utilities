@@ -183,6 +183,17 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                newDPID, sep=""))
   }
   
+  # redirect for air temp on buoy
+  if(dpID=="DP1.20046.001" & !release %in% c("RELEASE-2021",
+                                             "RELEASE-2022",
+                                             "RELEASE-2023",
+                                             "RELEASE-2024")) {
+    newDPID <- "DP1.20271.001"
+    stop(paste("Starting in 2025, ", dpID, " is included as a subset of product ", 
+               newDPID, " and is not available independently. Please download ", 
+               newDPID, sep=""))
+  }
+  
   # check for incompatible values of release= and include.provisional=
   if(release=="PROVISIONAL" & isFALSE(include.provisional)) {
     stop("Download request is for release=PROVISIONAL. To download PROVISIONAL data, enter input parameter include.provisional=TRUE.")
