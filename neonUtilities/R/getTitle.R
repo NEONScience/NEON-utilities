@@ -35,7 +35,7 @@ getTitle <- function(filename) {
     ym <- as.Date(x = paste0(ym, "-01"), format = "%Y-%m-%d")
     y <- format(ym, "%Y")
     m <- format(ym, "%B")
-    uri <- paste0("http://data.neonscience.org/api/v0/products/", dpID)
+    uri <- paste0("https://data.neonscience.org/api/v0/products/", dpID)
     data_info <- jsonlite::fromJSON(txt = uri)
     dpName <- data_info$data$productName
     title <- paste("NEON", dpName, "data from", site, m, y, "at horizontal level", hor, "and vertical position", ver, sep = " " )

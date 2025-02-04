@@ -25,7 +25,7 @@
 ##############################################################################################
 
 getProductSensors <- function(){
-  products <- jsonlite::fromJSON("http://data.neonscience.org/api/v0/products", flatten=T)
+  products <- jsonlite::fromJSON("https://data.neonscience.org/api/v0/products", flatten=T)
   products <- products[["data"]]
   df <- data.frame(dpID = NA, dpName = NA, sensor = NA)
   for(i in 1:nrow(products)){

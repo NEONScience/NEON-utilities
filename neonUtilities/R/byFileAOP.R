@@ -64,7 +64,7 @@ byFileAOP <- function(dpID, site, year,
   releases <- character()
   
   # query the products endpoint for the product requested
-  req <- getAPI(paste("http://data.neonscience.org/api/v0/products/", dpID, sep=""), token)
+  req <- getAPI(paste("https://data.neonscience.org/api/v0/products/", dpID, sep=""), token)
   avail <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
                               simplifyDataFrame=TRUE, flatten=TRUE)
 

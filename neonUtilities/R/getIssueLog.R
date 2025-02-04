@@ -34,7 +34,7 @@ getIssueLog <- function(dpID=NA, token=NA_character_) {
   if(dpID=="DP4.00200.001") {
     issuelog <- getEddyLog(token=token)
   } else {
-    req <- getAPI(apiURL = paste0("http://data.neonscience.org/api/v0/products/", dpID), 
+    req <- getAPI(apiURL = paste0("https://data.neonscience.org/api/v0/products/", dpID), 
                   token = token)
     
     if(is.null(req)) {

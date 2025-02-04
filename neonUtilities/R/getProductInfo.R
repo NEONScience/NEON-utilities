@@ -28,7 +28,7 @@
 ##############################################################################################
 getProductInfo <- function(dpID="", token = NA){
 
-  req <- getAPI(apiURL = paste0("http://data.neonscience.org/api/v0/products/", dpID), 
+  req <- getAPI(apiURL = paste0("https://data.neonscience.org/api/v0/products/", dpID), 
                   token = token)
   
   if(is.null(req)) {
