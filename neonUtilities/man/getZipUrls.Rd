@@ -10,7 +10,6 @@ getZipUrls(
   package,
   dpID,
   release,
-  messages,
   tabl,
   include.provisional,
   token = NA_character_
@@ -26,8 +25,6 @@ getZipUrls(
 \item{dpID}{Global variable for data product ID}
 
 \item{release}{Data release to be downloaded}
-
-\item{messages}{Error/warning messages from previous steps}
 
 \item{tabl}{Table name to get}
 

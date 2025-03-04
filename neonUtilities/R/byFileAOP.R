@@ -132,7 +132,7 @@ byFileAOP <- function(dpID, site, year,
       stop("Download halted.")
     }
   } else {
-    cat(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
+    message(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
     }
 
   # create folder in working directory to put files in
@@ -152,8 +152,7 @@ byFileAOP <- function(dpID, site, year,
 
   # copy zip files into folder
   j <- 1
-  messages <- list()
-  writeLines(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
+  message(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current[[1]])-1))
 
@@ -162,7 +161,7 @@ byFileAOP <- function(dpID, site, year,
   while(j <= nrow(file.urls.current[[1]])) {
 
     if (counter > 2) {
-      cat(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current[[1]]$name[j],
+      message(paste0("Refresh did not solve the isse. URL query for file ", file.urls.current[[1]]$name[j],
                   " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
                  "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
 
@@ -201,7 +200,7 @@ byFileAOP <- function(dpID, site, year,
         
         # re-attempt download once with no changes
         if(counter < 2) {
-          writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. Re-attempting."))
+          message(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. Re-attempting."))
           t <- tryCatch(
             {
               suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
@@ -212,12 +211,12 @@ byFileAOP <- function(dpID, site, year,
           if(inherits(t, "error")) {
             counter <- counter + 1
           } else {
-            messages[j] <- paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" ")
+            #message(paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" "))
             j <- j + 1
             counter <- 1
           }
         } else {
-          writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
+          message(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
           file.urls.new <- getFileUrls(month.urls, include.provisional=include.provisional, 
                                        token=token)
           file.urls.current <- file.urls.new
@@ -225,7 +224,7 @@ byFileAOP <- function(dpID, site, year,
         }
 
       } else {
-        messages[j] <- paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" ")
+        #message(paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" "))
         j <- j + 1
         counter <- 1
         releases <- c(releases, file.urls.current[[2]])
@@ -262,6 +261,5 @@ byFileAOP <- function(dpID, site, year,
     }
   }
 
-  writeLines(paste("Successfully downloaded ", length(messages), " files to ", filepath, sep=""))
-  #writeLines(paste0(messages, collapse = "\n")) # removed in v2.2.0, file lists were excessively long
+  message(paste("Successfully downloaded ", j, " files to ", filepath, sep=""))
 }

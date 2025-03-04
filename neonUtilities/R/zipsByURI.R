@@ -166,7 +166,7 @@ zipsByURI <- function(filepath,
   }
   
   #Loop to check existence and cumulative size of files
-  cat("checking file sizes...\n")
+  message("checking file sizes...")
   fileSize <- rep(NA,length(URLsToDownload))
   idx <- 0
   idxrem <- NA
@@ -177,7 +177,7 @@ zipsByURI <- function(filepath,
     
     # check for file found
     if(is.null(httr::headers(response)[["Content-Length"]])) {
-      cat(paste('No files found for url ', i, '\n', sep=''))
+      message(paste('No files found for url ', i, '\n', sep=''))
       idxrem <- c(idxrem, idx)
     } else {
       # grab file size and convert bytes to MB
@@ -191,7 +191,7 @@ zipsByURI <- function(filepath,
                            totalFileSize, ". Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) stop()
   }else{
-    cat("Downloading",length(URLsToDownload), "files totaling approximately",totalFileSize,".\n")
+    message("Downloading",length(URLsToDownload), "files totaling approximately",totalFileSize,".\n")
   }
 
   # remove URLs with no data
@@ -251,12 +251,12 @@ zipsByURI <- function(filepath,
     } else if(grepl("\\.csv|\\.CSV",i)){
       next
     } else if(unzip == TRUE && !(grepl("\\.zip|\\.ZIP",i) | grepl("\\.tar\\.gz",i))){
-      cat("Unable to unzip data for URL:",i,"\n")
+      message("Unable to unzip data for URL:",i,"\n")
     }
   }
   utils::setTxtProgressBar(pb, 1)
   close(pb)
-  cat(numDownloads, "file(s) successfully downloaded to", savepath, "\n", sep=" ")
+  message(numDownloads, "file(s) successfully downloaded to", savepath, sep=" ")
 
 }
 

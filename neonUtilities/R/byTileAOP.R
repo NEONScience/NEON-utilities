@@ -94,7 +94,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   # check that token was used
   if(!is.na(token) & !is.null(prod.req$headers$`x-ratelimit-limit`)) {
     if(prod.req$headers$`x-ratelimit-limit`==200) {
-      cat('API token was not recognized. Public rate limit applied.\n')
+      message('API token was not recognized. Public rate limit applied.')
     }
   }
 
@@ -107,10 +107,10 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   if(site %in% shared_flights$site) {
     flightSite <- shared_flights$flightSite[which(shared_flights$site==site)]
     if(site %in% c('TREE','CHEQ','KONA','DCFS')) {
-      cat(paste(site, ' is part of the flight box for ', flightSite,
+      message(paste(site, ' is part of the flight box for ', flightSite,
                 '. Downloading data from ', flightSite, '.\n', sep=''))
     } else {
-      cat(paste(site, ' is an aquatic site and is sometimes included in the flight box for ', flightSite,
+      message(paste(site, ' is an aquatic site and is sometimes included in the flight box for ', flightSite,
                 '. Aquatic sites are not always included in flight coverage every year.\nDownloading data from ',
                 flightSite, '. Check data to confirm coverage of ', site, '.\n', sep=''))
     }
@@ -154,7 +154,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     easting <- c(easting17, df18coords$x)
     northing <- c(northing17, df18coords$y)
 
-    cat('Blandy (BLAN) plots include two UTM zones, flight data are all in 17N.
+    message('Blandy (BLAN) plots include two UTM zones, flight data are all in 17N.
         Coordinates in UTM zone 18N have been converted to 17N to download the correct tiles.
         You will need to make the same conversion to connect airborne to ground data.')
   }
@@ -258,7 +258,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
       stop("Download halted.")
     }
   } else {
-    cat(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
+    message(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
     }
 
   # create folder in working directory to put files in
@@ -276,7 +276,6 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   
   # copy zip files into folder
   j <- 1
-  messages <- list()
   writeLines(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current[[1]])-1))
@@ -286,7 +285,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   while(j <= nrow(file.urls.current[[1]])) {
 
     if (counter > 2) {
-      cat(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current[[1]]$name[j],
+      message(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current[[1]]$name[j],
                   " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
                  "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
 
@@ -325,7 +324,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
         
         # re-attempt download once with no changes
         if(counter < 2) {
-          writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. Re-attempting."))
+          message(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. Re-attempting."))
           t <- tryCatch(
             {
               suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
@@ -336,12 +335,12 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
           if(inherits(t, "error")) {
             counter <- counter + 1
           } else {
-            messages[j] <- paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" ")
+            #message(paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" "))
             j <- j + 1
             counter <- 1
           }
         } else {
-          writeLines(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
+          message(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
           file.urls.new <- getTileUrls(month.urls, tileEasting, tileNorthing, 
                                        include.provisional=include.provisional, token=token)
           file.urls.current <- file.urls.new
@@ -349,7 +348,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
         }
         
       } else {
-        messages[j] <- paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" ")
+        #message(paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" "))
         j <- j + 1
         counter <- 1
         releases <- c(releases, file.urls.current[[2]])
@@ -386,6 +385,5 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     }
   }
 
-  writeLines(paste("Successfully downloaded ", length(messages), " files to ", filepath, sep=""))
-  #writeLines(paste0(messages, collapse = "\n")) # removed in v2.2.0, file lists were excessively long
+  message(paste("Successfully downloaded ", j, " files to ", filepath, sep=""))
 }

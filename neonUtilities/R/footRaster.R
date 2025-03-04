@@ -120,11 +120,8 @@ footRaster <- function(filepath) {
   # make empty list for location/dimension data
   locAttr <- list()
   
-  # make empty messages
-  messages <- character()
-  
   # set up progress bar
-  writeLines(paste0("Extracting data"))
+  message(paste0("Extracting data"))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 0)
 
@@ -180,7 +177,7 @@ footRaster <- function(filepath) {
                                           'stat', sep='/'))
       # check for internal consistency
       if(length(unique(oriAttr$distReso))!=1) {
-        messages <- c(messages,'Resolution attribute is inconsistent. Rasters are unscaled.\n')
+        message('Resolution attribute is inconsistent. Rasters are unscaled.')
         locAttr$distReso <- 0
       } else {
         locAttr$distReso <- unique(oriAttr$distReso)
@@ -200,14 +197,14 @@ footRaster <- function(filepath) {
       newAttr$distReso <- newOri$distReso
       
       if(unique(newOri$distReso)!=locAttr$distReso) {
-        messages <- c(messages, 'Resolution attribute is inconsistent. Rasters are unscaled.\nCheck input data, inputs may have included multiple sites.\n')
+        message('Resolution attribute is inconsistent. Rasters are unscaled.\nCheck input data, inputs may have included multiple sites.')
         locAttr$distReso <- 0
       } else {
         if(!all(c(newAttr$LatTow, newAttr$LonTow, 
                   newAttr$ZoneUtm)==c(locAttr$LatTow,
                                       locAttr$LonTow,
                                       locAttr$ZoneUtm))) {
-          messages <- c(messages, 'Resolution attribute is inconsistent. Rasters are unscaled.\nCheck input data, inputs may have included multiple sites.\n')
+          message('Resolution attribute is inconsistent. Rasters are unscaled.\nCheck input data, inputs may have included multiple sites.')
           locAttr$distReso <- 0
         }
       }
@@ -258,8 +255,6 @@ footRaster <- function(filepath) {
   summaryRaster <- terra::mean(masterRaster, na.rm=T)
   masterRaster <- c(summaryRaster, masterRaster)
   names(masterRaster)[1] <- paste(site, "summary", sep=".")
-  
-  cat(messages)
   
   return(masterRaster)
   

@@ -45,8 +45,8 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing,
     
     # check for no files
     if(length(tmp.files$data$files)==0) {
-      url.messages <- c(url.messages, paste("No files found for site", tmp.files$data$siteCode,
-                                            "and year", tmp.files$data$month, sep=" "))
+      message(paste("No files found for site", tmp.files$data$siteCode,
+                    "and year", tmp.files$data$month, sep=" "))
       next
     }
     
