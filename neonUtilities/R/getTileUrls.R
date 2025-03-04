@@ -66,9 +66,9 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing,
         if(length(ind.j)>0) {
           ind <- c(ind, ind.j)
         } else {
-          url.messages <- c(url.messages, paste("No tiles found for easting ",
-                                                tileEasting[j], " and northing ",
-                                                tileNorthing[j], sep=""))
+          message(paste("No tiles found for easting ",
+                        tileEasting[j], " and northing ",
+                        tileNorthing[j], sep=""))
         }
       }
       ind <- unique(ind)

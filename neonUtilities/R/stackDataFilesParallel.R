@@ -403,7 +403,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     if(directories <= 25000 | nCores == 1) {
       cl <- 1
       if(nCores == 1) {
-        writeLines(paste0("Stacking operation across a single core."))
+        message(paste0("Stacking operation across a single core."))
       } else {
         message(paste0("File requirements do not meet the threshold for automatic parallelization. Running on single core."))
       }

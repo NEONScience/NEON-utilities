@@ -276,7 +276,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   
   # copy zip files into folder
   j <- 1
-  writeLines(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
+  message(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current[[1]])-1))
 
@@ -385,5 +385,6 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     }
   }
 
-  message(paste("Successfully downloaded ", j, " files to ", filepath, sep=""))
+  # add a counter instead of using starting number
+  message(paste("Successfully downloaded ", nrow(file.urls.current[[1]]), " files to ", filepath, sep=""))
 }
