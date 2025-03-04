@@ -8,7 +8,7 @@
 #' Use the NEON API to get the issue log in a user-friendly format
 
 #' @param dpID The data product identifier, formatted as DP#.#####.###
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience.org user accounts)
 
 #' @return A table of issues reported for the data product.
 

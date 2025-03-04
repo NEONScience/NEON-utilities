@@ -19,7 +19,7 @@
 #' @param unzip T or F, indicates if the downloaded zip files from ECS buckets should be 
 #' unzipped into the same directory, defaults to T. Supports .zip and .tar.gz files currently.
 #' @param saveZippedFiles T or F: should the zip files be retained after unzipping? Defaults to F.
-#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
+#' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all files meeting query criteria.
 

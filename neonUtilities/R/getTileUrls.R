@@ -11,7 +11,7 @@
 #' @param tileEasting A vector containing the easting UTM coordinates of the locations to download.
 #' @param tileNorthing A vector containing the northing UTM coordinates of the locations to download.
 #' @param include.provisional T or F, should provisional data be included in downloaded files?
-#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
+#' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 #'
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 

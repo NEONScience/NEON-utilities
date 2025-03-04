@@ -21,7 +21,7 @@ getTileUrls(
 
 \item{include.provisional}{T or F, should provisional data be included in downloaded files?}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts). Optional.}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts). Optional.}
 }
 \value{
 A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)

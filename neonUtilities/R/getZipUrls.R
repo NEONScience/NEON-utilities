@@ -15,7 +15,7 @@
 #' @param tabl Table name to get
 #' @param messages Error/warning messages from previous steps
 #' @param include.provisional Should provisional data be included?
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience.org user accounts)
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 

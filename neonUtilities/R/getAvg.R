@@ -8,7 +8,7 @@
 #' Most IS products are available at multiple averaging intervals; get a list of what's available for a given data product
 #'
 #' @param dpID The identifier of the NEON data product, in the form DPL.PRNUM.REV, e.g. DP1.00006.001
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience.org user accounts)
 
 #' @return A vector of the available averaging intervals, typically in minutes.
 

@@ -39,7 +39,7 @@ getDatatable(
 
 \item{url_prefix_products}{products endpoint for NEON API.}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts)}
 }
 \value{
 data frame with selected NEON data

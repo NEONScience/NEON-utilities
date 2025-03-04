@@ -19,7 +19,7 @@
 #' @param data_package_type package type, either 'basic' or 'expanded'. If unsure, use 'expanded'
 #' @param url_prefix_data data endpoint for NEON API.
 #' @param url_prefix_products products endpoint for NEON API.
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience.org user accounts)
 #'
 #' @return data frame with selected NEON data
 #'

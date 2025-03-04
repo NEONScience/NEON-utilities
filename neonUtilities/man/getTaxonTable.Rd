@@ -19,7 +19,7 @@ FISH, HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL
 
 \item{stream}{Character string, true or false. Option to obtain the result as a stream. Utilize for large requests.}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts)}
 }
 \value{
 data frame with selected NEON data

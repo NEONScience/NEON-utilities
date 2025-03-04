@@ -9,7 +9,7 @@
 #'
 #' @param m.urls The monthly API URL for the AOP files
 #' @param include.provisional T or F, should provisional data be included in downloaded files?
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience.org user accounts)
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 

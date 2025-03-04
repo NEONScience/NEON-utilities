@@ -33,7 +33,7 @@ getZipUrls(
 
 \item{include.provisional}{Should provisional data be included?}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts)}
 }
 \value{
 A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
