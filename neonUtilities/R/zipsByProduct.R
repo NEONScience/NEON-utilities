@@ -147,7 +147,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         if(dpID %in% shared_aquatic$product[which(shared_aquatic$site==x)]) {
           terrSite <- unique(shared_aquatic$towerSite[which(shared_aquatic$site==x)])
           
-          message(paste(x, " -> ", terrSite, "\n", sep=""))
+          message(paste(x, " -> ", terrSite, sep=""))
           return(terrSite)
         }
         else {
