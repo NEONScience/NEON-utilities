@@ -25,6 +25,8 @@
 #' # Search for grazing events at several sites
 #' sim.graz <- byEventSIM(eventType="grazing", site=c("CPER","KONA","MOAB","STER","LAJA"))
 #' }
+#' 
+#' @importFrom rlang .data
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -90,6 +92,7 @@ byEventSIM <- function(eventType,
   if(inherits(vartab, "try-error")) {
     message("There was a problem reading the variables file. All data are loaded as character strings.")
     # use string schema - need to write function
+    # or use unify_schemas?
   } else {
     if(nrow(vartab)==0) {
       message("There was a problem reading the variables file. All data are loaded as character strings.")
@@ -98,6 +101,12 @@ byEventSIM <- function(eventType,
   }
   
   vschema <- schemaFromVar(vartab)
+  ds <- arrow::open_csv_dataset(sources=edlst, schema=vschema, skip=1)
   
+  evFilter <- eventType
+  evds <- dplyr::filter(.data=ds, .data$eventType==evFilter)
+  events <- data.frame(dplyr::collect(evds))
+  
+  return(events)
   
 }
