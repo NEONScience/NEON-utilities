@@ -13,6 +13,7 @@ queryFiles(
   release = "current",
   timeIndex = "all",
   tabl = "all",
+  metadata = TRUE,
   include.provisional = FALSE,
   token = NA_character_
 )
@@ -34,9 +35,14 @@ queryFiles(
 
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
 
+\item{metadata}{T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to F, can only be set to T if tabl is not 'all'.}
+
 \item{include.provisional}{T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.}
 
 \item{token}{User specific API token (generated within data.neonscience.org user accounts). Optional.}
+}
+\value{
+A list of two elements: (1) the set of urls matching the query; (2) the most recent variables file for the set of urls
 }
 \description{
 Uses the query endpoint of the NEON API to find the full list of files for a given data product, release, site(s), and date range.

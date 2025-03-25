@@ -21,6 +21,8 @@
 schemaAllStrings <- function(variables) {
 
   # still need to build in option for set of names, without full variables file
+  # schemaFromVar() is now set to only call this function if the variables file is available
+  # so only need the names option if this function is called from elsewhere in the future
   stringschema <- arrow::schema(unlist(apply(variables, MARGIN=1, FUN=function(x) {
     arrow::field(name=x["fieldName"], type=arrow::string())
   })))
