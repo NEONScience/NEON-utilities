@@ -4,12 +4,14 @@
 \alias{schemaFromVar}
 \title{Create an arrow schema from a NEON variables file.}
 \usage{
-schemaFromVar(variables, tab)
+schemaFromVar(variables, tab, package)
 }
 \arguments{
 \item{variables}{A data frame containing a NEON variables file, or a url pointing to a NEON variables file.}
 
 \item{tab}{The name of the table to generate a schema from.}
+
+\item{package}{Should the schema be created for the basic or expanded package?}
 }
 \value{
 An arrow schema for the relevant data table.

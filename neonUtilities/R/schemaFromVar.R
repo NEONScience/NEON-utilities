@@ -9,6 +9,7 @@
 #'
 #' @param variables A data frame containing a NEON variables file, or a url pointing to a NEON variables file.
 #' @param tab The name of the table to generate a schema from.
+#' @param package Should the schema be created for the basic or expanded package?
 #' 
 #' @return An arrow schema for the relevant data table.
 #' 
@@ -21,7 +22,7 @@
 #   Claire Lunch (2025-03-11)
 ##############################################################################################
 
-schemaFromVar <- function(variables, tab) {
+schemaFromVar <- function(variables, tab, package) {
 
   unify <- FALSE
   
@@ -52,6 +53,11 @@ schemaFromVar <- function(variables, tab) {
     vschema <- NULL
   } else {
     
+    # if working with the basic package, subset the table
+    if(package=="basic") {
+      vartab <- vartab[which(vartab$downloadPkg=="basic"),]
+    }
+    
     # start by making a schema with everything as a string
     vschema <- schemaAllStrings(vartab)
     
@@ -70,7 +76,7 @@ schemaFromVar <- function(variables, tab) {
                                        "yyyy-MM-dd'T'HH:mm:ss'Z'",
                                        "yyyy-MM-dd'T'HH:mm:ss'Z'(round)")) {
         vschema[[i]] <- arrow::field(name=vartab$fieldName[i], 
-                                     type=arrow::timestamp("s", tz="UTC"))
+                                     type=arrow::timestamp("s", timezone="UTC"))
       }
       if(vartab$dataType[i]=="dateTime" & 
          vartab$pubFormat[i] %in% c("yyyy-MM-dd(floor)", "yyyy-MM-dd")) {
