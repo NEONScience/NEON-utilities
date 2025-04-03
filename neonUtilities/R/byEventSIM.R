@@ -51,56 +51,21 @@ byEventSIM <- function(eventType,
     stop("The dplyr package is required to use this function. Install and re-try.")
   }
   
-  # check for GCS and S3 enabled
-  if(!arrow::arrow_with_gcs()) {
-    if(!arrow::arrow_with_s3()) {
-      stop("Package arrow is installed with S3 and GCS disabled. Consult documentation at https://arrow.apache.org/docs/r/articles/fs.html , update installation and re-try.")
-    } else {
-      message("Package arrow is installed with GCS disabled. S3 will be used to access data; performance may be reduced.")
-    }
-  }
-  
   urlset <- queryFiles(dpID="DP1.10111.001", site=site,
                        package='basic', startdate=startdate,
                        enddate=enddate, release=release, 
-                       tabl='sim_eventData',
+                       tabl='sim_eventData', metadata=TRUE,
                        include.provisional=include.provisional,
-                       token=Sys.getenv('NEON_TOKEN'))
+                       token=token)
   
   # subset to only the table to query
-  edlst <- base::grep("sim_eventData", urlset, value=TRUE)
+  edlst <- base::grep("sim_eventData", urlset[[1]], value=TRUE)
   
-  # get most recent variables file
-  varfls <- base::grep("variables", urlset, value=TRUE)
-  varfl <- getRecentPublication(varfls)[[1]]
+  # get variables file and translate to schema
+  varfl <- urlset[[2]]
+  vschema <- schemaFromVar(varfl, tab="sim_eventData", package="basic")
   
-  # add GCS prefix, if GCS is enabled
-  if(arrow::arrow_with_gcs()) {
-    edlst <- paste("gs://anonymous@", edlst, sep="")
-    varfl <- paste("gs://anonymous@", varfl, sep="")
-  } else {
-    # S3 prefix and suffix if GCS is not enabled
-    edlst <- paste("s3://", edlst, 
-                   "/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com", sep="")
-    varfl <- paste("s3://", varfl, 
-                   "/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com", sep="")
-  }
-  
-  # read in variables file
-  vartab <- try(data.frame(arrow::read_csv_arrow(varfl)), silent=TRUE)
-  vartab <- try(vartab[which(vartab$table=="sim_eventData"),], silent=TRUE)
-  if(inherits(vartab, "try-error")) {
-    message("There was a problem reading the variables file. All data are loaded as character strings.")
-    # use string schema - need to write function
-    # or use unify_schemas?
-  } else {
-    if(nrow(vartab)==0) {
-      message("There was a problem reading the variables file. All data are loaded as character strings.")
-      # use string schema - need to write function
-    }
-  }
-  
-  vschema <- schemaFromVar(vartab)
+  # open dataset and query for event type
   ds <- arrow::open_csv_dataset(sources=edlst, schema=vschema, skip=1)
   
   evFilter <- eventType
