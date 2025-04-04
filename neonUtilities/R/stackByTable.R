@@ -69,11 +69,12 @@ stackByTable <- function(filepath,
   }
 
   if(identical(savepath, "envt") & saveUnzippedFiles == TRUE & folder!="ls") {
-    cat("Warning: savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE unless stacking from an archive. Unzipped files won't be saved.\n")
+    warning("savepath = 'envt' can't be combined with saveUnzippedFiles = TRUE unless stacking from an archive. Unzipped files won't be saved.", 
+            call. = FALSE)
   }
 
   #### Check whether data should be stacked ####
-  if(folder==FALSE){
+  if(isFALSE(folder)){
     files <- listFilesInZip(filepath)
     files <- files$Name[grep(files$Name, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.")]
     if(length(files) == 0){
@@ -81,7 +82,7 @@ stackByTable <- function(filepath,
     }
   }
 
-  if(folder==TRUE){
+  if(isTRUE(folder)){
     files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.|release_status")
     if(length(files)==0) {
       stop("Data files are not present in specified filepath.")
@@ -143,7 +144,7 @@ stackByTable <- function(filepath,
 
   if(dpID == "DP1.10017.001" && package != 'basic'){
     saveUnzippedFiles = TRUE
-    writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.\n")
+    message("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.")
   }
   
   # warning about soil sensor data
@@ -153,7 +154,7 @@ stackByTable <- function(filepath,
   
   #### If all checks pass, unzip and stack files ####
   envt <- 0
-  if(folder==FALSE) {
+  if(isFALSE(folder)) {
     if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
     if(savepath=="envt") {
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
@@ -174,7 +175,7 @@ stackByTable <- function(filepath,
     }
   }
 
-  if(folder==TRUE) {
+  if(isTRUE(folder)) {
     if(is.na(savepath)){savepath <- filepath}
     if(savepath=="envt") {
       savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
@@ -215,7 +216,7 @@ stackByTable <- function(filepath,
       files <- substring(names(fols), 1, nchar(names(fols))-4)
     } else {
       if(length(grep(files, pattern = ".zip$"))>I(length(files)/5)) {
-        cat("There are a large number of zip files in the input list.\nFiles are only unzipped if all input files are zip files.\n")
+        message("There are a large number of zip files in the input list.\nFiles are only unzipped if all input files are zip files.")
       }
     }
     if(length(grep(files, pattern = ".zip$"))>0) {

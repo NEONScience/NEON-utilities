@@ -14,7 +14,7 @@
 #' FISH, HERPETOLOGY, MACROINVERTEBRATE, MOSQUITO, MOSQUITO_PATHOGENS, SMALL_MAMMAL, PLANT, TICK
 #' @param recordReturnLimit Integer. The number of items to limit the result set to. If NA, will return all records in table.
 #' @param stream Character string, true or false. Option to obtain the result as a stream. Utilize for large requests.
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience.org user accounts)
 #'
 #' @return data frame with selected NEON data
 #'
@@ -31,6 +31,6 @@ getTaxonTable <- function(
   token = NA
   ){
 
-  cat("getTaxonTable() is deprecated in neonUtilities. Use the updated version of this function, renamed to getTaxonList(), in the neonOS package.")
+  message("getTaxonTable() is deprecated in neonUtilities. Use the updated version of this function, renamed to getTaxonList(), in the neonOS package.")
   
 }

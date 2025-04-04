@@ -32,7 +32,6 @@
 stackDataFilesParallel <- function(folder, nCores=1, dpID){
   
   starttime <- Sys.time()
-  messages <- character()
   releases <- character()
   
   # get the in-memory list of table types (site-date, site-all, etc.). This list must be updated often.
@@ -66,7 +65,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     filenames <- filenames[grep("^NEON.", basename(filenames))]
     
     # stack frame files
-    writeLines("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
+    message("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
     if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
     # this is clunky - streamline in v3.0
@@ -194,7 +193,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     if(TRUE %in% stringr::str_detect(filepaths,'validation')) {
       valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])[[1]]
       file.copy(from = valpath, to = paste0(folder, "/stackedFiles/validation_", dpnum, ".csv"))
-      messages <- c(messages, "Copied the most recent publication of validation file to /stackedFiles")
+      message("Copied the most recent publication of validation file to /stackedFiles")
       m <- m + 1
     }
     
@@ -202,7 +201,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     if(TRUE %in% stringr::str_detect(filepaths,'categoricalCodes')) {
       lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])[[1]]
       file.copy(from = lovpath, to = paste0(folder, "/stackedFiles/categoricalCodes_", dpnum, ".csv"))
-      messages <- c(messages, "Copied the most recent publication of categoricalCodes file to /stackedFiles")
+      message("Copied the most recent publication of categoricalCodes file to /stackedFiles")
       m <- m + 1
     }
     
@@ -218,7 +217,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
         tablesj <- externalLabs[grep(paste("[.]", labTables[j], "[.]", sep=""), externalLabs)]
         if(length(tablesj)>0) {
 
-          writeLines(paste0("Stacking table ", labTables[j]))
+          message(paste0("Stacking table ", labTables[j]))
           
           outputLab <- data.table::rbindlist(pbapply::pblapply(as.list(tablesj), function(x, filepaths) {
             
@@ -337,10 +336,10 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
 
       if(!identical(nrow(outputSensorPositions), as.integer(0))) {
         data.table::fwrite(outputSensorPositions, paste0(folder, "/stackedFiles/sensor_positions_", dpnum, ".csv"))
-        messages <- c(messages, "Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
+        message("Merged the most recent publication of sensor position files for each site and saved to /stackedFiles")
         m <- m + 1
         if(length(unique(outputSensorPositions$siteID))!=length(uniqueSites)) {
-          messages <- c(messages, "There was an error in stacking one or more sensor positions files. Sensor positions table may be missing metadata from one or more sites.")
+          message("There was an error in stacking one or more sensor positions files. Sensor positions table may be missing metadata from one or more sites.")
         }
         
       }
@@ -390,7 +389,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       
       if(!identical(nrow(outputScienceReview), as.integer(0))) {
         data.table::fwrite(outputScienceReview, paste0(folder, "/stackedFiles/science_review_flags_", dpnum, ".csv"))
-        messages <- c(messages, "Aggregated the science review flag files for each site and saved to /stackedFiles")
+        message("Aggregated the science review flag files for each site and saved to /stackedFiles")
         m <- m + 1
       }
     }
@@ -404,15 +403,15 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     if(directories <= 25000 | nCores == 1) {
       cl <- 1
       if(nCores == 1) {
-        writeLines(paste0("Stacking operation across a single core."))
+        message(paste0("Stacking operation across a single core."))
       } else {
-        writeLines(paste0("File requirements do not meet the threshold for automatic parallelization. Running on single core."))
+        message(paste0("File requirements do not meet the threshold for automatic parallelization. Running on single core."))
       }
     } else {
       cl <- parallel::makeCluster(getOption("cl.cores", nCores),
                                   setup_strategy='sequential')
       parallel::clusterEvalQ(cl, library(data.table)) 
-      writeLines(paste0("Parallelizing stacking operation across ", nCores, " cores."))
+      message(paste0("Parallelizing stacking operation across ", nCores, " cores."))
       # If error, crash, or completion , closes all clusters
       suppressWarnings(on.exit(parallel::stopCluster(cl)))
       }
@@ -421,7 +420,7 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       variables <- getVariables(varpath)  # get the variables from the chosen variables file
 
-      writeLines(paste0("Stacking table ", tables[i]))
+      message(paste0("Stacking table ", tables[i]))
       file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
                          filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
 
@@ -509,14 +508,14 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # write out complete variables file
     vfull <- data.table::rbindlist(vlist, fill=TRUE)
     utils::write.csv(vfull, paste0(folder, "/stackedFiles/variables_", dpnum, ".csv"), row.names=F)
-    messages <- c(messages, "Copied the most recent publication of variable definition file to /stackedFiles")
+    message("Copied the most recent publication of variable definition file to /stackedFiles")
     m <- m + 1
     
   }
   
   # get issue log
   if(!curl::has_internet()) {
-    messages <- c(messages, "No internet connection, issue log file not accessed. Issue log can be found in the readme file.")
+    message("No internet connection, issue log file not accessed. Issue log can be found in the readme file.")
   } else {
     # token not used here, since token is not otherwise used/accessible in this function
     issues <- getIssueLog(dpID=dpID)
@@ -550,9 +549,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     }
   }
   
-  writeLines(paste0(messages, collapse = "\n"))
-  writeLines(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
+  message(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
   endtime <- Sys.time()
-  writeLines(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
+  message(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
   
 }

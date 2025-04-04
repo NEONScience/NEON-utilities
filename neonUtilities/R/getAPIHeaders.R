@@ -8,7 +8,7 @@
 #'
 #'
 #' @param apiURL The API endpoint URL
-#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
+#' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -50,9 +50,9 @@ getAPIHeaders <- function(apiURL, token=NA_character_){
       if(!is.null(req$headers$`x-ratelimit-limit`)) {
         
         if(req$headers$`x-ratelimit-remaining`<=1) {
-          cat(paste("\nRate limit reached. Pausing for ", 
+          message(paste("Rate limit reached. Pausing for ", 
                     req$headers$`x-ratelimit-reset`,
-                    " seconds to reset.\n", sep=""))
+                    " seconds to reset.", sep=""))
           Sys.sleep(req$headers$`x-ratelimit-reset`)
           j <- j+1
         } else {
@@ -86,9 +86,9 @@ getAPIHeaders <- function(apiURL, token=NA_character_){
 
         # if rate limit is reached, pause
         if(req$headers$`x-ratelimit-remaining`<=1) {
-          cat(paste("\nRate limit reached. Pausing for ", 
+          message(paste("Rate limit reached. Pausing for ", 
                     req$headers$`x-ratelimit-reset`,
-                    " seconds to reset.\n", sep=""))
+                    " seconds to reset.", sep=""))
           Sys.sleep(req$headers$`x-ratelimit-reset`)
           j <- j+1
         } else {

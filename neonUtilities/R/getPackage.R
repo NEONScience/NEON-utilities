@@ -28,7 +28,8 @@
 
 getPackage <- function(dpID, site_code, year_month, package="basic", savepath = getwd()){
   
-  message("getPackage() will be deprecated soon, use zipsByProduct(). For back-compatibility, your request has been sent to zipsByProduct().")
+  warning("getPackage() will be deprecated soon, use zipsByProduct(). For back-compatibility, your request has been sent to zipsByProduct().",
+          call. = FALSE)
   zipsByProduct(dpID=dpID, site=site_code, startdate=year_month, 
                 enddate=year_month, package=package, 
                 savepath=savepath, check.size=FALSE)

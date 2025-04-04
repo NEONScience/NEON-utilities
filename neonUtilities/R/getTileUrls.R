@@ -11,7 +11,7 @@
 #' @param tileEasting A vector containing the easting UTM coordinates of the locations to download.
 #' @param tileNorthing A vector containing the northing UTM coordinates of the locations to download.
 #' @param include.provisional T or F, should provisional data be included in downloaded files?
-#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
+#' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 #'
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
@@ -45,8 +45,8 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing,
     
     # check for no files
     if(length(tmp.files$data$files)==0) {
-      url.messages <- c(url.messages, paste("No files found for site", tmp.files$data$siteCode,
-                                            "and year", tmp.files$data$month, sep=" "))
+      message(paste("No files found for site", tmp.files$data$siteCode,
+                    "and year", tmp.files$data$month, sep=" "))
       next
     }
     
@@ -66,9 +66,9 @@ getTileUrls <- function(m.urls, tileEasting, tileNorthing,
         if(length(ind.j)>0) {
           ind <- c(ind, ind.j)
         } else {
-          url.messages <- c(url.messages, paste("No tiles found for easting ",
-                                                tileEasting[j], " and northing ",
-                                                tileNorthing[j], sep=""))
+          message(paste("No tiles found for easting ",
+                        tileEasting[j], " and northing ",
+                        tileNorthing[j], sep=""))
         }
       }
       ind <- unique(ind)

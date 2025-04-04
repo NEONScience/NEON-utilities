@@ -31,7 +31,7 @@ getReadmePublicationDate <- function(savepath, out_filepath, dpID) {
   readme_list <- list.files(savepath, pattern = '.readme.',
                             recursive = TRUE, full.names = TRUE)
   if(length(readme_list)==0) {
-    writeLines("No readme file found.\n")
+    message("No readme file found")
   } else {
 
     readme_recent <- getRecentPublication(readme_list)[[1]]

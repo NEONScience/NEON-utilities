@@ -20,7 +20,7 @@
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
-#' @param token User specific API token (generated within neon.datascience user accounts). Optional.
+#' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 
 #' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
 #' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
@@ -48,8 +48,6 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                           release="current", timeIndex="all", tabl="all", check.size=TRUE, 
                           include.provisional=FALSE, savepath=NA, load=F, 
                           token=NA_character_, avg=NA) {
-
-  messages <- NA
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -82,7 +80,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   
   # warning message if using deprecated avg= instead of timeIndex=
   if(!is.na(avg)) {
-    cat('Input parameter avg is deprecated; use timeIndex to download by time interval.\n')
+    message('Input parameter avg is deprecated; use timeIndex to download by time interval.')
   } else {
     avg <- timeIndex
   }
@@ -141,7 +139,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   # redirect for met/precip data shared between terrestrial & aquatic sites
   # site=='all' not addressed, because in that case all available sites for the product are returned
   if(length(intersect(which(shared_aquatic$product==dpID), which(shared_aquatic$site %in% site)))>0) {
-    cat(paste("Some sites in your download request are aquatic sites where ", 
+    message(paste("Some sites in your download request are aquatic sites where ", 
               dpID, " is collected at a nearby terrestrial site. The sites you requested, and the sites that will be accessed instead, are listed below:\n", 
               sep=""))
     site <- unlist(lapply(site, function(x) {
@@ -149,7 +147,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         if(dpID %in% shared_aquatic$product[which(shared_aquatic$site==x)]) {
           terrSite <- unique(shared_aquatic$towerSite[which(shared_aquatic$site==x)])
           
-          cat(paste(x, " -> ", terrSite, "\n", sep=""))
+          message(paste(x, " -> ", terrSite, sep=""))
           return(terrSite)
         }
         else {
@@ -243,7 +241,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   # check that token was used
   if(!is.na(token) & !is.null(prod.req$headers$`x-ratelimit-limit`)) {
     if(prod.req$headers$`x-ratelimit-limit`==200) {
-      cat('API token was not recognized. Public rate limit applied.\n')
+      message('API token was not recognized. Public rate limit applied.')
     }
   }
 
@@ -252,13 +250,13 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     # if product is OS, proceed with normal download
     if(avail$data$productScienceTeamAbbr %in% c("TOS","AOS","AOP") |
        dpID %in% c("DP1.20267.001","DP1.00101.001","DP1.00013.001","DP1.00038.001")) {
-      cat(paste(dpID, " is not a streaming sensor (IS) data product; cannot subset by averaging interval. Proceeding to download all available data.\n",
+      message(paste(dpID, " is not a streaming sensor (IS) data product; cannot subset by averaging interval. Proceeding to download all available data.\n",
                 sep=""))
       avg <- "all"
   } else {
     # exceptions for water quality, SAE, summary weather statistics
     if(dpID %in% c("DP1.20288.001","DP4.00001.001","DP4.00200.001")) {
-      cat(paste("Downloading by time interval is not available for ", dpID,
+      message(paste("Downloading by time interval is not available for ", dpID,
                 ". Proceeding to download all available data.\n", sep=""))
       avg <- "all"
     } else {
@@ -313,7 +311,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, tabl=tabl,
-                         release=release, messages=messages, 
+                         release=release,
                          include.provisional=include.provisional,
                          token=token)
   if(is.null(zip.urls)) { return(invisible()) }
@@ -330,7 +328,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       stop("Download halted.")
     }
   } else {
-    cat(paste0("Downloading files totaling approximately ", downld.size, "\n"))
+    message(paste0("Downloading files totaling approximately ", downld.size))
   }
 
   # create folder in working directory or savepath to put files in
@@ -353,7 +351,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                  R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
                  " ", R.Version()$platform, sep="")
   
-  writeLines(paste("Downloading ", nrow(zip.urls), " files", sep=""))
+  message(paste("Downloading ", nrow(zip.urls), " files", sep=""))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
 
@@ -363,7 +361,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   while(j <= nrow(zip.urls)) {
 
     if (counter > 2) {
-      cat(paste0("\nRefresh did not solve the isse. URL query for file ", zip.urls$name[j],
+      message(paste0("\nRefresh did not solve the isse. URL query for file ", zip.urls$name[j],
                  " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
                  "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
       j <- j + 1
@@ -392,7 +390,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           
           # re-attempt download once with no changes
           if(counter < 2) {
-            writeLines(paste0("\n", zip.urls$name[j], " could not be downloaded. Re-attempting."))
+            message(paste0("\n", zip.urls$name[j], " could not be downloaded. Re-attempting."))
             
             if(is.na(token)) {
               t <- tryCatch(
@@ -418,11 +416,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
               counter <- 1
             }
           } else {
-            writeLines(paste0("\n", zip.urls$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
+            message(paste0("\n", zip.urls$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
             
             zip.urls <- quietMessages(getZipUrls(month.urls, avg=avg, package=package, tabl=tabl, 
                                                  include.provisional=include.provisional,
-                                                 dpID=dpID, release=release, messages=messages, token=token))
+                                                 dpID=dpID, release=release, token=token))
             zip.urls <- tidyr::drop_na(zip.urls)
             
             counter <- counter + 1
@@ -450,10 +448,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   close(pb)
 
   if(load==F) {
-    messages <- c(messages, paste0(nrow(zip.urls), " files successfully downloaded to ", filepath))
+    message(paste0(nrow(zip.urls), " files successfully downloaded to ", filepath))
   }
 
-  writeLines(paste0(messages[-1], collapse = "\n"))
 }
 
 

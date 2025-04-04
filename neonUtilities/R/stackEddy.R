@@ -210,7 +210,7 @@ stackEddy <- function(filepath,
   names(tableList) <- substring(basename(files), 1, nchar(basename(files))-3)
   
   # set up progress bar
-  writeLines(paste0("Extracting data"))
+  message(paste0("Extracting data"))
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 0)
 
@@ -331,7 +331,7 @@ stackEddy <- function(filepath,
   names(mergTableList) <- names(tableList)
   
   # set up progress bar
-  writeLines(paste0("Joining data variables by file"))
+  message(paste0("Joining data variables by file"))
   pb2 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb2, 0)
   
@@ -488,7 +488,7 @@ stackEddy <- function(filepath,
   }
   
   # set up progress bar
-  writeLines(paste0("Stacking files by month"))
+  message(paste0("Stacking files by month"))
   pb3 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb3, 0)
   
@@ -513,7 +513,7 @@ stackEddy <- function(filepath,
   close(pb3)
   
   # attributes, objDesc, SRF table, and issue log
-  writeLines(paste0("Getting metadata tables"))
+  message(paste0("Getting metadata tables"))
   pb4 <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb4, 0)
   

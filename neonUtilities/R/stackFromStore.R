@@ -56,7 +56,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
   
   if(dpID == "DP1.10017.001" & package != 'basic'){
     saveUnzippedFiles = TRUE
-    writeLines("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.\n")
+    message("Note: Digital hemispheric photos (in NEF format) cannot be stacked; only the CSV metadata files will be stacked.")
   }
   
   # error message if dates aren't formatted correctly

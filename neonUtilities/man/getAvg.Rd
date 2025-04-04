@@ -9,7 +9,7 @@ getAvg(dpID, token = NA_character_)
 \arguments{
 \item{dpID}{The identifier of the NEON data product, in the form DPL.PRNUM.REV, e.g. DP1.00006.001}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts)}
 }
 \value{
 A vector of the available averaging intervals, typically in minutes.

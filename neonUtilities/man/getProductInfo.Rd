@@ -9,7 +9,7 @@ getProductInfo(dpID = "", token = NA)
 \arguments{
 \item{dpID}{The data product id (optional), formated as DP#.#####.###}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts)}
 }
 \value{
 A named list of metadata and availability information for a single data product. If the dpID argument is omitted, a table of information for all data products in the NEON catalog.

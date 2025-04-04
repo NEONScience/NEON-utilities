@@ -32,7 +32,7 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
     
     utils::unzip(zipfile = zippath, exdir=outpath)
     zps <- listZipfiles(zippath)
-    writeLines(paste0("Unpacking zip files using ", nCores, " cores."))
+    message(paste0("Unpacking zip files using ", nCores, " cores."))
 
     if(length(zps) >= 1){
 
@@ -58,13 +58,13 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
       outpath=outpath, cl=cl)
 
     } else {
-      writeLines("This zip file doesn't contain monthly data packages") }
+      message("This zip file doesn't contain monthly data packages") }
     return(zps)
   }
 
   if(level == "in") {
     zps <- as.list(grep(list.files(zippath, full.names=TRUE), pattern = '*.zip', value=TRUE))
-    writeLines(paste0("Unpacking zip files using ", nCores, " cores."))
+    message(paste0("Unpacking zip files using ", nCores, " cores."))
 
     if(length(zps) >= 1) {
 
@@ -86,7 +86,7 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
           
           utils::unzip(z, exdir=substr(o, 1, nchar(o)-4))
         } else {
-          writeLines(paste0("Skipping ",  z, " because these files have already been unpacked."))
+          message(paste0("Skipping ",  z, " because these files have already been unpacked."))
         }
         if (file.exists(z)) {
             file.remove(z)
@@ -94,7 +94,7 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
         },
         outpath=outpath, cl=cl)
     } else {
-        writeLines("This zip file doesn't contain monthly data packages")
+        message("This zip file doesn't contain monthly data packages")
     }
     return(zps)
   }

@@ -9,7 +9,7 @@ getIssueLog(dpID = NA, token = NA_character_)
 \arguments{
 \item{dpID}{The data product identifier, formatted as DP#.#####.###}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts)}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts)}
 }
 \value{
 A table of issues reported for the data product.

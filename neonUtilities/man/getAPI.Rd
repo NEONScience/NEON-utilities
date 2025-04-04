@@ -9,10 +9,10 @@ getAPI(apiURL, token = NA_character_)
 \arguments{
 \item{apiURL}{The API endpoint URL}
 
-\item{token}{User specific API token (generated within neon.datascience user accounts). Optional.}
+\item{token}{User specific API token (generated within data.neonscience.org user accounts). Optional.}
 }
 \description{
-Accesses the API with options to use the user-specific API token generated within neon.datascience user accounts.
+Accesses the API with options to use the user-specific API token generated within data.neonscience.org user accounts.
 }
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

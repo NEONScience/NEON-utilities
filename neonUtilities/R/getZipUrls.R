@@ -13,9 +13,8 @@
 #' @param dpID Global variable for data product ID
 #' @param release Data release to be downloaded
 #' @param tabl Table name to get
-#' @param messages Error/warning messages from previous steps
 #' @param include.provisional Should provisional data be included?
-#' @param token User specific API token (generated within neon.datascience user accounts)
+#' @param token User specific API token (generated within data.neonscience.org user accounts)
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 
@@ -29,10 +28,10 @@
 ##############################################################################################
 
 getZipUrls <- function(month.urls, avg, package, dpID, 
-                       release, messages, tabl, include.provisional,
+                       release, tabl, include.provisional,
                        token = NA_character_) {
 
-  writeLines("Finding available files")
+  message("Finding available files")
   pb <- utils::txtProgressBar(style=3)
   utils::setTxtProgressBar(pb, 0)
   
@@ -43,7 +42,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
     tmp.files[[j]] <- getAPI(month.urls[j], token=token)
     
     if(tmp.files[[j]]$status_code==500) {
-      messages <- c(messages, paste("Query for url ", month.urls[j],
+      message(paste("Query for url ", month.urls[j],
                                     " failed. API may be unavailable; check data portal data.neonscience.org for outage alert.",
                                     sep=""))
       next
@@ -75,7 +74,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       x$data$release!="PROVISIONAL"
     })
     if(length(which(unlist(tmp.ind)))!=length(tmp.files)) {
-      messages <- c(messages, "Provisional data were excluded from available files list. To download provisional data, use input parameter include.provisional=TRUE.")
+      message("Provisional data were excluded from available files list. To download provisional data, use input parameter include.provisional=TRUE.")
     }
     tmp.files <- tmp.files[which(unlist(tmp.ind))]
     
@@ -116,7 +115,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
 
     # check for no files
     if(length(tmp.files[[i]]$data$files)==0) {
-      messages <- c(messages, paste("No files found for site",
+      message(paste("No files found for site",
                                     substring(month.urls[i],
                                               nchar(month.urls[i])-11,
                                               nchar(month.urls[i])-8),
@@ -194,7 +193,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
                           grep(paste(avg, "_min", sep=""), unique.files$name, fixed=T))
         
         if(length(all.file)==0) {
-          messages <- c(messages, paste("No files found for site", tmp.files[[i]]$data$siteCode,
+          message(paste("No files found for site", tmp.files[[i]]$data$siteCode,
                                         "and month", tmp.files[[i]]$data$month, sep=" "))
           next
         }
@@ -217,7 +216,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
         if(length(pk.files)==0) {
           pk <- "basic"
           pk.files <- grep(pk, unique.files$name, fixed=T)
-          messages <- c(messages, paste("No expanded package found for site ",
+          message(paste("No expanded package found for site ",
                                         tmp.files[[i]]$data$siteCode, " and month ",
                                         tmp.files[[i]]$data$month,
                                         ". Basic package downloaded instead.",
@@ -235,7 +234,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
 
       # check again for no files
       if(length(which.file)==0) {
-        messages <- c(messages, paste("No basic package files found for site",
+        message(paste("No basic package files found for site",
                                       tmp.files[[i]]$data$siteCode,
                                       "and month", tmp.files[[i]]$data$month, sep=" "))
         next
@@ -255,7 +254,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
         
         # check for no files
         if(length(tmp.files[[i]]$data$packages)==0) {
-          messages <- c(messages, paste("No files found for site", tmp.files[[i]]$data$siteCode,
+          message(paste("No files found for site", tmp.files[[i]]$data$siteCode,
                                         "and month", tmp.files[[i]]$data$month, sep=" "))
           next
         }
@@ -266,7 +265,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
         if(pk=="expanded") {
           if(!pk %in% tmp.files[[i]]$data$packages$type) {
             pk <- "basic"
-            messages <- c(messages, paste("No expanded package found for site ",
+            message(paste("No expanded package found for site ",
                                           tmp.files[[i]]$data$siteCode, " and month ",
                                           tmp.files[[i]]$data$month,
                                           ". Basic package downloaded instead.",
@@ -300,7 +299,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       # check for no zips
       if(length(all.zip)==0) {
         
-        messages <- c(messages, paste("No zip files found for site", tmp.files[[i]]$data$siteCode,
+        message(paste("No zip files found for site", tmp.files[[i]]$data$siteCode,
                                       "and month", tmp.files[[i]]$data$month, sep=" "))
         next
         
@@ -312,7 +311,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       if(pk=="expanded") {
         if(length(grep(pk, tmp.files[[i]]$data$files$name))==0) {
           pk <- "basic"
-          messages <- c(messages, paste("No expanded package found for site ",
+          message(paste("No expanded package found for site ",
                                         tmp.files[[i]]$data$siteCode, " and month ",
                                         tmp.files[[i]]$data$month,
                                         ". Basic package downloaded instead.",
@@ -326,7 +325,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
 
       # check again for no files
       if(length(which.zip)==0) {
-        messages <- c(messages, paste("No basic package files found for site",
+        message(paste("No basic package files found for site",
                                       tmp.files[[i]]$data$siteCode,
                                       "and month", tmp.files[[i]]$data$month, sep=" "))
         next
@@ -343,7 +342,6 @@ getZipUrls <- function(month.urls, avg, package, dpID,
 
   # check for no files
   if(is.null(nrow(zip.urls))) {
-    writeLines(paste0(messages[-1], collapse = "\n"))
     message(paste("No files found. This indicates either your internet connection failed, or the API is temporarily unavailable, or the data available for ",
                dpID,
                " are all hosted elsewhere. Check the data portal data.neonscience.org for outage alerts, and check the ",
@@ -365,8 +363,6 @@ getZipUrls <- function(month.urls, avg, package, dpID,
                dpID, ".", sep=""))
     return(invisible())
   }
-
-  writeLines(paste0(messages[-1], collapse = "\n"))
 
   return(zip.urls)
 }
