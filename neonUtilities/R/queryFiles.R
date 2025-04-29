@@ -158,6 +158,16 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   for(j in 1:length(fllst)) {
     urllst <- c(urllst, fllst[[j]]$url)
   }
+  mdlst <- character()
+  for(j in 1:length(fllst)) {
+    mdlst <- c(mdlst, fllst[[j]]$md5)
+  }
+  
+  # check for no files
+  if(length(urllst)==0) {
+    message("No files found for query inputs.")
+    return(invisible())
+  }
   
   # drop default base url
   urllst <- base::gsub(pattern="https://storage.googleapis.com/", 
@@ -173,7 +183,14 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   
   # get most recent variables file
-  varfls <- base::grep("variables", urllst, value=TRUE)
+  # if multiple checksums for variables files, raise a flag
+  varfls <- base::grep(pattern="variables", x=urllst, value=TRUE)
+  varmd <- mdlst[base::grep(pattern="variables", x=urllst)]
+  if(length(unique(varmd))>1) {
+    vardiff <- TRUE
+  } else {
+    vardiff <- FALSE
+  }
   varfl <- getRecentPublication(varfls)[[1]]
   
   # subset by time index or table, if relevant
@@ -192,10 +209,20 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                      urllst, value=TRUE)
       if(!metadata) {
         # subset to only the table, if requested
-        urllst <- base::grep(tabl, urllst, value=TRUE)
+        urllst <- base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), 
+                             x=urllst, value=TRUE)
+      }
+      # check for no data
+      if(length(urllst)==0) {
+        message(paste("No files found for table ", tabl, sep=""))
+        return(invisible())
+      }
+      # if only metadata, print message but still return the metadata files
+      if(length(base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), x=urllst))==0) {
+        message(paste("No files found for table ", tabl, sep=""))
       }
     }
   }
   
-  return(list(urllst, varfl))
+  return(list(urllst, varfl, vardiff))
 }
