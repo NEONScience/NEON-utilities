@@ -158,6 +158,10 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   for(j in 1:length(fllst)) {
     urllst <- c(urllst, fllst[[j]]$url)
   }
+  mdlst <- character()
+  for(j in 1:length(fllst)) {
+    mdlst <- c(mdlst, fllst[[j]]$md5)
+  }
   
   # check for no files
   if(length(urllst)==0) {
@@ -179,7 +183,14 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   
   # get most recent variables file
-  varfls <- base::grep("variables", urllst, value=TRUE)
+  # if multiple checksums for variables files, raise a flag
+  varfls <- base::grep(pattern="variables", x=urllst, value=TRUE)
+  varmd <- mdlst[base::grep(pattern="variables", x=urllst)]
+  if(length(unique(varmd))>1) {
+    vardiff <- TRUE
+  } else {
+    vardiff <- FALSE
+  }
   varfl <- getRecentPublication(varfls)[[1]]
   
   # subset by time index or table, if relevant
@@ -213,5 +224,5 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     }
   }
   
-  return(list(urllst, varfl))
+  return(list(urllst, varfl, vardiff))
 }

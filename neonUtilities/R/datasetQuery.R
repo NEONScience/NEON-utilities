@@ -91,11 +91,19 @@ datasetQuery <- function(dpID, site="all",
                                       sep=""), x=urlset[[1]], value=TRUE)
   }
   
-  ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
-                                schema=schemaFromVar(urlset[[2]],
-                                                     tab=tabl,
-                                                     package=package), 
-                                skip=1)
+  if(urlset[[3]]) {
+    message("Differing variables files detected. Schema will be inferred; performance may be reduced. This can usually be avoided by excluding provisional data.")
+    ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
+                                  unify_schemas=TRUE,
+                                  col_names=TRUE,
+                                  skip=0)
+  } else {
+    ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
+                                  schema=schemaFromVar(urlset[[2]],
+                                                       tab=tabl,
+                                                       package=package), 
+                                  skip=1)
+  }
   
   return(ds)
   
