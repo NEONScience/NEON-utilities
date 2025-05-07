@@ -10,6 +10,7 @@
 
 #' @param zippath The path to a zip file
 #' @return A list of filenames within the given zip file
+#' @keywords internal
 #'
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

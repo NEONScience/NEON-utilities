@@ -8,6 +8,8 @@
 #' Given a list of files, this will order and return the file with the most recent publication date.
 
 #' @param inList The list of files.
+#' 
+#' @keywords internal
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

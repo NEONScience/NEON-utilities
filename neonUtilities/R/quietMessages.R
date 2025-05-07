@@ -9,6 +9,7 @@
 #' @param toBeQuieted Input to be quieted
 
 #' @return The expected output without associated messages/warnings.
+#' @keywords internal
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

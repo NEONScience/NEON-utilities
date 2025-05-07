@@ -7,7 +7,7 @@
 #' @description
 #' For any number of bytes, convert to a number of MB or GB
 #'
-#'
+#' @keywords internal
 #' @param objSize The size in bytes
 #' @return The size of the file in megabytes or gigabytes
 #'

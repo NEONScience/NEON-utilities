@@ -6,7 +6,7 @@
 
 #' @description Accesses the API with options to use the user-specific API token generated within data.neonscience.org user accounts.
 #'
-#'
+#' @keywords internal
 #' @param apiURL The API endpoint URL
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 

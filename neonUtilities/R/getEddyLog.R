@@ -8,7 +8,8 @@
 #' Use the NEON API to get the issue log from all products in the bundle in a user-friendly format
 
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
-
+#' @keywords internal
+#' 
 #' @return A table of issues reported for the data product.
 
 #' @references
