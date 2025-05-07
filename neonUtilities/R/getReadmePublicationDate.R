@@ -11,6 +11,8 @@
 #' @param savepath The root folder directory where the ReadMe files are located.
 #' @param out_filepath The output directory and filename.
 #' @param dpID The data product identifier
+#' 
+#' @keywords internal
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

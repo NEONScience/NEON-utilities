@@ -12,6 +12,8 @@
 #' @param outpath The name of the folder to save unpacked files to
 #' @param level Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively, or only files 'in' the folder specified
 #' @param nCores Number of cores to use for parallelization
+#' 
+#' @keywords internal
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

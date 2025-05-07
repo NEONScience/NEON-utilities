@@ -15,6 +15,8 @@
 #' @param tabl Table name to get
 #' @param include.provisional Should provisional data be included?
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
+#' 
+#' @keywords internal
 
 #' @return A dataframe comprised of file names, S3 URLs, file size, and download status (default = 0)
 

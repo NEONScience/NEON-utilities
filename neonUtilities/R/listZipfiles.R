@@ -10,6 +10,7 @@
 #'
 #' @param zippath The path to a zip file
 #' @return An array of all zip files contained within the focal zip file
+#' @keywords internal
 #'
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

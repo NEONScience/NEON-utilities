@@ -8,6 +8,7 @@
 #' Use the field names in a NEON variables file to create an arrow schema of all strings, or, if no variables file is available, read the header and assign everything as string.
 #'
 #' @param variables A data frame containing a NEON variables file for a single table, or a set of field names.
+#' @keywords internal
 #' 
 #' @return An arrow schema for the relevant data table with all variables set to string.
 
