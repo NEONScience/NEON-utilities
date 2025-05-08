@@ -4,10 +4,12 @@
 \alias{stackDataFilesParallel}
 \title{Join data files in a unzipped NEON data package by table type}
 \usage{
-stackDataFilesParallel(folder, nCores = 1, dpID)
+stackDataFilesParallel(folder, cloud.mode = FALSE, nCores = 1, dpID)
 }
 \arguments{
 \item{folder}{The location of the data}
+
+\item{cloud.mode}{T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.}
 
 \item{nCores}{The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting 'nCores=parallel::detectCores()'. By default it is set to a single core. If the files are less than 25000 bytes the userdefined nCores will be overridden to a single core.}
 

@@ -9,6 +9,7 @@
 #' This should result in a small number of large files.
 
 #' @param folder The location of the data
+#' @param cloud.mode T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.
 #' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting 'nCores=parallel::detectCores()'. By default it is set to a single core. If the files are less than 25000 bytes the userdefined nCores will be overridden to a single core.
 #' @param dpID The data product identifier
 #' @return One file for each table type is created and written.
@@ -30,7 +31,7 @@
 #     * Parallelized the function
 ##############################################################################################
 
-stackDataFilesParallel <- function(folder, nCores=1, dpID){
+stackDataFilesParallel <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
   
   starttime <- Sys.time()
   releases <- character()
@@ -178,7 +179,8 @@ stackDataFilesParallel <- function(folder, nCores=1, dpID){
     # copy variables and validation files to /stackedFiles using the most recent publication date
     if(TRUE %in% stringr::str_detect(filepaths,'variables.20')) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
-      variables <- getVariables(varpath)   # get the variables from the chosen variables file
+      # get the variables from the chosen variables file
+      variables <- getVariables(varpath)
       v <- suppressWarnings(data.table::fread(varpath, sep=','))
       
       # if science review flags are present but missing from variables file, add variables

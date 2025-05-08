@@ -229,7 +229,7 @@ stackByTable <- function(filepath,
     }
   }
 
-  stackDataFilesParallel(savepath, nCores, dpID)
+  stackDataFilesParallel(folder=savepath, cloud.mode=FALSE, nCores=nCores, dpID=dpID)
   try(getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID), 
       silent=T)
 
