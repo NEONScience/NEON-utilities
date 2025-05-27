@@ -14,6 +14,7 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
+#   2025-05-27 (Claire Lunch): Modified to check for expired token
 #   2020-05-21 (Claire Lunch): Modified to check for reaching rate limit
 #   2020-03-21 (Nate Mietkiewicz): Created original function
 ##############################################################################################
@@ -27,6 +28,15 @@ getAPI <- function(apiURL, token=NA_character_){
   
   if(identical(token, "")) {
     token <- NA_character_
+  }
+  
+  # check for expired token
+  if(!is.na(token)) {
+    splittoken <- strsplit(token, ".", fixed = TRUE)[[1]]
+    dubsplit <- unlist(strsplit(rawToChar(jose::base64url_decode(splittoken[2])), 
+                         split=","))
+    expsplit <- dubsplit[grep("exp", dubsplit)]
+    expval <- regmatches(expsplit, regexpr("[0-9]+", expsplit))
   }
   
   usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 

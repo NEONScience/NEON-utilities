@@ -3,6 +3,7 @@
 
 #' @author
 #' Christine Laney \email{claney@battelleecology.org}
+#' Claire Lunch \email{clunch@battelleecology.org}
 
 #' @description
 #' Given a folder of unzipped files (unzipped NEON data file), do a full join of all data files, grouped by table type.
@@ -29,9 +30,11 @@
 #     * Continuous stream discharge (DP4.00130.001) is an OS product in IS format. Adjusted script to stack properly.
 #   2019-11-14 (Nathan Mietkiewicz)
 #     * Parallelized the function
+#   2025-05-27 (Claire Lunch)
+#     * Rewrote from stackDataFilesParallel() to use arrow package for stacking
 ##############################################################################################
 
-stackDataFilesParallel <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
+stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
   
   starttime <- Sys.time()
   releases <- character()
