@@ -37,6 +37,12 @@ getAPI <- function(apiURL, token=NA_character_){
                          split=","))
     expsplit <- dubsplit[grep("exp", dubsplit)]
     expval <- regmatches(expsplit, regexpr("[0-9]+", expsplit))
+    expdate <- as.POSIXct(as.numeric(expval), origin="1970-01-01")
+    
+    if(expdate < Sys.time()) {
+      message("API token has expired. Function will proceed using public access rate. Go to your NEON user account to generate a new token.")
+      token <- NA_character_
+    }
   }
   
   usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
