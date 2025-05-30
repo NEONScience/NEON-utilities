@@ -169,7 +169,8 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     return(invisible())
   }
   
-  # drop default base url
+  # drop default base url, but keep a copy of original
+  urlbase <- urllst
   urllst <- base::gsub(pattern="https://storage.googleapis.com/", 
                        replacement="", urllst)
   
@@ -195,7 +196,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   
   # subset by time index or table, if relevant
   if(timeIndex=="all" & tabl=="all") {
-    return(urllst)
+    urllst <- urllst
   } else {
     if(timeIndex!="all") {
       urllst <- base::grep(pattern=paste(timeIndex, "min|", timeIndex, 
@@ -224,5 +225,5 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     }
   }
   
-  return(list(urllst, varfl, vardiff))
+  return(list(urllst, varfl, vardiff, urlbase))
 }

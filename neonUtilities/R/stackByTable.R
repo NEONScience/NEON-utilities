@@ -229,60 +229,44 @@ stackByTable <- function(filepath,
     }
   }
 
-  stackDataFilesParallel(folder=savepath, cloud.mode=FALSE, nCores=nCores, dpID=dpID)
-  try(getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID), 
-      silent=T)
-
-  if(saveUnzippedFiles == FALSE & envt!=1){
-    zipList <- unlist(zipList)
-    zipList <- basename(zipList)
-    zipList <- gsub('.zip', '', zipList)
-
-    cleanUp(savepath, zipList)
-  }
+  # stacking!
+  stackedList <- stackDataFilesArrow(folder=savepath, cloud.mode=FALSE, dpID=dpID)
   
-  if(folder=="ls" & envt!=1) {
-    file.copy(paste(savepath, "stackedFiles", sep="/"), finalpath, recursive=T)
-    unlink(savepath, recursive=T)
-  }
+  # need to change readme function - currently this is writing iteratively to a file
+  # try(getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID), 
+  #     silent=T)
 
+  # if saving to the environment, done
   if(envt==1) {
-
-    stacked_files <- list.files(paste(savepath, "stackedFiles", sep="/"), full.names = TRUE)
-    v <- utils::read.csv(stacked_files[grep('variables', stacked_files)][1], header=T, stringsAsFactors=F)
-
-    stacked_list <- lapply(stacked_files, function(x) {
-      if(length(grep("sensor_position", basename(x)))>0) {
-        fls <- suppressWarnings(data.table::fread(x, sep=',', keepLeadingZeros = TRUE, colClasses = list(character = c('HOR.VER'))))
-      } else if(length(grep("readme", basename(x)))>0) {
-        fls <- suppressMessages(utils::read.delim(x, header=FALSE, quote=""))
-      } else if(length(grep("variables", basename(x)))>0 | length(grep("validation", basename(x)))>0 |
-                length(grep("categoricalCodes", basename(x)))>0) {
-        fls <- suppressWarnings(data.table::fread(x, sep=",", header=TRUE, 
-                                                  encoding="UTF-8", keepLeadingZeros=TRUE))
-      } else if(length(grep("citation", basename(x)))>0) {
-        fls <- suppressWarnings(paste(readLines(x), collapse="\n"))
-      } else {
-        fls <- try(readTableNEON(dataFile=x, varFile=v, useFasttime=useFasttime), silent=T)
-        if(inherits(fls, 'try-error')) {
-          fls <- suppressWarnings(data.table::fread(x, sep=",", header=TRUE, 
-                                                    encoding="UTF-8", keepLeadingZeros=TRUE))
-        }
-        return(fls)
-      }
-    })
-    names(stacked_list) <- substring(basename(stacked_files), 1, nchar(basename(stacked_files))-4)
-    
     # rename 2D wind tables
-    if(length(grep("^2D", names(stacked_list)))>0) {
-      names(stacked_list) <- gsub(pattern="^2D", replacement="twoD", x=names(stacked_list))
+    # will operations in stackDataFilesArrow() fail on 2D wind? may need to move this there
+    if(length(grep("^2D", names(stackedList)))>0) {
+      names(stacked_list) <- gsub(pattern="^2D", replacement="twoD", x=names(stackedList))
       message("'2D' has been replaced by 'twoD' in table names to conform to R object rules.")
     }
-
     # remove temporary directory
     unlink(savepath, recursive=T)
-
-    return(stacked_list)
+    
+    return(stackedList)
+    
+  } else {
+    
+    # add code to write out files
+    
+    if(saveUnzippedFiles == FALSE & envt!=1){
+      zipList <- unlist(zipList)
+      zipList <- basename(zipList)
+      zipList <- gsub('.zip', '', zipList)
+      
+      cleanUp(savepath, zipList)
+    }
+    
+    if(folder=="ls" & envt!=1) {
+      file.copy(paste(savepath, "stackedFiles", sep="/"), finalpath, recursive=T)
+      unlink(savepath, recursive=T)
+    
+    }
+    
   }
-
+  
 }

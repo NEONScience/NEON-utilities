@@ -11,7 +11,6 @@
 
 #' @param folder The location of the data
 #' @param cloud.mode T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.
-#' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting 'nCores=parallel::detectCores()'. By default it is set to a single core. If the files are less than 25000 bytes the userdefined nCores will be overridden to a single core.
 #' @param dpID The data product identifier
 #' @return One file for each table type is created and written.
 #' @keywords internal
@@ -34,7 +33,7 @@
 #     * Rewrote from stackDataFilesParallel() to use arrow package for stacking
 ##############################################################################################
 
-stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
+stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
   
   starttime <- Sys.time()
   releases <- character()
@@ -46,17 +45,26 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
   dpnum <- substring(dpID, 5, 9)
   
   if(isTRUE(cloud.mode)) {
-    filenames <- basename(folder[[1]]) # this doesn't work for S3 override
-    filpaths <- folder[[1]]
+    filepaths <- folder[[1]]
+    basepaths <- folder[[4]]
+    if(length(grep(pattern="endpoint_override", x=filepaths))>0) {
+      filenames <- gsub(pattern="/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com",
+                        replacement="", x=filepaths, fixed=TRUE)
+      filenames <- basename(filenames)
+    } else {
+      filenames <- basename(filepaths)
+    }
   } else {
     # filenames without full path
     filenames <- findDatatables(folder = folder, fnames = F)
     
     # filenames with full path
     filepaths <- findDatatables(folder = folder, fnames = T)
+    basepaths <- filepaths
   }
   
   # get release file, if it exists
+  # is this still needed? maybe
   relfl <- grep("release_status", filepaths)
   if(length(relfl)==1) {
     reltab <- data.table::fread(filepaths[relfl],
@@ -159,19 +167,8 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
     stop("No data files are present in specified file path.")
   }
   
-  # if there is just one data file (and thus one table name), copy file into stackedFiles folder
-  if(length(datafls) == 1){
-    if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
-    file.copy(from = datafls[1][[1]], to = "/stackedFiles")
-    m <- 0
-    n <- 1
-  }
-  
   # if there is more than one data file, stack files
   if(length(datafls) > 1){
-    
-    # need to change this - folder can be a list of filepaths (cloud.mode)
-    if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
     
     # detecting table types by file format, then checking against table_types
     # reducing dependency on table_types updating
@@ -199,9 +196,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
     # get variables and validation files from the most recent publication date
     if(length(grep(pattern="variables.20", x=filepaths))>0) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
-      # get the variables from the chosen variables file
-      variables <- getVariables(varpath)
-      v <- suppressWarnings(data.table::fread(varpath, sep=','))
+      v <- try(arrow::read_csv_arrow(varpath, as_data_frame=TRUE), silent=TRUE)
+      if(inherits(v, "try-error")) {
+        varpath <- getRecentPublication(basepaths[grep("variables.20", basepaths)])[[1]]
+        v <- try(arrow::read_csv_arrow(varpath, as_data_frame=TRUE), silent=TRUE)
+      }
       
       # if science review flags are present but missing from variables file, add variables
       if(!"science_review_flags" %in% v$table) {
@@ -215,7 +214,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
     
     if(length(grep(pattern="validation", x=filepaths))>0) {
       valpath <- getRecentPublication(filepaths[grep("validation", filepaths)])[[1]]
-      vals <- suppressWarnings(data.table::fread(valpath, sep=','))
+      vals <- try(arrow::read_csv_arrow(valpath, as_data_frame=TRUE), silent=TRUE)
+      if(inherits(vals, "try-error")) {
+        valpath <- getRecentPublication(basepaths[grep("validation", basepaths)])[[1]]
+        vals <- try(arrow::read_csv_arrow(valpath, as_data_frame=TRUE), silent=TRUE)
+      }
       stacklist[[paste("validation", dpnum, sep="_")]] <- vals
       m <- m + 1
     }
@@ -223,69 +226,24 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
     # get categoricalCodes file from most recent publication date
     if(length(grep(pattern="categoricalCodes", x=filepaths))>0) {
       lovpath <- getRecentPublication(filepaths[grep("categoricalCodes", filepaths)])[[1]]
-      lovs <- suppressWarnings(data.table::fread(lovpath, sep=','))
+      lovs <- try(arrow::read_csv_arrow(lovpath, as_data_frame=TRUE), silent=TRUE)
+      if(inherits(lovs, "try-error")) {
+        lovpath <- getRecentPublication(basepaths[grep("categoricalCodes", basepaths)])[[1]]
+        lovs <- try(arrow::read_csv_arrow(lovpath, as_data_frame=TRUE), silent=TRUE)
+      }
       stacklist[[paste("categoricalCodes", dpnum, sep="_")]] <- lovs
       m <- m + 1
     }
     
-    # aggregate the science_review_flags files
-    # need to move this post-stacking
-    if(length(grep(pattern="science_review_flags", x=filepaths))>0) {
-      scienceReviewList <- unique(filepaths[grep("science_review_flags", filepaths)])
-      
-      # stack all files
-      outputScienceReview <- data.table::rbindlist(pbapply::pblapply(scienceReviewList, 
-                                                                     function(x) {
-                                                                       
-                                                                       outTbl <- data.table::fread(x, header=TRUE, encoding="UTF-8", keepLeadingZeros = TRUE,
-                                                                                                   colClasses = list(character = c('startDateTime','endDateTime',
-                                                                                                                                   'createDateTime',
-                                                                                                                                   'lastUpdateDateTime')))
-                                                                       if(identical(nrow(outTbl), as.integer(0))) {
-                                                                         return()
-                                                                       }
-                                                                       return(outTbl)
-                                                                     }), fill=TRUE)
-      
-      # remove duplicates
-      outputScienceReview <- unique(outputScienceReview)
-      
-      # check for non-identical duplicates with the same ID and keep the most recent one
-      if(length(unique(outputScienceReview$srfID))!=nrow(outputScienceReview)) {
-        dupRm <- numeric()
-        rowids <- 1:nrow(outputScienceReview)
-        origNames <- colnames(outputScienceReview)
-        outputScienceReview <- cbind(rowids, outputScienceReview)
-        for(k in unique(outputScienceReview$srfID)) {
-          scirvwDup <- outputScienceReview[which(outputScienceReview$srfID==k),]
-          if(nrow(scirvwDup)>1) {
-            dupRm <- c(dupRm, 
-                       scirvwDup$rowids[which(scirvwDup$lastUpdateDateTime!=max(scirvwDup$lastUpdateDateTime))])
-          }
-        }
-        if(length(dupRm)>0) {
-          outputScienceReview <- outputScienceReview[-dupRm,origNames]
-        } else {
-          outputScienceReview <- outputScienceReview[,origNames]
-        }
-      }
-      
-      if(!identical(nrow(outputScienceReview), as.integer(0))) {
-        data.table::fwrite(outputScienceReview, paste0(folder, "/stackedFiles/science_review_flags_", dpnum, ".csv"))
-        message("Aggregated the science review flag files for each site and saved to /stackedFiles")
-        m <- m + 1
-      }
-    }
-    
     # DATA STACKING
     # stack each table and add to list
+    message("Stacking data files")
     for(i in 1:length(tables)) {
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       
       # create arrow schema from variables file
       tableschema <- schemaFromVar(variables=v, tab=tables[i], package=package)
 
-      message(paste0("Stacking table ", tables[i]))
       file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
                          filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
 
@@ -318,65 +276,104 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
       
       # add file name column and stream to table
       datf <- dplyr::mutate(.data=dat, file=arrow::add_filename())
-      dattab <- data.frame(dplyr::collect(datf))
+      dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
       
-
-        # add column for release tag, if available
-        tabtemp$release <- rep(NA, nrow(tabtemp))
-        dir.splitName <- strsplit(dirname(x), split = "\\.")
-        relind <- grep("RELEASE|PROVISIONAL|LATEST", dir.splitName[[1]])
-        if(length(relind)==1) {
-          tabtemp$release <- rep(dir.splitName[[1]][relind],
-                                 nrow(tabtemp))
+      # if stacking fails, revert to a string schema
+      if(inherits(dattab, "try-error")) {
+        datnms <- names(datf)
+        stringschema <- schemaAllStrings(datnms)
+        
+        # set up new dataset with string schema
+        dat <- arrow::open_csv_dataset(sources=tblfls, schema=stringschema, skip=1)
+        datf <- dplyr::mutate(.data=dat, file=arrow::add_filename())
+        dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
+        if(inherits(dattab, "try-error")) {
+          message(paste("Failed to stack table ", tables[i], 
+                        ". Check input data for inconsistencies.", sep=""))
+          next
         } else {
-          if(all(!is.na(reltab))) {
-            if(basename(x) %in% reltab$name) {
-              tabtemp$release <- rep(reltab$release[which(reltab$name==basename(x))],
-                                     nrow(tabtemp))
-            } else {
-              tabtemp$release <- rep("undetermined", nrow(tabtemp))
-            }
-          } else {
-            tabtemp$release <- rep("undetermined", nrow(tabtemp))
-          }
+          # add step to cast data types post-stacking??
+          message(paste("Table ", tables[i], 
+                        " schema did not match data; all variable types set to string."))
         }
-        
-
-      stackedDf <- data.table::rbindlist(stackingList, fill=T)
-
-      if(!identical(nrow(stackedDf), as.integer(0))) {
-        data.table::fwrite(stackedDf, paste0(folder, "/stackedFiles/", tables[i], ".csv"),
-                           nThread = nCores)
-        
-        # add location and publication field names to variables file
-        if(!is.null(vlist)) {
-          vtable <- which(names(vlist)==tables[i])
-          if(length(vtable==1)) {
-            if("horizontalPosition" %in% names(stackedDf)) {
-              vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
-                                                                                   added_fields[1:4,])), 
-                                                            vlist[[vtable]]), fill=TRUE)
-            }
-            if("publicationDate" %in% names(stackedDf)) {
-              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
-                                                            c(table=tables[i], added_fields[5,])), fill=TRUE)
-            }
-            if("release" %in% names(stackedDf)) {
-              vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
-                                                            c(table=tables[i], added_fields[6,])), fill=TRUE)
-              releases <- c(releases, unique(stackedDf$release))
-            }
-          }
-        }
-        invisible(rm(stackedDf))
-        n <- n + 1
       }
+      
+      # append publication date
+      dattab$publicationDate <- regmatches(basename(dattab$file), 
+                                           regexpr("[0-9]{8}T[0-9]{6}Z", 
+                                                   basename(dattab$file)))
+      # append release tag
+      # this may not work in cloud mode, check timeIndex mode too
+      reldat <- regmatches(dattab$file, regexpr("20[0-9]{6}T[0-9]{6}Z\\..*\\/", 
+                                                dattab$file))
+      dattab$release <- gsub(pattern=".*\\.|\\/", replacement="", x=reldat)
+      
+      # for IS products, append domainID, siteID, HOR, VER
+      if(tbltype!="lab" & !"siteID" %in% names(dattab)) {
+        domainID <- regmatches(dattab$file, regexpr("D[0-2]{1}[0-9]{1}", 
+                                                    dattab$file))
+        siteID <- regmatches(dattab$file, regexpr("D[0-9]{2}[.][A-Z]{4}[.]", 
+                                                  dattab$file))
+        siteID <- gsub(pattern="D[0-9]{2}[.]|[.]", replacement="", x=siteID)
+        locinds <- regmatches(dattab$file, regexpr("[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.]", 
+                                                   dattab$file))
+        # a few tables are missing domainID and siteID but don't have hor/ver
+        if(identical(length(locinds), as.integer(0))) {
+          dattab <- cbind(domainID, siteID, dattab)
+        } else {
+          horizontalPosition <- substring(locinds, 6, 9)
+          verticalPosition <- substring(locinds, 10, 13)
+          dattab <- cbind(domainID, siteID, horizontalPosition,
+                          verticalPosition, dattab)
+        }
+        # sort rows?
+      }
+      
+      # for SRF tables, remove duplicates and updated records
+      if(tables[i]=="science_review_flags") {
+        dattab <- removeSrfDups(dattab)
+      }
+      
+      # for sensor positions, align column names
+      # need new function here
+      if(tables[i]=="sensor_positions") {
+        
+      }
+
+      # add location and publication field names to variables file
+      # switch to arrow or keep data.table?
+      if(!is.null(vlist)) {
+        vtable <- which(names(vlist)==tables[i])
+        if(length(vtable==1)) {
+          if("horizontalPosition" %in% names(dattab)) {
+            vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
+                                                                                 added_fields[1:4,])), 
+                                                          vlist[[vtable]]), fill=TRUE)
+          }
+          if("publicationDate" %in% names(dattab)) {
+            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                          c(table=tables[i], added_fields[5,])), fill=TRUE)
+          }
+          if("release" %in% names(dattab)) {
+            vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
+                                                          c(table=tables[i], added_fields[6,])), fill=TRUE)
+            releases <- c(releases, unique(dattab$release))
+          }
+        }
+      }
+      
+      # add stacked table to list
+      if(tables[i] %in% c("science_review_flags", "sensor_positions")) {
+        stacklist[[paste(tables[i], dpnum, sep="_")]] <- dattab
+      } else {
+        stacklist[[tables[i]]] <- dattab
+      }
+      n <- n + 1
     }
-    
+  
     # write out complete variables file
     vfull <- data.table::rbindlist(vlist, fill=TRUE)
-    utils::write.csv(vfull, paste0(folder, "/stackedFiles/variables_", dpnum, ".csv"), row.names=F)
-    message("Copied the most recent publication of variable definition file to /stackedFiles")
+    stacklist[[paste("variables", dpnum, sep="_")]] <- vfull
     m <- m + 1
     
   }
@@ -388,8 +385,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
     # token not used here, since token is not otherwise used/accessible in this function
     issues <- getIssueLog(dpID=dpID)
     if(!is.null(issues)) {
-      utils::write.csv(issues, paste0(folder, "/stackedFiles/issueLog_", dpnum, ".csv"),
-                       row.names=FALSE)
+      stacklist[[paste("issueLog", dpnum, sep="_")]] <- issues
       m <- m + 1
     }
   }
@@ -399,20 +395,19 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
   if("PROVISIONAL" %in% releases) {
     cit <- try(getCitation(dpID=dpID, release="PROVISIONAL"), silent=TRUE)
     if(!inherits(cit, "try-error")) {
-      base::write(cit, paste0(folder, "/stackedFiles/citation_", dpnum, "_PROVISIONAL", ".txt"))
+      stacklist[[paste("citation", dpnum, "PROVISIONAL", sep="_")]] <- cit
     }
   }
   if(length(grep("RELEASE", releases))==0) {
     releases <- releases
   } else {
     if(length(grep("RELEASE", releases))>1) {
-      unlink(paste0(folder, "/stackedFiles/"), recursive=TRUE)
       stop("Multiple data releases were stacked together. This is not appropriate, check your input data.")
     } else {
       rel <- releases[grep("RELEASE", releases)]
       cit <- try(getCitation(dpID=dpID, release=rel), silent=TRUE)
       if(!inherits(cit, "try-error")) {
-        base::write(cit, paste0(folder, "/stackedFiles/citation_", dpnum, "_", rel, ".txt"))
+        stacklist[[paste("citation", dpnum, rel, sep="_")]] <- cit
       }
     }
   }
@@ -420,5 +415,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, nCores=1, dpID){
   message(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
   endtime <- Sys.time()
   message(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
+  
+  return(stacklist)
   
 }
