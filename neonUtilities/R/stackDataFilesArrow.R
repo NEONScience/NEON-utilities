@@ -255,9 +255,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       if(tbltype == "site-all") {
         sites <- as.list(unique(substr(basename(file_list), 10, 13)))
 
-        tblfls <- lapply(sites, function(j, file_list) {
+        tblfls <- unique(unlist(lapply(sites, function(j, file_list) {
           tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
-        }, file_list=file_list)
+        }, file_list=file_list)))
         
       }
       # most recent for each lab for lab-all
@@ -321,8 +321,8 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         if(identical(length(locinds), as.integer(0))) {
           dattab <- cbind(domainID, siteID, dattab)
         } else {
-          horizontalPosition <- substring(locinds, 6, 9)
-          verticalPosition <- substring(locinds, 10, 13)
+          horizontalPosition <- substring(locinds, 6, 8)
+          verticalPosition <- substring(locinds, 10, 12)
           dattab <- cbind(domainID, siteID, horizontalPosition,
                           verticalPosition, dattab)
         }
@@ -339,6 +339,8 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       if(tables[i]=="sensor_positions") {
         
       }
+      
+      # get rid of filename column
 
       # add location and publication field names to variables file
       # switch to arrow or keep data.table?
