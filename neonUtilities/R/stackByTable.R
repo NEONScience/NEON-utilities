@@ -137,9 +137,9 @@ stackByTable <- function(filepath,
     stop("This eddy covariance data product is in HDF5 format. Stack using stackEddy()")
   }
   
-  # check for fasttime package, if used
-  if(useFasttime & !requireNamespace("fasttime", quietly=T)) {
-    stop("Parameter useFasttime is TRUE but fasttime package is not installed. Install and re-try.")
+  # warn that fasttime package is no longer used
+  if(isTRUE(useFasttime)) {
+    message("fasttime package is no longer used in stackByTable(); arrow package handles time conversions.")
   }
 
   if(dpID == "DP1.10017.001" && package != 'basic'){
@@ -153,6 +153,7 @@ stackByTable <- function(filepath,
   }
   
   #### If all checks pass, unzip and stack files ####
+  # unzip everything to appropriate directory
   envt <- 0
   if(isFALSE(folder)) {
     if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}

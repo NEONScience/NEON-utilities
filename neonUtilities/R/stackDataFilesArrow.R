@@ -44,6 +44,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
   ttypes <- table_types[which(table_types$productID==dpID),]
   dpnum <- substring(dpID, 5, 9)
   
+  # get file names and file paths
   if(isTRUE(cloud.mode)) {
     filepaths <- folder[[1]]
     basepaths <- folder[[4]]
@@ -63,16 +64,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     basepaths <- filepaths
   }
   
-  # get release file, if it exists
-  # is this still needed? maybe
-  relfl <- grep("release_status", filepaths)
-  if(length(relfl)==1) {
-    reltab <- data.table::fread(filepaths[relfl],
-                                header=TRUE, encoding="UTF-8")
-  } else {
-    reltab <- NA
-  }
-  
   # handle per-sample (data frame) tables separately
   if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", 
                  "DP1.20141.001", "DP1.20190.001", "DP1.20193.001",
@@ -85,11 +76,17 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     
     # stack frame files
     message("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
-    if(dir.exists(paste0(folder, "/stackedFiles")) == F) {dir.create(paste0(folder, "/stackedFiles"))}
-    
-    # this is clunky - streamline in v3.0
+
     # stacking for everything except community taxonomy
-    if(!dpID %in% c("DP1.10081.002", "DP1.20086.002", "DP1.20141.002")) {
+    if(!dpID %in% c("DP1.10081.001", "DP1.20086.001", "DP1.20141.001", 
+                    "DP1.10081.002", "DP1.20086.002", "DP1.20141.002")) {
+      
+      # pass to custom stacking function
+      frmtab <- stackFrameFiles(framefiles, dpID=dpID, 
+                                seqType=NA_character_, 
+                                cloud.mode=cloud.mode)
+      
+      
       frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), function(x) {
         tempf <- data.table::fread(x)
         tempf$fileName <- rep(basename(x), nrow(tempf))
@@ -110,6 +107,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         }
       }
     } else {
+      # stacking for community taxonomy
       fungifiles <- grep("[_]ITS[_]", framefiles, value=TRUE)
       bacteriafiles <- grep("[_]16S[_]", framefiles, value=TRUE)
       
@@ -341,9 +339,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       }
       
       # get rid of filename column
+      dattab <- dattab[which(names(dattab)!="file"),]
 
       # add location and publication field names to variables file
       # switch to arrow or keep data.table?
+      # keeping as data.table for now to avoid schema issues
       if(!is.null(vlist)) {
         vtable <- which(names(vlist)==tables[i])
         if(length(vtable==1)) {
@@ -373,7 +373,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       n <- n + 1
     }
   
-    # write out complete variables file
+    # write out complete variables file after all tables are done
     vfull <- data.table::rbindlist(vlist, fill=TRUE)
     stacklist[[paste("variables", dpnum, sep="_")]] <- vfull
     m <- m + 1
@@ -413,6 +413,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       }
     }
   }
+  
+  # order tables in stacklist
+  stacklist <- stacklist[order(names(stacklist))]
   
   message(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
   endtime <- Sys.time()
