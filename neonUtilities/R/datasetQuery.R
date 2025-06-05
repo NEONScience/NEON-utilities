@@ -87,24 +87,100 @@ datasetQuery <- function(dpID, site="all",
   
   # subset by hor and ver
   if(!is.na(ver)) {
-    urlset[[1]] <- base::grep(pattern=paste("[.]", hor, "[.]", ver, "[.]", 
-                                      sep=""), x=urlset[[1]], value=TRUE)
+    urlset[["files"]] <- base::grep(pattern=paste("[.]", hor, "[.]", ver, "[.]", 
+                                      sep=""), x=urlset[["files"]], value=TRUE)
   }
   
-  if(isTRUE(urlset[[3]])) {
-    # steps: check for column name differences, if different, can I find the new ones and make them strings?
-    # will it allow missing columns in some files?
-    message("Differing variables files detected. Schema will be inferred; performance may be reduced. This can usually be avoided by excluding provisional data.")
-    ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
-                                  unify_schemas=TRUE,
-                                  col_names=TRUE,
-                                  skip=0)
-  } else {
-    ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
-                                  schema=schemaFromVar(urlset[[2]],
-                                                       tab=tabl,
-                                                       package=package), 
-                                  skip=1)
+  # start with variables file returned by queryFiles
+  varend <- urlset[["variables"]]
+  
+  # if there are inconsistencies in variables files
+  if(isTRUE(urlset[["varcheck"]])) {
+    # check for differences in fieldNames and dataTypes for the relevant table
+    varset <- urlset[["varset"]]
+    var1 <- arrow::read_csv_arrow(varset[[1]], col_names=TRUE, skip=0)
+    var1 <- var1[which(var1$table==tabl),]
+    varany <- unlist(lapply(varset, FUN=function(x) {
+      varx <- arrow::read_csv_arrow(x, col_names=TRUE, skip=0)
+      varx <- varx[which(varx$table==tabl),]
+      if(nrow(var1)!=nrow(varx)) {
+        tst <- FALSE
+      } else {
+        tst <- any(varx$fieldName!=var1$fieldName | varx$dataType!=var1$dataType)
+      }
+      return(tst)
+      }))
+    if(any(!varany)) {
+      # if there are inconsistencies, read each separately, then unify
+      # should this be a separate function?
+      mdlist <- urlset[["mdlist"]]
+      tablist <- list()
+      piecewise <- TRUE
+      trystring <- FALSE
+      for(i in unique(mdlist)) {
+        
+        vari <- getRecentPublication(urlset[["varall"]][which(mdlist==i)])[[1]]
+        flsi <- urlset[["files"]][which(mdlist==i)]
+        
+        ds <- try(arrow::open_csv_dataset(sources=flsi, 
+                                          schema=schemaFromVar(vari,
+                                                               tab=tabl,
+                                                               package=package),
+                                          skip=1), silent=TRUE)
+        if(inherits(ds, "try-error")) {
+          piecewise <- FALSE
+          next
+        } else {
+          tablist[[i]] <- ds
+        }
+        
+      }
+      
+      # if any chunks failed, try for a string schema
+      if(isFALSE(piecewise)) {
+        trystring <- TRUE
+      } else {
+        # if all chunks succeeded, merge them
+        ds <- try(arrow::open_csv_dataset(sources=tablist, 
+                                          unify_schemas=TRUE,
+                                          skip=0), silent=TRUE)
+        # if merge fails, try for a string schema
+        if(inherits(ds, "try-error")) {
+          trystring <- TRUE
+        }
+      }
+      
+    } else {
+      # if fieldNames and dataTypes match across files, use first variables file
+      varend <- var1
+      urlset[["varcheck"]] <- FALSE
+    }
+  }
+  
+  if(isFALSE(urlset[["varcheck"]])) {
+    tableschema <- schemaFromVar(varend,
+                                 tab=tabl,
+                                 package=package)
+    ds <- try(arrow::open_csv_dataset(sources=urlset[["files"]], 
+                                      schema=tableschema,
+                                      skip=1), silent=TRUE)
+    if(inherits(ds, "try-error")) {
+      trystring <- TRUE
+    }
+  }
+  
+  # if making dataset via any path above failed, try a string schema
+  # note this will not work if number of columns differs across files
+  if(isTRUE(trystring)) {
+    message("Data retrieval using variables file to generate schema failed. All fields will be read as strings. This can be slow, and will reduce the possible types of queries you can make. Exclude provisional data, and if that does not resolve the problem, consider downloading data using loadByProduct().")
+    stringschema <- schemaAllStringsFromSet(urlset[["files"]])
+    ds <- try(arrow::open_csv_dataset(sources=urlset[["files"]], 
+                                      schema=stringschema,
+                                      skip=1), silent=TRUE)
+    if(inherits(ds, "try-error")) {
+      message("Reading data as strings failed. Check query parameters, and contact NEON if unable to resolve.")
+      return(invisible())
+    }
   }
   
   return(ds)

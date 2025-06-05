@@ -64,6 +64,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     basepaths <- filepaths
   }
   
+  # start list of tables
+  stacklist <- list()
+  
   # handle per-sample (data frame) tables separately
   if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", 
                  "DP1.20141.001", "DP1.20190.001", "DP1.20193.001",
@@ -82,77 +85,35 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                     "DP1.10081.002", "DP1.20086.002", "DP1.20141.002")) {
       
       # pass to custom stacking function
-      frmtab <- stackFrameFiles(framefiles, dpID=dpID, 
+      frmlst <- stackFrameFiles(framefiles, dpID=dpID, 
                                 seqType=NA_character_, 
                                 cloud.mode=cloud.mode)
       
+      stacklist[[frmlst[[2]]]] <- frmlst[[1]]
       
-      frm <- data.table::rbindlist(pbapply::pblapply(as.list(framefiles), function(x) {
-        tempf <- data.table::fread(x)
-        tempf$fileName <- rep(basename(x), nrow(tempf))
-        return(tempf)
-      }), fill=TRUE)
-      
-      if(dpID=="DP1.20190.001") {
-        data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "rea_conductivityRawData", ".csv"))
-      } else {
-        if(dpID=="DP1.20193.001") {
-          data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "sbd_conductivityRawData", ".csv"))
-        } else {
-          if(dpID=="DP4.00132.001") {
-            data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "bat_processedSonarFile", ".csv"))
-          } else {
-            data.table::fwrite(frm, paste0(folder, "/stackedFiles/", "per_sample", ".csv"))
-          }
-        }
-      }
     } else {
-      # stacking for community taxonomy
+      
+      # stacking for community composition/taxonomy - split 16S and ITS
       fungifiles <- grep("[_]ITS[_]", framefiles, value=TRUE)
       bacteriafiles <- grep("[_]16S[_]", framefiles, value=TRUE)
       
-      # stack ITS data
+      # pass to custom stacking function
       if(length(fungifiles)>0) {
-        fungifrm <- data.table::rbindlist(pbapply::pblapply(as.list(fungifiles), function(x) {
-          tempf <- data.table::fread(x)
-          tempf$fileName <- rep(basename(x), nrow(tempf))
-          return(tempf)
-        }), fill=TRUE)
+        fungilst <- stackFrameFiles(fungifiles, dpID=dpID, 
+                                    seqType=NA_character_, 
+                                    cloud.mode=cloud.mode)
         
-        if(nrow(fungifrm)>0) {
-          if(dpID=="DP1.10081.002") {
-            data.table::fwrite(fungifrm, paste0(folder, "/stackedFiles/", "mct_soilPerSampleTaxonomy_ITS", ".csv"))
-          }
-          if(dpID=="DP1.20086.002") {
-            data.table::fwrite(fungifrm, paste0(folder, "/stackedFiles/", "mct_benthicPerSampleTaxonomy_ITS", ".csv"))
-          }
-          if(dpID=="DP1.20141.002") {
-            data.table::fwrite(fungifrm, paste0(folder, "/stackedFiles/", "mct_surfaceWaterPerSampleTaxonomy_ITS", ".csv"))
-          }
-        }
+        stacklist[[fungilst[[2]]]] <- fungilst[[1]]
       }
       
-      # stack 16S data
       if(length(bacteriafiles)>0) {
-        bactfrm <- data.table::rbindlist(pbapply::pblapply(as.list(bacteriafiles), function(x) {
-          tempf <- data.table::fread(x)
-          tempf$fileName <- rep(basename(x), nrow(tempf))
-          return(tempf)
-        }), fill=TRUE)
+        bacterialst <- stackFrameFiles(bacteriafiles, dpID=dpID, 
+                                       seqType=NA_character_, 
+                                       cloud.mode=cloud.mode)
         
-        if(dpID=="DP1.10081.002") {
-          data.table::fwrite(bactfrm, paste0(folder, "/stackedFiles/", "mct_soilPerSampleTaxonomy_16S", ".csv"))
-        }
-        if(dpID=="DP1.20086.002") {
-          data.table::fwrite(bactfrm, paste0(folder, "/stackedFiles/", "mct_benthicPerSampleTaxonomy_16S", ".csv"))
-        }
-        if(dpID=="DP1.20141.002") {
-          data.table::fwrite(bactfrm, paste0(folder, "/stackedFiles/", "mct_surfaceWaterPerSampleTaxonomy_16S", ".csv"))
-        }
+        stacklist[[bacterialst[[2]]]] <- bacterialst[[1]]
       }
-      
     }
-    
   }
   
   # make a list, where filenames are the keys to the filepath values
@@ -188,7 +149,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     
     n <- 0
     m <- 0
-    stacklist <- list()
     
     # METADATA FILES
     # get variables and validation files from the most recent publication date

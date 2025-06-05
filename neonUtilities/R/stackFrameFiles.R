@@ -39,18 +39,35 @@ stackFrameFiles <- function(framefiles, dpID,
   tabnm <- "per_sample"
   if(dpID=="DP1.20190.001") {
     tabnm <- "rea_conductivityRawData"
-  } else {
-    if(dpID=="DP1.20193.001") {
-      tabnm <- "sbd_conductivityRawData"
-    } else {
-      if(dpID=="DP4.00132.001") {
-        tabnm <- "bat_processedSonarFile"
-      } else {
-        tabnm <- 
-      }
-    }
   }
-}
+  if(dpID=="DP1.20193.001") {
+    tabnm <- "sbd_conductivityRawData"
+  }
+  if(dpID=="DP4.00132.001") {
+    tabnm <- "bat_processedSonarFile"
+  }
+  if(dpID=="DP1.30012.001") {
+    tabnm <- "fsp_rawSpectra"
+  }
+  if(dpID=="DP1.10081.001") {
+    tabnm <- paste("mcc_soilPerSampleTaxonomy_", seqType, sep="")
+  }
+  if(dpID=="DP1.20086.001") {
+    tabnm <- paste("mcc_benthicPerSampleTaxonomy_", seqType, sep="")
+  }
+  if(dpID=="DP1.20141.001") {
+    tabnm <- paste("mcc_surfaceWaterPerSampleTaxonomy_", seqType, sep="")
+  }
+  if(dpID=="DP1.10081.002") {
+    tabnm <- paste("mct_soilPerSampleTaxonomy_", seqType, sep="")
+  }
+  if(dpID=="DP1.20086.002") {
+    tabnm <- paste("mct_benthicPerSampleTaxonomy_", seqType, sep="")
+  }
+  if(dpID=="DP1.20141.002") {
+    tabnm <- paste("mct_surfaceWaterPerSampleTaxonomy_", seqType, sep="")
+  }
+  
   
   if(isFALSE(noschema)) {
     
@@ -70,11 +87,20 @@ stackFrameFiles <- function(framefiles, dpID,
   if(isTRUE(noschema)) {
     
     message(paste("Variables file was not found or was inconsistent for table ", tabnm, ". Schema will be inferred; performance may be reduced.", sep=""))
-    fsdat <- arrow::open_csv_dataset(sources=framefiles, col_names=TRUE, 
-                                     unify_schemas=TRUE, skip=0)
+    fsdat <- try(arrow::open_csv_dataset(sources=framefiles, col_names=TRUE, 
+                                     unify_schemas=TRUE, skip=0), silent=TRUE)
+    if(inherits(fsdat, "try-error")) {
+      # if unifying schemas fails, make a string schema from the superset of field names
+      message("Inferring schema failed. All fields will be read as strings. Warning: this can be slow.")
+      stringschema <- schemaAllStringsFromSet(framefiles)
+      fsdat <- try(arrow::open_csv_dataset(sources=framefiles, 
+                                           schema=stringschema,
+                                           skip=1), silent=TRUE)
+    }
     fdattab <- try(data.frame(dplyr::collect(fsdat)), silent=TRUE)
     if(inherits(fdattab, "try-error")) {
       message(paste("Stacking table ", tabnm, " failed. Check inputs for inconsistencies.", sep=""))
+      return(invisible())
     }
     
   }
