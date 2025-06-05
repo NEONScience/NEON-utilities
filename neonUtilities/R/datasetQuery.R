@@ -91,7 +91,9 @@ datasetQuery <- function(dpID, site="all",
                                       sep=""), x=urlset[[1]], value=TRUE)
   }
   
-  if(urlset[[3]]) {
+  if(isTRUE(urlset[[3]])) {
+    # steps: check for column name differences, if different, can I find the new ones and make them strings?
+    # will it allow missing columns in some files?
     message("Differing variables files detected. Schema will be inferred; performance may be reduced. This can usually be avoided by excluding provisional data.")
     ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
                                   unify_schemas=TRUE,

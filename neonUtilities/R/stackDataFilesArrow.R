@@ -278,7 +278,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       
       # if stacking fails, revert to a string schema
       if(inherits(dattab, "try-error")) {
-        datnms <- names(datf)
+        datnms <- names(datf) # note: does this work? or do I need to infer? test case from inverts
         stringschema <- schemaAllStrings(datnms)
         
         # set up new dataset with string schema

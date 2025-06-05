@@ -26,20 +26,60 @@ stackFrameFiles <- function(framefiles, dpID,
                             cloud.mode=FALSE) {
   
   # get custom variables file for relevant dpID
-  # if dpID isn't on the list, use a string schema
+  # if dpID isn't on the list, infer schema
   if(!dpID %in% frame_file_codes$dpID) {
-    strsch <- TRUE
+    noschema <- TRUE
   } else {
     module <- frame_file_codes$code[which(frame_file_codes$dpID==dpID)]
     vartab <- frame_file_variables[which(frame_file_variables$table==module),]
-    strsch <- FALSE
+    noschema <- FALSE
   }
   
-  if(isFALSE(strsch)) {
+  # assign table name
+  tabnm <- "per_sample"
+  if(dpID=="DP1.20190.001") {
+    tabnm <- "rea_conductivityRawData"
+  } else {
+    if(dpID=="DP1.20193.001") {
+      tabnm <- "sbd_conductivityRawData"
+    } else {
+      if(dpID=="DP4.00132.001") {
+        tabnm <- "bat_processedSonarFile"
+      } else {
+        tabnm <- 
+      }
+    }
+  }
+}
+  
+  if(isFALSE(noschema)) {
     
+    # get schema from custom variables file and read dataset
+    frameschema <- schemaFromVar(vartab, tab=module, package="expanded")
+    fdat <- arrow::open_csv_dataset(sources=framefiles, 
+                                    schema=frameschema, skip=1)
+    fdattab <- try(data.frame(dplyr::collect(fdat)), silent=TRUE)
     
+    # if stacking fails, redirect to infer the schema
+    if(inherits(fdattab, "try-error")) {
+      noschema <- TRUE
+    }
     
   }
+  
+  if(isTRUE(noschema)) {
+    
+    message(paste("Variables file was not found or was inconsistent for table ", tabnm, ". Schema will be inferred; performance may be reduced.", sep=""))
+    fsdat <- arrow::open_csv_dataset(sources=framefiles, col_names=TRUE, 
+                                     unify_schemas=TRUE, skip=0)
+    fdattab <- try(data.frame(dplyr::collect(fsdat)), silent=TRUE)
+    if(inherits(fdattab, "try-error")) {
+      message(paste("Stacking table ", tabnm, " failed. Check inputs for inconsistencies.", sep=""))
+    }
+    
+  }
+  
+  return(list(fdattab, tabnm))
   
 }
 

@@ -188,9 +188,18 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   varfls <- base::grep(pattern="variables", x=urllst, value=TRUE)
   varmd <- mdlst[base::grep(pattern="variables", x=urllst)]
   if(length(unique(varmd))>1) {
+    # get a copy of each checksum
+    # since checksums match, don't actually need to get most recent
+    # but have to pick one somehow, so most recent is fine
+    varu <- unique(varmd)
+    varall <- list()
+    for(k in varu) {
+      varall[[k]] <- getRecentPublication(varfls[which(varmd==k)])[[1]]
+    }
     vardiff <- TRUE
   } else {
     vardiff <- FALSE
+    varall <- NA
   }
   varfl <- getRecentPublication(varfls)[[1]]
   
@@ -225,5 +234,5 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     }
   }
   
-  return(list(urllst, varfl, vardiff, urlbase))
+  return(list(urllst, varfl, vardiff, urlbase, varall))
 }
