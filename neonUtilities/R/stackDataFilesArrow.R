@@ -46,8 +46,8 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
   
   # get file names and file paths
   if(isTRUE(cloud.mode)) {
-    filepaths <- folder[[1]]
-    basepaths <- folder[[4]]
+    filepaths <- folder[["files"]]
+    basepaths <- folder[["filesall"]]$urlbase
     if(length(grep(pattern="endpoint_override", x=filepaths))>0) {
       filenames <- gsub(pattern="/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com",
                         replacement="", x=filepaths, fixed=TRUE)
@@ -236,9 +236,24 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       datf <- dplyr::mutate(.data=dat, file=arrow::add_filename())
       dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
       
-      # if stacking fails, revert to a string schema
+      # if stacking fails, look for multiple variables files
       if(inherits(dattab, "try-error")) {
-        datnms <- names(datf) # note: does this work? or do I need to infer? test case from inverts
+        
+        varpaths <- filepaths[grep("variables.20", filepaths)]
+        # get or calculate checksums and separate unique variables files
+        if(isTRUE(cloud.mode)) {
+          md5var <- folder[["filesall"]]$md5var
+          varset <- unique(md5var)
+        } else {
+          md5var <- tools::md5sum(varpaths)
+          varset <- unique(md5var)
+          # for local files, how to tie variables file to specific data files?
+        }
+
+        
+        ##########
+        
+        datnms <- names(datf)
         stringschema <- schemaAllStrings(datnms)
         
         # set up new dataset with string schema
@@ -255,6 +270,8 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                         " schema did not match data; all variable types set to string."))
         }
       }
+      
+      #########
       
       # append publication date
       dattab$publicationDate <- regmatches(basename(dattab$file), 

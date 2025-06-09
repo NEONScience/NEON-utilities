@@ -270,7 +270,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   varfl <- getRecentPublication(varfls)[[1]]
   
-  if(!metadata) {
+  if(isFALSE(metadata)) {
     # subset to only the table, if requested
     # keep variables files
     nmInd <- base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), 
