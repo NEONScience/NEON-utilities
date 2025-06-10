@@ -110,21 +110,9 @@ datasetQuery <- function(dpID, site="all",
   if(isTRUE(urlset[["varcheck"]])) {
     # check for differences in fieldNames and dataTypes for the relevant table
     varset <- urlset[["varset"]]
-    var1 <- arrow::read_csv_arrow(varset[[1]], col_names=TRUE, skip=0)
-    var1 <- var1[which(var1$table==tabl),]
-    varany <- unlist(lapply(varset, FUN=function(x) {
-      varx <- arrow::read_csv_arrow(x, col_names=TRUE, skip=0)
-      varx <- varx[which(varx$table==tabl),]
-      if(nrow(var1)!=nrow(varx)) {
-        tst <- FALSE
-      } else {
-        tst <- any(varx$fieldName!=var1$fieldName | varx$dataType!=var1$dataType)
-      }
-      return(tst)
-      }))
-    if(any(!varany)) {
+    varFieldDiff <- checkVarFields(variableSet=varset, tableName=tabl)
+    if(isTRUE(varFieldDiff)) {
       # if there are inconsistencies, read each separately, then unify
-      # should this be a separate function?
       mdlist <- urlsub$md5var
       tablist <- list()
       piecewise <- TRUE
@@ -164,7 +152,7 @@ datasetQuery <- function(dpID, site="all",
       
     } else {
       # if fieldNames and dataTypes match across files, use first variables file
-      varend <- var1
+      varend <- arrow::read_csv_arrow(varset[[1]], col_names=TRUE, skip=0)
       urlset[["varcheck"]] <- FALSE
     }
   }
@@ -182,7 +170,6 @@ datasetQuery <- function(dpID, site="all",
   }
   
   # if making dataset via any path above failed, try a string schema
-  # need to modify workflow: make separate string schemas for every set of field names
   if(isTRUE(trystring)) {
     message("Data retrieval using variables file to generate schema failed. All fields will be read as strings. This can be slow, and will reduce the possible types of queries you can make. This can usually be avoided by excluding provisional data, and if that does not resolve the problem, consider downloading data using loadByProduct().")
     stringtablist <- list()
