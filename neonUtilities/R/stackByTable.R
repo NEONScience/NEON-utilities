@@ -11,6 +11,7 @@
 
 #' @param filepath The location of the zip file
 #' @param savepath The location to save the output files to
+#' @param cloud.mode Are files being transferred directly to a cloud environment?
 #' @param folder T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatibility.
 #' @param saveUnzippedFiles T or F: should the unzipped monthly data folders be retained?
 #' @param dpID Data product ID of product to stack. Ignored and determined from data unless input is a vector of files, generally via stackFromStore().
@@ -50,6 +51,7 @@
 
 stackByTable <- function(filepath, 
                          savepath=NA, 
+                         cloud.mode=FALSE,
                          folder=FALSE, 
                          saveUnzippedFiles=FALSE, 
                          dpID=NA, 
@@ -57,14 +59,20 @@ stackByTable <- function(filepath,
                          nCores=1,
                          useFasttime=FALSE){
 
-  if(length(filepath)>1) {
-    folder <- "ls"
-    saveUnzippedFiles <- TRUE
+  if(isTRUE(cloud.mode)) {
+    allFiles <- filepath
+    filepath <- filepath[["files"]]
+    folder <- TRUE
   } else {
-    if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
-      folder <- FALSE
+    if(length(filepath)>1) {
+      folder <- "ls"
+      saveUnzippedFiles <- TRUE
     } else {
-      folder <- TRUE
+      if(substring(filepath, nchar(filepath)-3, nchar(filepath))==".zip") {
+        folder <- FALSE
+      } else {
+        folder <- TRUE
+      }
     }
   }
 
@@ -82,7 +90,13 @@ stackByTable <- function(filepath,
     }
   }
 
-  if(isTRUE(folder)){
+  if(isTRUE(cloud.mode)) {
+    files <- filepath
+    if(length(files)==0) {
+      stop("Data files are not present in specified filepath.")
+    }
+  }
+  if(isTRUE(folder) & isFALSE(cloud.mode)) {
     files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.|release_status")
     if(length(files)==0) {
       stop("Data files are not present in specified filepath.")
@@ -104,16 +118,24 @@ stackByTable <- function(filepath,
       stop("Files not found in specified filepaths. Check that the input list contains the full filepaths.")
     }
   } else {
+    
+    filestemp <- files
+    if(isTRUE(cloud.mode)) {
+      if(length(grep(pattern="endpoint_override", x=filestemp))>0) {
+        filestemp <- gsub(pattern="/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com",
+                          replacement="", x=filestemp, fixed=TRUE)
+      }
+    }
     # this regexpr allows for REV = .001 or .002
-    dpID <- unique(regmatches(basename(files), 
+    dpID <- unique(regmatches(basename(filestemp), 
                        regexpr("DP[1-4][.][0-9]{5}[.]00[1-2]{1}", 
-                               basename(files))))
+                               basename(filestemp))))
     if(!identical(length(dpID), as.integer(1))) {
       stop("Data product ID could not be determined. Check that filepath contains data files, from a single NEON data product.")
     }
-    pack.files <- unique(regmatches(basename(files), 
+    pack.files <- unique(regmatches(basename(filestemp), 
                                  regexpr("basic|expanded",
-                                         basename(files))))
+                                         basename(filestemp))))
     # expanded package can contain basic files
     if(any(pack.files=="expanded")) { 
       package <- "expanded"
@@ -153,85 +175,92 @@ stackByTable <- function(filepath,
   }
   
   #### If all checks pass, unzip and stack files ####
-  # unzip everything to appropriate directory
+  # if in cloud mode, bypass all the unzipping
+  # otherwise, unzip everything to appropriate directory
   envt <- 0
-  if(isFALSE(folder)) {
-    if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
-    if(savepath=="envt") {
-      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
-      envt <- 1
-    }
-    if(length(grep(files, pattern = ".zip")) > 0){
-      zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
-    } else {
-      if(!dir.exists(savepath)){dir.create(savepath)}
-      if(envt==0) {
-        utils::unzip(zipfile=filepath, exdir=dirname(savepath))
-      } else {
-        utils::unzip(zipfile=filepath, exdir=savepath)
+  if(isTRUE(cloud.mode)) {
+    envt <- 1
+    savepath <- allFiles
+  } else {
+    
+    if(isFALSE(folder)) {
+      if(is.na(savepath)){savepath <- substr(filepath, 1, nchar(filepath)-4)}
+      if(savepath=="envt") {
+        savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+        envt <- 1
       }
-      zipList <- list.files(savepath)
-      zipList <- zipList[grep("NEON[.]D[0-9]{2}[.][A-Z]{4}[.]DP[0-4]{1}[.]", 
-                              zipList)]
-    }
-  }
-
-  if(isTRUE(folder)) {
-    if(is.na(savepath)){savepath <- filepath}
-    if(savepath=="envt") {
-      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
-      envt <- 1
-    }
-    zipList <- files
-    if(length(grep(files, pattern = ".zip")) > 0){
-      unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
-    } else {
-      if(filepath!=savepath) {
+      if(length(grep(files, pattern = ".zip")) > 0){
+        zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
+      } else {
         if(!dir.exists(savepath)){dir.create(savepath)}
-        for(i in files) {
-          file.copy(paste(filepath, i, sep="/"), savepath)
+        if(envt==0) {
+          utils::unzip(zipfile=filepath, exdir=dirname(savepath))
+        } else {
+          utils::unzip(zipfile=filepath, exdir=savepath)
+        }
+        zipList <- list.files(savepath)
+        zipList <- zipList[grep("NEON[.]D[0-9]{2}[.][A-Z]{4}[.]DP[0-4]{1}[.]", 
+                                zipList)]
+      }
+    }
+    
+    if(isTRUE(folder)) {
+      if(is.na(savepath)){savepath <- filepath}
+      if(savepath=="envt") {
+        savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+        envt <- 1
+      }
+      zipList <- files
+      if(length(grep(files, pattern = ".zip")) > 0){
+        unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
+      } else {
+        if(filepath!=savepath) {
+          if(!dir.exists(savepath)){dir.create(savepath)}
+          for(i in files) {
+            file.copy(paste(filepath, i, sep="/"), savepath)
+          }
         }
       }
     }
-  }
-  
-  # logic: if zipped, unzip. save list of unzipped folder names.
-  # from there, either way there is a list of unzipped folders.
-  # copy from list of folders to temporary directory (this is inefficient) (do not delete originals)
-  # use temporary directory as single filepath for stacking
-  # if savepath != envt, copy stackedFiles folder from temporary directory to savepath directory
-  # delete temporary directory
-  if(folder=="ls") {
-    if(identical(savepath, "envt")) {envt <- 1}
-    if(is.na(savepath) | identical(savepath, "envt")) {
-      finalpath <- dirname(files[1])
-    } else {
-      finalpath <- savepath
-    }
-    if(!dir.exists(finalpath)){dir.create(finalpath)}
-    if(length(grep(files, pattern = ".zip$"))==length(files)){
-      fols <- sapply(files, function(x) {utils::unzip(x, exdir=paste(finalpath, 
-                                                             substring(basename(x), 1, 
-                                                                       nchar(basename(x))-4), 
-                                                             sep="/"))})
-      files <- substring(names(fols), 1, nchar(names(fols))-4)
-    } else {
-      if(length(grep(files, pattern = ".zip$"))>I(length(files)/5)) {
-        message("There are a large number of zip files in the input list.\nFiles are only unzipped if all input files are zip files.")
+    
+    # logic: if zipped, unzip. save list of unzipped folder names.
+    # from there, either way there is a list of unzipped folders.
+    # copy from list of folders to temporary directory (this is inefficient) (do not delete originals)
+    # use temporary directory as single filepath for stacking
+    # if savepath != envt, copy stackedFiles folder from temporary directory to savepath directory
+    # delete temporary directory
+    if(folder=="ls") {
+      if(identical(savepath, "envt")) {envt <- 1}
+      if(is.na(savepath) | identical(savepath, "envt")) {
+        finalpath <- dirname(files[1])
+      } else {
+        finalpath <- savepath
       }
-    }
-    if(length(grep(files, pattern = ".zip$"))>0) {
-      files <- files[grep(files, pattern = ".zip$", invert=T)]
-    }
-    savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
-    dir.create(savepath)
-    for(i in files) {
-      file.copy(i, savepath, recursive=T)
+      if(!dir.exists(finalpath)){dir.create(finalpath)}
+      if(length(grep(files, pattern = ".zip$"))==length(files)){
+        fols <- sapply(files, function(x) {utils::unzip(x, exdir=paste(finalpath, 
+                                                                       substring(basename(x), 1, 
+                                                                                 nchar(basename(x))-4), 
+                                                                       sep="/"))})
+        files <- substring(names(fols), 1, nchar(names(fols))-4)
+      } else {
+        if(length(grep(files, pattern = ".zip$"))>I(length(files)/5)) {
+          message("There are a large number of zip files in the input list.\nFiles are only unzipped if all input files are zip files.")
+        }
+      }
+      if(length(grep(files, pattern = ".zip$"))>0) {
+        files <- files[grep(files, pattern = ".zip$", invert=T)]
+      }
+      savepath <- file.path(tempdir(), paste("store", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+      dir.create(savepath)
+      for(i in files) {
+        file.copy(i, savepath, recursive=T)
+      }
     }
   }
 
   # stacking!
-  stackedList <- stackDataFilesArrow(folder=savepath, cloud.mode=FALSE, dpID=dpID)
+  stackedList <- stackDataFilesArrow(folder=savepath, cloud.mode=cloud.mode, dpID=dpID)
   
   # need to change readme function - currently this is writing iteratively to a file
   # try(getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID), 

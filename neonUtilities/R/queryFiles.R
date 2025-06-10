@@ -286,7 +286,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     return(invisible())
   } else {
     # if only metadata, print message but still return the metadata files
-    if(length(base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), x=urllst))==0) {
+    if(tabl!="all" & length(base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), x=urllst))==0) {
       message(paste("No files found for table ", tabl, ", only metadata.", sep=""))
     }
   }

@@ -7,6 +7,7 @@
 stackByTable(
   filepath,
   savepath = NA,
+  cloud.mode = FALSE,
   folder = FALSE,
   saveUnzippedFiles = FALSE,
   dpID = NA,
@@ -19,6 +20,8 @@ stackByTable(
 \item{filepath}{The location of the zip file}
 
 \item{savepath}{The location to save the output files to}
+
+\item{cloud.mode}{Are files being transferred directly to a cloud environment?}
 
 \item{folder}{T or F: does the filepath point to a parent, unzipped folder, or a zip file? If F, assumes the filepath points to a zip file. Defaults to F. No longer needed; included for back compatibility.}
 

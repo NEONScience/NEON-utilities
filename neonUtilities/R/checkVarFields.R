@@ -21,10 +21,10 @@
 
 checkVarFields <- function(variableSet, tableName) {
   
-  var1 <- arrow::read_csv_arrow(variableSet[[1]], col_names=TRUE, skip=0)
+  var1 <- data.frame(arrow::read_csv_arrow(variableSet[[1]], col_names=TRUE, skip=0))
   var1 <- var1[which(var1$table==tableName),]
   varany <- unlist(lapply(variableSet, FUN=function(x) {
-    varx <- arrow::read_csv_arrow(x, col_names=TRUE, skip=0)
+    varx <- data.frame(arrow::read_csv_arrow(x, col_names=TRUE, skip=0))
     varx <- varx[which(varx$table==tableName),]
     if(nrow(var1)!=nrow(varx)) {
       tst <- FALSE

@@ -16,6 +16,7 @@
 #' @param avg Deprecated; use timeIndex
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
+#' @param cloud.mode T or F, are files transferred cloud-to-cloud? Defaults to F; set to true only if the destination location (where you are downloading the files to) is in the cloud.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param nCores The number of cores to parallelize the stacking procedure. By default it is set to a single core.
@@ -45,7 +46,7 @@
 ##############################################################################################
 
 loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          release="current", timeIndex="all", tabl="all", 
+                          release="current", timeIndex="all", tabl="all", cloud.mode=FALSE,
                           check.size=TRUE, include.provisional=FALSE,
                           nCores=1, forceParallel=FALSE, token=NA_character_, 
                           useFasttime=FALSE, avg=NA) {
@@ -80,25 +81,42 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     stop("Parameter useFasttime is TRUE but fasttime package is not installed. Install and re-try.")
   }
 
-  # create a temporary directory to save to
-  temppath <- file.path(tempdir(), paste("zips", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
-  dir.create(temppath)
-
-  # pass the request to zipsByProduct() to download
-  zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
-                release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, 
-                savepath=temppath, include.provisional=include.provisional, load=TRUE, token=token)
-  
-  # if zipsByProduct() can't download anything, don't pass to stackByTable()
-  if(length(list.files(temppath))==0) {
-    return(invisible())
+  # cloud mode option: pass list of files from queryFiles() to stackByTable(); don't download anything
+  if(isTRUE(cloud.mode)) {
+    fls <- queryFiles(dpID=dpID, site=site, 
+                      startdate=startdate, enddate=enddate,
+                      package=package, release=release,
+                      timeIndex=timeIndex, tabl=tabl, metadata=TRUE,
+                      include.provisional=include.provisional, 
+                      token=token)
+    out <- stackByTable(filepath=fls, savepath="envt", 
+                        cloud.mode=TRUE, folder=TRUE, 
+                        nCores=nCores, saveUnzippedFiles=FALSE, 
+                        useFasttime=useFasttime)
+  } else {
+    
+    # create a temporary directory to save to
+    temppath <- file.path(tempdir(), paste("zips", format(Sys.time(), "%Y%m%d%H%M%S"), sep=""))
+    dir.create(temppath)
+    
+    # pass the request to zipsByProduct() to download
+    zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
+                  release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, 
+                  savepath=temppath, include.provisional=include.provisional, load=TRUE, token=token)
+    
+    # if zipsByProduct() can't download anything, don't pass to stackByTable()
+    if(length(list.files(temppath))==0) {
+      return(invisible())
+    }
+    
+    # stack and load the downloaded files using stackByTable
+    out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),
+                        savepath="envt", folder=TRUE, nCores=nCores, 
+                        saveUnzippedFiles=FALSE, useFasttime=useFasttime)
+    # Remove temppath directory
+    unlink(temppath, recursive=T)
+    
   }
 
-  # stack and load the downloaded files using stackByTable
-  out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),
-                      savepath="envt", folder=TRUE, nCores=nCores, 
-                      saveUnzippedFiles=FALSE, useFasttime=useFasttime)
-  # Remove temppath directory
-  unlink(temppath, recursive=T)
   return(out)
   }

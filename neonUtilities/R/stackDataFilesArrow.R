@@ -243,10 +243,13 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         # get or calculate checksums and separate unique variables files
         varset <- list()
         if(isTRUE(cloud.mode)) {
+          # go back to the original list of files to get the metadata; have to re-subset to table
           flset <- folder[["filesall"]]
+          flset <- flset[sort(union(grep(paste(".", tables[i], "_pub.", sep=""), flset$url, fixed=T),
+                                    grep(paste(".", tables[i], ".", sep=""), flset$url, fixed=T))),]
           varu <- unique(flset$md5var)
           for(k in varu) {
-            varset[[k]] <- getRecentPublication(flset$url[which(flset$md5==k)])[[1]]
+            varset[[k]] <- flset$url[which(flset$md5var==k)][1]
           }
         } else {
           md5var <- tools::md5sum(varpaths)
@@ -386,10 +389,16 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                                            regexpr("[0-9]{8}T[0-9]{6}Z", 
                                                    basename(dattab$file)))
       # append release tag
-      # this may not work in cloud mode, check timeIndex mode too
-      reldat <- regmatches(dattab$file, regexpr("20[0-9]{6}T[0-9]{6}Z\\..*\\/", 
-                                                dattab$file))
-      dattab$release <- gsub(pattern=".*\\.|\\/", replacement="", x=reldat)
+      # getting release from file path doesn't work in cloud mode
+      # in python, queryFiles() returns a dictionary of files and releases, and uses map() function to populate
+      # timeIndex mode?
+      if(isFALSE(cloud.mode)) {
+        reldat <- regmatches(dattab$file, regexpr("20[0-9]{6}T[0-9]{6}Z\\..*\\/", 
+                                                  dattab$file))
+        dattab$release <- gsub(pattern=".*\\.|\\/", replacement="", x=reldat)
+      } else {
+        
+      }
       
       # for IS products, append domainID, siteID, HOR, VER
       if(tbltype!="lab" & !"siteID" %in% names(dattab)) {
