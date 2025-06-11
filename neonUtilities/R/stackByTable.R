@@ -271,11 +271,14 @@ stackByTable <- function(filepath,
     # rename 2D wind tables
     # will operations in stackDataFilesArrow() fail on 2D wind? may need to move this there
     if(length(grep("^2D", names(stackedList)))>0) {
-      names(stacked_list) <- gsub(pattern="^2D", replacement="twoD", x=names(stackedList))
+      names(stackedList) <- gsub(pattern="^2D", replacement="twoD", x=names(stackedList))
       message("'2D' has been replaced by 'twoD' in table names to conform to R object rules.")
     }
+    
     # remove temporary directory
-    unlink(savepath, recursive=T)
+    if(isFALSE(cloud.mode)) {
+      unlink(savepath, recursive=T)
+    }
     
     return(stackedList)
     

@@ -150,15 +150,20 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   
   # get list of files for each site-month
+  names(relall$packages) <- relall$release
   packall <- relall$packages
   fllst <- list()
   for(i in 1:length(packall)) {
-    fllst <- c(fllst, packall[[i]]$files)
+    fltmp <- packall[[i]]$files
+    names(fltmp) <- paste(names(packall)[i], packall[[i]]$siteCode, 
+                          packall[[i]]$month, sep=".")
+    fllst <- c(fllst, fltmp)
   }
   
   # subset by time index or table, if relevant
   # make data frame of urls, checksums for each file, and checksum of corresponding variables file
   flset <- character()
+  relnames <- strsplit(names(fllst), split='.', fixed=TRUE)
   if(timeIndex=="all" & tabl=="all") {
     for(j in 1:length(fllst)) {
       flsetk <- cbind(fllst[[j]]$url, 
@@ -174,7 +179,8 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                                  fllst[[j]]$url[grep(pattern="variables", 
                                                      x=fllst[[j]]$url)], 
                                  NA_character_),
-                          length(fllst[[j]]$url)))
+                          length(fllst[[j]]$url)),
+                      rep(relnames[[j]][1], length(fllst[[j]]$url)))
       flset <- rbind(flset, flsetk)
     }
     
@@ -201,7 +207,8 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                                    fllst[[k]]$url[grep(pattern="variables", 
                                                        x=fllst[[k]]$url)], 
                                    NA_character_),
-                            length(fllst[[k]]$url[kInd])))
+                            length(fllst[[k]]$url[kInd])),
+                        rep(relnames[[j]][1], length(fllst[[j]]$url)))
         flset <- rbind(flset, flsetk)
       }
     }
@@ -227,14 +234,15 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                                    fllst[[k]]$url[grep(pattern="variables", 
                                                        x=fllst[[k]]$url)], 
                                    NA_character_),
-                            length(fllst[[k]]$url[kInd])))
+                            length(fllst[[k]]$url[kInd])),
+                        rep(relnames[[j]][1], length(fllst[[j]]$url)))
         flset <- rbind(flset, flsetk)
       }
     }
   }
   
   flset <- data.frame(flset)
-  colnames(flset) <- c("url","md5","md5var","urlvar")
+  colnames(flset) <- c("url","md5","md5var","urlvar","release")
   
   # drop default base url, but keep a copy of original
   flset$urlbase <- flset$url

@@ -389,16 +389,19 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                                            regexpr("[0-9]{8}T[0-9]{6}Z", 
                                                    basename(dattab$file)))
       # append release tag
-      # getting release from file path doesn't work in cloud mode
-      # in python, queryFiles() returns a dictionary of files and releases, and uses map() function to populate
       # timeIndex mode?
       if(isFALSE(cloud.mode)) {
         reldat <- regmatches(dattab$file, regexpr("20[0-9]{6}T[0-9]{6}Z\\..*\\/", 
                                                   dattab$file))
         dattab$release <- gsub(pattern=".*\\.|\\/", replacement="", x=reldat)
       } else {
-        
+        relmap <- folder[["filesall"]][,c("urlbase","release")]
+        relmap$urlbase <- gsub(pattern="https://storage.googleapis.com/",
+                               replacement="", x=relmap$urlbase)
+        dattab <- base::merge(dattab, relmap, by.x="file", by.y="urlbase", 
+                              all.x=TRUE)
       }
+      releases <- c(releases, unique(dattab$release))
       
       # for IS products, append domainID, siteID, HOR, VER
       if(tbltype!="lab" & !"siteID" %in% names(dattab)) {
@@ -433,7 +436,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       }
       
       # get rid of filename column
-      dattab <- dattab[which(colnames(dattab)!="file"),]
+      dattab <- dattab[,which(colnames(dattab)!="file")]
 
       # add location and publication field names to variables file
       # switch to arrow or keep data.table?
