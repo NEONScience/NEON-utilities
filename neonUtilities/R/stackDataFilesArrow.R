@@ -245,7 +245,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       }
       
       # point to files as dataset
-      # need to set up options for missing or inconsistent schema
       dat <- arrow::open_csv_dataset(sources=tblfls, schema=tableschema, skip=1)
       
       # add file name column and stream to table
