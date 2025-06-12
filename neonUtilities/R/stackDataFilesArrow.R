@@ -151,6 +151,22 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     m <- 0
     
     # METADATA FILES
+    
+    # get readme
+    if(length(grep(pattern="[.]readme[.]", x=filepaths))>0) {
+      readmepath <- getRecentPublication(grep(pattern="[.]readme[.]",
+                                              x=filepaths, value=TRUE))[[1]]
+      readmetab <- try(arrow::read_delim_arrow(readmepath, delim="\t"), silent=TRUE)
+      if(inherits(readmetab, "try-error")) {
+        message("Readme file could not be read.")
+      } else {
+        readmetab <- data.frame(readmetab)
+        names(readmetab) <- "V1"
+        stacklist[[paste("readme", dpnum, sep="_")]] <- formatReadme(readmetab, dpID)
+        m <- m + 1
+      }
+    }
+    
     # get variables and validation files from the most recent publication date
     if(length(grep(pattern="variables.20", x=filepaths))>0) {
       varpath <- getRecentPublication(filepaths[grep("variables.20", filepaths)])[[1]]
@@ -269,17 +285,17 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
           names(flset) <- c("url", "urlPubDate")
           flset$urlvar <- NA
           flset$md5var <- NA
-          for(m in 1:nrow(flset)) {
-            mpath <- varpaths[which(varPubDate==flset$urlPubDate[m])]
-            m5path <- md5var[which(varPubDate==flset$urlPubDate[m])]
+          for(b in 1:nrow(flset)) {
+            mpath <- varpaths[which(varPubDate==flset$urlPubDate[b])]
+            m5path <- md5var[which(varPubDate==flset$urlPubDate[b])]
             if(length(mpath)==0) {
-              dist <- as.numeric(substring(flset$urlPubDate[m], 10, 15)) - 
-                as.numeric(substring(flset$varPubDate[m], 10, 15))
+              dist <- as.numeric(substring(flset$urlPubDate[b], 10, 15)) - 
+                as.numeric(substring(flset$varPubDate[b], 10, 15))
               mpath <- varpaths[which(dist==min(dist))]
               m5path <- md5var[which(dist==min(dist))]
             }
-            flset$urlvar[m] <- mpath[1]
-            flset$md5var[m] <- m5path[1]
+            flset$urlvar[b] <- mpath[1]
+            flset$md5var[b] <- m5path[1]
           }
         }
         

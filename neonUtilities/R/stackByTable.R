@@ -262,10 +262,6 @@ stackByTable <- function(filepath,
   # stacking!
   stackedList <- stackDataFilesArrow(folder=savepath, cloud.mode=cloud.mode, dpID=dpID)
   
-  # need to change readme function - currently this is writing iteratively to a file
-  # try(getReadmePublicationDate(savepath, out_filepath = paste(savepath, "stackedFiles", sep="/"), dpID), 
-  #     silent=T)
-
   # if saving to the environment, done
   if(envt==1) {
     # rename 2D wind tables
@@ -285,6 +281,31 @@ stackByTable <- function(filepath,
   } else {
     
     # add code to write out files
+    for(fl in 1:length(stackedList)) {
+      
+      # write out readme
+      if(length(grep(pattern="readme", x=names(stackedList)[fl]))>0) {
+        utils::write.table(stackedList[[fl]], 
+                           file=paste(finalpath, names(stackedList)[fl], 
+                                      ".txt", sep="/"), 
+                           append=TRUE, row.names=FALSE, col.names=FALSE, 
+                           quote=FALSE)
+      } else {
+        # write out citation files
+        if(length(grep(pattern="citation", x=names(stackedList)[fl]))>0) {
+          base::writeLines(stackedList[[fl]], 
+                           file=paste(finalpath, names(stackedList)[fl], 
+                                      ".txt", sep="/"))
+        } else {
+          
+          # write out csv files
+          utils::write.csv(stackedList[[fl]], file=paste(finalpath, 
+                                                  names(stackedList)[fl], 
+                                                  ".csv", sep="/"), 
+                    row.names=FALSE)
+        }
+      }
+    }
     
     if(saveUnzippedFiles == FALSE & envt!=1){
       zipList <- unlist(zipList)
