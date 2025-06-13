@@ -27,5 +27,5 @@ cleanUp <- function(folder, orig) {
     unlink(currentFileList, recursive = TRUE)
   }
   
-  writeLines("All unzipped monthly data folders have been removed.")
+  message("All unzipped monthly data folders have been removed.")
 }

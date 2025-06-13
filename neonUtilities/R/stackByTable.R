@@ -280,28 +280,32 @@ stackByTable <- function(filepath,
     
   } else {
     
-    # add code to write out files
+    # write out files
     for(fl in 1:length(stackedList)) {
+      
+      if(!dir.exists(paste(savepath, "/stackedFiles", sep=""))) {
+        dir.create(paste(savepath, "/stackedFiles", sep=""))
+      }
       
       # write out readme
       if(length(grep(pattern="readme", x=names(stackedList)[fl]))>0) {
         utils::write.table(stackedList[[fl]], 
-                           file=paste(finalpath, names(stackedList)[fl], 
-                                      ".txt", sep="/"), 
+                           file=paste(savepath, "/stackedFiles/", names(stackedList)[fl], 
+                                      ".txt", sep=""), 
                            append=TRUE, row.names=FALSE, col.names=FALSE, 
                            quote=FALSE)
       } else {
         # write out citation files
         if(length(grep(pattern="citation", x=names(stackedList)[fl]))>0) {
-          base::writeLines(stackedList[[fl]], 
-                           file=paste(finalpath, names(stackedList)[fl], 
-                                      ".txt", sep="/"))
+          base::write(stackedList[[fl]], 
+                      file=paste(savepath, "/stackedFiles/", names(stackedList)[fl], 
+                                 ".txt", sep=""))
         } else {
           
           # write out csv files
-          utils::write.csv(stackedList[[fl]], file=paste(finalpath, 
+          utils::write.csv(stackedList[[fl]], file=paste(savepath, "/stackedFiles/", 
                                                   names(stackedList)[fl], 
-                                                  ".csv", sep="/"), 
+                                                  ".csv", sep=""), 
                     row.names=FALSE)
         }
       }

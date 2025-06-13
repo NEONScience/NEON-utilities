@@ -378,6 +378,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         counter <- 1
       } else {
         zip_out <- paste(filepath, zip.urls$name[j], sep="/")
+        if(!dir.exists(dirname(zip_out))) {
+          dir.create(dirname(zip_out))
+        }
         if(!file.exists(substr(zip_out, 1, nchar(zip_out)-4)) || !file.exists(zip_out)) {
           if(is.na(token)) {
             t <- tryCatch(
@@ -444,18 +447,6 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         
       }
     }
-    
-    # for individual file downloads, get release status of each file
-    # add for eddy as well (need to adjust unzipping routine in stackEddy())
-    if(avg!="all" | tabl!="all") {
-      utils::write.csv(zip.urls[,c("name","release")], file=paste(filepath, "/release_status_",
-                                                                  paste0(gsub("\\D", "", Sys.time()), 
-                                                                         collapse=""), ".csv", sep=""),
-                       row.names=F)
-    }
-    
-    utils::setTxtProgressBar(pb, 1)
-    close(pb)
     
     if(isFALSE(load)) {
       message(paste0(nrow(zip.urls), " files successfully downloaded to ", filepath))
