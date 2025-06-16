@@ -32,8 +32,9 @@ removeSrfDups <- function(srftable){
     for(k in unique(outputScienceReview$srfID)) {
       scirvwDup <- outputScienceReview[which(outputScienceReview$srfID==k),]
       if(nrow(scirvwDup)>1) {
-        dupRm <- c(dupRm, 
-                   scirvwDup$rowids[which(scirvwDup$lastUpdateDateTime!=max(scirvwDup$lastUpdateDateTime))])
+        dupRmk <- scirvwDup$rowids[which(scirvwDup$lastUpdateDateTime!=max(scirvwDup$lastUpdateDateTime))]
+        dupRm <- c(dupRm, dupRmk)
+        # this doesn't work - there can be multiple rows with the max updated date
       }
     }
     if(length(dupRm)>0) {

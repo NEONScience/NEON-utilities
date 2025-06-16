@@ -434,6 +434,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         }
       }
       
+      # for SRF tables, remove duplicates and updated records
+      if(tables[i]=="science_review_flags") {
+        dattab <- removeSrfDups(dattab)
+      }
+      
       # append publication date
       dattab$publicationDate <- regmatches(basename(dattab$file), 
                                            regexpr("[0-9]{8}T[0-9]{6}Z", 
@@ -471,11 +476,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                           verticalPosition, dattab)
         }
         # sort rows?
-      }
-      
-      # for SRF tables, remove duplicates and updated records
-      if(tables[i]=="science_review_flags") {
-        dattab <- removeSrfDups(dattab)
       }
       
       # get rid of filename column

@@ -97,7 +97,8 @@ stackByTable <- function(filepath,
     }
   }
   if(isTRUE(folder) & isFALSE(cloud.mode)) {
-    files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.|release_status")
+    files <- list.files(filepath, pattern = "NEON.D[[:digit:]]{2}.[[:alpha:]]{4}.", 
+                        recursive=TRUE)
     if(length(files)==0) {
       stop("Data files are not present in specified filepath.")
     }
@@ -217,7 +218,11 @@ stackByTable <- function(filepath,
         if(filepath!=savepath) {
           if(!dir.exists(savepath)){dir.create(savepath)}
           for(i in files) {
-            file.copy(paste(filepath, i, sep="/"), savepath)
+            if(!dir.exists(paste(savepath, dirname(i), sep="/"))) {
+              dir.create(paste(savepath, dirname(i), sep="/"))
+            }
+            file.copy(from=paste(filepath, i, sep="/"), 
+                      to=paste(savepath, i, sep="/"))
           }
         }
       }
