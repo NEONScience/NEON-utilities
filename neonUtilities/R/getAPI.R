@@ -31,6 +31,7 @@ getAPI <- function(apiURL, token=NA_character_){
   }
   
   # check for expired token
+  # this works, but needs to be moved out of this function to avoid repeat hits
   if(!is.na(token)) {
     splittoken <- strsplit(token, ".", fixed = TRUE)[[1]]
     dubsplit <- unlist(strsplit(rawToChar(jose::base64url_decode(splittoken[2])), 
@@ -69,7 +70,8 @@ getAPI <- function(apiURL, token=NA_character_){
         if(req$headers$`x-ratelimit-remaining`<=1) {
           message(paste("Rate limit reached. Pausing for ", 
                     req$headers$`x-ratelimit-reset`,
-                    " seconds to reset.", sep=""))
+                    " seconds to reset. For faster downloads, use a NEON user account and API token. Instructions here: https://www.neonscience.org/resources/learning-hub/tutorials/neon-api-tokens-tutorial", 
+                    sep=""))
           Sys.sleep(req$headers$`x-ratelimit-reset`)
           j <- j+1
         } else {

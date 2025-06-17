@@ -1,0 +1,11 @@
+@misc{https://doi.org/10.48443/11hx-c586,
+  doi = {10.48443/11HX-C586},
+  url = {https://data.neonscience.org/data-products/DP1.10033.001/RELEASE-2025},
+  author = {{National Ecological Observatory Network (NEON)}},
+  keywords = {plant productivity, production, carbon cycle, detritus, biomass, vegetation, leaves, turnover, senescence, litter, gross primary productivity (GPP), net primary productivity (NPP), litterfall, fine woody debris, ltr, nitrogen cycle, d13C, d15N, biodiversity},
+  language = {en},
+  title = {Litterfall and fine woody debris production and chemistry (DP1.10033.001)},
+  publisher = {National Ecological Observatory Network (NEON)},
+  year = {2025}
+}
+
