@@ -246,16 +246,16 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         labs <- unique(unlist(lapply(strsplit(file_list, split="[.]"), 
                                      FUN="[[", 2)))
         
-        tblfls <- lapply(labs, function(j, file_list) {
+        tblfls <- unique(unlist(lapply(labs, function(j, file_list) {
           tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
-        }, file_list=file_list)
+        }, file_list=file_list)))
       }
       
       # point to files as dataset
       dat <- arrow::open_csv_dataset(sources=tblfls, schema=tableschema, skip=1)
       
       # add file name column and stream to table
-      datf <- dplyr::mutate(.data=dat, file=arrow::add_filename())
+      datf <- dplyr::mutate(.data=dat, file=addFilename())
       dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
       
       # if stacking fails, look for multiple variables files
@@ -269,7 +269,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                                          schema=tableschemalegacy, skip=1)
           
           # add file name column and stream to table
-          datf <- dplyr::mutate(.data=dat, file=arrow::add_filename())
+          datf <- dplyr::mutate(.data=dat, file=addFilename())
           dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
           
           if(inherits(dattab, "try-error")) {
@@ -279,7 +279,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                                            schema=stringschema, skip=1)
             
             # add file name column and stream to table
-            datf <- dplyr::mutate(.data=dat, file=arrow::add_filename())
+            datf <- dplyr::mutate(.data=dat, file=addFilename())
             dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
             
             if(inherits(dattab, "try-error")) {
@@ -378,7 +378,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                                                   skip=0), silent=TRUE)
                 
                 # add file name column and stream to table
-                datf <- try(dplyr::mutate(.data=ds, file=arrow::add_filename()), silent=TRUE)
+                datf <- try(dplyr::mutate(.data=ds, file=addFilename()), silent=TRUE)
                 dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
                 
                 # if merge fails, try for a string schema
@@ -422,7 +422,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
                                                 skip=0), silent=TRUE)
               
               # add file name column and stream to table
-              datf <- try(dplyr::mutate(.data=ds, file=arrow::add_filename()), silent=TRUE)
+              datf <- try(dplyr::mutate(.data=ds, file=addFilename()), silent=TRUE)
               dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
               
               if(inherits(dattab, "try-error")) {
