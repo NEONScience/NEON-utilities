@@ -234,16 +234,16 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       }
       # most recent for each site for site-all
       if(tbltype == "site-all") {
-        sites <- as.list(unique(substr(basename(file_list), 10, 13)))
+        sites <- as.list(unique(substring(basename(file_list), 10, 13)))
 
         tblfls <- unique(unlist(lapply(sites, function(j, file_list) {
           tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
         }, file_list=file_list)))
         
       }
-      # most recent for each lab for lab-all
+      # most recent for each lab for lab-all and lab-current
       if(tbltype == "lab") {
-        labs <- unique(unlist(lapply(strsplit(file_list, split="[.]"), 
+        labs <- unique(unlist(lapply(strsplit(basename(file_list), split="[.]"), 
                                      FUN="[[", 2)))
         
         tblfls <- unique(unlist(lapply(labs, function(j, file_list) {
@@ -469,13 +469,16 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         # a few tables are missing domainID and siteID but don't have hor/ver
         if(identical(length(locinds), as.integer(0))) {
           dattab <- cbind(domainID, siteID, dattab)
+          dattab <- dattab[order(dattab$domainID, dattab$siteID),]
         } else {
           horizontalPosition <- substring(locinds, 6, 8)
           verticalPosition <- substring(locinds, 10, 12)
           dattab <- cbind(domainID, siteID, horizontalPosition,
                           verticalPosition, dattab)
+          dattab <- dattab[order(dattab$domainID, dattab$siteID,
+                                 dattab$horizontalPosition,
+                                 dattab$verticalPosition),]
         }
-        # sort rows?
       }
       
       # get rid of filename column
