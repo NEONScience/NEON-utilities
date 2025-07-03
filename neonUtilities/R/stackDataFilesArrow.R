@@ -447,7 +447,13 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       if(isFALSE(cloud.mode)) {
         reldat <- regmatches(dattab$file, regexpr("20[0-9]{6}T[0-9]{6}Z\\..*\\/", 
                                                   dattab$file))
-        dattab$release <- gsub(pattern=".*\\.|\\/", replacement="", x=reldat)
+        rtry <- try(dattab$release <- gsub(pattern=".*\\.|\\/", 
+                                           replacement="", x=reldat), 
+                    silent=TRUE)
+        if(inherits(rtry, "try-error")) {
+          message(paste("Release tag could not be determined for table ", 
+                        tables[i], sep=""))
+        }
       } else {
         relmap <- folder[["filesall"]][,c("urlbase","release")]
         relmap$urlbase <- gsub(pattern="https://storage.googleapis.com/",
