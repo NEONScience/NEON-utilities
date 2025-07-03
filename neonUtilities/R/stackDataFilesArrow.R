@@ -481,9 +481,16 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
           verticalPosition <- substring(locinds, 10, 12)
           dattab <- cbind(domainID, siteID, horizontalPosition,
                           verticalPosition, dattab)
-          dattab <- dattab[order(dattab$domainID, dattab$siteID,
-                                 dattab$horizontalPosition,
-                                 dattab$verticalPosition),]
+          if("endDateTime" %in% names(dattab)) {
+            dattab <- dattab[order(dattab$domainID, dattab$siteID,
+                                   dattab$horizontalPosition,
+                                   dattab$verticalPosition, 
+                                   dattab$endDateTime),]
+          } else {
+            dattab <- dattab[order(dattab$domainID, dattab$siteID,
+                                   dattab$horizontalPosition,
+                                   dattab$verticalPosition),]
+          }
         }
       }
       
