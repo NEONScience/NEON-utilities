@@ -219,6 +219,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     # DATA STACKING
     # stack each table and add to list
     message("Stacking data files")
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 0)
+    
     for(i in 1:length(tables)) {
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       
@@ -527,6 +530,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         stacklist[[tables[i]]] <- dattab
       }
       n <- n + 1
+      utils::setTxtProgressBar(pb, i/length(tables))
     }
   
     # write out complete variables file after all tables are done
@@ -547,6 +551,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       m <- m + 1
     }
   }
+  
+  utils::setTxtProgressBar(pb, 1)
+  close(pb)
   
   # get DOIs and generate citation(s)
   releases <- unique(releases)

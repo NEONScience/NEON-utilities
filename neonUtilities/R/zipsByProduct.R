@@ -448,6 +448,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       }
     }
     
+    utils::setTxtProgressBar(pb, 1)
+    close(pb)
+    
     if(isFALSE(load)) {
       message(paste0(nrow(zip.urls), " files successfully downloaded to ", filepath))
     }
