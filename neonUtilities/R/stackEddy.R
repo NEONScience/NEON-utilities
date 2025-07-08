@@ -463,7 +463,9 @@ stackEddy <- function(filepath,
   
   # set up tables for data and metadata
   # stack months within each site
-  sites <- regmatches(x=names(verMergList), m=regexpr(pattern="[.][A-Z]{4}[.]", text=names(verMergList)))
+  sites <- regmatches(x=names(verMergList), 
+                      m=regexpr(pattern="[.][A-Z]{4}[.]|[.][A-Z]{2}[0-9]{2}[.]", 
+                                text=names(verMergList)))
   sites <- gsub(pattern=".", replacement="", x=sites, fixed=TRUE)
   sites <- unique(sites)
   

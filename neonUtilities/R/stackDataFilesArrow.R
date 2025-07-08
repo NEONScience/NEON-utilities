@@ -473,7 +473,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         siteID <- regmatches(dattab$file, regexpr("D[0-9]{2}[.][A-Z]{4}[.]", 
                                                   dattab$file))
         siteID <- gsub(pattern="D[0-9]{2}[.]|[.]", replacement="", x=siteID)
-        locinds <- regmatches(dattab$file, regexpr("[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.]", 
+        locinds <- regmatches(dattab$file, regexpr("[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.]|[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.][0-9]{2}[A-Z]{1}[.]", 
                                                    dattab$file))
         # a few tables are missing domainID and siteID but don't have hor/ver
         if(identical(length(locinds), as.integer(0))) {
@@ -509,15 +509,20 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
           if("horizontalPosition" %in% names(dattab)) {
             vlist[[vtable]] <- data.table::rbindlist(list(data.frame(base::cbind(table=rep(tables[i],4), 
                                                                                  added_fields[1:4,])), 
-                                                          vlist[[vtable]]), fill=TRUE)
+                                                          vlist[[vtable]]), 
+                                                     fill=TRUE, ignore.attr=TRUE)
           }
           if("publicationDate" %in% names(dattab)) {
             vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
-                                                          c(table=tables[i], added_fields[5,])), fill=TRUE)
+                                                          c(table=tables[i], 
+                                                            added_fields[5,])), 
+                                                     fill=TRUE, ignore.attr=TRUE)
           }
           if("release" %in% names(dattab)) {
             vlist[[vtable]] <- data.table::rbindlist(list(vlist[[vtable]], 
-                                                          c(table=tables[i], added_fields[6,])), fill=TRUE)
+                                                          c(table=tables[i], 
+                                                            added_fields[6,])), 
+                                                     fill=TRUE, ignore.attr=TRUE)
             releases <- c(releases, unique(dattab$release))
           }
         }
@@ -534,7 +539,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     }
   
     # write out complete variables file after all tables are done
-    vfull <- data.table::rbindlist(vlist, fill=TRUE)
+    vfull <- data.table::rbindlist(vlist, fill=TRUE, ignore.attr=TRUE)
     stacklist[[paste("variables", dpnum, sep="_")]] <- vfull
     m <- m + 1
     
