@@ -43,7 +43,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   # check for GCS and S3 enabled
   if(!arrow::arrow_with_gcs()) {
     if(!arrow::arrow_with_s3()) {
-      stop("Package arrow is installed with S3 and GCS disabled. Consult documentation at https://arrow.apache.org/docs/r/articles/fs.html , update installation and re-try.")
+      stop("Package arrow is installed with S3 and GCS disabled and cannot access NEON data. Consult documentation at https://arrow.apache.org/docs/r/articles/fs.html , update installation and re-try.")
     } else {
       message("Package arrow is installed with GCS disabled. S3 will be used to access data; performance may be reduced.")
     }
@@ -208,7 +208,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                                                        x=fllst[[k]]$url)], 
                                    NA_character_),
                             length(fllst[[k]]$url[kInd])),
-                        rep(relnames[[j]][1], length(fllst[[j]]$url)))
+                        rep(relnames[[k]][1], length(fllst[[k]]$url[kInd])))
         flset <- rbind(flset, flsetk)
       }
     }
@@ -235,7 +235,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                                                        x=fllst[[k]]$url)], 
                                    NA_character_),
                             length(fllst[[k]]$url[kInd])),
-                        rep(relnames[[j]][1], length(fllst[[j]]$url)))
+                        rep(relnames[[k]][1], length(fllst[[k]]$url[kInd])))
         flset <- rbind(flset, flsetk)
       }
     }
