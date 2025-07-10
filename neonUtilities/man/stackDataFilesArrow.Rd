@@ -4,12 +4,14 @@
 \alias{stackDataFilesArrow}
 \title{Join data files in a unzipped NEON data package by table type}
 \usage{
-stackDataFilesArrow(folder, cloud.mode = FALSE, dpID)
+stackDataFilesArrow(folder, cloud.mode = FALSE, progress = TRUE, dpID)
 }
 \arguments{
 \item{folder}{The location of the data}
 
 \item{cloud.mode}{T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.}
+
+\item{progress}{T or F, should progress bars and messages be printed?}
 
 \item{dpID}{The data product identifier}
 }

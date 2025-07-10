@@ -11,6 +11,7 @@
 
 #' @param folder The location of the data
 #' @param cloud.mode T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.
+#' @param progress T or F, should progress bars and messages be printed?
 #' @param dpID The data product identifier
 #' @return One file for each table type is created and written.
 #' @keywords internal
@@ -33,7 +34,7 @@
 #     * Rewrote from stackDataFilesParallel() to use arrow package for stacking
 ##############################################################################################
 
-stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
+stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
   
   starttime <- Sys.time()
   releases <- character()
@@ -219,8 +220,10 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     # DATA STACKING
     # stack each table and add to list
     message("Stacking data files")
-    pb <- utils::txtProgressBar(style=3)
-    utils::setTxtProgressBar(pb, 0)
+    if(isTRUE(progress)) {
+      pb <- utils::txtProgressBar(style=3)
+      utils::setTxtProgressBar(pb, 0)
+    }
     
     for(i in 1:length(tables)) {
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
@@ -535,7 +538,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         stacklist[[tables[i]]] <- dattab
       }
       n <- n + 1
-      utils::setTxtProgressBar(pb, i/length(tables))
+      if(isTRUE(progress)) {
+        utils::setTxtProgressBar(pb, i/length(tables))
+      }
     }
   
     # write out complete variables file after all tables are done
@@ -557,8 +562,10 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     }
   }
   
-  utils::setTxtProgressBar(pb, 1)
-  close(pb)
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb, 1)
+    close(pb)
+  }
   
   # get DOIs and generate citation(s)
   releases <- unique(releases)
