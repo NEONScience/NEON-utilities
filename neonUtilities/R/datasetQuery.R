@@ -105,6 +105,7 @@ datasetQuery <- function(dpID, site="all",
   
   # start with variables file returned by queryFiles
   varend <- urlset[["variables"]]
+  trystring <- FALSE
   
   # check for inconsistencies in variables files
   if(isTRUE(urlset[["varcheck"]])) {
@@ -116,7 +117,6 @@ datasetQuery <- function(dpID, site="all",
       mdlist <- urlsub$md5var
       tablist <- list()
       piecewise <- TRUE
-      trystring <- FALSE
       for(i in unique(mdlist)) {
         
         vari <- getRecentPublication(urlsub$urlvar[which(mdlist==i)])[[1]]
