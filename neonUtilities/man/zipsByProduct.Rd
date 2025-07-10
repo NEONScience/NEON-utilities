@@ -15,8 +15,9 @@ zipsByProduct(
   tabl = "all",
   check.size = TRUE,
   include.provisional = FALSE,
+  cloud.mode = FALSE,
   savepath = NA,
-  load = F,
+  load = FALSE,
   token = NA_character_,
   avg = NA
 )
@@ -41,6 +42,8 @@ zipsByProduct(
 \item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
 \item{include.provisional}{T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.}
+
+\item{cloud.mode}{T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.}
 
 \item{savepath}{The location to save the output files to}
 

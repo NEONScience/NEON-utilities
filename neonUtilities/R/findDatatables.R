@@ -27,5 +27,6 @@ findDatatables <- function(folder, fnames = T){
   for(i in 1:length(fs)){
     fls <- c(fls, list.files(fs[i], full.names = fnames))
   }
-  return(fls[which(substr(fls, nchar(fls)-3, nchar(fls)) == ".csv")])
+  # return only files with a file extension (excludes directories)
+  return(fls[grep(pattern="[.][a-z]{3}$", x=fls)])
 }

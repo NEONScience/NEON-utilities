@@ -11,12 +11,12 @@ files_match <- function(object, output, expected) {
   )
 }
 
-f <- stackByTable(system.file("extdata", "NEON_gp.zip", 
+f <- stackByTable(system.file("extdata", "NEON_litterfall.zip", 
                               package="neonUtilities"), savepath="envt")
-test_that("Test that correct files are created for microbe group abundances", {
+test_that("Test that correct files are created for litterfall", {
   files_match({},
-              f$mga_soilGroupAbundances,
-              read.csv(system.file("extdata", "expected/gp/mga_soilGroupAbundances.csv", 
+              f$ltr_litterLignin,
+              read.csv(system.file("extdata", "expected/litter/ltr_litterLignin.csv", 
                                    package="neonUtilities")))
 })
 

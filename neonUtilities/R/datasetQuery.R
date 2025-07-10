@@ -32,7 +32,7 @@
 
 datasetQuery <- function(dpID, site="all", 
                          startdate=NA, enddate=NA, 
-                         tabl=NA, hor=NA, ver=NA,
+                         tabl=NA_character_, hor=NA, ver=NA,
                          package="basic", release="current", 
                          include.provisional=FALSE, token=NA_character_) {
   
@@ -48,6 +48,11 @@ datasetQuery <- function(dpID, site="all",
     stop(paste(dpID, " is a remote sensing data product. Remote sensing data can't be queried using this function.", sep=""))
   }
 
+  # table is a required input
+  if(is.na(tabl)) {
+    stop("Table name (tabl=) is a required input to this function.")
+  }
+  
   if(pubType %in% c("TIS Data Product Type","AIS Data Product Type")) {
     if(dpID %in% c("DP4.00200.001",
                    "DP1.00007.001","DP1.00010.001","DP1.00034.001","DP1.00035.001",
@@ -87,27 +92,125 @@ datasetQuery <- function(dpID, site="all",
   
   # subset by hor and ver
   if(!is.na(ver)) {
-    urlset[[1]] <- base::grep(pattern=paste("[.]", hor, "[.]", ver, "[.]", 
-                                      sep=""), x=urlset[[1]], value=TRUE)
+    # urls to files only
+    urlset[["files"]] <- base::grep(pattern=paste("[.]", hor, "[.]", ver, "[.]", 
+                                      sep=""), x=urlset[["files"]], value=TRUE)
+    # data frame with urls, checksums, variables files, etc
+    hvind <- base::grep(pattern=paste("[.]", hor, "[.]", ver, "[.]", 
+                             sep=""), x=urlset[["filesall"]])
+    urlsub <- urlset[["filesall"]][hvind,]
+  } else {
+    urlsub <- urlset[["filesall"]]
   }
   
-  if(urlset[[3]]) {
-    message("Differing variables files detected. Schema will be inferred; performance may be reduced. This can usually be avoided by excluding provisional data.")
-    ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
-                                  unify_schemas=TRUE,
-                                  col_names=TRUE,
-                                  skip=0)
-  } else {
-    ds <- arrow::open_csv_dataset(sources=urlset[[1]], 
-                                  schema=schemaFromVar(urlset[[2]],
-                                                       tab=tabl,
-                                                       package=package), 
-                                  skip=1)
+  # start with variables file returned by queryFiles
+  varend <- urlset[["variables"]]
+  trystring <- FALSE
+  
+  # check for inconsistencies in variables files
+  if(isTRUE(urlset[["varcheck"]])) {
+    # check for differences in fieldNames and dataTypes for the relevant table
+    varset <- urlset[["varset"]]
+    varFieldDiff <- checkVarFields(variableSet=varset, tableName=tabl)
+    if(isTRUE(varFieldDiff)) {
+      # if there are inconsistencies, read each separately, then unify
+      mdlist <- urlsub$md5var
+      tablist <- list()
+      piecewise <- TRUE
+      for(i in unique(mdlist)) {
+        
+        vari <- getRecentPublication(urlsub$urlvar[which(mdlist==i)])[[1]]
+        flsi <- urlsub$url[which(mdlist==i)]
+        
+        ds <- try(arrow::open_csv_dataset(sources=flsi, 
+                                          schema=schemaFromVar(vari,
+                                                               tab=tabl,
+                                                               package=package),
+                                          skip=1), silent=TRUE)
+        if(inherits(ds, "try-error")) {
+          piecewise <- FALSE
+          next
+        } else {
+          tablist[[i]] <- ds
+        }
+        
+      }
+      
+      # if any chunks failed, try for a string schema
+      if(isFALSE(piecewise)) {
+        trystring <- TRUE
+      } else {
+        # if all chunks succeeded, merge them
+        ds <- try(arrow::open_csv_dataset(sources=tablist, 
+                                          unify_schemas=TRUE,
+                                          skip=0), silent=TRUE)
+        # if merge fails, try for a string schema
+        if(inherits(ds, "try-error")) {
+          trystring <- TRUE
+        }
+      }
+      
+    } else {
+      # if fieldNames and dataTypes match across files, use first variables file
+      varend <- arrow::read_csv_arrow(varset[[1]], col_names=TRUE, skip=0)
+      urlset[["varcheck"]] <- FALSE
+    }
+  }
+  
+  if(isFALSE(urlset[["varcheck"]])) {
+    tableschema <- schemaFromVar(varend,
+                                 tab=tabl,
+                                 package=package)
+    ds <- try(arrow::open_csv_dataset(sources=urlset[["files"]], 
+                                      schema=tableschema,
+                                      skip=1), silent=TRUE)
+    if(inherits(ds, "try-error")) {
+      trystring <- TRUE
+    }
+  }
+  
+  # if making dataset via any path above failed, try a string schema
+  if(isTRUE(trystring)) {
+    message("Data retrieval using variables file to generate schema failed. All fields will be read as strings. This can be slow, and will reduce the possible types of queries you can make. This can usually be avoided by excluding provisional data, and if that does not resolve the problem, consider downloading data using loadByProduct().")
+    stringtablist <- list()
+    stringpiecewise <- TRUE
+    for(i in unique(urlsub$md5var)) {
+      
+      urlsubi <- urlsub[which(urlsub$md5var==i),]
+      flsi <- urlsubi$url
+      stringschema <- schemaAllStringsFromSet(flsi)
+      
+      ds <- try(arrow::open_csv_dataset(sources=flsi, 
+                                        schema=stringschema,
+                                        skip=1), silent=TRUE)
+      if(inherits(ds, "try-error")) {
+        stringpiecewise <- FALSE
+        next
+      } else {
+        stringtablist[[i]] <- ds
+      }
+      
+    }
+    
+    if(isFALSE(stringpiecewise)) {
+      message("Reading data as strings failed. Try excluding provisional data, and contact NEON if unable to resolve.")
+      return(invisible())
+    } else {
+      # if all chunks succeeded, merge them
+      ds <- try(arrow::open_csv_dataset(sources=stringtablist, 
+                                        unify_schemas=TRUE,
+                                        skip=0), silent=TRUE)
+      if(inherits(ds, "try-error")) {
+        message("Reading data as strings failed. Try excluding provisional data, and contact NEON if unable to resolve.")
+        return(invisible())
+      }
+    }
   }
   
   return(ds)
   
   # need to figure out how to handle site-all and lab tables
   # and how to detect site-all and lab tables in this context
+  # now have md5s, can use those
   
 }

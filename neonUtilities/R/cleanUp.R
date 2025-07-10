@@ -21,11 +21,18 @@
 ##############################################################################################
 cleanUp <- function(folder, orig) {
   
-  currentFileList <- paste(folder, orig, sep="/")
+  currentFileList <- orig
   
   if(length(currentFileList) > 0) {
     unlink(currentFileList, recursive = TRUE)
   }
   
-  writeLines("All unzipped monthly data folders have been removed.")
+  dirlist <- list.dirs(folder)
+  for(i in 1:length(dirlist)) {
+    if(length(list.files(dirlist[i]))==0) {
+      unlink(dirlist[i], recursive=TRUE)
+    }
+  }
+  
+  message("All unzipped monthly data folders have been removed.")
 }

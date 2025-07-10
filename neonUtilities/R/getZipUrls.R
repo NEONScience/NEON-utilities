@@ -40,18 +40,27 @@ getZipUrls <- function(month.urls, avg, package, dpID,
   # get all the file names
   tmp.files <- list(length(month.urls))
   for(j in 1:length(month.urls)) {
-
-    tmp.files[[j]] <- getAPI(month.urls[j], token=token)
     
+    tmp.files[[j]] <- getAPI(month.urls[j], token=token)
+
     if(tmp.files[[j]]$status_code==500) {
       message(paste("Query for url ", month.urls[j],
                                     " failed. API may be unavailable; check data portal data.neonscience.org for outage alert.",
                                     sep=""))
       next
     }
+    
+    # short delay if using a token (limit is 4 requests per second)
+    if(!is.na(token) & !is.null(tmp.files[[j]]$headers$`x-ratelimit-limit`)) {
+      if(abs(round(j/4, digits=0)-j/4)<0.01 & as.numeric(tmp.files[[j]]$headers$`x-ratelimit-limit`)>200) {
+        Sys.sleep(1)
+      }
+    }
+    
     tmp.files[[j]] <- jsonlite::fromJSON(httr::content(tmp.files[[j]], as="text", encoding='UTF-8'),
                                          simplifyDataFrame=T, flatten=T)
     utils::setTxtProgressBar(pb, j/length(month.urls))
+    
   }
   
   utils::setTxtProgressBar(pb, 1)
@@ -129,21 +138,27 @@ getZipUrls <- function(month.urls, avg, package, dpID,
 
     # if only one averaging interval or one table is requested, filter by file names
     if(avg!="all" | tabl!="all") {
-
+      
+      # get zip file path to append to name
+      h <- getAPIHeaders(tmp.files[[i]]$data$packages$url
+                         [which(tmp.files[[i]]$data$packages$type==package)])
+      flhd <- httr::headers(h)
+      flnm <- gsub('\"', '', flhd$`content-disposition`, fixed=T)
+      flnm <- gsub("inline; filename=", "", flnm, fixed=T)
+      flnm <- gsub(".zip", "", flnm, fixed=T)
+      
+      tmp.files[[i]]$data$files$name <- paste(flnm, tmp.files[[i]]$data$files$name, sep="/")
+      
       # start with metadata
-      # get url for most recent variables & readme
+      # get url for most recent readme
+      # get all variables files (as of v3.0.0 - needed for schema resolution in arrow)
+      which.var <- grep("variables", tmp.files[[i]]$data$files$name, fixed=T)
+      zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.var],
+                                        tmp.files[[i]]$data$files$url[which.var],
+                                        tmp.files[[i]]$data$files$size[which.var],
+                                        rep(tmp.files[[i]]$data$release, 
+                                            length(tmp.files[[i]]$data$files$name[which.var]))))
       if(i==max.pub) {
-        which.var <- grep("variables", tmp.files[[i]]$data$files$name, fixed=T)[1]
-        if(is.na(which.var)) {
-          zip.urls <- zip.urls
-        } else {
-          zip.urls <- rbind(zip.urls, cbind(tmp.files[[i]]$data$files$name[which.var],
-                                            tmp.files[[i]]$data$files$url[which.var],
-                                            tmp.files[[i]]$data$files$size[which.var],
-                                            rep(tmp.files[[i]]$data$release, 
-                                                length(tmp.files[[i]]$data$files$name[which.var]))))
-        }
-        
         which.read <- grep("readme", tmp.files[[i]]$data$files$name, fixed=T)[1]
         if(is.na(which.read)) {
           zip.urls <- zip.urls
@@ -154,7 +169,6 @@ getZipUrls <- function(month.urls, avg, package, dpID,
                                             rep(tmp.files[[i]]$data$release, 
                                                 length(tmp.files[[i]]$data$files$name[which.read]))))
         }
-        
       }
       
       # add url for most recent sensor position file for each site
@@ -183,10 +197,6 @@ getZipUrls <- function(month.urls, avg, package, dpID,
                                               length(tmp.files[[i]]$data$files$name[which.srf]))))
       }
       
-      # drop duplicate files by hash
-      # this should be unnecessary, and may lead to conflicts if the wrong package's file is dropped
-      # removed in 2.4.2
-      #unique.files <- tmp.files[[i]]$data$files[!base::duplicated(tmp.files[[i]]$data$files$md5),]
       unique.files <- tmp.files[[i]]$data$files
       
       # select files by averaging interval
@@ -213,11 +223,11 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       # if package==expanded, check that expanded package exists
       # if it doesn't, download basic package
       pk <- package
-      pk.files <- grep(pk, unique.files$name, fixed=T)
+      pk.files <- grep(pk, basename(unique.files$name), fixed=T)
       if(pk=="expanded") {
         if(length(pk.files)==0) {
           pk <- "basic"
-          pk.files <- grep(pk, unique.files$name, fixed=T)
+          pk.files <- grep(pk, basename(unique.files$name), fixed=T)
           message(paste("No expanded package found for site ",
                                         tmp.files[[i]]$data$siteCode, " and month ",
                                         tmp.files[[i]]$data$month,

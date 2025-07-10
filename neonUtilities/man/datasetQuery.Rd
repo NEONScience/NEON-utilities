@@ -9,7 +9,7 @@ datasetQuery(
   site = "all",
   startdate = NA,
   enddate = NA,
-  tabl = NA,
+  tabl = NA_character_,
   hor = NA,
   ver = NA,
   package = "basic",

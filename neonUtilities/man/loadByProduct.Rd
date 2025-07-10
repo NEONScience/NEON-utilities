@@ -13,6 +13,7 @@ loadByProduct(
   release = "current",
   timeIndex = "all",
   tabl = "all",
+  cloud.mode = FALSE,
   check.size = TRUE,
   include.provisional = FALSE,
   nCores = 1,
@@ -38,6 +39,8 @@ loadByProduct(
 \item{timeIndex}{Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
 
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
+
+\item{cloud.mode}{T or F, are files transferred cloud-to-cloud? Defaults to F; set to true only if the destination location (where you are downloading the files to) is in the cloud.}
 
 \item{check.size}{T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.}
 
