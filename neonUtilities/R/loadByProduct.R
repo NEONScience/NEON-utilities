@@ -81,6 +81,14 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   if(useFasttime & !requireNamespace("fasttime", quietly=T)) {
     stop("Parameter useFasttime is TRUE but fasttime package is not installed. Install and re-try.")
   }
+  
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
+  }
+  
+  # check for token expiration
+  token <- tokenCheck(token)
 
   # cloud mode option: pass list of files from queryFiles() to stackByTable(); don't download anything
   if(isTRUE(cloud.mode)) {

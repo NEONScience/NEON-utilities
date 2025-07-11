@@ -516,8 +516,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       dattab <- dattab[,which(colnames(dattab)!="file")]
 
       # add location and publication field names to variables file
-      # switch to arrow or keep data.table?
-      # keeping as data.table for now to avoid schema issues
       if(!is.null(vlist)) {
         vtable <- which(names(vlist)==tables[i])
         if(length(vtable==1)) {

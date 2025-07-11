@@ -40,6 +40,9 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     token <- NA_character_
   }
   
+  # check for expiration
+  token <- tokenCheck(token)
+  
   # check for GCS and S3 enabled
   if(!arrow::arrow_with_gcs()) {
     if(!arrow::arrow_with_s3()) {

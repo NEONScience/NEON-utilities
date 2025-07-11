@@ -79,6 +79,9 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     token <- NA_character_
   }
   
+  # check for token expiration
+  token <- tokenCheck(token)
+  
   releases <- character()
 
   # query the products endpoint for the product requested

@@ -36,6 +36,14 @@ datasetQuery <- function(dpID, site="all",
                          package="basic", release="current", 
                          include.provisional=FALSE, token=NA_character_) {
   
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
+  }
+  
+  # check for expiration
+  token <- tokenCheck(token)
+  
   # check inputs: this only works for OS and tabular IS data
   # and for IS products, HOR and VER are required, and only one site can be queried
   prod.req <- getAPI(apiURL = paste("https://data.neonscience.org/api/v0/products/", 
@@ -85,7 +93,7 @@ datasetQuery <- function(dpID, site="all",
                        include.provisional=include.provisional, 
                        token=token)
   
-  # exit if no files
+  # exit if no files (no message here because queryFiles() prints messages)
   if(is.null(urlset)) {
     return(invisible())
   }

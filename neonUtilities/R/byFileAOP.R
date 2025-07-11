@@ -63,6 +63,9 @@ byFileAOP <- function(dpID, site, year,
     token <- NA_character_
   }
   
+  # check for token expiration
+  token <- tokenCheck(token)
+  
   releases <- character()
   
   # query the products endpoint for the product requested

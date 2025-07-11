@@ -211,6 +211,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     token <- NA_character_
   }
   
+  # check for token expiration
+  token <- tokenCheck(token)
+  
   # if in cloud mode, pass to queryFiles(). otherwise download
   if(isTRUE(cloud.mode)) {
     out <- queryFiles(dpID=dpID, site=site, startdate=startdate, 
