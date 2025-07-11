@@ -14,6 +14,7 @@
 #' @param metadata Should the output include metadata from the attributes of the H5 files? Defaults to false. Even when false, variable definitions, issue logs, and science review flags will be included. [logical]
 #' @param useFasttime Should the fasttime package be used to convert time stamps to time format? Decreases stacking time but can introduce imprecision at the millisecond level. Defaults to false. [logical]
 #' @param runLocal Set to TRUE to omit any calls to the NEON API. Data are extracted and reformatted from local files, but citation and issue log are not retrieved. [logical]
+#' @param progress T or F: should progress bars be printed? Defaults to TRUE. [logical]
 
 #' @details Given a filepath containing H5 files of DP4.00200.001 data, extracts variables, stacks data tables over time, and joins variables into a single table.
 #' For data product levels 2-4 (dp02, dp03, dp04), joins all available data, except for the flux footprint data in the expanded package.
@@ -43,7 +44,8 @@ stackEddy <- function(filepath,
                       avg=NA,
                       metadata=FALSE,
                       useFasttime=FALSE,
-                      runLocal=FALSE) {
+                      runLocal=FALSE,
+                      progress=TRUE) {
   
   # first check for rhdf5 package
   if(!requireNamespace("rhdf5", quietly=T)) {
@@ -210,9 +212,11 @@ stackEddy <- function(filepath,
   names(tableList) <- substring(basename(files), 1, nchar(basename(files))-3)
   
   # set up progress bar
-  message(paste0("Extracting data"))
-  pb <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb, 0)
+  if(isTRUE(progress)) {
+    message(paste0("Extracting data"))
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 0)
+  }
 
   # extract data from each file
   for(i in 1:length(files)) {
@@ -289,10 +293,14 @@ stackEddy <- function(filepath,
                                  file=files[i], read.attributes=T)
     base::names(tableList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
     
-    utils::setTxtProgressBar(pb, i/length(files))
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb, i/length(files))
+    }
     
   }
-  close(pb)
+  if(isTRUE(progress)) {
+    close(pb)
+  }
   
   # remove skipped files from table list
   if(any(grepl(pattern="skip", x=names(tableList)))) {
@@ -331,9 +339,11 @@ stackEddy <- function(filepath,
   names(mergTableList) <- names(tableList)
   
   # set up progress bar
-  message(paste0("Joining data variables by file"))
-  pb2 <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb2, 0)
+  if(isTRUE(progress)) {
+    message(paste0("Joining data variables by file"))
+    pb2 <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb2, 0)
+  }
   
   for(tb in 1:length(tableList)) {
     
@@ -404,10 +414,14 @@ stackEddy <- function(filepath,
       mergTableList[[tb]] <- mergTabl
       
     }
-    utils::setTxtProgressBar(pb2, tb/length(tableList))
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb2, tb/length(tableList))
+    }
     
   }
-  close(pb2)
+  if(isTRUE(progress)) {
+    close(pb2)
+  }
   
   # for dp01 and dp02, stack tower levels and calibration gases
   if(level=="dp01" | level=="dp02") {
@@ -490,9 +504,11 @@ stackEddy <- function(filepath,
   }
   
   # set up progress bar
-  message(paste0("Stacking files by month"))
-  pb3 <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb3, 0)
+  if(isTRUE(progress)) {
+    message(paste0("Stacking files by month"))
+    pb3 <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb3, 0)
+  }
   
   # set up final list
   varMergList <- vector("list", length(sites)+numTabs)
@@ -510,14 +526,20 @@ stackEddy <- function(filepath,
       varMergList[[o]] <- as.data.frame(varMergList[[o]][order(varMergList[[o]]$timeBgn),])
     }
     
-    utils::setTxtProgressBar(pb3, o/length(sites))
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb3, o/length(sites))
+    }
   }
-  close(pb3)
+  if(isTRUE(progress)) {
+    close(pb3)
+  }
   
   # attributes, objDesc, SRF table, and issue log
-  message(paste0("Getting metadata tables"))
-  pb4 <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb4, 0)
+  if(isTRUE(progress)) {
+    message(paste0("Getting metadata tables"))
+    pb4 <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb4, 0)
+  }
   
   # attributes are only included if metadata==TRUE
   if(metadata) {
@@ -530,7 +552,9 @@ stackEddy <- function(filepath,
     }
     siteAttributes <- data.table::rbindlist(siteAttributes, fill=T)
     varMergList[["siteAttributes"]] <- siteAttributes
-    utils::setTxtProgressBar(pb4, 0.15)
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb4, 0.15)
+    }
     
     # get attributes from root level
     codeAttributes <- vector(mode="list", length=length(sites))
@@ -540,7 +564,9 @@ stackEddy <- function(filepath,
     }
     codeAttributes <- data.table::rbindlist(codeAttributes, fill=T)
     varMergList[["codeAttributes"]] <- codeAttributes
-    utils::setTxtProgressBar(pb4, 0.25)
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb4, 0.25)
+    }
     
     # get CO2 validation attributes if CO2 variables were extracted
     if("validationAttributes" %in% varNames) {
@@ -559,7 +585,9 @@ stackEddy <- function(filepath,
       }
       valAttributes <- data.table::rbindlist(valAttributes, fill=T)
       varMergList[["validationAttributes"]] <- valAttributes
-      utils::setTxtProgressBar(pb4, 0.35)
+      if(isTRUE(progress)) {
+        utils::setTxtProgressBar(pb4, 0.35)
+      }
       
     }
     
@@ -574,7 +602,9 @@ stackEddy <- function(filepath,
   varMergList[["variables"]] <- variables
   varMergList[["objDesc"]] <- objDesc
   
-  utils::setTxtProgressBar(pb4, 0.5)
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb4, 0.5)
+  }
   
   # get issue log
   if(!runLocal) {
@@ -588,7 +618,9 @@ stackEddy <- function(filepath,
     varMergList <- varMergList[-grep("issueLog", names(varMergList))]
   }
   
-  utils::setTxtProgressBar(pb4, 0.75)
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb4, 0.75)
+  }
   
   # aggregate the science_review_flags files
   if(length(scienceReviewList)>0) {
@@ -632,8 +664,10 @@ stackEddy <- function(filepath,
     varMergList <- varMergList[-grep("scienceReviewFlags", names(varMergList))]
   }
   
-  utils::setTxtProgressBar(pb4, 1)
-  close(pb4)
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb4, 1)
+    close(pb4)
+  }
   
   # add citations to output
   if(!runLocal) {

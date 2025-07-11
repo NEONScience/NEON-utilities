@@ -219,8 +219,8 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
     
     # DATA STACKING
     # stack each table and add to list
-    message("Stacking data files")
     if(isTRUE(progress)) {
+      message("Stacking data files")
       pb <- utils::txtProgressBar(style=3)
       utils::setTxtProgressBar(pb, 0)
     }
@@ -592,9 +592,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
   # order tables in stacklist
   stacklist <- stacklist[order(names(stacklist))]
   
-  message(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
-  endtime <- Sys.time()
-  message(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
+  if(isTRUE(progress)) {
+    message(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
+    endtime <- Sys.time()
+    message(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
+  }
   
   return(stacklist)
   

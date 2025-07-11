@@ -11,7 +11,8 @@ stackEddy(
   avg = NA,
   metadata = FALSE,
   useFasttime = FALSE,
-  runLocal = FALSE
+  runLocal = FALSE,
+  progress = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ stackEddy(
 \item{useFasttime}{Should the fasttime package be used to convert time stamps to time format? Decreases stacking time but can introduce imprecision at the millisecond level. Defaults to false. [logical]}
 
 \item{runLocal}{Set to TRUE to omit any calls to the NEON API. Data are extracted and reformatted from local files, but citation and issue log are not retrieved. [logical]}
+
+\item{progress}{T or F: should progress bars be printed? Defaults to TRUE. [logical]}
 }
 \value{
 A named list of data frames. One data frame per site, plus one data frame containing the metadata (objDesc) table and one data frame containing units for each variable (variables).

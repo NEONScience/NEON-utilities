@@ -19,6 +19,7 @@
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param savepath The file path to download to. Defaults to NA, in which case the working directory is used.
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
+#' @param progress T or F, should progress bars be printed? Defaults to TRUE.
 
 #' @return A folder in the working directory, containing all files meeting query criteria.
 
@@ -36,7 +37,8 @@
 
 byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
                       include.provisional=FALSE, check.size=TRUE, 
-                      savepath=NA, token=NA_character_) {
+                      savepath=NA, token=NA_character_,
+                      progress=TRUE) {
 
   # error message if dpID isn't formatted as expected
   if(regexpr("DP[1-4]{1}.[0-9]{5}.00[1-2]{1}",dpID)!=1) {
@@ -258,7 +260,9 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
       stop("Download halted.")
     }
   } else {
-    message(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
+    if(isTRUE(progress)) {
+      message(paste("Downloading files totaling approximately", downld.size.read, "\n", sep=" "))
+    }
     }
 
   # create folder in working directory to put files in
@@ -276,11 +280,13 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   
   # copy zip files into folder
   j <- 1
-  message(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
-  pb <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current[[1]])-1))
+  if(isTRUE(progress)) {
+    message(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current[[1]])-1))
+  }
 
-  counter<- 1
+  counter <- 1
 
   while(j <= nrow(file.urls.current[[1]])) {
 
@@ -352,13 +358,19 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
         j <- j + 1
         counter <- 1
         releases <- c(releases, file.urls.current[[2]])
-        utils::setTxtProgressBar(pb, j/(nrow(file.urls.current[[1]])-1))
+        
+        if(isTRUE(progress)) {
+          utils::setTxtProgressBar(pb, j/(nrow(file.urls.current[[1]])-1))
+        }
+        
       }
 
     }
   }
-  utils::setTxtProgressBar(pb, 1)
-  close(pb)
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb, 1)
+    close(pb)
+  }
   
   # get issue log and write to file
   issues <- getIssueLog(dpID=dpID, token=token)
@@ -386,5 +398,8 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
 
   # add a counter instead of using starting number
-  message(paste("Successfully downloaded ", nrow(file.urls.current[[1]]), " files to ", filepath, sep=""))
+  if(isTRUE(progress)) {
+    message(paste("Successfully downloaded ", nrow(file.urls.current[[1]]), " files to ", filepath, sep=""))
+  }
+  
 }

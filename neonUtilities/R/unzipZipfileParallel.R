@@ -40,7 +40,9 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
     
     utils::unzip(zipfile = zippath, exdir=outpath)
     zps <- listZipfiles(zippath)
-    message(paste0("Unpacking zip files using ", nCores, " cores."))
+    if(isTRUE(progress)) {
+      message(paste0("Unpacking zip files using ", nCores, " cores."))
+    }
 
     if(length(zps) >= 1){
 
@@ -77,7 +79,9 @@ unzipZipfileParallel <- function(zippath, outpath = substr(zippath, 1, nchar(zip
 
   if(level == "in") {
     zps <- as.list(grep(list.files(zippath, full.names=TRUE), pattern = '*.zip', value=TRUE))
-    message(paste0("Unpacking zip files using ", nCores, " cores."))
+    if(isTRUE(progress)) {
+      message(paste0("Unpacking zip files using ", nCores, " cores."))
+    }
 
     if(length(zps) >= 1) {
 

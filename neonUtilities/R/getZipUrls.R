@@ -35,8 +35,8 @@ getZipUrls <- function(month.urls, avg, package, dpID,
                        token = NA_character_,
                        progress=TRUE) {
 
-  message("Finding available files")
   if(isTRUE(progress)) {
+    message("Finding available files")
     pb <- utils::txtProgressBar(style=3)
     utils::setTxtProgressBar(pb, 0)
   }
@@ -57,7 +57,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
     # short delay if using a token (limit is 4 requests per second)
     if(!is.na(token) & !is.null(tmp.files[[j]]$headers$`x-ratelimit-limit`)) {
       if(abs(round(j/4, digits=0)-j/4)<0.01 & as.numeric(tmp.files[[j]]$headers$`x-ratelimit-limit`)>200) {
-        Sys.sleep(1)
+        Sys.sleep(0.5)
       }
     }
     

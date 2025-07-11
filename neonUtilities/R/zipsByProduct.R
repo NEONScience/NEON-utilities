@@ -340,7 +340,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         stop("Download halted.")
       }
     } else {
-      message(paste0("Downloading files totaling approximately ", downld.size))
+      if(isTRUE(progress)) {
+        message(paste0("Downloading files totaling approximately ", downld.size))
+      }
     }
     
     # create folder in working directory or savepath to put files in
@@ -363,8 +365,8 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                    R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
                    " ", R.Version()$platform, sep="")
     
-    message(paste("Downloading ", nrow(zip.urls), " files", sep=""))
     if(isTRUE(progress)) {
+      message(paste("Downloading ", nrow(zip.urls), " files", sep=""))
       pb <- utils::txtProgressBar(style=3)
       utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
     }
@@ -459,7 +461,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
       close(pb)
     }
     
-    if(isFALSE(load)) {
+    if(isFALSE(load) & isTRUE(progress)) {
       message(paste0(nrow(zip.urls), " files successfully downloaded to ", filepath))
     }
     
