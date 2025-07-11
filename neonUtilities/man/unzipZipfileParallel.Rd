@@ -8,7 +8,8 @@ unzipZipfileParallel(
   zippath,
   outpath = substr(zippath, 1, nchar(zippath) - 4),
   level = "all",
-  nCores = 1
+  nCores = 1,
+  progress = TRUE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ unzipZipfileParallel(
 \item{level}{Whether the unzipping should occur only for the 'top' zip file, or unzip 'all' recursively, or only files 'in' the folder specified}
 
 \item{nCores}{Number of cores to use for parallelization}
+
+\item{progress}{T or F, should progress bars be printed?}
 }
 \description{
 Unzip a zip file either at just the top level or recursively through the file

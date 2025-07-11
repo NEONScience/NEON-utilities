@@ -11,7 +11,8 @@ zipsByURI(
   check.size = TRUE,
   unzip = TRUE,
   saveZippedFiles = FALSE,
-  token = NA_character_
+  token = NA_character_,
+  progress = TRUE
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ unzipped into the same directory, defaults to T. Supports .zip and .tar.gz files
 \item{saveZippedFiles}{T or F: should the zip files be retained after unzipping? Defaults to F.}
 
 \item{token}{User specific API token (generated within data.neonscience.org user accounts). Optional.}
+
+\item{progress}{T or F, should progress bars be printed? Defaults to TRUE.}
 }
 \value{
 A folder in the working directory (or in savepath, if specified), containing all files meeting query criteria.

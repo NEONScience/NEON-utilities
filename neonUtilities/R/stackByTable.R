@@ -18,6 +18,7 @@
 #' @param package Data download package, either basic or expanded. Ignored and determined from data unless input is a vector of files, generally via stackFromStore().
 #' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
 #' @param useFasttime Should the fasttime package be used to read date-time variables? Only relevant if savepath="envt". Defaults to false.
+#' @param progress T or F: should progress bars be printed? Defaults to TRUE.
 #' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
 #' @examples
@@ -57,7 +58,8 @@ stackByTable <- function(filepath,
                          dpID=NA, 
                          package=NA, 
                          nCores=1,
-                         useFasttime=FALSE){
+                         useFasttime=FALSE,
+                         progress=TRUE){
 
   if(isTRUE(cloud.mode)) {
     allFiles <- filepath
@@ -191,7 +193,9 @@ stackByTable <- function(filepath,
         envt <- 1
       }
       if(length(grep(files, pattern = ".zip")) > 0){
-        zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "all", nCores)
+        zipList <- unzipZipfileParallel(zippath = filepath, outpath = savepath, 
+                                        level = "all", nCores=nCores,
+                                        progress=progress)
       } else {
         if(!dir.exists(savepath)){dir.create(savepath)}
         utils::unzip(zipfile=filepath, exdir=savepath)
@@ -209,7 +213,8 @@ stackByTable <- function(filepath,
       }
       zipList <- files
       if(length(grep(files, pattern = ".zip")) > 0){
-        unzipZipfileParallel(zippath = filepath, outpath = savepath, level = "in", nCores)
+        unzipZipfileParallel(zippath = filepath, outpath = savepath, 
+                             level = "in", nCores=nCores, progress=progress)
       } else {
         if(filepath!=savepath) {
           if(!dir.exists(savepath)){dir.create(savepath)}
@@ -261,7 +266,8 @@ stackByTable <- function(filepath,
   }
 
   # stacking!
-  stackedList <- stackDataFilesArrow(folder=savepath, cloud.mode=cloud.mode, dpID=dpID)
+  stackedList <- stackDataFilesArrow(folder=savepath, cloud.mode=cloud.mode, 
+                                     progress=progress, dpID=dpID)
   
   # if saving to the environment, done
   if(envt==1) {

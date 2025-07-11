@@ -23,6 +23,7 @@
 #' @param forceParallel If the data volume to be processed does not meet minimum requirements to run in parallel, this overrides. Set to FALSE as default.
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
 #' @param useFasttime Should the fasttime package be used to read date-time fields? Defaults to false.
+#' @param progress T or F, should progress bars be printed? Defaults to TRUE.
 #'
 #' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
 #' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
@@ -49,7 +50,7 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                           release="current", timeIndex="all", tabl="all", cloud.mode=FALSE,
                           check.size=TRUE, include.provisional=FALSE,
                           nCores=1, forceParallel=FALSE, token=NA_character_, 
-                          useFasttime=FALSE, avg=NA) {
+                          useFasttime=FALSE, avg=NA, progress=TRUE) {
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -80,6 +81,14 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   if(useFasttime & !requireNamespace("fasttime", quietly=T)) {
     stop("Parameter useFasttime is TRUE but fasttime package is not installed. Install and re-try.")
   }
+  
+  # if token is an empty string, set to NA
+  if(identical(token, "")) {
+    token <- NA_character_
+  }
+  
+  # check for token expiration
+  token <- tokenCheck(token)
 
   # cloud mode option: pass list of files from queryFiles() to stackByTable(); don't download anything
   if(isTRUE(cloud.mode)) {
@@ -92,7 +101,7 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     out <- stackByTable(filepath=fls, savepath="envt", 
                         cloud.mode=TRUE, folder=TRUE, 
                         nCores=nCores, saveUnzippedFiles=FALSE, 
-                        useFasttime=useFasttime)
+                        useFasttime=useFasttime, progress=progress)
   } else {
     
     # create a temporary directory to save to
@@ -102,7 +111,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     # pass the request to zipsByProduct() to download
     zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
                   release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, 
-                  savepath=temppath, include.provisional=include.provisional, load=TRUE, token=token)
+                  savepath=temppath, include.provisional=include.provisional, load=TRUE, 
+                  token=token, progress=progress)
     
     # if zipsByProduct() can't download anything, don't pass to stackByTable()
     if(length(list.files(temppath))==0) {
@@ -112,7 +122,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     # stack and load the downloaded files using stackByTable
     out <- stackByTable(filepath=paste(temppath, "/filesToStack", substr(dpID, 5, 9), sep=""),
                         savepath="envt", folder=TRUE, nCores=nCores, 
-                        saveUnzippedFiles=FALSE, useFasttime=useFasttime)
+                        saveUnzippedFiles=FALSE, useFasttime=useFasttime,
+                        progress=progress)
     # Remove temppath directory
     unlink(temppath, recursive=T)
     

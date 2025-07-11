@@ -20,7 +20,8 @@ loadByProduct(
   forceParallel = FALSE,
   token = NA_character_,
   useFasttime = FALSE,
-  avg = NA
+  avg = NA,
+  progress = TRUE
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ loadByProduct(
 \item{useFasttime}{Should the fasttime package be used to read date-time fields? Defaults to false.}
 
 \item{avg}{Deprecated; use timeIndex}
+
+\item{progress}{T or F, should progress bars be printed? Defaults to TRUE.}
 }
 \value{
 A named list of all the data tables in the data product downloaded, plus a validation file and a variables file, as available.

@@ -4,10 +4,12 @@
 \alias{footRaster}
 \title{Extract eddy covariance footprint data from HDF5 format}
 \usage{
-footRaster(filepath)
+footRaster(filepath, progress = TRUE)
 }
 \arguments{
 \item{filepath}{One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file. Filepath can only contain files for a single site. [character]}
+
+\item{progress}{T or F: should progress bars be printed? Defaults to TRUE. [logical]}
 }
 \value{
 A rasterStack object containing all the footprints in the input files, plus one layer (the first in the stack) containing the mean footprint.

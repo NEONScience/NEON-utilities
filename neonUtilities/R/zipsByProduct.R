@@ -22,6 +22,7 @@
 #' @param savepath The location to save the output files to
 #' @param load T or F, are files saved locally or loaded directly? Used silently with loadByProduct(), do not set manually.
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
+#' @param progress T or F, should progress bars be printed? Defaults to TRUE.
 
 #' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
 #' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
@@ -48,7 +49,8 @@
 zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
                           release="current", timeIndex="all", tabl="all", check.size=TRUE, 
                           include.provisional=FALSE, cloud.mode=FALSE, savepath=NA, 
-                          load=FALSE, token=NA_character_, avg=NA) {
+                          load=FALSE, token=NA_character_, avg=NA, 
+                          progress=TRUE) {
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -209,6 +211,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     token <- NA_character_
   }
   
+  # check for token expiration
+  token <- tokenCheck(token)
+  
   # if in cloud mode, pass to queryFiles(). otherwise download
   if(isTRUE(cloud.mode)) {
     out <- queryFiles(dpID=dpID, site=site, startdate=startdate, 
@@ -323,7 +328,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     zip.urls <- getZipUrls(month.urls, avg=avg, package=package, dpID=dpID, tabl=tabl,
                            release=release,
                            include.provisional=include.provisional,
-                           token=token)
+                           token=token, progress=progress)
     if(is.null(zip.urls)) { return(invisible()) }
     zip.urls <- tidyr::drop_na(zip.urls)
     
@@ -338,7 +343,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         stop("Download halted.")
       }
     } else {
-      message(paste0("Downloading files totaling approximately ", downld.size))
+      if(isTRUE(progress)) {
+        message(paste0("Downloading files totaling approximately ", downld.size))
+      }
     }
     
     # create folder in working directory or savepath to put files in
@@ -361,9 +368,11 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                    R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
                    " ", R.Version()$platform, sep="")
     
-    message(paste("Downloading ", nrow(zip.urls), " files", sep=""))
-    pb <- utils::txtProgressBar(style=3)
-    utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
+    if(isTRUE(progress)) {
+      message(paste("Downloading ", nrow(zip.urls), " files", sep=""))
+      pb <- utils::txtProgressBar(style=3)
+      utils::setTxtProgressBar(pb, 1/(nrow(zip.urls)-1))
+    }
     
     j <- 1
     counter<- 1
@@ -441,17 +450,21 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           } else {
             j <- j + 1
             counter <- 1
-            utils::setTxtProgressBar(pb, j/(nrow(zip.urls)-1))
+            if(isTRUE(progress)) {
+              utils::setTxtProgressBar(pb, j/(nrow(zip.urls)-1))
+            }
           }
         }
         
       }
     }
     
-    utils::setTxtProgressBar(pb, 1)
-    close(pb)
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb, 1)
+      close(pb)
+    }
     
-    if(isFALSE(load)) {
+    if(isFALSE(load) & isTRUE(progress)) {
       message(paste0(nrow(zip.urls), " files successfully downloaded to ", filepath))
     }
     

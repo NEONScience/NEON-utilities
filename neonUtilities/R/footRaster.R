@@ -10,6 +10,7 @@
 #' For background information about flux footprints and considerations around the time scale of footprint calculations, see Amiro 1998: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.922.4124&rep=rep1&type=pdf
 #'
 #' @param filepath One of: a folder containing NEON EC H5 files, a zip file of DP4.00200.001 data downloaded from the NEON data portal, a folder of DP4.00200.001 data downloaded by the neonUtilities::zipsByProduct() function, or a single NEON EC H5 file. Filepath can only contain files for a single site. [character]
+#' @param progress T or F: should progress bars be printed? Defaults to TRUE. [logical]
 
 #' @details Given a filepath containing H5 files of expanded package DP4.00200.001 data, extracts flux footprint data and creates a raster.
 
@@ -34,7 +35,8 @@
 
 ##############################################################################################
 
-footRaster <- function(filepath) {
+footRaster <- function(filepath,
+                       progress=TRUE) {
   
   # first check for rhdf5 package
   if(!requireNamespace("rhdf5", quietly=T)) {
@@ -121,9 +123,11 @@ footRaster <- function(filepath) {
   locAttr <- list()
   
   # set up progress bar
-  message(paste0("Extracting data"))
-  pb <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb, 0)
+  if(isTRUE(progress)) {
+    message(paste0("Extracting data"))
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 0)
+  }
 
   # extract footprint data from each file
   for(i in 1:length(files)) {
@@ -211,10 +215,14 @@ footRaster <- function(filepath) {
       
     }
     
-    utils::setTxtProgressBar(pb, i/length(files))
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb, i/length(files))
+    }
     
   }
-  close(pb)
+  if(isTRUE(progress)) {
+    close(pb)
+  }
  
   allGrids <- unlist(gridList, recursive=F)
   

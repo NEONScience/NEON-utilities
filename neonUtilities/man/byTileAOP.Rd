@@ -14,7 +14,8 @@ byTileAOP(
   include.provisional = FALSE,
   check.size = TRUE,
   savepath = NA,
-  token = NA_character_
+  token = NA_character_,
+  progress = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ byTileAOP(
 \item{savepath}{The file path to download to. Defaults to NA, in which case the working directory is used.}
 
 \item{token}{User specific API token (generated within data.neonscience.org user accounts)}
+
+\item{progress}{T or F, should progress bars be printed? Defaults to TRUE.}
 }
 \value{
 A folder in the working directory, containing all files meeting query criteria.

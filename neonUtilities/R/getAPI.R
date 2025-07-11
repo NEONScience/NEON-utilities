@@ -14,7 +14,6 @@
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
 # Changelog and author contributions / copyrights
-#   2025-05-27 (Claire Lunch): Modified to check for expired token
 #   2020-05-21 (Claire Lunch): Modified to check for reaching rate limit
 #   2020-03-21 (Nate Mietkiewicz): Created original function
 ##############################################################################################
@@ -28,22 +27,6 @@ getAPI <- function(apiURL, token=NA_character_){
   
   if(identical(token, "")) {
     token <- NA_character_
-  }
-  
-  # check for expired token
-  # this works, but needs to be moved out of this function to avoid repeat hits
-  if(!is.na(token)) {
-    splittoken <- strsplit(token, ".", fixed = TRUE)[[1]]
-    dubsplit <- unlist(strsplit(rawToChar(jose::base64url_decode(splittoken[2])), 
-                         split=","))
-    expsplit <- dubsplit[grep("exp", dubsplit)]
-    expval <- regmatches(expsplit, regexpr("[0-9]+", expsplit))
-    expdate <- as.POSIXct(as.numeric(expval), origin="1970-01-01")
-    
-    if(expdate < Sys.time()) {
-      message("API token has expired. Function will proceed using public access rate. Go to your NEON user account to generate a new token.")
-      token <- NA_character_
-    }
   }
   
   usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 

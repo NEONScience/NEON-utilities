@@ -40,12 +40,15 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     token <- NA_character_
   }
   
+  # check for expiration
+  token <- tokenCheck(token)
+  
   # check for GCS and S3 enabled
   if(!arrow::arrow_with_gcs()) {
     if(!arrow::arrow_with_s3()) {
       stop("Package arrow is installed with S3 and GCS disabled and cannot access NEON data. Consult documentation at https://arrow.apache.org/docs/r/articles/fs.html , update installation and re-try.")
     } else {
-      message("Package arrow is installed with GCS disabled. S3 will be used to access data; performance may be reduced.")
+      message("Package arrow is installed with GCS disabled. S3 will be used to access data; performance may be reduced. To enable GCS consult documentation at https://arrow.apache.org/docs/r/articles/fs.html ")
     }
   }
   
@@ -290,7 +293,8 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   # check for no data
   if(length(urllst)==0) {
-    message(paste("No files found for table ", tabl, sep=""))
+    message(paste("No files found for table ", tabl, " in ", 
+                  package, " package", sep=""))
     return(invisible())
   } else {
     # if only metadata, print message but still return the metadata files

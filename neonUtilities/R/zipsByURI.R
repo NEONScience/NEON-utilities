@@ -20,6 +20,7 @@
 #' unzipped into the same directory, defaults to T. Supports .zip and .tar.gz files currently.
 #' @param saveZippedFiles T or F: should the zip files be retained after unzipping? Defaults to F.
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
+#' @param progress T or F, should progress bars be printed? Defaults to TRUE.
 
 #' @return A folder in the working directory (or in savepath, if specified), containing all files meeting query criteria.
 
@@ -48,7 +49,8 @@ zipsByURI <- function(filepath,
                       check.size=TRUE,
                       unzip = TRUE,
                       saveZippedFiles = FALSE,
-                      token = NA_character_) {
+                      token = NA_character_,
+                      progress=TRUE) {
 
   # check that filepath points to either a directory or an R object
   if(!identical(class(filepath), "list")) {
@@ -166,7 +168,10 @@ zipsByURI <- function(filepath,
   }
   
   #Loop to check existence and cumulative size of files
-  message("checking file sizes...")
+  if(isTRUE(progress)) {
+    message("checking file sizes...")
+  }
+  
   fileSize <- rep(NA,length(URLsToDownload))
   idx <- 0
   idxrem <- NA
@@ -190,8 +195,10 @@ zipsByURI <- function(filepath,
     resp <- readline(paste("Continuing will download",length(URLsToDownload), "files totaling approximately",
                            totalFileSize, ". Do you want to proceed y/n: ", sep=" "))
     if(!(resp %in% c("y","Y"))) stop()
-  }else{
-    message("Downloading",length(URLsToDownload), "files totaling approximately",totalFileSize,".\n")
+  } else {
+    if(isTRUE(progress)) {
+      message("Downloading",length(URLsToDownload), "files totaling approximately",totalFileSize,".\n")
+    }
   }
 
   # remove URLs with no data
@@ -202,8 +209,10 @@ zipsByURI <- function(filepath,
   
   # copy zip files into folder
   numDownloads <- 0
-  pb <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb, 1/(length(URLsToDownload)-1))
+  if(isTRUE(progress)) {
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 1/(length(URLsToDownload)-1))
+  }
   for(i in URLsToDownload) {
     if(is.na(token)) {
       dl <- try(downloader::download(i, paste(savepath, gsub("^.*\\/","",i), sep="/"), 
@@ -221,7 +230,10 @@ zipsByURI <- function(filepath,
       next
     }
     numDownloads <- numDownloads + 1
-    utils::setTxtProgressBar(pb, numDownloads/(length(URLsToDownload)-1))
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb, numDownloads/(length(URLsToDownload)-1))
+    }
+    
     if(unzip == TRUE && grepl("\\.zip|\\.ZIP",i)){
       utils::unzip(paste(savepath, gsub("^.*\\/","",i), sep="/"), 
                      exdir=paste(savepath, gsub("^.*\\/|\\..*$","",i), sep="/"), 
@@ -254,9 +266,11 @@ zipsByURI <- function(filepath,
       message("Unable to unzip data for URL:",i,"\n")
     }
   }
-  utils::setTxtProgressBar(pb, 1)
-  close(pb)
-  message(numDownloads, "file(s) successfully downloaded to", savepath, sep=" ")
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb, 1)
+    close(pb)
+    message(numDownloads, "file(s) successfully downloaded to", savepath, sep=" ")
+  }
 
 }
 

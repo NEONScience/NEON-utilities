@@ -15,6 +15,7 @@
 #' @param tabl Table name to get
 #' @param include.provisional Should provisional data be included?
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
+#' @param progress T or F: should progress bars be printed?
 #' 
 #' @keywords internal
 
@@ -31,11 +32,14 @@
 
 getZipUrls <- function(month.urls, avg, package, dpID, 
                        release, tabl, include.provisional,
-                       token = NA_character_) {
+                       token = NA_character_,
+                       progress=TRUE) {
 
-  message("Finding available files")
-  pb <- utils::txtProgressBar(style=3)
-  utils::setTxtProgressBar(pb, 0)
+  if(isTRUE(progress)) {
+    message("Finding available files")
+    pb <- utils::txtProgressBar(style=3)
+    utils::setTxtProgressBar(pb, 0)
+  }
   
   # get all the file names
   tmp.files <- list(length(month.urls))
@@ -53,18 +57,22 @@ getZipUrls <- function(month.urls, avg, package, dpID,
     # short delay if using a token (limit is 4 requests per second)
     if(!is.na(token) & !is.null(tmp.files[[j]]$headers$`x-ratelimit-limit`)) {
       if(abs(round(j/4, digits=0)-j/4)<0.01 & as.numeric(tmp.files[[j]]$headers$`x-ratelimit-limit`)>200) {
-        Sys.sleep(1)
+        Sys.sleep(0.5)
       }
     }
     
     tmp.files[[j]] <- jsonlite::fromJSON(httr::content(tmp.files[[j]], as="text", encoding='UTF-8'),
                                          simplifyDataFrame=T, flatten=T)
-    utils::setTxtProgressBar(pb, j/length(month.urls))
+    if(isTRUE(progress)) {
+      utils::setTxtProgressBar(pb, j/length(month.urls))
+    }
     
   }
   
-  utils::setTxtProgressBar(pb, 1)
-  close(pb)
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb, 1)
+    close(pb)
+  }
   
   # if a release is selected, subset to the release
   if(release!="current") {

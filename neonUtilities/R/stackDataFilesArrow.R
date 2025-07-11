@@ -11,6 +11,7 @@
 
 #' @param folder The location of the data
 #' @param cloud.mode T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.
+#' @param progress T or F, should progress bars and messages be printed?
 #' @param dpID The data product identifier
 #' @return One file for each table type is created and written.
 #' @keywords internal
@@ -33,7 +34,7 @@
 #     * Rewrote from stackDataFilesParallel() to use arrow package for stacking
 ##############################################################################################
 
-stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
+stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
   
   starttime <- Sys.time()
   releases <- character()
@@ -218,9 +219,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     
     # DATA STACKING
     # stack each table and add to list
-    message("Stacking data files")
-    pb <- utils::txtProgressBar(style=3)
-    utils::setTxtProgressBar(pb, 0)
+    if(isTRUE(progress)) {
+      message("Stacking data files")
+      pb <- utils::txtProgressBar(style=3)
+      utils::setTxtProgressBar(pb, 0)
+    }
     
     for(i in 1:length(tables)) {
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
@@ -229,7 +232,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       tableschema <- schemaFromVar(variables=v, tab=tables[i], package=package)
 
       file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
-                         filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
+                              filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
 
       # all files for site-date
       if(tbltype == "site-date") {
@@ -237,7 +240,13 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       }
       # most recent for each site for site-all
       if(tbltype == "site-all") {
-        sites <- as.list(unique(substring(basename(file_list), 10, 13)))
+        if(length(grep(pattern="endpoint_override", x=file_list))>0) {
+          filetemp <- gsub(pattern="/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com",
+                            replacement="", x=file_list, fixed=TRUE)
+        } else {
+          filetemp <- file_list
+        }
+        sites <- as.list(unique(substring(basename(filetemp), 10, 13)))
 
         tblfls <- unique(unlist(lapply(sites, function(j, file_list) {
           tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
@@ -246,7 +255,13 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       }
       # most recent for each lab for lab-all and lab-current
       if(tbltype == "lab") {
-        labs <- unique(unlist(lapply(strsplit(basename(file_list), split="[.]"), 
+        if(length(grep(pattern="endpoint_override", x=file_list))>0) {
+          filetemp <- gsub(pattern="/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com",
+                           replacement="", x=file_list, fixed=TRUE)
+        } else {
+          filetemp <- file_list
+        }
+        labs <- unique(unlist(lapply(strsplit(basename(filetemp), split="[.]"), 
                                      FUN="[[", 2)))
         
         tblfls <- unique(unlist(lapply(labs, function(j, file_list) {
@@ -501,8 +516,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
       dattab <- dattab[,which(colnames(dattab)!="file")]
 
       # add location and publication field names to variables file
-      # switch to arrow or keep data.table?
-      # keeping as data.table for now to avoid schema issues
       if(!is.null(vlist)) {
         vtable <- which(names(vlist)==tables[i])
         if(length(vtable==1)) {
@@ -535,7 +548,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
         stacklist[[tables[i]]] <- dattab
       }
       n <- n + 1
-      utils::setTxtProgressBar(pb, i/length(tables))
+      if(isTRUE(progress)) {
+        utils::setTxtProgressBar(pb, i/length(tables))
+      }
     }
   
     # write out complete variables file after all tables are done
@@ -557,8 +572,10 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
     }
   }
   
-  utils::setTxtProgressBar(pb, 1)
-  close(pb)
+  if(isTRUE(progress)) {
+    utils::setTxtProgressBar(pb, 1)
+    close(pb)
+  }
   
   # get DOIs and generate citation(s)
   releases <- unique(releases)
@@ -585,9 +602,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, dpID){
   # order tables in stacklist
   stacklist <- stacklist[order(names(stacklist))]
   
-  message(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
-  endtime <- Sys.time()
-  message(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
+  if(isTRUE(progress)) {
+    message(paste("Finished: Stacked", n, "data tables and", m, "metadata tables!"))
+    endtime <- Sys.time()
+    message(paste0("Stacking took ", format((endtime-starttime), units = "auto")))
+  }
   
   return(stacklist)
   
