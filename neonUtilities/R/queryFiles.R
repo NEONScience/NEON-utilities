@@ -290,7 +290,8 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   # check for no data
   if(length(urllst)==0) {
-    message(paste("No files found for table ", tabl, sep=""))
+    message(paste("No files found for table ", tabl, " in ", 
+                  package, " package", sep=""))
     return(invisible())
   } else {
     # if only metadata, print message but still return the metadata files

@@ -103,6 +103,38 @@ datasetQuery <- function(dpID, site="all",
     urlsub <- urlset[["filesall"]]
   }
   
+  # check table type and subset if not site-date
+  ttypes <- findTablesByFormat(urlsub$urlbase)
+  if(nrow(ttypes)!=1) {
+    stop("Table type could not be identified, or more than one table was found. Check inputs.")
+  }
+  if(ttypes$tableName!=tabl) {
+    message("Table name is inconsistent with inputs. Function will proceed, but check for inconsistencies in data outputs.")
+  }
+  # most recent for each site for site-all
+  if(ttypes$tableType=="site-all") {
+    sites <- as.list(unique(substring(basename(urlsub$urlbase), 10, 13)))
+    # get indices of most recent files for each site
+    siteind <- unique(unlist(lapply(sites, function(j, urlsub) {
+      url_recent <- getRecentPublication(urlsub$urlbase[grep(j, urlsub$urlbase)])[[1]]
+      url_ind <- which(urlsub$urlbase==url_recent)[1]
+      return(url_ind)
+    }, urlsub=urlsub)))
+    urlsub <- urlsub[siteind,]
+  }
+  # most recent for each lab for lab files
+  if(ttypes$tableType == "lab") {
+    labs <- unique(unlist(lapply(strsplit(basename(urlsub$urlbase), split="[.]"), 
+                                 FUN="[[", 2)))
+    
+    labind <- unique(unlist(lapply(labs, function(j, urlsub) {
+      url_lab <- getRecentPublication(urlsub$urlbase[grep(j, urlsub$urlbase)])[[1]]
+      url_ind <- which(urlsub$urlbase==url_lab)[1]
+      return(url_ind)
+    }, urlsub=urlsub)))
+    urlsub <- urlsub[labind,]
+  }
+  
   # start with variables file returned by queryFiles
   varend <- urlset[["variables"]]
   trystring <- FALSE
@@ -208,9 +240,5 @@ datasetQuery <- function(dpID, site="all",
   }
   
   return(ds)
-  
-  # need to figure out how to handle site-all and lab tables
-  # and how to detect site-all and lab tables in this context
-  # now have md5s, can use those
   
 }

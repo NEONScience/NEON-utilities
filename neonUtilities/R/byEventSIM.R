@@ -67,12 +67,12 @@ byEventSIM <- function(eventType,
   varfl <- urlset[[2]]
   vschema <- schemaFromVar(varfl, tab="sim_eventData", package="basic")
   
-  # open dataset and query for event type
+  # open dataset
   ds <- arrow::open_csv_dataset(sources=edlst, schema=vschema, skip=1)
   
+  # filter to event type
   evFilter <- eventType
   evds <- dplyr::filter(.data=ds, .data$eventType==evFilter)
-  # include file name step here to get pub date and release??
   events <- data.frame(dplyr::collect(evds))
   
   if(length(events)==0) {
@@ -125,7 +125,6 @@ byEventSIM <- function(eventType,
       if(!inherits(tei, "try-error")) {
         eventlist[["issueLog_10111"]] <- tei
       }
-      # modify if adding file name to dataset
       if(length(grep(pattern="RELEASE", x=release))==1) {
         tedoi <- try(getCitation(dpID="DP1.10111.001", release=release), silent=TRUE)
         if(!inherits(tedoi, "try-error")) {

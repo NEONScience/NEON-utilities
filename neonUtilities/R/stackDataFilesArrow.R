@@ -232,7 +232,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       tableschema <- schemaFromVar(variables=v, tab=tables[i], package=package)
 
       file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
-                         filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
+                              filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
 
       # all files for site-date
       if(tbltype == "site-date") {
@@ -240,7 +240,13 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       }
       # most recent for each site for site-all
       if(tbltype == "site-all") {
-        sites <- as.list(unique(substring(basename(file_list), 10, 13)))
+        if(length(grep(pattern="endpoint_override", x=file_list))>0) {
+          filetemp <- gsub(pattern="/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com",
+                            replacement="", x=file_list, fixed=TRUE)
+        } else {
+          filetemp <- file_list
+        }
+        sites <- as.list(unique(substring(basename(filetemp), 10, 13)))
 
         tblfls <- unique(unlist(lapply(sites, function(j, file_list) {
           tbl_list <- getRecentPublication(file_list[grep(j, file_list)])[[1]]
@@ -249,7 +255,13 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       }
       # most recent for each lab for lab-all and lab-current
       if(tbltype == "lab") {
-        labs <- unique(unlist(lapply(strsplit(basename(file_list), split="[.]"), 
+        if(length(grep(pattern="endpoint_override", x=file_list))>0) {
+          filetemp <- gsub(pattern="/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com",
+                           replacement="", x=file_list, fixed=TRUE)
+        } else {
+          filetemp <- file_list
+        }
+        labs <- unique(unlist(lapply(strsplit(basename(filetemp), split="[.]"), 
                                      FUN="[[", 2)))
         
         tblfls <- unique(unlist(lapply(labs, function(j, file_list) {
