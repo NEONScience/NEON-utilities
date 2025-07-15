@@ -75,9 +75,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
   
   # if token is an empty string, set to NA
-  if(identical(token, "")) {
-    token <- NA_character_
-  }
+  if(identical(token, "")) {token <- NA_character_}
   
   # check for token expiration
   token <- tokenCheck(token)

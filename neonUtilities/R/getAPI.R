@@ -25,9 +25,7 @@ getAPI <- function(apiURL, token=NA_character_){
     return(invisible())
   }
   
-  if(identical(token, "")) {
-    token <- NA_character_
-  }
+  if(identical(token, "")) {token <- NA_character_}
   
   usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 
                  R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
