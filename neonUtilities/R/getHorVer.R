@@ -73,7 +73,7 @@ getHorVer <- function(dpID=NA_character_,
   fls <- dat$data$files
   
   # get sensor positions file
-  sens.ind <- grep(pattern="sensor_positions", x=fls$name)[1]
+  sens.ind <- grep(pattern="sensor_positions", x=fls$name)
   
   if(length(sens.ind)==0) {
     message(paste("No sensor positions file found. Check that", dpID,
@@ -82,7 +82,7 @@ getHorVer <- function(dpID=NA_character_,
   }
   
   # get indices from file
-  sens.tab <- utils::read.csv(fls$url[sens.ind], colClasses=c(HOR.VER="character"))
+  sens.tab <- utils::read.csv(fls$url[sens.ind[1]], colClasses=c(HOR.VER="character"))
   HOR <- substring(sens.tab$HOR.VER, 1, 3)
   VER <- substring(sens.tab$HOR.VER, 5, 7)
   
