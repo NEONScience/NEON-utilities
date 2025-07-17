@@ -21,14 +21,8 @@
 tokenCheck <- function(token){
 
   if(!is.na(token)) {
-    # get token components
-    splittoken <- strsplit(token, ".", fixed = TRUE)[[1]]
-    dubsplit <- unlist(strsplit(rawToChar(jose::base64url_decode(splittoken[2])), 
-                         split=","))
-    # get expiration date component
-    expsplit <- dubsplit[grep("exp", dubsplit)]
-    expval <- regmatches(expsplit, regexpr("[0-9]+", expsplit))
-    expdate <- as.POSIXct(as.numeric(expval), origin="1970-01-01")
+    # get token expiration date
+    expdate <- tokenDate(token)
     
     # check against current date
     if(expdate < Sys.time()) {
