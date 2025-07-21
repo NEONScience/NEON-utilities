@@ -54,10 +54,10 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       next
     }
     
-    # short delay if using a token (limit is 4 requests per second)
+    # short delay if using a token, to delay hitting rate limit
     if(!is.na(token) & !is.null(tmp.files[[j]]$headers$`x-ratelimit-limit`)) {
       if(abs(round(j/4, digits=0)-j/4)<0.01 & as.numeric(tmp.files[[j]]$headers$`x-ratelimit-limit`)>200) {
-        Sys.sleep(0.5)
+        Sys.sleep(0.25)
       }
     }
     

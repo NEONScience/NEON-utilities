@@ -77,11 +77,19 @@ stackFrameFiles <- function(framefiles, dpID,
                                     schema=frameschema, skip=1)
     fdattab <- try(data.frame(dplyr::collect(fdat)), silent=TRUE)
     
-    # if stacking fails, redirect to infer the schema
+    # if stacking fails, check for alternate variables file, then redirect to infer the schema
     if(inherits(fdattab, "try-error")) {
-      noschema <- TRUE
+      if(paste(module, "2", sep="") %in% frame_file_variables$table) {
+        vartab2 <- frame_file_variables[which(frame_file_variables$table==paste(module, "2", sep="")),]
+        frameschema <- schemaFromVar(vartab2, tab=paste(module, "2", sep=""), package="expanded")
+        fdat <- arrow::open_csv_dataset(sources=framefiles, 
+                                        schema=frameschema, skip=1)
+        fdattab <- try(data.frame(dplyr::collect(fdat)), silent=TRUE)
+      }
+      if(inherits(fdattab, "try-error")) {
+        noschema <- TRUE
+      }
     }
-    
   }
   
   if(isTRUE(noschema)) {
@@ -91,7 +99,7 @@ stackFrameFiles <- function(framefiles, dpID,
                                      unify_schemas=TRUE, skip=0), silent=TRUE)
     if(inherits(fsdat, "try-error")) {
       # if unifying schemas fails, make a string schema from the superset of field names
-      message("Inferring schema failed. All fields will be read as strings. Warning: this can be slow.")
+      message("Inferring schema failed. All fields will be read as strings. This can be slow, and can usually be avoided by excluding provisional data.")
       stringschema <- schemaAllStringsFromSet(framefiles)
       fsdat <- try(arrow::open_csv_dataset(sources=framefiles, 
                                            schema=stringschema,
@@ -99,7 +107,7 @@ stackFrameFiles <- function(framefiles, dpID,
     }
     fdattab <- try(data.frame(dplyr::collect(fsdat)), silent=TRUE)
     if(inherits(fdattab, "try-error")) {
-      message(paste("Stacking table ", tabnm, " failed. Check inputs for inconsistencies.", sep=""))
+      message(paste("Stacking table ", tabnm, " failed. Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
       return(invisible())
     }
     

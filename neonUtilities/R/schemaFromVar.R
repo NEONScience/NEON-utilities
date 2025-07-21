@@ -49,7 +49,7 @@ schemaFromVar <- function(variables, tab, package) {
   }
   
   # if reading the file failed, function returns NULL
-  if(unify) {
+  if(isTRUE(unify)) {
     vschema <- NULL
   } else {
     

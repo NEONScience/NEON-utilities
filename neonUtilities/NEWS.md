@@ -1,3 +1,17 @@
+# version 3.0.0
+
+Released 2025-07-21
+
+## Enhancements
+
+* This version includes a major overhaul of the stacking functions to use the arrow package to stack files. This change improves stacking speeds and sets up for future database-style queries of NEON data using the arrow/dplyr framework.
+* Data access by query is piloted in the new function byEventSIM(), which enables downloading site management data by event type, rather than by site or date.
+* loadByProduct() has a new input, cloud.mode=, which can be used when transferring data to a cloud environment. Data are stacked directly from the NEON buckets to the destination buckets, without intermediate download.
+* Progress bars are now suppressible in download and stacking functions (zipsByProduct(), stackByTable(), loadByProduct(), stackEddy(), byFileAOP(), byTileAOP()) using input progress=FALSE. When progress bars are suppressed, messages related to function progress are also suppressed.
+* The earliest NEON API tokens are beginning to expire. New function tokenDate() provides the expiration date for a NEON API token, and functions that use tokens check for expiration and alert the user.
+* New function getHorVer() provides the available horizontal and vertical indices for a given sensor data product and site
+
+
 # version 2.4.3
 
 Released 2024-12-04

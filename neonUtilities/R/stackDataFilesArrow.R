@@ -469,7 +469,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
                                            replacement="", x=reldat), 
                     silent=TRUE)
         if(inherits(rtry, "try-error")) {
-          message(paste("Release tag could not be determined for table ", 
+          message(paste("\nRelease tag could not be determined for table ", 
                         tables[i], sep=""))
         }
       } else {
