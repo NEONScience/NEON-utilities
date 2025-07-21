@@ -137,6 +137,18 @@ Disclaimer
 Change Log
 ----------
 
+#### 2025-07-21 v3.0.0
+Enhancements:
+* stacking functions stackByTable() and loadByProduct() now use the arrow package to stack files, increasing stacking speed
+* loadByProduct() has a new input, cloud.mode=, to be used for faster data access when transferring data to a cloud environment
+* progress bars are now suppressible in download and stacking functions (zipsByProduct(), stackByTable(), loadByProduct(), stackEddy(), byFileAOP(), byTileAOP())
+* new function tokenDate() provides the expiration date for a NEON API token
+* functions that use API tokens check for expiration and inform the user
+* new function getHorVer() provides the available horizontal and vertical indices for a given sensor data product and site
+* new function datasetQuery() returns an arrow dataset for a given data product, sites, date range, etc (see documentation). Datasets can be queried via dplyr syntax without downloading.
+* new function byEventSIM() enables downloading site management data by event type, rather than by site or date
+
+
 #### 2024-12-05 v2.4.3
 * stackByTable() updated to work with data product revisions and updates affecting DP4.00132.001, DP1.20046.001, DP1.10081.002, DP1.20086.002, and DP1.20141.002
 

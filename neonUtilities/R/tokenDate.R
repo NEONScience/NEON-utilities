@@ -6,10 +6,11 @@
 
 #' @description Extracts the expiration date from a NEON API token.
 #'
-#' @keywords internal
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
 #' 
 #' @return Returns the date when the token will expire (or has expired).
+#' 
+#' @export
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
