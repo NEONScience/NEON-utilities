@@ -375,12 +375,12 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     }
     
     j <- 1
-    counter<- 1
+    counter <- 1
     
     while(j <= nrow(zip.urls)) {
       
       if (counter > 2) {
-        message(paste0("\nRefresh did not solve the isse. URL query for file ", zip.urls$name[j],
+        message(paste0("\nRefresh did not solve the issue. URL query for file ", zip.urls$name[j],
                        " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
                        "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
         j <- j + 1
@@ -410,9 +410,10 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           
           if(inherits(t, "error")) {
             
-            # re-attempt download once with no changes
+            # use getAPI() to check for rate limit, then re-attempt download once with no other changes
             if(counter < 2) {
               message(paste0("\n", zip.urls$name[j], " could not be downloaded. Re-attempting."))
+              testget <- getAPI(zip.urls$URL[j], token=token)
               
               if(is.na(token)) {
                 t <- tryCatch(
