@@ -25,17 +25,19 @@ tokenCheck <- function(token){
     expdate <- try(tokenDate(token), silent=TRUE)
     
     if(inherits(expdate, "try-error")) {
-      # message("API token expiration date could not be determined.")
+      message("API token expiration date could not be determined.")
       return(token)
     } else {
-      # check against current date
-      if(expdate < Sys.time()) {
-        message("API token has expired. Function will proceed using public access rate. Go to your NEON user account to generate a new token.")
-        token <- NA_character_
+      if(length(expdate)==0) {
+        return(token)
+      } else {
+        # check against current date
+        if(expdate < Sys.time()) {
+          message("API token has expired. Function will proceed using public access rate. Go to your NEON user account to generate a new token.")
+          token <- NA_character_
+        }
       }
-      
     }
-    
   }
   
   return(token)
