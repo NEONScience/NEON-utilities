@@ -22,7 +22,12 @@ tokenCheck <- function(token){
 
   if(!is.na(token)) {
     # get token expiration date
-    expdate <- tokenDate(token)
+    expdate <- try(tokenDate(token), silent=TRUE)
+    
+    if(inherits(expdate, "try-error")) {
+      # message("API token expiration date could not be determined.")
+      return(token)
+    }
     
     # check against current date
     if(expdate < Sys.time()) {
