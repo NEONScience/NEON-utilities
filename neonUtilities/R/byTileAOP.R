@@ -157,9 +157,10 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     easting <- c(easting17, df18coords$x)
     northing <- c(northing17, df18coords$y)
 
-    message('Blandy (BLAN) plots include two UTM zones, flight data are all in 17N.
+    message('Blandy (BLAN) ground data include two UTM zones, flight data are all in 17N.
         Coordinates in UTM zone 18N have been converted to 17N to download the correct tiles.
-        You will need to make the same conversion to connect airborne to ground data.')
+        You will need to make the same conversion in the ground locations to connect to airborne measurements; 
+            one option is to use the convertBLAN() function in the geoNEON package.')
   }
 
   # get the tile corners for the coordinates
