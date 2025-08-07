@@ -130,4 +130,4 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
   }
 
   return(out)
-  }
+}

@@ -9,7 +9,7 @@ The `neonUtilities` R package provides utilities for discovering, downloading, a
 
 `neonUtilities` is available [on CRAN](https://CRAN.R-project.org/package=neonUtilities) and most users will want to install it from there. If you want to use the current development version, you can install from GitHub, but be warned that the version here may not be stable.
 
-A cheat sheet for the `neonUtilities` package is available [here](https://www.neonscience.org/sites/default/files/cheat-sheet-neonUtilities.pdf).
+A cheat sheet for the `neonUtilities` package is available [here](https://github.com/NEONScience/NEON-utilities/blob/main/cheat-sheet-neonUtilities.pdf).
 
 See [NEON Data Tutorials](https://www.neonscience.org/resources/learning-hub/tutorials) for more information, particularly the [Get Started](https://www.neonscience.org/resources/learning-hub/tutorials/get-started-neon-data-series-data-tutorials) tutorial series.
 
@@ -55,21 +55,12 @@ To load data directly into the current R environment, instead of saving the stac
 dust <- stackByTable(filepath = "testdata/NEON_size-dust-particulate.zip", savepath="envt")
 ```
 
-`getPackage()` can be used to pull a single zip file (all the data for a single data product by site by month combination) using the NEON API.
-
-```
-# Plant phenology observations from the Jornada LTER site, May 2017
-getPackage(dpID = "DP1.10055.001", site_code = "JORN", year_month = "2017-05", package = "basic")
-```
-
 `zipsByProduct()` pulls data from the NEON API in the correct format to be stacked by `stackByTable()`. Depending on the data product and data volume, pulling data from the API with `zipsByProduct()` can take a very long time.
 
 ```
-{
 # Herbaceous clip harvest data, from all sites and months for which it is currently available
 zipsByProduct(dpID="DP1.10023.001", site="all", package="basic", check.size=T)
 stackByTable(paste0(getwd(), "/filesToStack10023"))
-}
 ```
 
 `loadByProduct()` performs the actions of both `zipsByProduct()` and `stackByTable()` and loads the resulting data into the current R environment. The object output by `loadByProduct()` is a named list of tables.
@@ -111,7 +102,7 @@ For a tutorial explaining how to use the `neonUtilities` package in more detail,
 
 
 ### Known issues
-* On Windows, file paths are limited to 260 characters. In some cases, NEON data file names plus local directories will exceed this length; this is most likely when working with lab quality assurance files, which include the name of the lab in the file name. If this happens, you will see an error saying "cannot open file". Usually, you can get around this by using zipsByProduct() -> stackByTable() -> readTableNEON() to download data and load it to R, taking care to download the files to a short file directory. Reportedly, R v4.3.0+ avoids this problem; we are still testing to evaluate this.
+* On Windows, file paths are limited to 260 characters. In some cases, NEON data file names plus local directories will exceed this length; this is most likely when working with lab quality assurance files, which include the name of the lab in the file name. If this happens, you will see an error saying "cannot open file". Usually, you can get around this by using zipsByProduct() -> stackByTable() -> readTableNEON() to download data and load it to R, taking care to download the files to a short file directory.
 * On slow networks, data download can sometimes time out, particularly for the largest files, usually the remote sensing data. If your downloads take a long time and ultimately fail, try increasing the timeout in your R environment: `options(timeout=300)`. The `timeout` value is in seconds, and defaults to 60.
 * Some software security systems prevent R from downloading data from the internet. This is fairly unusual, but if you're unable to download any data using neonUtilities, and increasing the timeout doesn't help, check your security settings.
 
