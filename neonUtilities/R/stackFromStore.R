@@ -185,7 +185,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
       
       # include metadata tables
       tabs <- c(tabs1, "validation", "variables", "readme", 
-                "categoricalCodes", "sensor_positions")
+                "categoricalCodes", "sensor_positions", "science_review_flags")
       
       # select files matching table names and metadata
       files <- files[grep(paste(paste("[.]", tabs, "[.]", sep=""), collapse="|"), files)]
@@ -239,7 +239,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
       filesuborig <- filesub
       
       # extract sites from filenames (don't use site input in case some sites requested aren't available)
-      sitemat <- regexpr("[.][A-Z]{4}[.]", basename(filesub))
+      sitemat <- regexpr("[.][A-Z]{4}[.]|[.][A-Z]{2}[0-9]{2}[.]", basename(filesub))
       sitesactual <- regmatches(basename(filesub), sitemat)
       sitesactual <- gsub(".", "", sitesactual, fixed=T)
       
@@ -276,7 +276,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
           pubdatesub <- as.POSIXct(pubdatesub, format="%Y%m%dT%H%M%SZ", tz="GMT")
           
           # and extract sites again
-          sitemat <- regexpr("[.][A-Z]{4}[.]", basename(filesub))
+          sitemat <- regexpr("[.][A-Z]{4}[.]|[.][A-Z]{2}[0-9]{2}[.]", basename(filesub))
           sitesactual <- regmatches(basename(filesub), sitemat)
           sitesactual <- gsub(".", "", sitesactual, fixed=T)
           
@@ -362,7 +362,7 @@ stackFromStore <- function(filepaths, dpID, site="all",
       } else {
         savepath <- NA
       }
-      return(stackByTable(files, savepath=savepath, saveUnzippedFiles=T, nCores=nCores,
+      return(stackByTable(filepath=files, savepath=savepath, saveUnzippedFiles=T, nCores=nCores,
                           dpID=dpID, package=package))
     }
     

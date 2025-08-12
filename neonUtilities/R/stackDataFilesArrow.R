@@ -485,9 +485,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       if(tbltype!="lab" & !"siteID" %in% names(dattab)) {
         domainID <- regmatches(dattab$file, regexpr("D[0-2]{1}[0-9]{1}", 
                                                     dattab$file))
-        siteID <- regmatches(dattab$file, regexpr("D[0-9]{2}[.][A-Z]{4}[.]", 
+        siteID <- regmatches(dattab$file, regexpr("[.]D[0-9]{2}[.][A-Z]{4}[.]|[.]D[0-9]{2}[.][A-Z]{2}[0-9]{2}[.]", 
                                                   dattab$file))
-        siteID <- gsub(pattern="D[0-9]{2}[.]|[.]", replacement="", x=siteID)
+        siteID <- gsub(pattern="[.]D[0-9]{2}[.]|[.]", replacement="", x=siteID)
         locinds <- regmatches(dattab$file, regexpr("[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.]|[.][0-9]{3}[.][0-9]{3}[.][0-9]{3}[.][0-9]{2}[A-Z]{1}[.]", 
                                                    dattab$file))
         # a few tables are missing domainID and siteID but don't have hor/ver
