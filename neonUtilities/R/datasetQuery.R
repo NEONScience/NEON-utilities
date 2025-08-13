@@ -101,11 +101,13 @@ datasetQuery <- function(dpID, site="all",
   # subset by hor and ver
   if(!is.na(ver)) {
     # urls to files only
-    urlset[["files"]] <- base::grep(pattern=paste("[.]", hor, "[.]", ver, "[.]", 
-                                      sep=""), x=urlset[["files"]], value=TRUE)
+    urlset[["files"]] <- base::grep(pattern=paste(
+      "[.]00[0-9]{1}[.]", hor, "[.]", ver, "[.][0-9]{2}[A-Z0-9]{1}[.]", sep=""), 
+      x=urlset[["files"]], value=TRUE)
     # data frame with urls, checksums, variables files, etc
-    hvind <- base::grep(pattern=paste("[.]", hor, "[.]", ver, "[.]", 
-                             sep=""), x=urlset[["filesall"]])
+    hvind <- base::grep(pattern=paste(
+      "[.]00[0-9]{1}[.]", hor, "[.]", ver, "[.][0-9]{2}[A-Z0-9]{1}[.]", sep=""), 
+      x=urlset[["filesall"]])
     urlsub <- urlset[["filesall"]][hvind,]
   } else {
     urlsub <- urlset[["filesall"]]
