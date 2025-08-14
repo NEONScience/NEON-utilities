@@ -73,8 +73,14 @@ schemaFromVar <- function(variables, tab, package) {
       }
       if(vartab$dataType[i]=="dateTime" & 
          vartab$pubFormat[i] %in% c("yyyy-MM-dd'T'HH:mm:ss'Z'(floor)",
-                                       "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                                       "yyyy-MM-dd'T'HH:mm:ss'Z'(round)")) {
+                                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                    "yyyy-MM-dd'T'HH:mm:ss'Z'(round)",
+                                    "yyyy-MM-dd'T'HH:mm'Z'(floor)",
+                                    "yyyy-MM-dd'T'HH:mm'Z'",
+                                    "yyyy-MM-dd'T'HH:mm'Z'(round)",
+                                    "yyyy-MM-dd'T'HH'Z'(floor)",
+                                    "yyyy-MM-dd'T'HH'Z'",
+                                    "yyyy-MM-dd'T'HH'Z'(round)")) {
         vschema[[i]] <- arrow::field(name=vartab$fieldName[i], 
                                      type=arrow::timestamp("s", timezone="UTC"))
       }
