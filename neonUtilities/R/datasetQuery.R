@@ -70,10 +70,10 @@ datasetQuery <- function(dpID, site="all",
                    "DP4.00067.001","DP4.00137.001","DP4.00201.001","DP1.00030.001")) {
       stop(paste(dpID, " is an eddy covariance data product and can't be queried using this function.", sep=""))
     }
-    if(grepl(pattern="^ais[.]", x=tabl)) {
+    if(grepl(pattern="^ais[_]", x=tabl)) {
       tabl <- tabl
     } else {
-      if(site=="all" | length(site)>1) {
+      if(length(site)>1 | identical(site, "all")) {
         stop(paste(dpID, " is a sensor data product and can only be queried at a single site using this function. If you need data at multiple sites, run multiple queries or use loadByProduct().", sep=""))
       }
       if(any(is.na(c(hor, ver)))) {
@@ -81,6 +81,9 @@ datasetQuery <- function(dpID, site="all",
       }
       if(any(nchar(c(hor,ver))!=3)) {
         stop("hor and ver must be 3-digit codes in character format.")
+      }
+      if(any(c(length(hor), length(ver))!=1)) {
+        stop("Only a single sensor location can be queried; hor and ver must each be a single code.")
       }
     }
   }
