@@ -149,7 +149,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       
       # get zip file path to append to name
       h <- getAPIHeaders(tmp.files[[i]]$data$packages$url
-                         [which(tmp.files[[i]]$data$packages$type==package)])
+                         [which(tmp.files[[i]]$data$packages$type==package)], token=token)
       flhd <- httr::headers(h)
       flnm <- gsub('\"', '', flhd$`content-disposition`, fixed=T)
       flnm <- gsub("inline; filename=", "", flnm, fixed=T)
