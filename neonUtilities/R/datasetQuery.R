@@ -110,7 +110,7 @@ datasetQuery <- function(dpID, site="all",
     # data frame with urls, checksums, variables files, etc
     hvind <- base::grep(pattern=paste(
       "[.]00[0-9]{1}[.]", hor, "[.]", ver, "[.][0-9]{2}[A-Z0-9]{1}[.]", sep=""), 
-      x=urlset[["filesall"]])
+      x=urlset[["filesall"]]$url)
     urlsub <- urlset[["filesall"]][hvind,]
   } else {
     urlsub <- urlset[["filesall"]]
