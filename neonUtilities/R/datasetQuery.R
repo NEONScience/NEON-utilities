@@ -72,6 +72,11 @@ datasetQuery <- function(dpID, site="all",
     }
     if(grepl(pattern="^ais[_]", x=tabl)) {
       tabl <- tabl
+      if(any(!is.na(c(hor, ver)))) {
+        hor <- NA
+        ver <- NA
+        message("AIS maintenance tables can't be queried by location index; hor and ver will be ignored.")
+      }
     } else {
       if(length(site)>1 | identical(site, "all")) {
         stop(paste(dpID, " is a sensor data product and can only be queried at a single site using this function. If you need data at multiple sites, run multiple queries or use loadByProduct().", sep=""))
@@ -85,6 +90,12 @@ datasetQuery <- function(dpID, site="all",
       if(any(c(length(hor), length(ver))!=1)) {
         stop("Only a single sensor location can be queried; hor and ver must each be a single code.")
       }
+    }
+  } else {
+    if(any(!is.na(c(hor, ver)))) {
+      hor <- NA
+      ver <- NA
+      message(paste(dpID, "is an observational data product; hor and ver will be ignored."))
     }
   }
   
