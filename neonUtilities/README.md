@@ -128,6 +128,14 @@ Disclaimer
 Change Log
 ----------
 
+#### 2025-08-28 v3.0.1
+Bug fixes:
+* Improved error messaging for hor and ver indices in datasetQuery()
+* Retrieval of API headers now correctly uses tokens
+* Time stamp casting in observational data products fixed
+* tokenCheck() now works correctly for service tokens as well as individual tokens
+
+
 #### 2025-07-21 v3.0.0
 Enhancements:
 * stacking functions stackByTable() and loadByProduct() now use the arrow package to stack files, increasing stacking speed

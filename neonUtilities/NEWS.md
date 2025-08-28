@@ -1,3 +1,15 @@
+# version 3.0.1
+
+Released 2025-08-28
+
+## Bug fixes
+
+* Improved error messaging for hor and ver indices in datasetQuery()
+* Retrieval of API headers now correctly uses tokens
+* Time stamp casting in observational data products fixed
+* tokenCheck() now works correctly for service tokens as well as individual tokens
+
+
 # version 3.0.0
 
 Released 2025-07-21
