@@ -101,7 +101,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       # pass to custom stacking function
       if(length(fungifiles)>0) {
         fungilst <- stackFrameFiles(fungifiles, dpID=dpID, 
-                                    seqType=NA_character_, 
+                                    seqType="ITS", 
                                     cloud.mode=cloud.mode)
         
         stacklist[[fungilst[[2]]]] <- fungilst[[1]]
@@ -109,7 +109,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       
       if(length(bacteriafiles)>0) {
         bacterialst <- stackFrameFiles(bacteriafiles, dpID=dpID, 
-                                       seqType=NA_character_, 
+                                       seqType="16S", 
                                        cloud.mode=cloud.mode)
         
         stacklist[[bacterialst[[2]]]] <- bacterialst[[1]]
