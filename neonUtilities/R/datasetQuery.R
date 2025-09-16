@@ -217,7 +217,7 @@ datasetQuery <- function(dpID, site="all",
     tableschema <- schemaFromVar(varend,
                                  tab=tabl,
                                  package=package)
-    ds <- try(arrow::open_csv_dataset(sources=urlset[["files"]], 
+    ds <- try(arrow::open_csv_dataset(sources=urlsub$url, 
                                       schema=tableschema,
                                       skip=1), silent=TRUE)
     if(inherits(ds, "try-error")) {
