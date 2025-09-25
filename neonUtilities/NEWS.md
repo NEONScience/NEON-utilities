@@ -1,3 +1,15 @@
+# version 3.0.2
+
+Released 2025-09-25
+
+## Bug fixes
+
+* Further improved error messaging for hor and ver indices in datasetQuery()
+* Fixed handling of site-all tables in datasetQuery()
+* Fixed data stacking for microbial community taxonomy data products
+* Fixed data stacking for latest update of temperature at specific depth
+
+
 # version 3.0.1
 
 Released 2025-08-28
