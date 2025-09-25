@@ -114,6 +114,13 @@ datasetQuery <- function(dpID, site="all",
   
   # subset by hor and ver
   if(!is.na(ver)) {
+    if(length(base::grep(pattern=paste(
+      "[.]00[0-9]{1}[.]", hor, "[.]", ver, "[.][0-9]{2}[A-Z0-9]{1}[.]", sep=""), 
+      x=urlset[["files"]]))==0) {
+      stop(paste("hor=", hor, " and ver=", ver, 
+                 " returned no results. Check valid horizontal and vertical indices using function getHorVer().",
+                 sep=""))
+    }
     # urls to files only
     urlset[["files"]] <- base::grep(pattern=paste(
       "[.]00[0-9]{1}[.]", hor, "[.]", ver, "[.][0-9]{2}[A-Z0-9]{1}[.]", sep=""), 
