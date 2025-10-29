@@ -310,10 +310,10 @@ stackByTable <- function(filepath,
         } else {
           
           # write out csv files
-          utils::write.csv(stackedList[[fl]], file=paste(savepath, "/stackedFiles/", 
+          data.table::fwrite(stackedList[[fl]], file=paste(savepath, "/stackedFiles/", 
                                                   names(stackedList)[fl], 
                                                   ".csv", sep=""), 
-                    row.names=FALSE)
+                    row.names=FALSE, sep=",", na="NA")
         }
       }
     }
