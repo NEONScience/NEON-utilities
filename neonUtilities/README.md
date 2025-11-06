@@ -21,12 +21,53 @@ To get citation details for citing the `neonUtilities` package in a publication,
 Usage
 -----
 
-### Starting out
-Install the package into your local environment using the following code:
+### Installation
 
-```
+#### Within R
+
+Install the package into your local environment [from CRAN](https://cran.r-project.org/web/packages/neonUtilities/index.html) using the following code:
+
+```r
 install.packages('neonUtilities')
 library(neonUtilities)
+```
+
+#### From conda-forge
+
+`neonUtilities` is available [on conda-forge](https://github.com/conda-forge/r-neonutilities-feedstock).
+You can setup an environment that includes all dependencies (including R) with the following command line operations.
+
+##### With Pixi
+
+[Pixi](https://pixi.sh/) environments are fully reproducible by default.
+From your project directory, initialize a Pixi workspace and then add `neonUtilities`
+
+```shell
+pixi init
+pixi add r-neonutilities
+```
+
+You can optionally activate an interactive shell with the environment loaded with
+
+```shell
+pixi shell
+```
+
+##### With conda
+
+Create a [conda](https://docs.conda.io/) environment and install `neonUtilities` from the `conda-forge` channel
+
+```shell
+conda create --name neon-env
+conda config --name neon-env --add channels conda-forge
+conda config --name neon-env --remove channels defaults
+conda install --name neon-env r-neonutilities
+```
+
+and then activate the conda environment
+
+```shell
+conda activate neon-env
 ```
 
 ### Primary functions
