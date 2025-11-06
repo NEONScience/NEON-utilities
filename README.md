@@ -6,7 +6,7 @@ NEON-utilities
 
 NEON-utilities is a repository hosting packages and code for basic data handling for NEON data. It currently contains:
 
-1. `neonUtilities`: an R package for discovering, downloading, and working with NEON data files. This builds upon the deprecated pacakge, `neonDataStackR`.
+1. `neonUtilities`: an R package for discovering, downloading, and working with NEON data files. This builds upon the deprecated package, `neonDataStackR`.
 2. `cheat-sheet-neonUtilities`: a cheat sheet for the `neonUtilities` package. Also available on the NEON website, this is intended to be a quick guide to function inputs for users who are already familiar with the package.
 
 <!-- ****** Python ****** -->
