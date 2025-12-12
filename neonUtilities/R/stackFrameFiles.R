@@ -25,6 +25,8 @@ stackFrameFiles <- function(framefiles, dpID,
                             seqType=NA_character_, 
                             cloud.mode=FALSE) {
   
+  frame_file_variables <- read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_variables.csv")
+  
   # get custom variables file for relevant dpID
   # if dpID isn't on the list, infer schema
   if(!dpID %in% frame_file_codes$dpID) {
