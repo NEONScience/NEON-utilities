@@ -90,7 +90,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
                                 seqType=NA_character_, 
                                 cloud.mode=cloud.mode)
       
-      stacklist[[frmlst[[2]]]] <- frmlst[[1]]
+      if(!is.null(frmlst)) {
+        stacklist[[frmlst[[2]]]] <- frmlst[[1]]
+      }
       
     } else {
       
@@ -104,7 +106,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
                                     seqType="ITS", 
                                     cloud.mode=cloud.mode)
         
-        stacklist[[fungilst[[2]]]] <- fungilst[[1]]
+        if(!is.null(fungilst)) {
+          stacklist[[fungilst[[2]]]] <- fungilst[[1]]
+        }
       }
       
       if(length(bacteriafiles)>0) {
@@ -112,7 +116,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
                                        seqType="16S", 
                                        cloud.mode=cloud.mode)
         
-        stacklist[[bacterialst[[2]]]] <- bacterialst[[1]]
+        if(!is.null(bacterialst)) {
+          stacklist[[bacterialst[[2]]]] <- bacterialst[[1]]
+        }
       }
     }
   }
@@ -302,6 +308,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
             
             if(inherits(dattab, "try-error")) {
               message("Stacking sensor positions files failed. Try excluding provisional data, and contact NEON if unable to resolve.")
+              next
             }
           }
         } else {

@@ -109,10 +109,42 @@ stackFrameFiles <- function(framefiles, dpID,
     }
     fdattab <- try(data.frame(dplyr::collect(fsdat)), silent=TRUE)
     if(inherits(fdattab, "try-error")) {
-      message(paste("Stacking table ", tabnm, " failed. Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
-      return(invisible())
+      # try string schema for each file and unify
+      stringtablist <- list()
+      stringpiecewise <- TRUE
+      for(p in 1:length(framefiles)) {
+        
+        stringschema <- schemaAllStringsFromSet(framefiles[p])
+        
+        ds <- try(arrow::open_csv_dataset(sources=framefiles[p], 
+                                          schema=stringschema,
+                                          skip=1), silent=TRUE)
+        if(inherits(ds, "try-error")) {
+          stringpiecewise <- FALSE
+          next
+        } else {
+          stringtablist[[p]] <- ds
+        }
+        
+      }
+      
+      if(isFALSE(stringpiecewise)) {
+        message(paste("Reading data as strings failed for table ", tabnm, ". Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
+        return(invisible())
+      } else {
+        # if all chunks succeeded, merge them
+        ds <- try(arrow::open_csv_dataset(sources=stringtablist, 
+                                          unify_schemas=TRUE,
+                                          skip=0), silent=TRUE)
+        
+        fdattab <- try(data.frame(dplyr::collect(ds)), silent=TRUE)
+        
+        if(inherits(fdattab, "try-error")) {
+          message(paste("Reading data as strings failed for table ", tabnm, ". Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
+          return(invisible())
+        }
+      }
     }
-    
   }
   
   return(list(fdattab, tabnm))
