@@ -274,12 +274,6 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           message(paste("Downloading by time interval is not available for ", dpID,
                         ". Proceeding to download all available data.\n", sep=""))
           avg <- "all"
-        } else {
-          # check and make sure the averaging interval is valid for the product
-          if(!avg %in% table_types$tableTMI[which(table_types$productID==dpID)]) {
-            stop(paste(avg, " is not a valid time interval for ", dpID,
-                       ". Use function getTimeIndex() to find valid time intervals.", sep=""))
-          }
         }
       }
     }

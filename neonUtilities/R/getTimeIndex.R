@@ -62,7 +62,10 @@ getTimeIndex <- function(dpID, token = NA_character_) {
   }
   
   # look up TMI in table_types
-  tmi <- table_types$tableTMI[which(table_types$productID==dpID)]
+  tmi <- unique(table_types$tableTMI[which(table_types$productID==dpID)])
+  if(any(tmi==0)) {
+    tmi <- tmi[-which(tmi==0)]
+  }
   return(tmi)
 
 }

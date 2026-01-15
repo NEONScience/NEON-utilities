@@ -213,8 +213,9 @@ getZipUrls <- function(month.urls, avg, package, dpID,
                           grep(paste(avg, "_min", sep=""), unique.files$name, fixed=T))
         
         if(length(all.file)==0) {
-          message(paste("No files found for site", tmp.files[[i]]$data$siteCode,
-                                        "and month", tmp.files[[i]]$data$month, sep=" "))
+          message(paste("No files with time index", avg, "found for site", 
+                        tmp.files[[i]]$data$siteCode,
+                        "and month", tmp.files[[i]]$data$month, sep=" "))
           next
         }
       }
