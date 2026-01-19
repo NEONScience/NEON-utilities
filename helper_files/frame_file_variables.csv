@@ -58,7 +58,7 @@
 "REA","hoboSampleID","Unique identifier for the HOBO conductivity logger file","string",NA,"expanded","asIs"
 "REA","hoboSampleCode","Barcode of the HOBO conductivity logger file","string",NA,"expanded","asIs"
 "REA","measurementNumber","The number of the measurement in a time series","integer",NA,"expanded","integer"
-"REA","dateTimeLogger","Local date and time returned by a field data logger","dateTime",NA,"expanded","yyyy-MM-dd'T'HH:mm:ss'Z'"
+"REA","dateTimeLogger","Local date and time returned by a field data logger","dateTime",NA,"expanded","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 "REA","lowRangeHobo","Conductivity returned from a hobo logger for the low range","real","microsiemensPerCentimeter","expanded","asIs"
 "REA","fullRangeHobo","Conductivity from a hobo logger for the full range","real","microsiemensPerCentimeter","expanded","asIs"
 "REA","waterTemp","Temperature of water (C)","real","celsius","expanded","asIs"

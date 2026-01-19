@@ -85,6 +85,11 @@ schemaFromVar <- function(variables, tab, package) {
                                      type=arrow::timestamp("s", timezone="UTC"))
       }
       if(vartab$dataType[i]=="dateTime" & 
+         vartab$pubFormat[i] %in% c("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")) {
+        vschema[[i]] <- arrow::field(name=vartab$fieldName[i], 
+                                     type=arrow::timestamp("ms", timezone="UTC"))
+      }
+      if(vartab$dataType[i]=="dateTime" & 
          vartab$pubFormat[i] %in% c("yyyy-MM-dd(floor)", "yyyy-MM-dd")) {
         vschema[[i]] <- arrow::field(name=vartab$fieldName[i], type=arrow::date32())
       }
