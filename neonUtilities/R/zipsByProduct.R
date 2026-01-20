@@ -155,30 +155,28 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
         }
       }
     }
-    if(length(intersect(which(shared_aquatic$product==dpID), which(shared_aquatic$site %in% site)))>0) {
-      message(paste("Some sites in your download request are aquatic sites where ", 
-                    dpID, " is collected at a nearby terrestrial site. The sites you requested, and the sites that will be accessed instead, are listed below:\n", 
-                    sep=""))
-      if(isTRUE(BLWAflag)) {
-        message("Until the fall of 2025, meteorological data for BLWA were collected at DELA. Data collection at DELA ended in late 2025 and the meteorological station was relocated to BLWA. If your download request crosses this time period, data will be downloaded from each site for the time period when they are available.\n")
-      }
-      site <- unlist(lapply(site, function(x) {
-        if(x %in% shared_aquatic$site) {
-          if(dpID %in% shared_aquatic$product[which(shared_aquatic$site==x)]) {
-            terrSite <- unique(shared_aquatic$towerSite[which(shared_aquatic$site==x)])
-            
-            message(paste(x, " -> ", terrSite, sep=""))
-            return(terrSite)
-          }
-          else {
-            return(x)
-          }
+    message(paste("Some sites in your download request are aquatic sites where ", 
+                  dpID, " is collected at a nearby terrestrial site. The sites you requested, and the sites that will be accessed instead, are listed below:\n", 
+                  sep=""))
+    if(isTRUE(BLWAflag)) {
+      message("Until the fall of 2025, meteorological data for BLWA were collected at DELA. Data collection at DELA ended in late 2025 and the meteorological station was relocated to BLWA. If your download request crosses this time period, data will be downloaded from each site for the time period when they are available.\n")
+    }
+    site <- unlist(lapply(site, function(x) {
+      if(x %in% shared_aquatic$site) {
+        if(dpID %in% shared_aquatic$product[which(shared_aquatic$site==x)]) {
+          terrSite <- unique(shared_aquatic$towerSite[which(shared_aquatic$site==x)])
+          
+          message(paste(x, " -> ", terrSite, sep=""))
+          return(terrSite)
         }
         else {
           return(x)
         }
-      }))
-    }
+      }
+      else {
+        return(x)
+      }
+    }))
   }
   
   # redirect for chemistry data product bundles
