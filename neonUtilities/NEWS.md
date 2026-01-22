@@ -1,3 +1,13 @@
+# version 3.0.3
+
+Released 2026-01-22
+
+## Keeping up to date with data product updates
+
+* Updated data stacking for frame file data products to account for new variables and variable names
+* Updated aquatic site meteorological data redirects to account for Dead Lake site decommissioning
+
+
 # version 3.0.2
 
 Released 2025-09-25

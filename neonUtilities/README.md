@@ -25,7 +25,7 @@ Usage
 
 #### Within R
 
-Install the package into your local environment [from CRAN](https://cran.r-project.org/web/packages/neonUtilities/index.html) using the following code:
+Install the package into your local environment [from CRAN](https://cran.r-project.org/package=neonUtilities) using the following code:
 
 ```r
 install.packages('neonUtilities')
@@ -39,7 +39,7 @@ You can setup an environment that includes all dependencies (including R) with t
 
 ##### With Pixi
 
-[Pixi](https://pixi.sh/) environments are fully reproducible by default.
+[Pixi](https://pixi.prefix.dev/) environments are fully reproducible by default.
 From your project directory, initialize a Pixi workspace and then add `neonUtilities`
 
 ```shell
@@ -168,6 +168,12 @@ Disclaimer
 <!-- ****** Change Log ****** -->
 Change Log
 ----------
+
+#### 2026-01-22 v3.0.3
+Updates:
+* Updated data stacking for frame file data products
+* Updated aquatic site meteorological data redirects
+
 
 #### 2025-08-28 v3.0.2
 Bug fixes:
