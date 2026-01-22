@@ -75,7 +75,7 @@ stackFrameFiles <- function(framefiles, dpID,
     
     # get schema from custom variables file and read dataset
     frameschema <- schemaFromVar(vartab, tab=module, package="expanded")
-    fdat <- arrow::open_csv_dataset(sources=framefiles, 
+    fdat <- arrow::open_csv_dataset(sources=framefiles,
                                     schema=frameschema, skip=1)
     fdattab <- try(data.frame(dplyr::collect(fdat)), silent=TRUE)
     
