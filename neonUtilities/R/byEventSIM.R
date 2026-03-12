@@ -90,7 +90,7 @@ byEventSIM <- function(eventType,
       maxdat <- events$endDate[maxdatind]
       maxdat <- substring(as.character(maxdat), 1, 7)
       maxsite <- events$siteID[maxdatind]
-      maxurl <- paste("https://data.neonscience.org/api/v0/data/DP1.10111.001/",
+      maxurl <- paste(baseurl, "data/DP1.10111.001/",
                       maxsite, "/", maxdat, sep="")
       maxres <- getAPI(maxurl, token=token)
       maxfiles <- jsonlite::fromJSON(httr::content(maxres, as="text", encoding='UTF-8'),

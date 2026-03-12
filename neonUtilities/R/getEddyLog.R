@@ -29,7 +29,7 @@ getEddyLog <- function(token=NA_character_) {
   eddyLog <- character()
   for(i in bundleDPs) {
     
-    req <- getAPI(apiURL = paste0("https://data.neonscience.org/api/v0/products/", i), 
+    req <- getAPI(apiURL = paste0(baseurl, "products/", i), 
                   token = token)
     
     if(is.null(req)) {

@@ -54,10 +54,10 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   
   # first query products endpoint to get availability info
   if(release=="current" | release=="PROVISIONAL") {
-    prod.req <- getAPI(apiURL = paste("https://data.neonscience.org/api/v0/products/", 
+    prod.req <- getAPI(apiURL = paste(baseurl, "products/", 
                                       dpID, sep=""), token = token)
   } else {
-    prod.req <- getAPI(apiURL = paste("https://data.neonscience.org/api/v0/products/", 
+    prod.req <- getAPI(apiURL = paste(baseurl, "products/", 
                                       dpID, "?release=", release, sep=""), token = token)
   }
 
@@ -123,7 +123,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   
   # construct full query url and run query
-  qurl <- paste("https://data.neonscience.org/api/v0/data/query?productCode=",
+  qurl <- paste(baseurl, "data/query?productCode=",
                 dpID, siteurl, dateurl, ipurl, "&package=", package, relurl, sep="")
   qreq <- getAPI(apiURL=qurl, token=token)
   
