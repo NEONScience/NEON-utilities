@@ -46,7 +46,7 @@ datasetQuery <- function(dpID, site="all",
   
   # check inputs: this only works for OS and tabular IS data
   # and for IS products, HOR and VER are required, and only one site can be queried
-  prod.req <- getAPI(apiURL = paste(baseurl, "products/", 
+  prod.req <- getAPI(apiURL = paste(nu.globals$baseurl, "products/", 
                                     dpID, sep=""), token = token)
   avail <- jsonlite::fromJSON(httr::content(prod.req, as='text', encoding='UTF-8'), 
                               simplifyDataFrame=TRUE, flatten=TRUE)

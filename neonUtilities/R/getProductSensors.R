@@ -25,7 +25,7 @@
 ##############################################################################################
 
 getProductSensors <- function(){
-  products <- jsonlite::fromJSON(paste0(baseurl, "products"), flatten=T)
+  products <- jsonlite::fromJSON(paste0(nu.globals$baseurl, "products"), flatten=T)
   products <- products[["data"]]
   df <- data.frame(dpID = NA, dpName = NA, sensor = NA)
   for(i in 1:nrow(products)){

@@ -69,7 +69,7 @@ byFileAOP <- function(dpID, site, year,
   releases <- character()
   
   # query the products endpoint for the product requested
-  req <- getAPI(paste(baseurl, "products/", dpID, sep=""), token)
+  req <- getAPI(paste(nu.globals$baseurl, "products/", dpID, sep=""), token)
   avail <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
                               simplifyDataFrame=TRUE, flatten=TRUE)
 

@@ -28,7 +28,7 @@
 ##############################################################################################
 getProductInfo <- function(dpID="", token = NA){
 
-  req <- getAPI(apiURL = paste0(baseurl, "products/", dpID), 
+  req <- getAPI(apiURL = paste0(nu.globals$baseurl, "products/", dpID), 
                   token = token)
   
   if(is.null(req)) {

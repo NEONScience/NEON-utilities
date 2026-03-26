@@ -83,7 +83,7 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   releases <- character()
 
   # query the products endpoint for the product requested
-  prod.req <- getAPI(apiURL = paste(baseurl, "products/", dpID, sep=""), 
+  prod.req <- getAPI(apiURL = paste(nu.globals$baseurl, "products/", dpID, sep=""), 
                   token = token)
   
   avail <- jsonlite::fromJSON(httr::content(prod.req, as='text', encoding='UTF-8'), 
