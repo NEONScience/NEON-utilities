@@ -14,7 +14,7 @@
 #' @param release The data release to be downloaded; either 'current' or the name of a release, e.g. 'RELEASE-2021'. 'current' returns the most recent release, as well as provisional data if include.provisional is set to TRUE. To download only provisional data, use release='PROVISIONAL'. Defaults to 'current'.
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
-#' @param metadata T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to F, can only be set to T if tabl is not 'all'.
+#' @param metadata T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to T.
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 #' 
