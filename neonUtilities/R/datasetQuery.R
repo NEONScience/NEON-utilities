@@ -185,11 +185,13 @@ datasetQuery <- function(dpID, site="all",
         vari <- getRecentPublication(urlsub$urlvar[which(mdlist==i)])[[1]]
         flsi <- urlsub$url[which(mdlist==i)]
         
-        ds <- try(arrow::open_csv_dataset(sources=flsi, 
-                                          schema=schemaFromVar(vari,
+        ds <- try(duckdbfs::open_dataset(sources=flsi, 
+                                          parser_options=c(
+                                            columns=schemaFromVarDuck(vari,
                                                                tab=tabl,
                                                                package=package),
-                                          skip=1), silent=TRUE)
+                                            header=TRUE),
+                                          format="csv"), silent=TRUE)
         if(inherits(ds, "try-error")) {
           piecewise <- FALSE
           next

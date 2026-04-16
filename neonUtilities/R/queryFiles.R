@@ -43,15 +43,6 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   # check for expiration
   token <- tokenCheck(token)
   
-  # check for GCS and S3 enabled
-  if(!arrow::arrow_with_gcs()) {
-    if(!arrow::arrow_with_s3()) {
-      stop("Package arrow is installed with S3 and GCS disabled and cannot access NEON data. Consult documentation at https://arrow.apache.org/docs/r/articles/fs.html , update installation and re-try.")
-    } else {
-      message("Package arrow is installed with GCS disabled. S3 will be used to access data; performance may be reduced. To enable GCS consult documentation at https://arrow.apache.org/docs/r/articles/fs.html ")
-    }
-  }
-  
   # first query products endpoint to get availability info
   if(release=="current" | release=="PROVISIONAL") {
     prod.req <- getAPI(apiURL = paste(nu.globals$baseurl, "products/", 
@@ -247,25 +238,8 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   flset <- data.frame(flset)
   colnames(flset) <- c("url","md5","md5var","urlvar","release")
   
-  # drop default base url, but keep a copy of original
   flset$urlbase <- flset$url
-  flset$url <- base::gsub(pattern="https://storage.googleapis.com/", 
-                       replacement="", flset$url)
-  flset$urlvar <- base::gsub(pattern="https://storage.googleapis.com/", 
-                          replacement="", flset$urlvar)
-  
-  # add GCS base url, if GCS is enabled
-  if(arrow::arrow_with_gcs()) {
-    flset$url <- paste("gs://anonymous@", flset$url, sep="")
-    flset$urlvar <- paste("gs://anonymous@", flset$urlvar, sep="")
-  } else {
-    # S3 base url and suffix if GCS is not enabled
-    flset$url <- paste("s3://", flset$url, 
-                    "/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com", sep="")
-    flset$urlvar <- paste("s3://", flset$urlvar, 
-                       "/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com", sep="")
-  }
-  
+
   # get most recent variables file
   # if multiple checksums for variables files, raise a flag
   varset <- list()
