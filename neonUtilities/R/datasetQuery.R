@@ -172,49 +172,20 @@ datasetQuery <- function(dpID, site="all",
   
   # check for inconsistencies in variables files
   if(isTRUE(urlset[["varcheck"]])) {
+    
     # check for differences in fieldNames and dataTypes for the relevant table
     varset <- urlset[["varset"]]
     varFieldDiff <- checkVarFields(variableSet=varset, tableName=tabl)
     if(isTRUE(varFieldDiff)) {
-      # if there are inconsistencies, read each separately, then unify
-      mdlist <- urlsub$md5var
-      tablist <- list()
-      piecewise <- TRUE
-      for(i in unique(mdlist)) {
-        
-        vari <- getRecentPublication(urlsub$urlvar[which(mdlist==i)])[[1]]
-        flsi <- urlsub$url[which(mdlist==i)]
-        
-        ds <- try(duckdbfs::open_dataset(sources=flsi, 
-                                          parser_options=c(
-                                            columns=schemaFromVarDuck(vari,
-                                                               tab=tabl,
-                                                               package=package),
-                                            header=TRUE),
-                                          format="csv"), silent=TRUE)
-        if(inherits(ds, "try-error")) {
-          piecewise <- FALSE
-          next
-        } else {
-          tablist[[i]] <- ds
-        }
-        
-      }
       
-      # if any chunks failed, try for a string schema
-      if(isFALSE(piecewise)) {
+      # if there are inconsistencies, infer schema
+      message("Differences in variables files detected. Schema will be inferred. If this causes errors, try querying released and provisional data separately.")
+      ds <- try(duckdbfs::open_dataset(sources=urlsub$url, 
+                                       unify_schemas=TRUE,
+                                       format="csv"), silent=TRUE)
+      if(inherits(ds, "try-error")) {
         trystring <- TRUE
-      } else {
-        # if all chunks succeeded, merge them
-        ds <- try(arrow::open_csv_dataset(sources=tablist, 
-                                          unify_schemas=TRUE,
-                                          skip=0), silent=TRUE)
-        # if merge fails, try for a string schema
-        if(inherits(ds, "try-error")) {
-          trystring <- TRUE
-        }
-      }
-      
+        
     } else {
       # if fieldNames and dataTypes match across files, use first variables file
       varend <- arrow::read_csv_arrow(varset[[1]], col_names=TRUE, skip=0)
@@ -223,12 +194,16 @@ datasetQuery <- function(dpID, site="all",
   }
   
   if(isFALSE(urlset[["varcheck"]])) {
-    tableschema <- schemaFromVar(varend,
+    tableschema <- schemaFromVarDuck(varend,
                                  tab=tabl,
                                  package=package)
-    ds <- try(arrow::open_csv_dataset(sources=urlsub$url, 
-                                      schema=tableschema,
-                                      skip=1), silent=TRUE)
+    # need to set a timestamp format
+    ds <- try(duckdbfs::open_dataset(sources=urlsub$url, 
+                                     parser_options = c(
+                                       columns=tableschema,
+                                       header=TRUE
+                                     ),
+                                      format="csv"), silent=TRUE)
     if(inherits(ds, "try-error")) {
       trystring <- TRUE
     }
