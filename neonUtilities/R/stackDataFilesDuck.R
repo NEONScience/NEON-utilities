@@ -40,8 +40,8 @@ stackDataFilesDuck <- function(urls,
     if(isTRUE(varFieldDiff)) {
       
       # if there are inconsistencies, infer schema
-      # add table name to messages
-      message("Differences in variables files detected. Schema will be inferred. If this causes errors, try querying released and provisional data separately.")
+      message(paste("Differences in variables files detected for table ", tabl, 
+                    ". Schema will be inferred. If this causes errors, try querying released and provisional data separately.", sep=""))
       ds <- try(duckdbfs::open_dataset(sources=urls, 
                                        unify_schemas=TRUE,
                                        format="csv"), silent=TRUE)
@@ -78,9 +78,9 @@ stackDataFilesDuck <- function(urls,
   }
   
   # if making dataset via the paths above failed, try a string schema
-  # update message: this now shows up in loadByProduct() when cloud.mode=T
   if(isTRUE(trystring)) {
-    message("Data retrieval using variables file to generate schema failed. All fields will be read as strings. This can be slow, and will reduce the possible types of queries you can make. This can usually be avoided by excluding provisional data, and if that does not resolve the problem, consider downloading data using loadByProduct().")
+    message(paste("Data retrieval using variables file to generate schema failed for table ", tabl, 
+                  ". All fields will be read as strings. This can usually be avoided by excluding provisional data.", sep=""))
     ds <- try(duckdbfs::open_dataset(sources=urls, 
                                      parser_options = c(
                                        all_varchar=TRUE,
@@ -89,7 +89,8 @@ stackDataFilesDuck <- function(urls,
                                      ),
                                      format="csv"), silent=TRUE)
     if(inherits(ds, "try-error")) {
-      message("Reading data as strings failed. Try excluding provisional data, and contact NEON if unable to resolve.")
+      message(paste("Reading data as strings failed for table ", tabl, 
+                    ". Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
       return(invisible())
     }
   }

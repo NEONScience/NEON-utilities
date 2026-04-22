@@ -497,8 +497,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
         }
       } else {
         relmap <- folder[["filesall"]][,c("urlbase","release")]
-        relmap$urlbase <- gsub(pattern="https://storage.googleapis.com/",
-                               replacement="", x=relmap$urlbase)
         dattab <- base::merge(dattab, relmap, by.x="file", by.y="urlbase", 
                               all.x=TRUE)
       }
