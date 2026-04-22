@@ -245,13 +245,13 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   varset <- list()
   varfls <- base::grep(pattern="variables", x=flset$url, value=TRUE)
   if(length(unique(flset$md5var))>1) {
-    varu <- unique(flset$md5var)
-    for(k in varu) {
-      varset[[k]] <- getRecentPublication(flset$url[which(flset$md5==k)])[[1]]
-    }
     vardiff <- TRUE
   } else {
     vardiff <- FALSE
+  }
+  varu <- unique(flset$md5var)
+  for(k in varu) {
+    varset[[k]] <- getRecentPublication(flset$url[which(flset$md5==k)])[[1]]
   }
   varfl <- getRecentPublication(varfls)[[1]]
   

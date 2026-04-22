@@ -1,10 +1,10 @@
 ##############################################################################################
-#' @title Query the query endpoint of the NEON API and create an arrow dataset from the results
+#' @title Query the query endpoint of the NEON API and create a duckdb dataset from the results
 
 #' @author
 #' Claire Lunch \email{clunch@battelleecology.org}
 
-#' @description Uses the query endpoint of the NEON API to find the full list of files for a given data product, release, site(s), and date range, then turns them into an arrow dataset.
+#' @description Uses the query endpoint of the NEON API to find the full list of files for a given data product, release, site(s), and date range, then turns them into a duckdb dataset.
 #'
 #' @param dpID The identifier of the NEON data product to pull, in the form DPL.PRNUM.REV, e.g. DP1.10023.001
 #' @param site Either the string 'all', meaning all available sites, or a character vector of 4-letter NEON site codes, e.g. c('ONAQ','RMNP'). Defaults to all.
@@ -18,7 +18,7 @@
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 #' 
-#' @return An arrow dataset for the data requested.
+#' @return A duckdb dataset for the data requested.
 
 #' @export
 
@@ -166,86 +166,11 @@ datasetQuery <- function(dpID, site="all",
     urlsub <- urlsub[labind,]
   }
   
-  # start with variables file returned by queryFiles
-  varend <- urlset[["variables"]]
-  trystring <- FALSE
-  
-  # check for inconsistencies in variables files
-  if(isTRUE(urlset[["varcheck"]])) {
-    
-    # check for differences in fieldNames and dataTypes for the relevant table
-    varset <- urlset[["varset"]]
-    varFieldDiff <- checkVarFields(variableSet=varset, tableName=tabl)
-    if(isTRUE(varFieldDiff)) {
-      
-      # if there are inconsistencies, infer schema
-      message("Differences in variables files detected. Schema will be inferred. If this causes errors, try querying released and provisional data separately.")
-      ds <- try(duckdbfs::open_dataset(sources=urlsub$url, 
-                                       unify_schemas=TRUE,
-                                       format="csv"), silent=TRUE)
-      if(inherits(ds, "try-error")) {
-        trystring <- TRUE
-        
-    } else {
-      # if fieldNames and dataTypes match across files, use first variables file
-      varend <- arrow::read_csv_arrow(varset[[1]], col_names=TRUE, skip=0)
-      urlset[["varcheck"]] <- FALSE
-    }
-  }
-  
-  if(isFALSE(urlset[["varcheck"]])) {
-    tableschema <- schemaFromVarDuck(varend,
-                                 tab=tabl,
-                                 package=package)
-    # need to set a timestamp format
-    ds <- try(duckdbfs::open_dataset(sources=urlsub$url, 
-                                     parser_options = c(
-                                       columns=tableschema,
-                                       header=TRUE
-                                     ),
-                                      format="csv"), silent=TRUE)
-    if(inherits(ds, "try-error")) {
-      trystring <- TRUE
-    }
-  }
-  
-  # if making dataset via any path above failed, try a string schema
-  if(isTRUE(trystring)) {
-    message("Data retrieval using variables file to generate schema failed. All fields will be read as strings. This can be slow, and will reduce the possible types of queries you can make. This can usually be avoided by excluding provisional data, and if that does not resolve the problem, consider downloading data using loadByProduct().")
-    stringtablist <- list()
-    stringpiecewise <- TRUE
-    for(i in unique(urlsub$md5var)) {
-      
-      urlsubi <- urlsub[which(urlsub$md5var==i),]
-      flsi <- urlsubi$url
-      stringschema <- schemaAllStringsFromSet(flsi)
-      
-      ds <- try(arrow::open_csv_dataset(sources=flsi, 
-                                        schema=stringschema,
-                                        skip=1), silent=TRUE)
-      if(inherits(ds, "try-error")) {
-        stringpiecewise <- FALSE
-        next
-      } else {
-        stringtablist[[i]] <- ds
-      }
-      
-    }
-    
-    if(isFALSE(stringpiecewise)) {
-      message("Reading data as strings failed. Try excluding provisional data, and contact NEON if unable to resolve.")
-      return(invisible())
-    } else {
-      # if all chunks succeeded, merge them
-      ds <- try(arrow::open_csv_dataset(sources=stringtablist, 
-                                        unify_schemas=TRUE,
-                                        skip=0), silent=TRUE)
-      if(inherits(ds, "try-error")) {
-        message("Reading data as strings failed. Try excluding provisional data, and contact NEON if unable to resolve.")
-        return(invisible())
-      }
-    }
-  }
+  # pass data to duckdb stacking function
+  ds <- stackDataFilesDuck(urls=urlsub$url,
+                           varset=urlset$variables,
+                           tabl=tabl,
+                           package=package)
   
   return(ds)
   
