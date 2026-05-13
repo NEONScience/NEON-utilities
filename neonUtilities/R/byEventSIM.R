@@ -53,22 +53,13 @@ byEventSIM <- function(eventType,
     stop("The dplyr package is required to use this function. Install and re-try.")
   }
   
-  urlset <- queryFiles(dpID="DP1.10111.001", site=site,
-                       package="basic", startdate=startdate,
-                       enddate=enddate, release=release, 
-                       tabl="sim_eventData", metadata=TRUE,
-                       include.provisional=include.provisional,
-                       token=token)
-  
-  # subset to only the table to query
-  edlst <- base::grep("sim_eventData", urlset[[1]], value=TRUE)
-  
-  # get variables file and translate to schema
-  varfl <- urlset[[2]]
-  vschema <- schemaFromVar(varfl, tab="sim_eventData", package="basic")
-  
   # open dataset
-  ds <- arrow::open_csv_dataset(sources=edlst, schema=vschema, skip=1)
+  ds <- datasetQuery(dpID="DP1.10111.001", site=site,
+                     package="basic", startdate=startdate,
+                     enddate=enddate, release=release, 
+                     tabl="sim_eventData",
+                     include.provisional=include.provisional,
+                     token=token)
   
   # filter to event type
   evFilter <- eventType
