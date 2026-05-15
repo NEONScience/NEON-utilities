@@ -33,7 +33,7 @@ tokenCheck <- function(token){
       } else {
         # check against current date
         if(expdate < Sys.time()) {
-          message("API token has expired. Function will proceed using public access rate. Go to your NEON user account to generate a new token.")
+          message("API token has expired. Go to your NEON user account to generate a new token.")
           token <- NA_character_
         }
       }
