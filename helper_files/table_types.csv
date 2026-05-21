@@ -595,6 +595,8 @@ DP1.20280.001,mic_benthicDnaPooling,Laboratory processing metadata for pooling o
 DP1.20055.001,SST_30min,Temperature and specific conductance at specific depths in surface water taken every 30 minutes,site-date,30
 DP1.10076.001,mam_barcodingqa,Small mammal barcoding quality assurance data from external labs,lab-all,0
 DP1.10020.001,bet_barcodingqa,Ground beetle barcoding quality assurance data from external labs,lab-all,0
+DP1.10107.001,mms_soilDnaPooling,Laboratory processing metadata for pooling of DNA extractions from soil samples,site-date,0
+DP1.10111.001,sim_locationVisitsAndAttributes,"Summary of annual visit totals, environmental context, and mitigation actions by location to support estimates of sampling impact and location vulnerability",site-all,0
 DP1.10045.001,vst_perplotperyear,"Per plot sampling metadata, including presence/absence of each growthForm",site-date,0
 DP1.10045.001,nst_perindividual,"Field measurements of individual non-herbaceous perennial plants (e.g. cacti, ferns)",site-date,0
 DP1.20197.001,asc_fieldDataPoint,Point level sediment collection field data,site-date,0
