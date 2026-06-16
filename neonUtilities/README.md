@@ -169,6 +169,12 @@ Disclaimer
 Change Log
 ----------
 
+#### 2026-06-16 v4.0.0
+Updates:
+* Data download functions updated to work with signed urls and required tokens
+* Updated aquatic site precipitation data redirects
+
+
 #### 2026-01-22 v3.0.3
 Updates:
 * Updated data stacking for frame file data products

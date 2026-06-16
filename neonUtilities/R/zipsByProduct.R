@@ -236,7 +236,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                       token = token)
   if(authCheck$status_code!=200) {
     if(is.na(token)) {
-      stop("API token was not provided or has expired. As of June 2026, NEON requires an API token for data download. To get a token, go to your user account at neonscience.org")
+      stop("API token was not provided, was invalid, or has expired. As of June 2026, NEON requires an API token for data download. To get a token, go to your user account at neonscience.org")
     } else {
       message("There was a problem connecting to the NEON API. Code will attempt to proceed but data access may fail.")
     }

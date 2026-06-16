@@ -1,3 +1,13 @@
+# version 4.0.0
+
+Released 2026-06-16
+
+## Keeping up to date with API updates
+
+* Updated data download functions to allow for signed urls and new authentication requirement
+* Updated aquatic site precipitation data redirects to account for new precipitation products
+
+
 # version 3.0.3
 
 Released 2026-01-22

@@ -24,7 +24,7 @@ DP1.10093.001,tck_taxonomyRaw,Tick identifications by expert taxonomists - raw,s
 DP1.10093.001,tck_taxonomyProcessed,Tick identifications by expert taxonomists - desynonimized,site-date,0
 DP1.10092.001,tck_pathogen,Tick pathogen testing data,site-date,0
 DP1.10092.001,tck_pathogenqa,Tick pathogen testing quality assurance data from external labs,lab-all,0
-DP1.20033.001,NSW_15_minute,Nitrate in surface water summarized over 2 minutes from burst measurements taken every 15 minutes,site-date,15
+DP1.20033.001,NSW_15_minute,Nitrate in surface water summarized from burst of measurements taken every 15 minutes,site-date,15
 DP1.20138.001,amc_fieldSuperParent,Field data for the parent sample of surface water microbes,site-date,0
 DP1.20138.001,amc_fieldCellCounts,Aquatic microbes field data specific to sample for cell counts,site-date,0
 DP1.20138.001,amc_cellCounts,Aquatic cell counts laboratory data,site-date,0
@@ -597,6 +597,7 @@ DP1.10076.001,mam_barcodingqa,Small mammal barcoding quality assurance data from
 DP1.10020.001,bet_barcodingqa,Ground beetle barcoding quality assurance data from external labs,lab-all,0
 DP1.10107.001,mms_soilDnaPooling,Laboratory processing metadata for pooling of DNA extractions from soil samples,site-date,0
 DP1.10111.001,sim_locationVisitsAndAttributes,"Summary of annual visit totals, environmental context, and mitigation actions by location to support estimates of sampling impact and location vulnerability",site-all,0
+DP1.20105.001,fsh_barcodingqa,Fish barcoding quality assurance data from external labs,lab-all,0
 DP1.10045.001,vst_perplotperyear,"Per plot sampling metadata, including presence/absence of each growthForm",site-date,0
 DP1.10045.001,nst_perindividual,"Field measurements of individual non-herbaceous perennial plants (e.g. cacti, ferns)",site-date,0
 DP1.20197.001,asc_fieldDataPoint,Point level sediment collection field data,site-date,0
