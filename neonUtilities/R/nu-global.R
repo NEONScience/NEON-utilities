@@ -2,7 +2,7 @@
 
 nu.globals <- new.env()
 
-.onLoad <- function(libname, pkgname) {
+.onAttach <- function(libname, pkgname) {
   
   nu.globals$baseurl <- Sys.getenv("NEON_API_URL")
   if(nu.globals$baseurl=="") {
@@ -11,3 +11,11 @@ nu.globals <- new.env()
   
 }
 
+
+# print the base url for the NEON API
+
+printBaseUrl <- function() {
+  
+  print(nu.globals$baseurl)
+  
+}

@@ -352,9 +352,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                            include.provisional=include.provisional,
                            token=token, progress=progress)
     if(is.null(zip.urls)) { return(invisible()) }
-    zip.urls <- tidyr::drop_na(zip.urls)
+    zip.urls <- tidyr::drop_na(zip.urls, c("name","URL"))
     
-    downld.size <- convByteSize(sum(as.numeric(zip.urls$size), na.rm=T))
+    downld.size <- convByteSize(sum(as.numeric(zip.urls$size), na.rm=TRUE))
     
     # ask user if they want to proceed
     # can disable this with check.size=F
