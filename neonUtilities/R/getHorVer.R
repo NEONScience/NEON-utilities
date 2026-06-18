@@ -43,7 +43,7 @@ getHorVer <- function(dpID=NA_character_,
   token <- tokenCheck(token)
   
   # look up product availability
-  req <- getAPI(paste("https://data.neonscience.org/api/v0/products/", 
+  req <- getAPI(paste(nu.globals$baseurl, "products/", 
                          dpID, sep=""), token=token)
   if(is.null(req)) {
     message(paste("Product lookup failed. Check that", dpID, "is a valid NEON data product."))

@@ -41,7 +41,7 @@ getCitation <- function(dpID=NA_character_, release=NA_character_) {
     cit <- base::gsub(pattern="YEAR", replacement=format(Sys.Date(), "%Y"), x=cit)
     
     # get product name from NEON API
-    req <- httr::GET(paste("https://data.neonscience.org/api/v0/products/", 
+    req <- httr::GET(paste(nu.globals$baseurl, "products/", 
                            dpID, sep=""))
     if(is.null(req)) {return(invisible())}
     if(!inherits(req, "response")) {return(invisible())}

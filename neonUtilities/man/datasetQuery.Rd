@@ -2,7 +2,7 @@
 % Please edit documentation in R/datasetQuery.R
 \name{datasetQuery}
 \alias{datasetQuery}
-\title{Query the query endpoint of the NEON API and create an arrow dataset from the results}
+\title{Query the query endpoint of the NEON API and create a duckdb dataset from the results}
 \usage{
 datasetQuery(
   dpID,
@@ -42,10 +42,10 @@ datasetQuery(
 \item{token}{User specific API token (generated within data.neonscience.org user accounts). Optional.}
 }
 \value{
-An arrow dataset for the data requested.
+A duckdb dataset for the data requested.
 }
 \description{
-Uses the query endpoint of the NEON API to find the full list of files for a given data product, release, site(s), and date range, then turns them into an arrow dataset.
+Uses the query endpoint of the NEON API to find the full list of files for a given data product, release, site(s), and date range, then turns them into a duckdb dataset.
 }
 \references{
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

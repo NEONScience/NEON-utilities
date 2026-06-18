@@ -44,7 +44,7 @@ getTimeIndex <- function(dpID, token = NA_character_) {
   }
   
   # error message if dpID isn't IS
-  req <- getAPI(paste(apiURL = "https://data.neonscience.org/api/v0/products/", dpID, sep=""), 
+  req <- getAPI(paste(nu.globals$baseurl, "products/", dpID, sep=""), 
                 token = token)
   
   if(is.null(req)) {

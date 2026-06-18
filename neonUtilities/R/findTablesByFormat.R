@@ -26,7 +26,8 @@ findTablesByFormat <- function(datatables){
     for(j in 3:length(splitNames[[i]])){
       s <- splitNames[[i]][j]
       s <- gsub(x = s, pattern = "_pub", replacement = "")
-      if(s != "sensor_positions" & s != "science_review_flags" & length(grep('_', s, fixed=T))>0) {
+      if(s != "sensor_positions" & s != "science_review_flags" & length(grep('_', s, fixed=T))>0 
+         & nchar(s)<=50) {
         t <- c(t, s)
       }
     }
@@ -46,7 +47,7 @@ findTablesByFormat <- function(datatables){
       if(length(which(xn==""))>0) {
         xn <- xn[-which(xn=="")]
       }
-      if(length(xn)==5) {
+      if(length(grep("^D[0-9]{2}$", xn))==0) {
         return("lab")
       } else {
         if(length(grep("[0-9]{4}-[0-9]{2}", xn))>0) {

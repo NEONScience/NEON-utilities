@@ -14,7 +14,7 @@
 #' @param release The data release to be downloaded; either 'current' or the name of a release, e.g. 'RELEASE-2021'. 'current' returns the most recent release, as well as provisional data if include.provisional is set to TRUE. To download only provisional data, use release='PROVISIONAL'. Defaults to 'current'.
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
-#' @param metadata T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to F, can only be set to T if tabl is not 'all'.
+#' @param metadata T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to T.
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 #' 
@@ -43,21 +43,28 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   # check for expiration
   token <- tokenCheck(token)
   
-  # check for GCS and S3 enabled
-  if(!arrow::arrow_with_gcs()) {
-    if(!arrow::arrow_with_s3()) {
-      stop("Package arrow is installed with S3 and GCS disabled and cannot access NEON data. Consult documentation at https://arrow.apache.org/docs/r/articles/fs.html , update installation and re-try.")
-    } else {
-      message("Package arrow is installed with GCS disabled. S3 will be used to access data; performance may be reduced. To enable GCS consult documentation at https://arrow.apache.org/docs/r/articles/fs.html ")
+  # check for access to the data query endpoint to test whether token is valid
+  # this query should have data, but would be ok if it didn't - still get status code 200 if auth is good
+  authCheck <- getAPI(apiURL = paste(nu.globals$baseurl, "data/query?productCode=DP1.10003.001&siteCode=BART&startDateMonth=2023-01&endDateMonth=2023-12&release=RELEASE-2025", sep=""), 
+                      token = token)
+  if(is.null(authCheck$status_code)) {
+    return(invisible())
+  } else {
+    if(authCheck$status_code!=200) {
+      if(is.na(token)) {
+        stop("API token was not provided, was invalid, or has expired. As of June 2026, NEON requires an API token for data download. To get a token, go to your user account at neonscience.org")
+      } else {
+        message("There was a problem connecting to the NEON API. Code will attempt to proceed but data access may fail.")
+      }
     }
   }
   
   # first query products endpoint to get availability info
   if(release=="current" | release=="PROVISIONAL") {
-    prod.req <- getAPI(apiURL = paste("https://data.neonscience.org/api/v0/products/", 
+    prod.req <- getAPI(apiURL = paste(nu.globals$baseurl, "products/", 
                                       dpID, sep=""), token = token)
   } else {
-    prod.req <- getAPI(apiURL = paste("https://data.neonscience.org/api/v0/products/", 
+    prod.req <- getAPI(apiURL = paste(nu.globals$baseurl, "products/", 
                                       dpID, "?release=", release, sep=""), token = token)
   }
 
@@ -123,7 +130,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   
   # construct full query url and run query
-  qurl <- paste("https://data.neonscience.org/api/v0/data/query?productCode=",
+  qurl <- paste(nu.globals$baseurl, "data/query?productCode=",
                 dpID, siteurl, dateurl, ipurl, "&package=", package, relurl, sep="")
   qreq <- getAPI(apiURL=qurl, token=token)
   
@@ -247,37 +254,20 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   flset <- data.frame(flset)
   colnames(flset) <- c("url","md5","md5var","urlvar","release")
   
-  # drop default base url, but keep a copy of original
   flset$urlbase <- flset$url
-  flset$url <- base::gsub(pattern="https://storage.googleapis.com/", 
-                       replacement="", flset$url)
-  flset$urlvar <- base::gsub(pattern="https://storage.googleapis.com/", 
-                          replacement="", flset$urlvar)
-  
-  # add GCS base url, if GCS is enabled
-  if(arrow::arrow_with_gcs()) {
-    flset$url <- paste("gs://anonymous@", flset$url, sep="")
-    flset$urlvar <- paste("gs://anonymous@", flset$urlvar, sep="")
-  } else {
-    # S3 base url and suffix if GCS is not enabled
-    flset$url <- paste("s3://", flset$url, 
-                    "/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com", sep="")
-    flset$urlvar <- paste("s3://", flset$urlvar, 
-                       "/?endpoint_override=https%3A%2F%2Fstorage.googleapis.com", sep="")
-  }
-  
+
   # get most recent variables file
   # if multiple checksums for variables files, raise a flag
   varset <- list()
   varfls <- base::grep(pattern="variables", x=flset$url, value=TRUE)
   if(length(unique(flset$md5var))>1) {
-    varu <- unique(flset$md5var)
-    for(k in varu) {
-      varset[[k]] <- getRecentPublication(flset$url[which(flset$md5==k)])[[1]]
-    }
     vardiff <- TRUE
   } else {
     vardiff <- FALSE
+  }
+  varu <- unique(flset$md5var)
+  for(k in varu) {
+    varset[[k]] <- getRecentPublication(flset$url[which(flset$md5==k)])[[1]]
   }
   varfl <- getRecentPublication(varfls)[[1]]
   

@@ -35,7 +35,7 @@ queryFiles(
 
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
 
-\item{metadata}{T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to F, can only be set to T if tabl is not 'all'.}
+\item{metadata}{T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to T.}
 
 \item{include.provisional}{T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.}
 

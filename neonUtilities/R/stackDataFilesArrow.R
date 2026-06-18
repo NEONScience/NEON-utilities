@@ -275,15 +275,30 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
         }, file_list=file_list)))
       }
       
-      # point to files as dataset
-      dat <- arrow::open_csv_dataset(sources=tblfls, schema=tableschema, skip=1)
+      # point to files as dataset and include file name column
+      if(isTRUE(cloud.mode)) {
+        dat <- stackDataFilesDuck(urls=tblfls,
+                                 varset=list(varpath),
+                                 tabl=tables[i],
+                                 package=package)
+        datf <- try(dplyr::rename(.data=dat, file="filename"), silent=TRUE)
+      } else {
+        dat <- arrow::open_csv_dataset(sources=tblfls, schema=tableschema, skip=1)
+        datf <- try(dplyr::mutate(.data=dat, file=addFilename()), silent=TRUE)
+      }
       
-      # add file name column and stream to table
-      datf <- dplyr::mutate(.data=dat, file=addFilename())
+      # stream to table
       dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
       
-      # if stacking fails, look for multiple variables files
-      if(inherits(dattab, "try-error")) {
+      # if cloud stacking fails, bail
+      if(inherits(dattab, "try-error") & isTRUE(cloud.mode)) {
+        message(paste("Stacking table ", tables[i], 
+                      " failed. Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
+        next
+      }
+      
+      # if local stacking fails, look for multiple variables files
+      if(inherits(dattab, "try-error") & isFALSE(cloud.mode)) {
         
         if(tables[i]=="sensor_positions") {
           # try arrow schema from old version of column names
@@ -318,6 +333,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
           varset <- list()
           if(isTRUE(cloud.mode)) {
             # go back to the original list of files to get the metadata; have to re-subset to table
+            # this is deprecated in duckdb workflow - cloud.mode can't be true here
             flset <- folder[["filesall"]]
             flset <- flset[sort(union(grep(paste(".", tables[i], "_pub.", sep=""), flset$url, fixed=T),
                                       grep(paste(".", tables[i], ".", sep=""), flset$url, fixed=T))),]
@@ -481,8 +497,6 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
         }
       } else {
         relmap <- folder[["filesall"]][,c("urlbase","release")]
-        relmap$urlbase <- gsub(pattern="https://storage.googleapis.com/",
-                               replacement="", x=relmap$urlbase)
         dattab <- base::merge(dattab, relmap, by.x="file", by.y="urlbase", 
                               all.x=TRUE)
       }

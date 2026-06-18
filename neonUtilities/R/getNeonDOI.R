@@ -84,7 +84,7 @@ getNeonDOI <- function(dpID=NA_character_, release=NA_character_) {
   } else {
     
     # query NEON API for product
-    req <- httr::GET(paste("https://data.neonscience.org/api/v0/products/", 
+    req <- httr::GET(paste(nu.globals$baseurl, "products/", 
                            dpID, sep=""), httr::user_agent(usera))
     
     # check for no or empty response

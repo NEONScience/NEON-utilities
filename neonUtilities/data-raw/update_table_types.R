@@ -64,7 +64,8 @@ update_table_types <- function(){
   usethis::use_data(table_types, added_fields, science_review_variables, shared_flights, 
                     sensor_position_variables, sensor_position_legacy,
                     shared_aquatic, release_2021, chem_bundles, other_bundles, relevant_EPSG, 
-                    cit_prov_template, frame_file_codes, internal=TRUE, overwrite=TRUE)
+                    cit_prov_template, frame_file_codes, 
+                    internal=TRUE, overwrite=TRUE)
   usethis::use_data(table_types, shared_flights, shared_aquatic, chem_bundles, other_bundles, 
                     internal=FALSE, overwrite=TRUE)
   
