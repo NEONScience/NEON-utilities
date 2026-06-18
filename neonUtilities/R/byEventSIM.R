@@ -61,6 +61,10 @@ byEventSIM <- function(eventType,
                      include.provisional=include.provisional,
                      token=token)
   
+  if(is.null(ds)) {
+    return(invisible())
+  }
+  
   # filter to event type
   evFilter <- eventType
   evds <- dplyr::filter(.data=ds, .data$eventType==evFilter)
