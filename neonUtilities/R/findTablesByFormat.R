@@ -47,7 +47,7 @@ findTablesByFormat <- function(datatables){
       if(length(which(xn==""))>0) {
         xn <- xn[-which(xn=="")]
       }
-      if(length(xn)==8) {
+      if(length(grep("^D[0-9]{2}$", xn))==0) {
         return("lab")
       } else {
         if(length(grep("[0-9]{4}-[0-9]{2}", xn))>0) {
