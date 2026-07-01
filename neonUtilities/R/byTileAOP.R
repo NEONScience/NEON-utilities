@@ -259,9 +259,10 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
   }
 
   file.urls.current <- getTileUrls(month.urls,
+                                   tileEasting=format(tileEasting, scientific=F, justified='none'),
+                                   tileNorthing=format(tileNorthing, scientific=F, justified='none'),
                                    include.provisional=include.provisional,
-                                   format(tileEasting, scientific=F, justified='none'),
-                                   format(tileNorthing, scientific=F, justified='none'))
+                                   token=token)
   if(is.null(file.urls.current[[1]])) {
     message("No data files found.")
     return(invisible())
