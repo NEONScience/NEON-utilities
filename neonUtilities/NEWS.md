@@ -1,3 +1,13 @@
+# version 4.0.1
+
+Released 2026-07-02
+
+## Bug fix
+
+* Fixed bug that prevented data download via the byTileAOP() function
+
+
+
 # version 4.0.0
 
 Released 2026-06-16
