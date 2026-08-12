@@ -322,143 +322,98 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
             dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
             
             if(inherits(dattab, "try-error")) {
-              message("Stacking sensor positions files failed. Try excluding provisional data, and contact NEON if unable to resolve.")
-              next
+              stringschema <- stringschema
             }
+          }
+        }
+        
+        varpaths <- filepaths[grep("variables.20", filepaths)]
+        # get or calculate checksums and separate unique variables files
+        varset <- list()
+        if(isTRUE(cloud.mode)) {
+          # go back to the original list of files to get the metadata; have to re-subset to table
+          # this is deprecated in duckdb workflow - cloud.mode can't be true here
+          flset <- folder[["filesall"]]
+          flset <- flset[sort(union(grep(paste(".", tables[i], "_pub.", sep=""), flset$url, fixed=T),
+                                    grep(paste(".", tables[i], ".", sep=""), flset$url, fixed=T))),]
+          varu <- unique(flset$md5var)
+          for(k in varu) {
+            varset[[k]] <- flset$url[which(flset$md5var==k)][1]
           }
         } else {
-          
-          varpaths <- filepaths[grep("variables.20", filepaths)]
-          # get or calculate checksums and separate unique variables files
-          varset <- list()
-          if(isTRUE(cloud.mode)) {
-            # go back to the original list of files to get the metadata; have to re-subset to table
-            # this is deprecated in duckdb workflow - cloud.mode can't be true here
-            flset <- folder[["filesall"]]
-            flset <- flset[sort(union(grep(paste(".", tables[i], "_pub.", sep=""), flset$url, fixed=T),
-                                      grep(paste(".", tables[i], ".", sep=""), flset$url, fixed=T))),]
-            varu <- unique(flset$md5var)
-            for(k in varu) {
-              varset[[k]] <- flset$url[which(flset$md5var==k)][1]
-            }
-          } else {
-            md5var <- tools::md5sum(varpaths)
-            varu <- unique(md5var)
-            for(k in varu) {
-              varset[[k]] <- getRecentPublication(varpaths[which(md5var==k)])[[1]]
-            }
-            # for local files, match variables file to specific data files by publication date
-            varPubDate <- regmatches(basename(varpaths), 
-                                     regexpr("[0-9]{8}T[0-9]{6}Z", 
-                                             basename(varpaths)))
-            tblPubDate <- regmatches(basename(tblfls), 
-                                     regexpr("[0-9]{8}T[0-9]{6}Z", 
-                                             basename(tblfls)))
-            flset <- cbind(tblfls, tblPubDate)
-            flset <- data.frame(flset)
-            names(flset) <- c("url", "urlPubDate")
-            flset$urlvar <- NA
-            flset$md5var <- NA
-            for(b in 1:nrow(flset)) {
-              mpath <- varpaths[which(varPubDate==flset$urlPubDate[b])]
-              m5path <- md5var[which(varPubDate==flset$urlPubDate[b])]
-              if(length(mpath)==0) {
-                dist <- as.numeric(substring(flset$urlPubDate[b], 10, 15)) - 
-                  as.numeric(substring(varPubDate, 10, 15))
-                mpath <- varpaths[which(abs(dist)==min(abs(dist)))]
-                m5path <- md5var[which(abs(dist)==min(abs(dist)))]
-              }
-              flset$urlvar[b] <- mpath[1]
-              flset$md5var[b] <- m5path[1]
-            }
+          md5var <- tools::md5sum(varpaths)
+          varu <- unique(md5var)
+          for(k in varu) {
+            varset[[k]] <- getRecentPublication(varpaths[which(md5var==k)])[[1]]
           }
-          
-          # if variables files match, go straight to string schema
-          trystring <- FALSE
-          if(length(varset)==1) {
+          # for local files, match variables file to specific data files by publication date
+          varPubDate <- regmatches(basename(varpaths), 
+                                   regexpr("[0-9]{8}T[0-9]{6}Z", 
+                                           basename(varpaths)))
+          tblPubDate <- regmatches(basename(tblfls), 
+                                   regexpr("[0-9]{8}T[0-9]{6}Z", 
+                                           basename(tblfls)))
+          flset <- cbind(tblfls, tblPubDate)
+          flset <- data.frame(flset)
+          names(flset) <- c("url", "urlPubDate")
+          flset$urlvar <- NA
+          flset$md5var <- NA
+          for(b in 1:nrow(flset)) {
+            mpath <- varpaths[which(varPubDate==flset$urlPubDate[b])]
+            m5path <- md5var[which(varPubDate==flset$urlPubDate[b])]
+            if(length(mpath)==0) {
+              dist <- as.numeric(substring(flset$urlPubDate[b], 10, 15)) - 
+                as.numeric(substring(varPubDate, 10, 15))
+              mpath <- varpaths[which(abs(dist)==min(abs(dist)))]
+              m5path <- md5var[which(abs(dist)==min(abs(dist)))]
+            }
+            flset$urlvar[b] <- mpath[1]
+            flset$md5var[b] <- m5path[1]
+          }
+        }
+        
+        # if variables files match, go straight to string schema
+        trystring <- FALSE
+        if(length(varset)==1) {
+          trystring <- TRUE
+        } else {
+          # check for field name differences among files
+          varFieldDiff <- checkVarFields(variableSet=varset, tableName=tables[i])
+          if(isFALSE(varFieldDiff)) {
+            # if field names match, go to string schema
             trystring <- TRUE
           } else {
-            # check for field name differences among files
-            varFieldDiff <- checkVarFields(variableSet=varset, tableName=tables[i])
-            if(isFALSE(varFieldDiff)) {
-              # if field names match, go to string schema
-              trystring <- TRUE
-            } else {
-              # if there are inconsistencies, read each separately, then unify
-              mdlist <- flset$md5var
-              tablist <- list()
-              piecewise <- TRUE
-              trystring <- FALSE
-              for(p in unique(mdlist)) {
-                
-                varp <- getRecentPublication(flset$urlvar[which(mdlist==p)])[[1]]
-                flsp <- flset$url[which(mdlist==p)]
-                
-                ds <- try(arrow::open_csv_dataset(sources=flsp, 
-                                                  schema=schemaFromVar(varp,
-                                                                       tab=tables[i],
-                                                                       package=package),
-                                                  skip=1), silent=TRUE)
-                
-                if(inherits(ds, "try-error")) {
-                  piecewise <- FALSE
-                  next
-                } else {
-                  tablist[[p]] <- ds
-                }
-                
-              }
+            # if there are inconsistencies, read each separately, then unify
+            mdlist <- flset$md5var
+            tablist <- list()
+            piecewise <- TRUE
+            trystring <- FALSE
+            for(p in unique(mdlist)) {
               
-              # if any chunks failed, try for a string schema
-              if(isFALSE(piecewise)) {
-                trystring <- TRUE
-              } else {
-                # if all chunks succeeded, merge them
-                ds <- try(arrow::open_csv_dataset(sources=tablist, 
-                                                  unify_schemas=TRUE,
-                                                  skip=0), silent=TRUE)
-                
-                # add file name column and stream to table
-                datf <- try(dplyr::mutate(.data=ds, file=addFilename()), silent=TRUE)
-                dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
-                
-                # if merge fails, try for a string schema
-                if(inherits(dattab, "try-error")) {
-                  trystring <- TRUE
-                }
-              }
-            }
-          }
-          
-          # if making dataset via any path above failed, try a string schema
-          if(isTRUE(trystring)) {
-            message(paste("Data retrieval using variables file to generate schema failed for table ", tables[i], ". All fields will be read as strings. This can be slow, and can usually be avoided by excluding provisional data.", sep=""))
-            stringtablist <- list()
-            stringpiecewise <- TRUE
-            for(p in unique(flset$md5var)) {
-              
-              flsetp <- flset[which(flset$md5var==p),]
-              flsp <- flsetp$url
-              stringschema <- schemaAllStringsFromSet(flsp)
+              varp <- getRecentPublication(flset$urlvar[which(mdlist==p)])[[1]]
+              flsp <- flset$url[which(mdlist==p)]
               
               ds <- try(arrow::open_csv_dataset(sources=flsp, 
-                                                schema=stringschema,
+                                                schema=schemaFromVar(varp,
+                                                                     tab=tables[i],
+                                                                     package=package),
                                                 skip=1), silent=TRUE)
+              
               if(inherits(ds, "try-error")) {
-                stringpiecewise <- FALSE
+                piecewise <- FALSE
                 next
               } else {
-                stringtablist[[p]] <- ds
+                tablist[[p]] <- ds
               }
               
             }
             
-            if(isFALSE(stringpiecewise)) {
-              message(paste("Reading data as strings failed for table ", tables[i], ". Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
-              next
+            # if any chunks failed, try for a string schema
+            if(isFALSE(piecewise)) {
+              trystring <- TRUE
             } else {
               # if all chunks succeeded, merge them
-              ds <- try(arrow::open_csv_dataset(sources=stringtablist, 
+              ds <- try(arrow::open_csv_dataset(sources=tablist, 
                                                 unify_schemas=TRUE,
                                                 skip=0), silent=TRUE)
               
@@ -466,10 +421,53 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
               datf <- try(dplyr::mutate(.data=ds, file=addFilename()), silent=TRUE)
               dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
               
+              # if merge fails, try for a string schema
               if(inherits(dattab, "try-error")) {
-                message(paste("Reading data as strings failed for table ", tables[i], ". Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
-                next
+                trystring <- TRUE
               }
+            }
+          }
+        }
+        
+        # if making dataset via any path above failed, try a string schema
+        if(isTRUE(trystring)) {
+          message(paste("Data retrieval using variables file to generate schema failed for table ", tables[i], ". All fields will be read as strings. This can be slow, and can usually be avoided by excluding provisional data.", sep=""))
+          stringtablist <- list()
+          stringpiecewise <- TRUE
+          for(p in unique(flset$md5var)) {
+            
+            flsetp <- flset[which(flset$md5var==p),]
+            flsp <- flsetp$url
+            stringschema <- schemaAllStringsFromSet(flsp)
+            
+            ds <- try(arrow::open_csv_dataset(sources=flsp, 
+                                              schema=stringschema,
+                                              skip=1), silent=TRUE)
+            if(inherits(ds, "try-error")) {
+              stringpiecewise <- FALSE
+              next
+            } else {
+              stringtablist[[p]] <- ds
+            }
+            
+          }
+          
+          if(isFALSE(stringpiecewise)) {
+            message(paste("Reading data as strings failed for table ", tables[i], ". Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
+            next
+          } else {
+            # if all chunks succeeded, merge them
+            ds <- try(arrow::open_csv_dataset(sources=stringtablist, 
+                                              unify_schemas=TRUE,
+                                              skip=0), silent=TRUE)
+            
+            # add file name column and stream to table
+            datf <- try(dplyr::mutate(.data=ds, file=addFilename()), silent=TRUE)
+            dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
+            
+            if(inherits(dattab, "try-error")) {
+              message(paste("Reading data as strings failed for table ", tables[i], ". Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))
+              next
             }
           }
         }
