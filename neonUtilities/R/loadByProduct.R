@@ -24,6 +24,7 @@
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
 #' @param useFasttime Should the fasttime package be used to read date-time fields? Defaults to false.
 #' @param progress T or F, should progress bars be printed? Defaults to TRUE.
+#' @param all.string T or F, should all fields be set to data type = string? Ignored unless cloud.mode=TRUE. Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.
 #'
 #' @details All available data meeting the query criteria will be downloaded. Most data products are collected at only a subset of sites, and dates of collection vary. Consult the NEON data portal for sampling details.
 #' Dates are specified only to the month because NEON data are provided in monthly packages. Any month included in the search criteria will be included in the download. Start and end date are inclusive.
@@ -50,7 +51,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                           release="current", timeIndex="all", tabl="all", cloud.mode=FALSE,
                           check.size=TRUE, include.provisional=FALSE,
                           nCores=1, forceParallel=FALSE, token=NA_character_, 
-                          useFasttime=FALSE, avg=NA, progress=TRUE) {
+                          useFasttime=FALSE, avg=NA, progress=TRUE,
+                          all.string=FALSE) {
 
   # error message if package is not basic or expanded
   if(!package %in% c("basic", "expanded")) {
@@ -117,7 +119,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     out <- stackByTable(filepath=fls, savepath="envt", 
                         cloud.mode=TRUE, folder=TRUE, 
                         nCores=nCores, saveUnzippedFiles=FALSE, 
-                        useFasttime=useFasttime, progress=progress)
+                        useFasttime=useFasttime, all.string=all.string,
+                        progress=progress)
   } else {
     
     # create a temporary directory to save to

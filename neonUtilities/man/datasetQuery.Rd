@@ -15,6 +15,7 @@ datasetQuery(
   package = "basic",
   release = "current",
   include.provisional = FALSE,
+  all.string = FALSE,
   token = NA_character_
 )
 }
@@ -39,7 +40,9 @@ datasetQuery(
 
 \item{include.provisional}{T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.}
 
-\item{token}{User specific API token (generated within data.neonscience.org user accounts). Optional.}
+\item{all.string}{T or F, should all fields be set to data type = string? Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.}
+
+\item{token}{User specific API token (generated within data.neonscience.org user accounts).}
 }
 \value{
 A duckdb dataset for the data requested.

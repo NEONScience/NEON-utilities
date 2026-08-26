@@ -21,7 +21,8 @@ loadByProduct(
   token = NA_character_,
   useFasttime = FALSE,
   avg = NA,
-  progress = TRUE
+  progress = TRUE,
+  all.string = FALSE
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ loadByProduct(
 \item{avg}{Deprecated; use timeIndex}
 
 \item{progress}{T or F, should progress bars be printed? Defaults to TRUE.}
+
+\item{all.string}{T or F, should all fields be set to data type = string? Ignored unless cloud.mode=TRUE. Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.}
 }
 \value{
 A named list of all the data tables in the data product downloaded, plus a validation file and a variables file, as available.

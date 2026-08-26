@@ -10,6 +10,7 @@
 #' @param varset A list of urls pointing to the set of variables files relevant to the url set.
 #' @param tabl The table name of the table the url set represents.
 #' @param package Basic or expanded data package?
+#' @param all.string T or F, should all fields be set to data type = string? Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.
 #' 
 #' @return A duckdb dataset for the input data paths.
 
@@ -26,14 +27,15 @@
 stackDataFilesDuck <- function(urls,
                                varset,
                                tabl,
-                               package) {
+                               package,
+                               all.string=FALSE) {
   
   # start with variables file returned by queryFiles
-  trystring <- FALSE
+  trystring <- all.string
   onevar <- FALSE
   
   # check for inconsistencies in variables files
-  if(length(varset)>1) {
+  if(length(varset)>1 & isFALSE(trystring)) {
     
     # check for differences in fieldNames and dataTypes for the relevant table
     varFieldDiff <- checkVarFields(variableSet=varset, tableName=tabl)
@@ -41,7 +43,7 @@ stackDataFilesDuck <- function(urls,
       
       # if there are inconsistencies, infer schema
       message(paste("Differences in variables files detected for table ", tabl, 
-                    ". Schema will be inferred. If this causes errors, try querying released and provisional data separately.", sep=""))
+                    ". Schema will be inferred. If this causes errors, try querying released and provisional data separately. As a last resort, all data fields can be set to string type using all.string=TRUE.", sep=""))
       ds <- try(duckdbfs::open_dataset(sources=urls, 
                                        unify_schemas=TRUE,
                                        filename=TRUE,
@@ -57,11 +59,11 @@ stackDataFilesDuck <- function(urls,
     }
   }
   
-  if(length(varset)==1) {
+  if(length(varset)==1 & isFALSE(trystring)) {
     varend <- arrow::read_csv_arrow(varset[[1]], col_names=TRUE, skip=0)
   }
   
-  if(length(varset)==1 | isTRUE(onevar)) {
+  if(length(varset)==1 | isTRUE(onevar) & isFALSE(trystring)) {
     tableschema <- schemaFromVarDuck(varend,
                                  tab=tabl,
                                  package=package)
@@ -80,8 +82,10 @@ stackDataFilesDuck <- function(urls,
   
   # if making dataset via the paths above failed, try a string schema
   if(isTRUE(trystring)) {
-    message(paste("Data retrieval using variables file and/or inference to generate schema failed for table ", tabl, 
-                  ". All fields will be read as strings. This can usually be avoided by excluding provisional data.", sep=""))
+    if(isFALSE(all.string)) {
+      message(paste("Data retrieval using variables file and/or inference to generate schema failed for table ", tabl, 
+                    ". All fields will be read as strings. This can usually be avoided by excluding provisional data.", sep=""))
+    }
     ds <- try(duckdbfs::open_dataset(sources=urls, 
                                      unify_schemas=TRUE,
                                      parser_options = c(

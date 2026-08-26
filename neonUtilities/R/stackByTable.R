@@ -19,6 +19,7 @@
 #' @param nCores The number of cores to parallelize the stacking procedure. To automatically use the maximum number of cores on your machine we suggest setting nCores=parallel::detectCores(). By default it is set to a single core.
 #' @param useFasttime Should the fasttime package be used to read date-time variables? Only relevant if savepath="envt". Defaults to false.
 #' @param progress T or F: should progress bars be printed? Defaults to TRUE.
+#' @param all.string T or F, should all fields be set to data type = string? Ignored unless cloud.mode=TRUE. Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.
 #' @return All files are unzipped and one file for each table type is created and written. If savepath="envt" is specified, output is a named list of tables; otherwise, function output is null and files are saved to the location specified.
 
 #' @examples
@@ -59,7 +60,8 @@ stackByTable <- function(filepath,
                          package=NA, 
                          nCores=1,
                          useFasttime=FALSE,
-                         progress=TRUE){
+                         progress=TRUE,
+                         all.string=FALSE){
 
   if(isTRUE(cloud.mode)) {
     allFiles <- filepath
@@ -267,7 +269,7 @@ stackByTable <- function(filepath,
 
   # stacking!
   stackedList <- stackDataFilesArrow(folder=savepath, cloud.mode=cloud.mode, 
-                                     progress=progress, dpID=dpID)
+                                     progress=progress, dpID=dpID, all.string=all.string)
   
   # if saving to the environment, done
   if(envt==1) {

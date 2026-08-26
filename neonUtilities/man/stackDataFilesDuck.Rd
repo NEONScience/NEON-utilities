@@ -4,7 +4,7 @@
 \alias{stackDataFilesDuck}
 \title{Align data files into a duckdb dataset}
 \usage{
-stackDataFilesDuck(urls, varset, tabl, package)
+stackDataFilesDuck(urls, varset, tabl, package, all.string = FALSE)
 }
 \arguments{
 \item{urls}{The set of urls to be combined into a dataset.}
@@ -14,6 +14,8 @@ stackDataFilesDuck(urls, varset, tabl, package)
 \item{tabl}{The table name of the table the url set represents.}
 
 \item{package}{Basic or expanded data package?}
+
+\item{all.string}{T or F, should all fields be set to data type = string? Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.}
 }
 \value{
 A duckdb dataset for the input data paths.

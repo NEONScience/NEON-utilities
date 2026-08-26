@@ -13,6 +13,8 @@
 #' @param cloud.mode T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.
 #' @param progress T or F, should progress bars and messages be printed?
 #' @param dpID The data product identifier
+#' @param all.string T or F, should all fields be set to data type = string? Ignored unless cloud.mode=TRUE. Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.
+
 #' @return One file for each table type is created and written.
 #' @keywords internal
 
@@ -34,7 +36,10 @@
 #     * Rewrote from stackDataFilesParallel() to use arrow package for stacking
 ##############################################################################################
 
-stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
+stackDataFilesArrow <- function(folder, cloud.mode=FALSE, 
+                                progress=TRUE, 
+                                all.string=FALSE,
+                                dpID){
   
   starttime <- Sys.time()
   releases <- character()
@@ -280,7 +285,8 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
         dat <- stackDataFilesDuck(urls=tblfls,
                                  varset=folder$varset,
                                  tabl=tables[i],
-                                 package=package)
+                                 package=package,
+                                 all.string=all.string)
         datf <- try(dplyr::rename(.data=dat, file="filename"), silent=TRUE)
       } else {
         dat <- arrow::open_csv_dataset(sources=tblfls, schema=tableschema, skip=1)

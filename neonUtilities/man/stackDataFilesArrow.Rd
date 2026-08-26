@@ -4,7 +4,13 @@
 \alias{stackDataFilesArrow}
 \title{Join data files in a unzipped NEON data package by table type}
 \usage{
-stackDataFilesArrow(folder, cloud.mode = FALSE, progress = TRUE, dpID)
+stackDataFilesArrow(
+  folder,
+  cloud.mode = FALSE,
+  progress = TRUE,
+  all.string = FALSE,
+  dpID
+)
 }
 \arguments{
 \item{folder}{The location of the data}
@@ -12,6 +18,8 @@ stackDataFilesArrow(folder, cloud.mode = FALSE, progress = TRUE, dpID)
 \item{cloud.mode}{T or F, are data transferred from one cloud environment to another? If T, this function returns a list of url paths to data files.}
 
 \item{progress}{T or F, should progress bars and messages be printed?}
+
+\item{all.string}{T or F, should all fields be set to data type = string? Ignored unless cloud.mode=TRUE. Defaults to FALSE; should generally only be used if schema from variables file is failing and inferring the schema is introducing errors.}
 
 \item{dpID}{The data product identifier}
 }
