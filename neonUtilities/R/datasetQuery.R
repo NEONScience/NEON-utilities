@@ -168,7 +168,7 @@ datasetQuery <- function(dpID, site="all",
   
   # pass data to duckdb stacking function
   ds <- stackDataFilesDuck(urls=urlsub$url,
-                           varset=urlset$variables,
+                           varset=urlset$varset,
                            tabl=tabl,
                            package=package)
   
