@@ -278,7 +278,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       # point to files as dataset and include file name column
       if(isTRUE(cloud.mode)) {
         dat <- stackDataFilesDuck(urls=tblfls,
-                                 varset=list(varpath),
+                                 varset=folder$varset,
                                  tabl=tables[i],
                                  package=package)
         datf <- try(dplyr::rename(.data=dat, file="filename"), silent=TRUE)
@@ -291,6 +291,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE, progress=TRUE, dpID){
       dattab <- try(data.frame(dplyr::collect(datf)), silent=TRUE)
       
       # if cloud stacking fails, bail
+      # alternative stacking options for cloud are included in stackDataFilesDuck()
       if(inherits(dattab, "try-error") & isTRUE(cloud.mode)) {
         message(paste("Stacking table ", tables[i], 
                       " failed. Try excluding provisional data, and contact NEON if unable to resolve.", sep=""))

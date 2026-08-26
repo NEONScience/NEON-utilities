@@ -27,12 +27,12 @@ checkVarFields <- function(variableSet, tableName) {
     varx <- data.frame(arrow::read_csv_arrow(x, col_names=TRUE, skip=0))
     varx <- varx[which(varx$table==tableName),]
     if(nrow(var1)!=nrow(varx)) {
-      tst <- FALSE
+      tst <- TRUE
     } else {
       tst <- any(varx$fieldName!=var1$fieldName | varx$dataType!=var1$dataType)
     }
     return(tst)
   }))
   
-  return(any(!varany))
+  return(any(varany))
 }

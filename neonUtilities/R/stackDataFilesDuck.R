@@ -44,6 +44,7 @@ stackDataFilesDuck <- function(urls,
                     ". Schema will be inferred. If this causes errors, try querying released and provisional data separately.", sep=""))
       ds <- try(duckdbfs::open_dataset(sources=urls, 
                                        unify_schemas=TRUE,
+                                       filename=TRUE,
                                        format="csv"), silent=TRUE)
       if(inherits(ds, "try-error")) {
         trystring <- TRUE
