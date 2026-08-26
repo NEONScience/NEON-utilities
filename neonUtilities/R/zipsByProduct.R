@@ -425,14 +425,9 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
           
           if(inherits(dt2, "error")) {
             # check expiration date
-            urlcreatedate <- regmatches(zip.urls$URL[j], regexpr("X-Goog-Date=20[0-9]{6}T[0-9]{6}Z", zip.urls$URL[j]))
-            urlcreatedate <- regmatches(urlcreatedate, regexpr("20[0-9]{6}T[0-9]{6}Z", urlcreatedate))
-            urlcreatedate <- as.POSIXct(urlcreatedate, format="%Y%m%dT%H%M%SZ", tz="GMT")
-            urlexpdate <- regmatches(zip.urls$URL[j], regexpr("X-Goog-Expires=[0-9]{6}", zip.urls$URL[j]))
-            urlexpdate <- regmatches(urlexpdate, regexpr("[0-9]{6}", urlexpdate))
-            urlexp <- urlcreatedate + as.numeric(urlexpdate)
+            urlexp <- checkUrlExp(zip.urls$URL[j])
             
-            if(length(urlexp)==0) {
+            if(is.null(urlexp)) {
               message(paste0("\nDownload of file ", zip.urls$name[j],
                              " failed. If all files fail, check data portal (neonscience.org/data) for possible outage alert.\n",
                              "The most common cause of download failures is timeout. If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))

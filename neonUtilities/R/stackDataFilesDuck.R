@@ -80,7 +80,7 @@ stackDataFilesDuck <- function(urls,
   
   # if making dataset via the paths above failed, try a string schema
   if(isTRUE(trystring)) {
-    message(paste("Data retrieval using variables file to generate schema failed for table ", tabl, 
+    message(paste("Data retrieval using variables file and/or inference to generate schema failed for table ", tabl, 
                   ". All fields will be read as strings. This can usually be avoided by excluding provisional data.", sep=""))
     ds <- try(duckdbfs::open_dataset(sources=urls, 
                                      unify_schemas=TRUE,
