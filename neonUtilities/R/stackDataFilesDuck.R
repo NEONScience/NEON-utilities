@@ -43,7 +43,7 @@ stackDataFilesDuck <- function(urls,
       
       # if there are inconsistencies, infer schema
       message(paste("Differences in variables files detected for table ", tabl, 
-                    ". Schema will be inferred. If this causes errors, try querying released and provisional data separately. As a last resort, all data fields can be set to string type using all.string=TRUE.", sep=""))
+                    ". Schema will be inferred. If this causes errors, try querying released and provisional data separately. Alternatively, all data fields can be set to string type using all.string=TRUE.", sep=""))
       ds <- try(duckdbfs::open_dataset(sources=urls, 
                                        unify_schemas=TRUE,
                                        filename=TRUE,
