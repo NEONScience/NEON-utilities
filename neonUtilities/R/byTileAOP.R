@@ -297,95 +297,81 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
                  R.Version()$major, ".", R.Version()$minor, " ", commandArgs()[1], 
                  " ", R.Version()$platform, sep="")
   
-  # copy zip files into folder
-  j <- 1
+  fl.urls <- file.urls.current[[1]]
+  ct <- 0
+  
   if(isTRUE(progress)) {
-    message(paste("Downloading ", nrow(file.urls.current[[1]]), " files", sep=""))
+    message(paste("Downloading ", nrow(fl.urls), " files", sep=""))
     pb <- utils::txtProgressBar(style=3)
-    utils::setTxtProgressBar(pb, 1/(nrow(file.urls.current[[1]])-1))
+    utils::setTxtProgressBar(pb, 1/(nrow(fl.urls)-1))
   }
 
-  counter <- 1
-
-  while(j <= nrow(file.urls.current[[1]])) {
-
-    if (counter > 2) {
-      message(paste0("\nRefresh did not solve the isse. URL query for file ", file.urls.current[[1]]$name[j],
-                  " failed. If all files fail, check data portal (data.neonscience.org/news) for possible outage alert.\n",
-                 "If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
-
-      j <- j + 1
-      counter <- 1
-    } else {
-      path1 <- strsplit(file.urls.current[[1]]$URL[j], "\\?")[[1]][1]
-      pathparts <- strsplit(path1, "\\/")
-      path2 <- paste(pathparts[[1]][4:(length(pathparts[[1]])-1)], collapse="/")
-      newpath <- paste0(filepath, "/", path2)
-
-      if(dir.exists(newpath) == FALSE) {
-        dir.create(newpath, recursive = TRUE)
-      }
-
-      if(is.na(token)) {
-        t <- tryCatch(
-          {
-            suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
-                                                  paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                  mode="wb", quiet=T,
-                                                  headers=c("User-Agent"=usera)))
-          }, error = function(e) { e } )
-      } else {
-        t <- tryCatch(
-          {
-            suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
-                                                  paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                  mode="wb", quiet=T,
-                                                  headers=c("User-Agent"=usera,
-                                                            "X-API-Token"=token)))
-          }, error = function(e) { e } )
-      }
-
-      if(inherits(t, "error")) {
+  # download files
+  for(j in 1:nrow(fl.urls)) {
+    
+    path1 <- strsplit(fl.urls$URL[j], "\\?")[[1]][1]
+    pathparts <- strsplit(path1, "\\/")
+    path2 <- paste(pathparts[[1]][4:(length(pathparts[[1]])-1)], collapse="/")
+    newpath <- paste0(filepath, "/", path2)
+    
+    if(dir.exists(newpath) == FALSE) {
+      dir.create(newpath, recursive = TRUE)
+    }
+    outpathj <- paste(newpath, fl.urls$name[j], sep="/")
+    
+    if(!file.exists(substr(outpathj, 1, nchar(outpathj)-4)) || !file.exists(outpathj)) {
+      
+      dt <- downloadNEONFile(url=fl.urls$URL[j],
+                             outpath=outpathj,
+                             useragent=usera,
+                             token=token)
+      
+      if(inherits(dt, "error")) {
         
-        # re-attempt download once with no changes
-        if(counter < 2) {
-          message(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. Re-attempting."))
-          t <- tryCatch(
-            {
-              suppressWarnings(downloader::download(file.urls.current[[1]]$URL[j],
-                                                    paste(newpath, file.urls.current[[1]]$name[j], sep="/"),
-                                                    mode="wb", quiet=T,
-                                                    headers=c("User-Agent"=usera)))
-            }, error = function(e) { e } )
-          if(inherits(t, "error")) {
-            counter <- counter + 1
+        # get header to check for rate limit, then re-attempt download once with no other changes
+        testget <- getAPIHeaders(fl.urls$URL[j], token=token)
+        
+        dt2 <- downloadNEONFile(url=fl.urls$URL[j],
+                                outpath=outpathj,
+                                useragent=usera,
+                                token=token)
+        
+        if(inherits(dt2, "error")) {
+          # check expiration date
+          urlexp <- checkUrlExp(fl.urls$URL[j])
+          
+          if(is.null(urlexp)) {
+            message(paste0("\nDownload of file ", fl.urls$name[j],
+                           " failed. If all files fail, check data portal (neonscience.org/data) for possible outage alert.\n",
+                           "The most common cause of download failures is timeout. If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
+            unlink(outpathj)
           } else {
-            #message(paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" "))
-            j <- j + 1
-            counter <- 1
+            if(urlexp < Sys.time()) {
+              message(paste0("\nURL for file ", fl.urls$name[j], " has expired. Re-generate url list by re-running byFileAOP()."))
+            } else {
+              message(paste0("\nDownload of file ", fl.urls$name[j],
+                             " failed. If all files fail, check data portal (neonscience.org/data) for possible outage alert.\n",
+                             "The most common cause of download failures is timeout. If file sizes are large, increase the timeout limit on your machine: options(timeout=###)"))
+              unlink(outpathj)
+            }
           }
+          
         } else {
-          message(paste0("\n", file.urls.current[[1]]$name[j], " could not be downloaded. URLs may have expired. Refreshing URL list."))
-          file.urls.new <- getTileUrls(month.urls, tileEasting, tileNorthing, 
-                                       include.provisional=include.provisional, token=token)
-          file.urls.current <- file.urls.new
-          counter <- counter + 1
+          ct <- ct + 1
+          if(isTRUE(progress)) {
+            utils::setTxtProgressBar(pb, j/(nrow(fl.urls)-1))
+          }
         }
-        
       } else {
-        #message(paste(file.urls.current[[1]]$name[j], "downloaded to", newpath, sep=" "))
-        j <- j + 1
-        counter <- 1
-        releases <- c(releases, file.urls.current[[2]])
-        
+        ct <- ct + 1
         if(isTRUE(progress)) {
-          utils::setTxtProgressBar(pb, j/(nrow(file.urls.current[[1]])-1))
+          utils::setTxtProgressBar(pb, j/(nrow(fl.urls)-1))
         }
-        
       }
-
+      
     }
   }
+  
   if(isTRUE(progress)) {
     utils::setTxtProgressBar(pb, 1)
     close(pb)
@@ -416,9 +402,8 @@ byTileAOP <- function(dpID, site, year, easting, northing, buffer=0,
     }
   }
 
-  # add a counter instead of using starting number
   if(isTRUE(progress)) {
-    message(paste("Successfully downloaded ", nrow(file.urls.current[[1]]), " files to ", filepath, sep=""))
+    message(paste("Successfully downloaded ", ct, " files to ", filepath, sep=""))
   }
   
 }
