@@ -169,6 +169,16 @@ Disclaimer
 Change Log
 ----------
 
+#### 2026-09-09 v4.0.2
+Updates:
+* Update to special handling for sensor positions files, to align with data publication updates
+
+
+#### 2026-07-02 v4.0.1
+Bug fix:
+* Fixed bug that prevented data download via the byTileAOP() function
+
+
 #### 2026-06-16 v4.0.0
 Updates:
 * Data download functions updated to work with signed urls and required tokens
@@ -181,7 +191,7 @@ Updates:
 * Updated aquatic site meteorological data redirects
 
 
-#### 2025-08-28 v3.0.2
+#### 2025-09-25 v3.0.2
 Bug fixes:
 * Further improved error messaging for hor and ver indices in datasetQuery()
 * Fixed handling of site-all tables in datasetQuery()

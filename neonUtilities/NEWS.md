@@ -1,3 +1,13 @@
+# version 4.0.2
+
+Released 2026-09-09
+
+## Keeping up to date with internal code changes
+
+* Updated customized code for stacking sensor positions files, to align with updated publication schema
+
+
+
 # version 4.0.1
 
 Released 2026-07-02
