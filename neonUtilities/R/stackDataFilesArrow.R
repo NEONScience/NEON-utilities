@@ -485,6 +485,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE,
         dattab <- removeSrfDups(dattab)
       }
       
+      # for sensor positions, check column names
+      if(tables[i]=="sensor_positions" & "name" %in% names(dattab)) {
+        dattab <- alignSpCols(dattab)
+      }
+      
       # append publication date
       dattab$publicationDate <- regmatches(basename(dattab$file), 
                                            regexpr("[0-9]{8}T[0-9]{6}Z", 
