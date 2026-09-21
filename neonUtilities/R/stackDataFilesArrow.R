@@ -240,7 +240,10 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE,
       tbltype <- unique(ttypes$tableType[which(ttypes$tableName == gsub(tables[i], pattern = "_pub", replacement = ""))])
       
       # create arrow schema from variables file
-      tableschema <- schemaFromVar(variables=v, tab=tables[i], package=package)
+      tableschema <- try(schemaFromVar(variables=v, tab=tables[i], package=package), silent = TRUE)
+      if(inherits(tableschema, "try-error")) {
+        tableschema <- NULL
+      }
 
       file_list <- sort(union(filepaths[grep(paste(".", tables[i], "_pub.", sep=""), filepaths, fixed=T)],
                               filepaths[grep(paste(".", tables[i], ".", sep=""), filepaths, fixed=T)]))
@@ -289,7 +292,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE,
                                  all.string=all.string)
         datf <- try(dplyr::rename(.data=dat, file="filename"), silent=TRUE)
       } else {
-        dat <- arrow::open_csv_dataset(sources=tblfls, schema=tableschema, skip=1)
+        dat <- try(arrow::open_csv_dataset(sources=tblfls, schema=tableschema, skip=1), silent=TRUE)
         datf <- try(dplyr::mutate(.data=dat, file=addFilename()), silent=TRUE)
       }
       
