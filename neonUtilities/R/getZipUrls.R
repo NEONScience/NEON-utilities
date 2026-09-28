@@ -135,12 +135,9 @@ getZipUrls <- function(month.urls, avg, package, dpID,
     # check for no files
     if(length(tmp.files[[i]]$data$files)==0) {
       message(paste("No files found for site",
-                                    substring(month.urls[i],
-                                              nchar(month.urls[i])-11,
-                                              nchar(month.urls[i])-8),
-                                    "and month", substring(month.urls[i],
-                                                           nchar(month.urls[i])-6,
-                                                           nchar(month.urls[i])), sep=" "))
+                    tmp.files[[i]]$data$siteCode,
+                                    "and month", 
+                    tmp.files[[i]]$data$month, sep=" "))
       next
     }
 
