@@ -1,613 +1,613 @@
 productID,tableName,tableDesc,tableType,tableTMI
-NEON.DOM.SITE.DP1.20221.001,zoo_pcrAmplification_pub,Ingest of laboratory metadata from PCR amplification of DNA for zooplankton analyses,site-date,0
-NEON.DOM.SITE.DP1.20120.001,inv_persample_pub,Aquatic macroinvertebrate habitat data and QC metrics per sample,site-date,0
-NEON.DOM.SITE.DP1.20008.001,SCSW_5_min,Specific conductivity of surface water averaged over 5 minutes,site-date,5
-NEON.DOM.SITE.DP1.20093.001,swc_domainLabData_pub,Surface water chemistry ALK and ANC domain lab data summary data,site-date,0
-NEON.DOM.SITE.DP1.10047.001,spc_biogeochem_pub,Soil initial characterization chemical measurements,site-date,0
-NEON.DOM.SITE.DP1.20141.002,mct_surfaceWaterSampleMetadata_ITS_pub,Metadata for surface water samples used in the analysis of ITS marker gene sequences to derive community composition,site-date,0
-NEON.DOM.SITE.DP1.10099.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
-NEON.DOM.SITE.DP1.10108.001,mmg_soilRawDataFiles_pub,Raw sequence data files for microbial marker gene sequencing from soil samples,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.10104.001,sme_batchResults_pub,Microbial biomass batch-level data,lab-all,0
-NEON.DOM.SITE.DP1.30012.001,fsp_sampleMetadata_pub,Foliar sample metaddata,site-date,0
-NEON.DOM.SITE.DP1.00023.001,SLRNR_1min,Shortwave and Longwave Radiation averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.00026.001,ais_sunaCleanAndCal_pub,Record of SUNA cleaning and calibration activities,site-date,0
-NEON.DOM.SITE.DP1.20221.001,zoo_fieldData_pub,Aquatic zooplankton field data,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_qualityCheck_pub,Aquatic algae quality data,site-date,0
-NEON.DOM.SITE.DP1.20092.001,gwc_fieldSuperParent_pub,Field data for the parent sample of groundwater chemistry,site-date,0
-NEON.DOM.SITE.DP1.20194.001,asc_externalLabSummary_pub,Sediment chemistry external lab long-term summary data,lab-current,0
-NEON.DOM.SITE.DP1.10058.001,div_voucher_pub,Voucher specimens,site-all,0
-NEON.DOM.SITE.DP1.10086.001,sls_metagenomicsPooling_pub,Sample information for soil subsamples collected for metagenomics analysis,site-date,0
-NEON.DOM.SITE.DP1.20271.001,RHbuoy_30min,Relative Humidity on buoy averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10055.001,phe_statusintensity_pub,Plant phenophase status and intensity data,site-date,0
-NEON.DOM.SITE.DP1.10093.001,tck_taxonomyProcessed_pub,Tick identifications by expert taxonomists - desynonimized,site-date,0
-NEON.DOM.SITE.DP1.00003.001,TAAT_30min,Triple aspirated air temperature averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10010.001,cdw_tally_identificationHistory_pub,Coarse downed wood survey identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.00098.001,RH_30min,Relative Humidity averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20277.001,mga_benthicGroupAbundances_pub,Laboratory results of gene copy number data in benthic aquatic samples,site-date,0
-NEON.DOM.SITE.DP1.00002.001,SAAT_1min,Single aspirated air temperature averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10026.001,cfc_fieldData_pub,Field collection of foliar samples,site-date,0
-NEON.DOM.SITE.DP1.20032.001,SLRNRB_30min,Shortwave and Longwave Radiation on buoy averaged over 30 minutess,site-date,30
-NEON.DOM.SITE.DP1.00024.001,PARPAR_30min,Photosynthetically Active Radiation averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10010.001,cdw_fieldtally_pub,Tally and raw measurement of coarse downed wood >= 2 cm diameter,site-date,0
-NEON.DOM.SITE.DP1.10086.001,sls_soilCoreCollection_pub,Field data of soils collected for microbial or biogeochemistry sampling,site-date,0
-NEON.DOM.SITE.DP1.20138.001,amc_fieldCellCounts_pub,Aquatic microbes field data specific to sample for cell counts,site-date,0
-NEON.DOM.SITE.DP1.10072.001,mam_voucherIdentificationHistory_pub,Non-bout vertebrate voucher specimens identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20163.001,alg_fieldData_pub,"Periphyton, seston, and phytoplankton field collection data from streams, lakes, and non-wadeable streams",site-date,0
-NEON.DOM.SITE.DP1.10047.001,spc_perplot_pub,Soil initial characterization field data collected per plot,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_trimbleData_pub,Field collected spatial data,site-date,0
-NEON.DOM.SITE.DP1.20053.001,TSW_5min,Temperature of surface water from PRT summarized over 5 minutes,site-date,5
-NEON.DOM.SITE.DP1.20191.001,rip_percentComposition_pub,Assessment of riparian vegetation percent cover in wadeable streams,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_taxonomyRaw_pub,"Periphyton, seston, and phytoplankton identifications by expert taxonomists - raw",site-date,0
-NEON.DOM.SITE.DP1.10020.001,bet_BOLDspecimenDetails_pub,Ground beetle sequences DNA barcode - specimen details,site-date,0
-NEON.DOM.SITE.DP1.20219.001,zoo_fieldData_pub,Aquatic zooplankton field data,site-date,0
-NEON.DOM.SITE.DP1.00133.001,sdrc_priorParameters_pub,Prior rating curve parameters used to develop rating curve,site-date,0
-NEON.DOM.SITE.DP1.00045.001,TIPPRE_1min,Tipping Bucket Precipitation pooled over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.00001.001,2DWSD_2min,2D wind speed and direction averaged over 2 minutes,site-date,2
-NEON.DOM.SITE.DP1.10086.001,ntr_externalSummary_pub,Long-term uncertainty values for analysis of inorganic nitrogen concentrations,lab-all,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_gaugeDischargeMeas_pub,Individual gauge and discharge measurements used to develop rating curve,site-date,0
-NEON.DOM.SITE.DP1.00101.001,dpm_field_pub,Particulate mass field collection summary per site,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_yearly_temp,Yearly weather summary statistics,site-date,365
-NEON.DOM.SITE.DP1.00026.001,ais_aquaticLocationRecord_pub,Aquatic location tracking record information,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_markerGeneSequencingStandard_pub,Ingest of laboratory metadata for macroinvertebrate standard sample marker gene sequencing,lab-all,0
-NEON.DOM.SITE.DP1.20001.001,rap_pebbleCount_pub,Sediment particle size data collected during rapid habitat assessment pebble count sampling,site-date,0
-NEON.DOM.SITE.DP1.20193.001,sdg_externalLabSummaryData_pub,"Dissolved gas, gas tracer, and salt tracer external lab summary data",lab-all,0
-NEON.DOM.SITE.DP1.10022.001,bet_archivepooling_pub,Pitfall samples pooled by NEON technicians,site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_groundTruthPoints_pub,Bathymetry field collected ground truth data,site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_processedPlantCoverage_pub,Bathymetry plant coverage data from the processed sonar survey,site-date,0
-NEON.DOM.SITE.DP1.10107.001,mms_soilDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from soil samples,site-date,0
-NEON.DOM.SITE.DP1.20107.001,fsh_perFish_pub,Fish sampling field data per specimen captured,site-date,0
-NEON.DOM.SITE.DP1.20194.001,asc_fieldDataZone_pub,Zone level sediment collection field data,site-date,0
-NEON.DOM.SITE.DP1.20059.001,WSDBuoy_2min,Windspeed and direction above water on-buoy 2 minute mean,site-date,2
-NEON.DOM.SITE.DP1.20015.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20288.001,waq_instantaneous_pub,Instantaneous water quality measurements,site-date,100
-NEON.DOM.SITE.DP1.20066.001,apl_clipHarvest_pub,Aquatic plant bryophyte lichen macroalgae clip harvest data,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swMarkerGeneSequencing_ITS_pub,Laboratory metadata for microbial ITS marker gene sequencing from surface water samples,site-date,0
-NEON.DOM.SITE.DP1.10058.001,div_10m2Data100m2Data_pub,Plant species identifications within 10 square meter and 100 square meter subplots,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swMarkerGeneSequencing_16S_pub,Laboratory metadata for microbial 16S marker gene sequencing from surface water samples,site-date,0
-NEON.DOM.SITE.DP1.10047.001,spc_particlesize_pub,Soil initial characterization particle size measurements,site-date,0
-NEON.DOM.SITE.DP1.20288.001,ais_multisondeCleanCal_pub,Information related to multisonde cleaning and calibration activities,site-date,0
-NEON.DOM.SITE.DP1.10043.001,mos_trapping_pub,Mosquito trapping data from field operations,site-date,0
-NEON.DOM.SITE.DP1.20267.001,gag_fieldData_pub,Field metadata and gauge height per site per date,site-date,0
-NEON.DOM.SITE.DP1.20097.001,sdg_externalLabData_pub,Dissolved gas external lab data,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_thalwegByHabitatType_pub,Summary level data for stream habitat units mapped during the survey,site-date,0
-NEON.DOM.SITE.DP1.20221.001,inv_pcrAmplificationStandard_pub,Ingest of laboratory metadata from PCR amplification of DNA for macroinvertebrate standard samples,lab-all,0
-NEON.DOM.SITE.DP1.20092.001,gwc_wellStabilization_pub,Field data for recording stabilization of ground water well before sampling,site-date,0
-NEON.DOM.SITE.DP1.00017.001,dpsd_60_minutes,Dust and particulate size distribution median over 60 minutes,site-date,60
-NEON.DOM.SITE.DP1.20054.001,TOSW_30_min,Temperature (digital thermistor) of surface water averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.00005.001,IRBT_30_minute,IR Biological Temperature averaged over 30 minute,site-date,30
-NEON.DOM.SITE.DP1.00040.001,SHF_30min,The amount of thermal energy moving by conduction across an area of soil averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10022.001,bet_expertTaxonomistIDProcessed_pub,Ground beetle identifications by expert taxonomists - desynonomized,site-date,0
-NEON.DOM.SITE.DP1.20015.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
-NEON.DOM.SITE.DP1.20072.001,apc_taxonomyProcessed_pub,"Aquatic plant bryophyte lichen macroalgae point transect identifications by expert taxonomists, desynonimized",site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_dnaStandardTaxon_pub,Macroinvertebrate DNA standard sample taxonomy,lab-all,0
-NEON.DOM.SITE.DP1.20279.001,amb_fieldParent_pub,Aquatic benthic microbes field data,site-date,0
-NEON.DOM.SITE.DP1.10014.001,cdw_densitylog_pub,Tree level data for coarse downed wood disk collection,site-date,0
-NEON.DOM.SITE.DP1.10104.001,sme_labSummary_pub,Long-term uncertainty values for soil microbial biomass analysis,lab-all,0
-NEON.DOM.SITE.DP1.10055.001,phe_perindividualperyear_pub,Annual census of size and disease status on phenology plants,site-date,0
-NEON.DOM.SITE.DP1.20063.001,apl_biomass_pub,Domain lab aquatic clip harvest biomass,site-date,0
-NEON.DOM.SITE.DP1.20221.001,inv_metabarcodeSummary_pub,Summary data on laboratory methods for metabarcode community results,lab-all,0
-NEON.DOM.SITE.DP4.00131.001,geo_surveyFieldData_pub,Table to restrict Fulcrum loading until survey is complete,site-date,0
-NEON.DOM.SITE.DP1.00006.001,SECPRE_30min,Secondary Precipitation pooled over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20066.001,apl_biomass_pub,Domain lab aquatic clip harvest biomass,site-date,0
-NEON.DOM.SITE.DP1.10076.001,mam_BOLDcollectionData_pub,Small mammal sequences DNA barcode - collection data,site-date,0
-NEON.DOM.SITE.DP1.20086.002,mct_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
-NEON.DOM.SITE.DP1.10108.001,mmg_soilPcrAmplification_ITS_pub,Laboratory metadata from ITS PCR amplification of DNA from soil samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.10108.001,mmg_soilPcrAmplification_16S_pub,Laboratory metadata from 16S PCR amplification of DNA from soil samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.20001.001,rap_pebbleFieldData_pub,Sediment particle size distribution summary data associated with pebble count sampling during the rapid habitat assessment survey,site-date,0
-NEON.DOM.SITE.DP1.20264.001,TSD_1_min,Temperature at specific depths of surface water taken every 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10067.001,bbc_percore_pub,Field data collected per soil core,site-date,0
-NEON.DOM.SITE.DP1.20163.001,alg_domainLabChemistryComp_pub,"Periphyton, seston, and phytoplankton domain lab data for composite chemistry samples",site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swMarkerGeneSequencingQA_ITS_pub,Laboratory quality assurance metadata for microbial ITS marker gene sequencing from surface water samples,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_maintenanceSensorReplacement_pub,Information related to replacement of sensors and infrastructure,site-date,0
-NEON.DOM.SITE.DP1.10104.001,sme_scaledMicrobialBiomass_pub,"Laboratory results of microbial biomass data, scaled to an internal standard",site-date,0
-NEON.DOM.SITE.DP1.00023.001,SLRNR_30min,Shortwave and Longwave Radiation averaged over 30 minute,site-date,30
-NEON.DOM.SITE.DP1.20217.001,TGW_5_minute,Temperature of groundwater taken every 5 minutes,site-date,5
-NEON.DOM.SITE.DP1.20252.001,dep_secchi_pub,Secchi field data collection per site per sampling day,site-date,0
-NEON.DOM.SITE.DP1.20099.001,agw_groundwaterFieldData_pub,Field metadata and groundwater measurements per site per date,site-date,0
-NEON.DOM.SITE.DP1.00014.001,SRDDP_1min,Shortwave radiation (direct and diffuse pyranometer) averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10033.001,ltr_litterLignin_pub,External lab analysis of lignin concentrations in litter,site-date,0
-NEON.DOM.SITE.DP1.20206.001,asi_fieldSuperParent_pub,Field data for the parent sample of surface water stable isotopes,site-date,0
-NEON.DOM.SITE.DP1.20033.001,NSW_15_minute,Nitrate in surface water summarized from burst of measurements taken every 15 minutes,site-date,15
-NEON.DOM.SITE.DP1.10067.001,bbc_rootChemistry_pub,External lab analysis of carbon and nitrogen concentrations in roots,site-date,0
-NEON.DOM.SITE.DP1.10104.001,sme_microbialBiomass_pub,Laboratory results of microbial biomass data,site-date,0
-NEON.DOM.SITE.DP1.10102.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
-NEON.DOM.SITE.DP1.20055.001,SST_30min,Temperature and specific conductance at specific depths in surface water taken every 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10026.001,cfc_chlorophyll_pub,External lab analysis of foliar chlorophyll concentrations,site-date,0
-NEON.DOM.SITE.DP1.20004.001,BP_30min,Barometric Pressure averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.00017.001,dpsd_30_minutes,Dust and particulate size distribution median over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10058.001,div_morphospecies_pub,Diversity morphospecies resolution data,site-all,0
-NEON.DOM.SITE.DP1.20280.001,mmg_benthicPcrAmplification_16S_pub,Laboratory metadata from 16S PCR amplification of DNA from aquatic benthic samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.10066.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
-NEON.DOM.SITE.DP1.00026.001,ais_multisondeCleanCal_pub,Information related to multisonde cleaning and calibration activities,site-date,0
-NEON.DOM.SITE.DP1.20072.001,apc_morphospecies_pub,Plant morphospecies resolution data,site-all,0
-NEON.DOM.SITE.DP1.10043.001,mos_expertTaxonomistIDProcessed_pub,Mosquito identifications by expert taxonomists - desynonomized,site-date,0
-NEON.DOM.SITE.DP1.10072.001,mam_identificationHistory_pub,Small mammal identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.10023.001,hbp_perbout_pub,"Herbaceous clip harvest spatial and temporal sampling information, and sampling metadata",site-date,0
-NEON.DOM.SITE.DP1.10093.001,tck_taxonomyRaw_pub,Tick identifications by expert taxonomists - raw,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_rapidHabitatAssessment_pub,Data associated with the rapid habitat assessment portion of the stream morphology protocol,site-date,0
-NEON.DOM.SITE.DP1.00014.001,SRDDP_30min,Shortwave radiation (direct and diffuse pyranometer) averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10033.001,ltr_vegetationCover_pub,Cover of qualifying vegetation from AOP survey,site-all,0
-NEON.DOM.SITE.DP1.00045.001,TIPPRE_30min,Tipping Bucket Precipitation pooled over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20086.001,mcc_benthicSeqVariantMetadata_16S_pub,Taxon table metadata for benthic microbes from sequence variant data analysis of the 16S marker gene,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_metabarcodeTaxonList_pub,Metabarcode full taxonomic list for every sequenceName,lab-all,0
-NEON.DOM.SITE.DP1.20280.001,mic_benthicDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from benthic samples,site-date,0
-NEON.DOM.SITE.DP1.20107.001,fsh_bulkCount_pub,Fish sampling field data bulk count,site-date,0
-NEON.DOM.SITE.DP1.00004.001,BP_30min,Barometric Pressure averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20166.001,alg_taxonomyRawComp_pub,"Periphyton, seston, and phytoplankton composite identifications by expert taxonomists - raw",site-date,0
-NEON.DOM.SITE.DP1.20276.001,gsi_fieldSuperParent_pub,Field data for the parent sample of groundwater stable isotopes,site-date,0
-NEON.DOM.SITE.DP1.20093.001,swc_externalLabDataByAnalyte_pub,Surface water chemistry from external lab in long format,site-date,0
-NEON.DOM.SITE.DP1.00098.001,RH_1min,Relative Humidity averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10014.001,cdw_densitydisk_pub,Disk and sample level data for coarse downed wood disk collection,site-date,0
-NEON.DOM.SITE.DP1.00002.001,SAAT_30min,Single aspirated air temperature averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20097.001,sdg_fieldDataProc_pub,Dissolved gas field sample processing per site per date,site-date,0
-NEON.DOM.SITE.DP1.10067.001,bbc_dilution_pub,Data collected per root dilution sample,site-date,0
-NEON.DOM.SITE.DP1.10100.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
-NEON.DOM.SITE.DP1.20001.001,rap_rapidHabitatAssessment_pub,Habitat characterization and spatial data associated with the rapid habitat assessment survey,site-date,0
-NEON.DOM.SITE.DP1.10058.001,div_geneticarchive_pub,Genetic archive samples,site-all,0
-NEON.DOM.SITE.DP1.20092.001,gwc_domainLabData_pub,Groundwater chemistry ALK and ANC domain lab data summary data,site-date,0
-NEON.DOM.SITE.DP1.20219.001,zoo_taxonomyRaw_pub,Aquatic zooplankton identifications by expert taxonomists - raw,site-date,0
-NEON.DOM.SITE.DP1.00006.001,THRPRE_30min,Throughfall pooled over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10058.001,div_1m2Data_pub,"Plant species identifications and cover, and cover of abiotic variables within 1 square meter subplots",site-date,0
-NEON.DOM.SITE.DP1.20282.001,amc_fieldSuperParent_pub,Field data for the parent sample of surface water microbes,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_siteSurveyStationFeature_pub,Aquatic instrument system site survey feature information,site-date,0
-NEON.DOM.SITE.DP1.20097.001,sdg_fieldData_pub,Dissolved gas field data per station per date,site-date,0
-NEON.DOM.SITE.DP1.20221.001,inv_dnaExtractionStandard_pub,Ingest of laboratory metadata from DNA extraction for macroinvertebrate standard samples,lab-all,0
-NEON.DOM.SITE.DP1.20086.001,mcc_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
-NEON.DOM.SITE.DP1.20032.001,SLRNRB_1min,Shortwave and Longwave Radiation on buoy averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.00095.001,SCO2C_30_minute,Soil CO2 concentration averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20107.001,fsh_fieldData_pub,Fish sampling field data per sub-sampling reach,site-date,0
-NEON.DOM.SITE.DP1.20086.001,mcc_benthicSeqVariantMetadata_ITS_pub,Taxon table metadata for benthic microbes from sequence variant data analysis of the ITS marker gene,site-date,0
-NEON.DOM.SITE.DP1.20042.001,PARWS_1min,Photosynthetically Active Radiation at Water Surface averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20066.001,apc_voucherTaxonomyProcessed_pub,"Identifications by expert taxonomists for voucher specimens, desynonimized",site-all,0
-NEON.DOM.SITE.DP1.20092.001,swc_externalLabBlanksByAnalyte_pub,Blank sample water chemistry from external lab,site-all,0
-NEON.DOM.SITE.DP1.10086.001,sls_soilpH_pub,Soil pH data for microbial and biogeochemical samples,site-date,0
-NEON.DOM.SITE.DP1.10041.001,mos_pathogenresults_pub,Mosquito pathogen testing results from external labs,site-date,0
-NEON.DOM.SITE.DP1.20066.001,apl_taxonomyRaw_pub,Aquatic plant bryophyte lichen macroalgae clip harvest identifications by expert taxonomists - raw,site-date,0
-NEON.DOM.SITE.DP1.10098.001,vst_apparentindividual_pub,Biomass and productivity measurements of woody individuals,site-date,0
-NEON.DOM.SITE.DP1.20072.001,apc_perTaxon_pub,Point transect data for each taxon,site-date,0
-NEON.DOM.SITE.DP1.20280.001,amb_fieldParent_pub,Aquatic benthic microbes field data,site-date,0
-NEON.DOM.SITE.DP1.20015.001,SCGW_30_minute,Specific conductivity in groundwater averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20219.001,zoo_taxonomyProcessed_pub,Aquatic zooplankton identifications by expert taxonomists - desynonimized,site-date,0
-NEON.DOM.SITE.DP1.10098.001,vst_mappingandtagging_pub,"Mapping, identifying and tagging of individual stems for remeasurement",site-all,0
-NEON.DOM.SITE.DP1.00095.001,SCO2C_1_minute,Soil CO2 concentration averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10043.001,mos_subsampling_pub,"Generation of mosquito samples for barcoding, archiving and pathogen testing",site-date,0
-NEON.DOM.SITE.DP1.00094.001,SWS_1_minute,Soil water content and water salinity averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20163.001,alg_algaeExternalLabDataPerSample_pub,Algae external lab chemistry data,site-date,0
-NEON.DOM.SITE.DP1.20138.001,amc_cellCountLabSummary_pub,Summary data on laboratory methods for cell count results,lab-all,0
-NEON.DOM.SITE.DP1.10022.001,bet_sorting_pub,Sorting of field-collected pitfall samples by NEON parataxonomists,site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_pointcollection_pub,Bathymetry field point collection,site-date,0
-NEON.DOM.SITE.DP1.20282.001,amc_fieldGenetic_pub,Field data for the genetic sample of surface water microbes,site-date,0
-NEON.DOM.SITE.DP1.00066.001,PARQL_1min,Photosynthetically active radiation (quantum line) averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20086.001,mcc_benthicTaxonTableMetadata_16S_pub,Taxonomic table metadata for benthic microbes from 16S marker gene sequencing analysis,site-date,0
-NEON.DOM.SITE.DP1.10081.001,mcc_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
-NEON.DOM.SITE.DP1.10098.001,vst_perplotperyear_pub,"Per plot sampling metadata, including presence/absence of each growthForm",site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_siteSurveyMappedPointError_pub,Aquatic instrument system site survey mapped points that contain errors,site-date,0
-NEON.DOM.SITE.DP1.20261.001,uPAR_1min,Photosynthetically Active Radiation below water surface averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20163.001,alg_domainLabChemistry_pub,"Periphyton, seston, and phytoplankton domain lab data for chemistry samples",site-date,0
-NEON.DOM.SITE.DP1.10058.001,div_identificationHistory_pub,Plant diversity identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.10038.001,mos_BOLDcollectionData_pub,Mosquito sequences DNA barcode - collection data,site-date,0
-NEON.DOM.SITE.DP1.20004.001,BP_1min,Barometric Pressure averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP4.00131.001,geo_transectBankfullWidths_pub,Data that describe channel widths measured at mapped cross-section transects,site-date,0
-NEON.DOM.SITE.DP1.20072.001,apc_taxonomyRaw_pub,"Aquatic plant bryophyte lichen macroalgae point transect identifications by expert taxonomists, raw",site-date,0
-NEON.DOM.SITE.DP1.20105.001,fsh_BOLDcollectionData_pub,Fish sequences DNA barcode - collection data,site-date,0
-NEON.DOM.SITE.DP1.10020.001,bet_BOLDcollectionData_pub,Ground beetle sequences DNA barcode - collection data,site-date,0
-NEON.DOM.SITE.DP1.10081.002,mct_soilSampleMetadata_16S_pub,Metadata for soil samples used in the analysis of 16S marker gene sequences to derive community composition,site-date,0
-NEON.DOM.SITE.DP1.20217.001,TGW_30_minute,Temperature of groundwater averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20278.001,mga_batchResults_pub,Batch-level results of analysis of gene copy number in surface water samples,lab-all,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_resultsResiduals_pub,Results residuals for the gauge and discharge measurements used to develop rating curve,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swPcrAmplification_16S_pub,Laboratory metadata from 16S PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.00066.001,PARQL_30min,Photosynthetically active radiation (quantum line) averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20193.001,sbd_externalLabDataSalt_pub,Reaeration external lab salt data for salt-based discharge,site-date,0
-NEON.DOM.SITE.DP1.20221.001,inv_dnaRawDataFilesStandard_pub,Raw sequence data files for macroinvertebrate standard sample marker gene sequencing,lab-all,0
-NEON.DOM.SITE.DP1.00026.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_processedVolumeData_pub,Bathymetry volume data from the processed sonar survey,site-date,0
-NEON.DOM.SITE.DP1.20193.001,sbd_plateauMeasurementFieldData_pub,Field data collected at plateau per station per date for salt-based discharge,site-date,0
-NEON.DOM.SITE.DP1.00005.001,IRBT_1_minute,IR Biological Temperature averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20281.001,mms_swMetagenomeDnaExtraction_pub,Laboratory metadata from surface water DNA extraction for metagenomics sequencing,site-date,0
-NEON.DOM.SITE.DP1.20107.001,fsh_morphospecies_pub,Fish morphospecies resolution data,site-all,0
-NEON.DOM.SITE.DP1.20221.001,zoo_metabarcodeTaxonomy_pub,Zooplankton metabarcode taxon table from bioinformatics pipeline,site-date,0
-NEON.DOM.SITE.DP1.10111.001,sim_locationVisitsAndAttributes_pub,"Summary of annual visit totals, environmental context, and mitigation actions by location to support estimates of sampling impact and location vulnerability",site-all,0
-NEON.DOM.SITE.DP1.10026.001,cfc_elements_pub,"External lab analysis of major, minor, and trace element concentrations in foliage",site-date,0
-NEON.DOM.SITE.DP1.20221.001,inv_metabarcodeTaxonList_pub,Metabarcode full taxonomic list for every sequenceName,lab-all,0
-NEON.DOM.SITE.DP1.10026.001,cfc_LMA_pub,Leaf mass per area measurement of foliar samples,site-date,0
-NEON.DOM.SITE.DP1.00096.001,mgp_perarchivesample_pub,Archived sample information,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_rapidHabitatResultsFile_pub,Rapid habitat assessment file of results,site-date,0
-NEON.DOM.SITE.DP1.20016.001,EOS_30_min,Elevation of surface water averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20042.001,PARWS_30min,Photosynthetically Active Radiation at Water Surface averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10086.001,ntr_externalLab_pub,External lab analysis of inorganic nitrogen concentrations in kcl extracts,site-date,0
-NEON.DOM.SITE.DP1.10053.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
-NEON.DOM.SITE.DP1.20141.001,mcc_swTaxonTableMetadata_16S_pub,Taxonomic table metadata for surface water microbes from 16S marker gene sequencing analysis,site-date,0
-NEON.DOM.SITE.DP1.20280.001,mmg_benthicMarkerGeneSequencing_ITS_pub,Laboratory metadata for microbial ITS marker gene sequencing from aquatic benthic samples,site-date,0
-NEON.DOM.SITE.DP1.20278.001,mic_swDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from surface water samples,site-date,0
-NEON.DOM.SITE.DP1.20221.001,inv_metabarcodeTaxonomyStandard_pub,Macroinvertebrate metabarcode taxon table from bioinformatics pipeline for macroinvertebrate standard samples,lab-all,0
-NEON.DOM.SITE.DP4.00130.001,csd_constantBiasShift_pub,Information on the date range and magnitude of constant bias shifts applied to Instrumented Systems (IS) data streams during gap-filling,site-date,0
-NEON.DOM.SITE.DP1.20097.001,sdg_fieldDataAir_pub,Dissolved gas reference air collection per site per date,site-date,0
-NEON.DOM.SITE.DP1.20277.001,mga_batchResults_pub,Batch-level results of analysis of gene copy number in benthic aquatic samples,lab-all,0
-NEON.DOM.SITE.DP1.10109.001,mga_labSummary_pub,Summary data on laboratory methods for qPCR results in soil samples,lab-all,0
-NEON.DOM.SITE.DP1.10043.001,mos_barcoding_pub,Mosquito barcoding sample data from external labs,site-date,0
-NEON.DOM.SITE.DP1.10031.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
-NEON.DOM.SITE.DP1.20126.001,inv_metabarcodeTaxonomy_pub,Macroinvertebrate metabarcode taxon table from bioinformatics pipeline,site-date,0
-NEON.DOM.SITE.DP1.20206.001,asi_externalLabSummaryData_pub,H2O stable isotopes external lab summary data,lab-all,0
-NEON.DOM.SITE.DP1.20264.001,TSD_30_min,Temperature at specific depths of surface water averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10064.002,rpt2_pathogentesting_pub,Rodent pathogen testing results from external labs,site-date,0
-NEON.DOM.SITE.DP1.20281.001,mms_swMetagenomeSequencing_pub,Surface water metagenomics sequencing metadata,site-date,0
-NEON.DOM.SITE.DP1.10043.001,mos_barcodingqa_pub,Mosquito barcoding quality assurance data from external labs,lab-all,0
-NEON.DOM.SITE.DP4.00001.001,wss_monthly_humid,Monthly weather summary statistics,site-date,12
-NEON.DOM.SITE.DP1.20008.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.10093.001,tck_identificationHistory_pub,Tick identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20194.001,asc_fieldDataStation_pub,Station level sediment collection field data,site-date,0
-NEON.DOM.SITE.DP1.20221.001,zoo_markerGeneSequencing_pub,Ingest of laboratory metadata for zooplankton marker gene sequencing,site-date,0
-NEON.DOM.SITE.DP1.10026.001,cfc_chlorophyllParameters_pub,External lab parameters used in foliar chlorophyll measurements,lab-all,0
-NEON.DOM.SITE.DP1.20063.001,apl_plantExternalLabQA_pub,Plant chemistry external lab data quality assurance,lab-all,0
-NEON.DOM.SITE.DP1.20206.001,asi_fieldData_pub,Surface water stable isotopes field data,site-date,0
-NEON.DOM.SITE.DP1.10022.001,bet_bycatchIDHistory_pub,Identification history for beetle bycatch records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20042.001,PARWS_5min,Photosynthetically Active Radiation at Water Surface averaged over 5 minutes,site-date,5
-NEON.DOM.SITE.DP1.00026.001,ais_siteSurveyStation_pub,Aquatic instrument system site survey station information,site-date,0
-NEON.DOM.SITE.DP1.10041.001,mos_pathogenqa_pub,Mosquito pathogen testing quality assurance data from external labs,lab-all,0
-NEON.DOM.SITE.DP1.10067.001,bbc_chemistryPooling_pub,Identifiers for subsamples created for chemical analyses or archive,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_fieldData_pub,"Periphyton, seston, and phytoplankton field collection data from streams, lakes, and non-wadeable streams",site-date,0
-NEON.DOM.SITE.DP1.20279.001,mms_benthicMetagenomeSequencing_pub,Benthic metagenomics sequencing metadata,site-date,0
-NEON.DOM.SITE.DP1.10038.001,mos_BOLDtaxonomy_pub,Mosquito sequences DNA barcode - taxonomy,site-date,0
-NEON.DOM.SITE.DP1.20163.001,alg_algaeDataPerSampleCompCNPS_pub,"Algae external lab chemistry data for composite C, N, P, and S samples",site-date,0
-NEON.DOM.SITE.DP1.20281.001,amc_fieldSuperParent_pub,Field data for the parent sample of surface water microbes,site-date,0
-NEON.DOM.SITE.DP1.00022.001,SRPP_1min,Shortwave radiation (primary pyranometer) averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20100.001,EOG_30_min,Elevation of groundwater averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20126.001,inv_markerGeneSequencing_pub,Ingest of laboratory metadata for macroinvertebrate marker gene sequencing,site-date,0
-NEON.DOM.SITE.DP1.10098.001,vst_shrubgroup_pub,Biomass and productivity measurements of groups of shrubs,site-date,0
-NEON.DOM.SITE.DP1.20059.001,WSDBuoy_30min,Windspeed and direction above water on-buoy averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.00038.001,wdi_collection_pub,Wet deposition field collection data,site-date,0
-NEON.DOM.SITE.DP1.20141.001,mcc_swSeqVariantMetadata_16S_pub,Taxon table metadata for surface water microbes from sequence variant data analysis of the 16S marker gene,site-date,0
-NEON.DOM.SITE.DP1.00096.001,mgp_perhorizon_pub,Per soil horizon metadata,site-date,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_controlType_pub,Control type and geometry used for determining prior parameters,site-date,0
-NEON.DOM.SITE.DP1.20141.002,mct_surfaceWaterSampleMetadata_16S_pub,Metadata for surface water samples used in the analysis of 16S marker gene sequences to derive community composition,site-date,0
-NEON.DOM.SITE.DP1.10086.001,sls_soilMoisture_pub,Soil moisture data for microbial and biogeochemical samples,site-date,0
-NEON.DOM.SITE.DP1.00001.001,2DWSD_30min,2D wind speed and direction averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10055.001,phe_identificationHistory_pub,Phenology identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.10033.001,ltr_chemistrySubsampling_pub,Identifiers for subsamples created for chemical analyses or archive,site-date,0
-NEON.DOM.SITE.DP1.00024.001,PARPAR_1min,Photosynthetically Active Radiation averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.30012.001,fsp_spectralData_pub,Spectral data reference and metadata,site-date,0
-NEON.DOM.SITE.DP1.00041.001,ST_30_minute,Soil temperature averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10043.001,mos_sorting_pub,Mosquito sorting data from external labs,site-date,0
-NEON.DOM.SITE.DP1.10017.001,dhp_perplot_pub,Digital hemispherical photo sampling information per plot per bout,site-date,0
-NEON.DOM.SITE.DP1.20093.001,swc_fieldData_pub,Surface water chemistry summary data per site per bout,site-date,0
-NEON.DOM.SITE.DP1.20107.001,fsh_invertBycatch_pub,Fish sampling macroinvertebrate bycatch,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_pebbleCount_pub,Sediment particle size data collected during pebble count sampling,site-date,0
-NEON.DOM.SITE.DP1.20221.001,zoo_dnaExtraction_pub,Ingest of laboratory metadata from DNA extraction for zooplankton analyses,site-date,0
-NEON.DOM.SITE.DP1.10086.001,sls_soilChemistry_pub,External lab analysis of carbon and nitrogen concentrations in soil,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_slideLocations_pub,Metadata for diatom slide transect locations,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_biomass_pub,"Periphyton, seston, and phytoplankton biomass data",site-date,0
-NEON.DOM.SITE.DP1.20261.001,uPAR_30min,Photosynthetically Active Radiation below water surface averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10003.001,brd_perpoint_pub,Per point metadata for breeding landbirds,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_yearly_press,Yearly weather summary statistics,site-date,365
-NEON.DOM.SITE.DP1.20100.001,EOG_5_min,Elevation of groundwater taken every 5 minutes,site-date,5
-NEON.DOM.SITE.DP4.00131.001,geo_thalwegLongProfile_pub,Data associated with points mapped on the streambed along the thalweg,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swPcrAmplificationQA_16S_pub,Laboratory quality assurance metadata from 16S PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_taxonomyProcessed_pub,"Periphyton, seston, and phytoplankton identifications by expert taxonomists - desynonimized",site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_fieldData_pub,Bathymetry field collection data,site-date,0
-NEON.DOM.SITE.DP1.00133.001,csd_constantBiasShift_pub,Information on the date range and magnitude of constant bias shifts applied to Instrumented Systems (IS) data streams during gap-filling,site-date,0
-NEON.DOM.SITE.DP1.20053.001,TSW_30min,Temperature of surface water from PRT summarized over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20092.001,swc_externalLabSummaryData_pub,Surface water chemistry external lab summary data,lab-all,0
-NEON.DOM.SITE.DP1.00006.001,THRPRE_1min,Throughfall pooled over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20193.001,sbd_conductivityFieldData_pub,Reaeration logger field data for salt-based discharge,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_rawSurveyData_pub,"Raw data generated during the survey, including a unique identifier and raw coordinate values for each point mapped",site-date,0
-NEON.DOM.SITE.DP1.00013.001,wdp_externalLabSummaryData_pub,Wet deposition chemistry external lab long-term summary data,lab-all,0
-NEON.DOM.SITE.DP1.10081.001,mcc_soilSeqVariantMetadata_16S_pub,Taxon table metadata for soil microbes from sequence variant data analysis of the 16S marker gene,site-date,0
-NEON.DOM.SITE.DP1.00013.001,wdp_chemLab_pub,Wet deposition chemistry per sample,site-date,0
-NEON.DOM.SITE.DP1.20277.001,mic_benthicDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from benthic samples,site-date,0
-NEON.DOM.SITE.DP1.00096.001,mgp_perbiogeosample_pub,Data collected on biogeochemistry sample,site-date,0
-NEON.DOM.SITE.DP1.20072.001,apc_voucherTaxonomyRaw_pub,"Identifications by expert taxonomists for voucher specimens, raw",site-all,0
-NEON.DOM.SITE.DP1.20217.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20278.001,mga_labSummary_pub,Summary data on laboratory methods for qPCR results in surface water samples,lab-all,0
-NEON.DOM.SITE.DP1.10033.001,ltr_litterCarbonNitrogen_pub,External lab analysis of carbon and nitrogen concentrations in litter,site-date,0
-NEON.DOM.SITE.DP1.10026.001,lig_externalSummary_pub,Long-term uncertainty values for lignin analysis in plant tissue,lab-all,0
-NEON.DOM.SITE.DP1.20280.001,mmg_benthicDnaExtraction_pub,Laboratory metadata from DNA extraction of aquatic benthic samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.10064.002,rpt2_pathogenqa_pub,Rodent pathogen testing quality assurance data from external labs,lab-all,0
-NEON.DOM.SITE.DP1.10026.001,cfc_lignin_pub,External lab analysis of lignin concentrations in foliage,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_aquaticLocationTroll_pub,Aquatic location TROLL measurements for impacted well,site-date,0
-NEON.DOM.SITE.DP1.10026.001,cfc_chlorophyllSummary_pub,Long-term uncertainty values for chlorophyll analyses,lab-all,0
-NEON.DOM.SITE.DP1.20126.001,inv_fieldData_pub,Aquatic macroinvertebrate field data,site-date,0
-NEON.DOM.SITE.DP1.20092.001,gwc_fieldData_pub,Groundwater chemistry summary data per site per bout,site-date,0
-NEON.DOM.SITE.DP1.20217.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
-NEON.DOM.SITE.DP1.20194.001,asc_externalLabData_pub,Sediment chemical and physical properties external lab data,site-date,0
-NEON.DOM.SITE.DP1.20107.001,fsh_perPass_pub,Fish sampling field data per pass,site-date,0
-NEON.DOM.SITE.DP1.20100.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20271.001,RHbuoy_1min,Relative Humidity on buoy averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20275.001,rip_identificationHistory_pub,Riparian identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20072.001,apc_pointTransect_pub,Stream aquatic plant bryophyte lichen macroalgae point transect field data,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_monthly_wind,Monthly weather summary statistics,site-date,12
-NEON.DOM.SITE.DP4.00130.001,csd_15_min,Continuous discharge data calculated from in situ pressure and stage-discharge rating curve averaged over 15 minutes,site-date,15
-NEON.DOM.SITE.DP1.10111.001,sim_eventData_pub,"Record of land management activities, disturbances, and other incidents of ecological note within a NEON site",site-date,0
-NEON.DOM.SITE.DP1.20278.001,mga_swGroupAbundances_pub,Laboratory results of gene copy number data in surface water samples,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_metabarcodeSummary_pub,Summary data on laboratory methods for metabarcode community results,lab-all,0
-NEON.DOM.SITE.DP1.20126.001,inv_dnaExtraction_pub,Ingest of laboratory metadata from DNA extraction for macroinvertebrate analyses,site-date,0
-NEON.DOM.SITE.DP1.10047.001,spc_bulkdensity_pub,Soil initial characterization bulk density measurements,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_closedLoops_pub,Aquatic instrument system site survey loop closure information,site-date,0
-NEON.DOM.SITE.DP1.10022.001,bet_parataxonomistID_pub,Ground beetle pinning/pointing and identifications by NEON parataxonomists,site-date,0
-NEON.DOM.SITE.DP1.10092.001,tck_pathogen_pub,Tick pathogen testing data,site-date,0
-NEON.DOM.SITE.DP1.20280.001,mmg_benthicMarkerGeneSequencing_16S_pub,Laboratory metadata for microbial 16S marker gene sequencing from aquatic benthic samples,site-date,0
-NEON.DOM.SITE.DP1.20063.001,asi_externalLabPOMSummaryData_pub,"Plant, algae and POM chemistry external lab summary data",lab-all,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swPcrAmplificationQA_ITS_pub,Laboratory quality assurance metadata from ITS PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.20016.001,EOS_5_min,Elevation of surface water averaged over 5 minutes,site-date,5
-NEON.DOM.SITE.DP1.10003.001,brd_countdata_pub,Point count data for breeding landbirds,site-date,0
-NEON.DOM.SITE.DP1.10109.001,mga_soilBatchResults_pub,Batch-level results of analysis of gene copy number in soil samples,lab-all,0
-NEON.DOM.SITE.DP1.20107.001,fsh_identificationHistory_pub,Fish identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20190.001,rea_externalLabDataSalt_pub,Reaeration external lab salt data,site-date,0
-NEON.DOM.SITE.DP1.20066.001,apl_identificationHistory_pub,Aquatic plant bryophyte lichen macroalgae identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.00022.001,SRPP_30min,Shortwave radiation (primary pyranometer) averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20141.001,mcc_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
-NEON.DOM.SITE.DP1.10108.001,mmg_soilMarkerGeneSequencing_16S_pub,Laboratory metadata for microbial 16S marker gene sequencing from soil samples,site-date,0
-NEON.DOM.SITE.DP1.20206.001,asi_externalLabPOMSummaryData_pub,"Plant, algae and POM chemistry external lab summary data",lab-all,0
-NEON.DOM.SITE.DP1.10026.001,cfc_carbonNitrogen_pub,External lab analysis of carbon and nitrogen concentrations and stable isotopes in foliage,site-date,0
-NEON.DOM.SITE.DP1.20277.001,mga_labSummary_pub,Summary data on laboratory methods for qPCR results in benthic aquatic samples,lab-all,0
-NEON.DOM.SITE.DP1.20190.001,rea_fieldData_pub,Field data per site per date,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_surveyPoints_pub,Data associated with mapped cross-section transects used to delineate hydrologic controls,site-date,0
-NEON.DOM.SITE.DP1.20141.002,mct_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
-NEON.DOM.SITE.DP4.00130.001,csd_gaugeWaterColumnRegression_pub,Statistics and information on gauge height vs. water column height regressions used in estimating continuous discharge,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_missingLineWorkflow_pub,Aquatic instrument system site survey missing line workflow information,site-date,0
-NEON.DOM.SITE.DP1.10020.001,bet_BOLDtaxonomy_pub,Ground beetle sequences DNA barcode - taxonomy,site-date,0
-NEON.DOM.SITE.DP1.10066.001,mpr_carbonNitrogen_pub,External lab analysis of carbon and nitrogen concentrations in roots,site-date,0
-NEON.DOM.SITE.DP1.00004.001,BP_1min,Barometric Pressure averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20086.002,mct_benthicSampleMetadata_ITS_pub,Metadata for benthic samples used in the analysis of ITS marker gene sequences to derive community composition,site-date,0
-NEON.DOM.SITE.DP1.20097.001,sdg_externalLabSummaryData_pub,Dissolved gas external lab summary data,lab-all,0
-NEON.DOM.SITE.DP1.10033.001,lig_externalSummary_pub,Long-term uncertainty values for lignin analysis in plant tissue,lab-all,0
-NEON.DOM.SITE.DP4.00131.001,geo_surveySummary_pub,"Summary data associated with the survey, including summary statistics such as survey completeness, physical channel characteristics, relationships between upstream and downstream sensor sets, and data download URLs",site-date,0
-NEON.DOM.SITE.DP1.10093.001,tck_fielddata_pub,Tick field collection data,site-date,0
-NEON.DOM.SITE.DP1.00013.001,wdp_collection_pub,Wet deposition chemistry per sample,site-date,0
-NEON.DOM.SITE.DP1.20086.001,mcc_benthicTaxonTableMetadata_ITS_pub,Taxonomic table metadata for benthic microbes from ITS marker gene sequencing analysis,site-date,0
-NEON.DOM.SITE.DP1.20120.001,inv_taxonomyRaw_pub,Aquatic macroinvertebrate identifications by expert taxonomists - raw,site-date,0
-NEON.DOM.SITE.DP1.20016.001,EOS_1_min,Elevation of surface water taken every 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10107.001,mms_metagenomeSequencing_pub,Soil metagenomics sequencing metadata,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_mappedPointErrors_pub,Data that describe any survey errors that need to be resolved during post-processing,site-date,0
-NEON.DOM.SITE.DP1.10107.001,mms_metagenomeDnaExtraction_pub,Laboratory metadata from soil DNA extraction for metagenomics sequencing,site-date,0
-NEON.DOM.SITE.DP1.20016.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20063.001,apl_clipHarvest_pub,Aquatic plant bryophyte lichen macroalgae clip harvest data,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_biomassComp_pub,"Periphyton, seston, and phytoplankton biomass data for composite samples",site-date,0
-NEON.DOM.SITE.DP1.20193.001,sbd_fieldData_pub,Field data per site per date for salt-based discharge,site-date,0
-NEON.DOM.SITE.DP1.00094.001,SWS_30_minute,Soil water content and water salinity averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP4.00133.001,sdrc_controlInfo_pub,Activation state of the controls used for a rating curve,site-date,0
-NEON.DOM.SITE.DP1.00041.001,ST_1_minute,Soil temperature averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10108.001,mmg_soilMarkerGeneSequencing_ITS_pub,Laboratory metadata for microbial ITS marker gene sequencing from soil samples,site-date,0
-NEON.DOM.SITE.DP1.20275.001,rip_assessment_pub,Riparian Assessment at Aquatic Sites per transect,site-date,0
-NEON.DOM.SITE.DP1.00133.001,csd_dataGapToFillMethodMapping_pub,Summary of data gaps in cleaned Instrumented Systems (IS) data streams and the methods selected to gap-fill each data gap,site-date,0
-NEON.DOM.SITE.DP1.10067.001,bbc_rootmass_pub,Lab data collected per soil core,site-date,0
-NEON.DOM.SITE.DP1.00044.001,WEIPRE_60min,Weighing Gauge Precipitation pooled over 60 minutes,site-date,60
-NEON.DOM.SITE.DP1.20221.001,zoo_dnaRawDataFiles_pub,Raw sequence data files for zooplankton marker gene sequencing,site-date,0
-NEON.DOM.SITE.DP1.10022.001,bet_identificationHistory_pub,Beetle identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.10109.001,mga_batchResults_pub,Batch-level results of analysis of gene copy number in soil samples,lab-all,0
-NEON.DOM.SITE.DP1.10086.001,ntr_internalLabBlanks_pub,NEON domain lab potassium chloride blank reference sample creation,site-date,0
-NEON.DOM.SITE.DP1.20219.001,zoo_perSample_pub,Zooplankton subsampling data and QC metrics per sample,site-date,0
-NEON.DOM.SITE.DP1.20004.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_aquaticLocationWellOffset_pub,Aquatic location well offset measurements,site-date,0
-NEON.DOM.SITE.DP4.00130.001,csd_continuousDischarge_pub,Continuous discharge data calculated from in situ pressure and stage-discharge rating curve,site-date,1
-NEON.DOM.SITE.DP1.20072.001,apc_voucherTaxonomyProcessed_pub,"Identifications by expert taxonomists for voucher specimens, desynonimized",site-all,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swPcrAmplification_ITS_pub,Laboratory metadata from ITS PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP4.00130.001,csd_gapFillingRegression_pub,Statistics and information on regressions developed for gap-filling Instrumented Systems (IS) data streams,site-date,0
-NEON.DOM.SITE.DP1.20093.001,swc_fieldSuperParent_pub,Field data for the parent sample of surface water chemistry,site-date,0
-NEON.DOM.SITE.DP1.10081.001,mcc_soilSeqVariantMetadata_ITS_pub,Taxon table metadata for soil microbes from sequence variant data analysis of the ITS marker gene,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_missingLine_pub,Data associated with the missing line workflow used to orient the first total station location during the survey,site-date,0
-NEON.DOM.SITE.DP1.20072.001,apc_identificationHistory_pub,Aquatic plant bryophyte lichen macroalgae identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20190.001,rea_backgroundFieldSaltData_pub,Background salt per station per date,site-date,0
-NEON.DOM.SITE.DP4.00130.001,csd_continuousDischargeUSGS_pub,Continuous discharge data from the nearby USGS station,site-date,100
-NEON.DOM.SITE.DP1.20138.001,amc_cellCountsBlankQA_pub,Aquatic cell counts laboratory blank quality assurance data,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_benchmarkLocations_pub,Spatial data associated with benchmark locations,site-all,0
-NEON.DOM.SITE.DP1.00026.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_daily_humid,Daily weather summary statistics,site-date,24
-NEON.DOM.SITE.DP1.00040.001,SHF_1min,The amount of thermal energy moving by conduction across an area of soil averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20141.001,mcc_swSeqVariantMetadata_ITS_pub,Taxon table metadata for surface water microbes from sequence variant data analysis of the ITS marker gene,site-date,0
-NEON.DOM.SITE.DP1.20092.001,gwc_externalLabDataByAnalyte_pub,Groundwater chemistry from external lab in long format,site-date,0
-NEON.DOM.SITE.DP1.00006.001,SECPRE_1min,Secondary Precipitation pooled over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20066.001,apc_voucherTaxonomyRaw_pub,"Identifications by expert taxonomists for voucher specimens, raw",site-all,0
-NEON.DOM.SITE.DP1.00044.001,WEIPRE_daily,Weighing Gauge Precipitation pooled over 1 day,site-date,24
-NEON.DOM.SITE.DP1.10098.001,vst_identificationHistory_pub,Plant identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP4.00001.001,wss_yearly_humid,Yearly weather summary statistics,site-date,365
-NEON.DOM.SITE.DP1.20163.001,alg_labBlank_pub,Lab deionized water blank filters,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swDnaExtraction_pub,Laboratory metadata from DNA extraction of surface water samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_dnaRawDataFilesStandard_pub,Raw sequence data files for macroinvertebrate standard sample marker gene sequencing,lab-all,0
-NEON.DOM.SITE.DP1.10086.001,sls_bgcSubsampling_pub,Processing data for soil subsamples for biogeochemical analysis and archiving,site-date,0
-NEON.DOM.SITE.DP1.20120.001,inv_pervial_pub,Aquatic macroinvertebrate identified archive data,site-date,0
-NEON.DOM.SITE.DP1.20063.001,apl_plantExternalLabDataPerSample_pub,Plant external lab chemistry data,site-date,0
-NEON.DOM.SITE.DP1.20105.001,fsh_BOLDvoucherInfo_pub,Fish sequences DNA barcode - voucher info,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_pcrAmplification_pub,Ingest of laboratory metadata from PCR amplification of DNA for macroinvertebrate analyses,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_voucherTaxonomy_pub,Algae voucher flora taxonomy versioning,lab-all,0
-NEON.DOM.SITE.DP1.20097.001,sdg_fieldSuperParent_pub,"Field data for the parent sample of water chemistry, dissolved gas, stable isotopes and surface water microbes for dissolved gas publication",site-date,0
-NEON.DOM.SITE.DP1.20048.001,dsc_individualFieldData_pub,Discharge manual wading survey data per point per transect,site-date,0
-NEON.DOM.SITE.DP1.20093.001,swc_externalLabSummaryData_pub,Surface water chemistry external lab summary data,lab-all,0
-NEON.DOM.SITE.DP4.00132.001,bat_processedSiteLevelSummary_pub,Bathymetry summary data associated with the processed survey,site-date,0
-NEON.DOM.SITE.DP1.20194.001,asc_fieldDataPoint_pub,Point level sediment collection field data,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_resultsFile_pub,Morphology file of results,site-date,0
-NEON.DOM.SITE.DP1.20288.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20190.001,rea_plateauSampleFieldData_pub,Field data collected at plateau per sample,site-date,0
-NEON.DOM.SITE.DP1.10022.001,bet_expertTaxonomistIDRaw_pub,Ground beetle identifications by expert taxonomists - raw,site-date,0
-NEON.DOM.SITE.DP1.00133.001,csd_gapFillingRegression_pub,Statistics and information on regressions developed for gap-filling Instrumented Systems (IS) data streams,site-date,0
-NEON.DOM.SITE.DP1.20193.001,sbd_plateauSampleFieldData_pub,Field data collected at plateau per sample for salt-based discharge,site-date,0
-NEON.DOM.SITE.DP1.10020.001,bet_barcodingqa_pub,Ground beetle barcoding quality assurance data from external labs,lab-all,0
-NEON.DOM.SITE.DP1.20105.001,fsh_barcodingqa_pub,Fish barcoding quality assurance data from external labs,lab-all,0
-NEON.DOM.SITE.DP1.10033.001,ltr_massdata_pub,Dry mass of litter and fine woody debris components per trap per bout,site-date,0
-NEON.DOM.SITE.DP4.00130.001,csd_dataGapToFillMethodMapping_pub,Summary of data gaps in cleaned Instrumented Systems (IS) data streams and the methods selected to gap-fill each data gap,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_totalStation_pub,"Data that describe each total station location setup, including control point and thalweg point identifiers, geomorphic features surveyed from each location, and associated error metrics",site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_pcrAmplificationStandard_pub,Ingest of laboratory metadata from PCR amplification of DNA for macroinvertebrate standard samples,lab-all,0
-NEON.DOM.SITE.DP1.10033.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
-NEON.DOM.SITE.DP4.00131.001,geo_misclosureInfo_pub,Data associated with survey misclosure,site-date,0
-NEON.DOM.SITE.DP1.20092.001,gwc_externalLabAbsorbanceScan_pub,Groundwater chemistry absorbance scan from external lab,site-date,0
-NEON.DOM.SITE.DP1.00133.001,sdrc_curveIdentification_pub,Active dates of a rating curve and associated control survey date,site-date,0
-NEON.DOM.SITE.DP1.20138.001,amc_fieldSuperParent_pub,Field data for the parent sample of surface water microbes,site-date,0
-NEON.DOM.SITE.DP1.20001.001,rap_surveySummary_pub,"Summary data associated with the rapid habitat assessment survey, including survey metadata and data download URLs",site-date,0
-NEON.DOM.SITE.DP1.20254.001,dep_profileData_pub,Depth profile field data collection per site per sampling day,site-date,0
-NEON.DOM.SITE.DP1.20120.001,inv_taxonomyProcessed_pub,Aquatic macroinvertebrate identifications by expert taxonomists - desynonymized,site-date,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_priorParameters_pub,Prior rating curve parameters used to develop rating curve,site-date,0
-NEON.DOM.SITE.DP1.20279.001,mic_benthicDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from benthic samples,site-date,0
-NEON.DOM.SITE.DP1.20163.001,asi_externalLabPOMSummaryData_pub,"Plant, algae and POM chemistry external lab summary data",lab-all,0
-NEON.DOM.SITE.DP1.10109.001,mga_soilGroupAbundances_pub,Laboratory results of gene copy number data in soil samples,site-date,0
-NEON.DOM.SITE.DP1.10023.001,hbp_massdata_pub,Herbaceous clip harvest dry mass and QA dry mass data,site-date,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_gaugePressureRelationship_pub,Information relating staff gauge readings to pressure measurements,site-date,0
-NEON.DOM.SITE.DP1.10033.001,ltr_pertrap_pub,"Record of trap establishment, contains date, trap type and location",site-all,0
-NEON.DOM.SITE.DP1.10014.001,cdw_identificationHistory_pub,Coarse downed wood density identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20271.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_monthly_pres,Monthly weather summary statistics,site-date,12
-NEON.DOM.SITE.DP1.20276.001,gsi_externalLabH2OIsotopes_pub,Groundwater H2O stable isotopes external lab data,site-date,0
-NEON.DOM.SITE.DP1.10081.001,mcc_soilTaxonTableMetadata_ITS_pub,Taxonomic table metadata for soil microbes from ITS marker gene sequencing analysis,site-date,0
-NEON.DOM.SITE.DP1.20048.001,dsc_fieldData_pub,Discharge manual wading survey data per site per bout,site-date,0
-NEON.DOM.SITE.DP1.00038.001,wdp_sensor_pub,Wet deposition collector automated sensor data,site-date,0
-NEON.DOM.SITE.DP1.00044.002,WEIPRE_30min,Weighing Gauge Precipitation pooled over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.20221.001,inv_markerGeneSequencingStandard_pub,Ingest of laboratory metadata for macroinvertebrate standard sample marker gene sequencing,lab-all,0
-NEON.DOM.SITE.DP4.00131.001,geo_featureInfo_pub,Data associated with mapped cross-section transects,site-date,0
-NEON.DOM.SITE.DP1.00133.001,sdrc_AISsiteSurveyResultsFile_pub,AIS site survey file of results,site-date,0
-NEON.DOM.SITE.DP1.10064.001,rpt_bloodtesting_pub,Rodent pathogen antibody data from external lab,site-date,0
-NEON.DOM.SITE.DP1.20032.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.10043.001,mos_expertTaxonomistIDRaw_pub,Mosquito identifications by expert taxonomists - raw,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_yearly_wind,Yearly weather summary statistics,site-date,365
-NEON.DOM.SITE.DP1.20279.001,mms_benthicMetagenomeDnaExtraction_pub,Laboratory metadata from benthic DNA extraction for metagenomics sequencing,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swMarkerGeneSequencingQA_16S_pub,Laboratory quality assurance metadata for microbial 16S marker gene sequencing from surface water samples,site-date,0
-NEON.DOM.SITE.DP1.20190.001,rea_plateauMeasurementFieldData_pub,Field data collected at plateau per station per date,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_pebbleFieldData_pub,Sediment particle size distribution summary data associated with pebble count sampling during the survey,site-date,0
-NEON.DOM.SITE.DP1.00003.001,TAAT_1min,Triple aspirated air temperature averaged over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20276.001,gsi_fieldData_pub,Groundwater stable isotopes field data,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_biovolumes_pub,Biovolumes for algal taxonomy,lab-all,0
-NEON.DOM.SITE.DP1.20190.001,sdg_externalLabSummaryData_pub,"Dissolved gas, gas tracer, and salt tracer external lab summary data",lab-all,0
-NEON.DOM.SITE.DP1.10076.001,mam_BOLDspecimenDetails_pub,Small mammal sequences DNA barcode - specimen details,site-date,0
-NEON.DOM.SITE.DP1.10022.001,bet_fielddata_pub,Ground beetle metadata on field collection,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mic_swDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from surface water samples,site-date,0
-NEON.DOM.SITE.DP4.00130.001,csd_dischargeRegressionUSGS_pub,Information relating NEON discharge readings to USGS discharge readings,site-date,0
-NEON.DOM.SITE.DP1.20054.001,TOSW_5_min,Temperature (digital thermistor) of surface water averaged over 5 minutes,site-date,5
-NEON.DOM.SITE.DP1.20120.001,inv_fieldData_pub,Aquatic macroinvertebrate field data,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_daily_temp,Daily weather summary statistics,site-date,24
-NEON.DOM.SITE.DP1.10026.001,cfc_shapefile_pub,Metadata for shapefiles that contain crown polygons,site-date,0
-NEON.DOM.SITE.DP1.20105.001,fsh_BOLDspecimenDetails_pub,Fish sequences DNA barcode - specimen details,site-date,0
-NEON.DOM.SITE.DP1.20206.001,asi_externalLabH2OIsotopes_pub,Surface water H2O stable isotopes external lab data,site-date,0
-NEON.DOM.SITE.DP1.20219.001,zoo_perVial_pub,Aquatic zooplankton identified archive data,site-date,0
-NEON.DOM.SITE.DP1.00026.001,ais_siteSurvey_pub,Information about aquatic instrument system site survey,site-date,0
-NEON.DOM.SITE.DP1.20086.002,mct_benthicSampleMetadata_16S_pub,Metadata for benthic samples used in the analysis of 16S marker gene sequences to derive community composition,site-date,0
-NEON.DOM.SITE.DP1.10098.001,vst_non-woody_pub,"Biomass and productivity measurements of non-herbaceous perennial plants (e.g. cacti, ferns)",site-date,0
-NEON.DOM.SITE.DP1.20054.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20033.001,ais_sunaCleanAndCal_pub,Record of SUNA cleaning and calibration activities,site-date,0
-NEON.DOM.SITE.DP1.10081.002,mct_soilSampleMetadata_ITS_pub,Metadata for soil samples used in the analysis of ITS marker gene sequences to derive community composition,site-date,0
-NEON.DOM.SITE.DP1.10026.001,cfc_elementsSummary_pub,"Long-term uncertainty values for major, minor, and trace element analyses",lab-all,0
-NEON.DOM.SITE.DP1.20281.001,mms_swRawDataFiles_pub,Surface water metagenomics raw sequence data,site-date,0
-NEON.DOM.SITE.DP1.10043.001,mos_identificationHistory_pub,Mosquito identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP4.00130.001,sdrc_gaugePressureRelationship_pub,Information relating staff gauge readings to pressure measurements,site-date,0
-NEON.DOM.SITE.DP1.00133.001,csd_gaugeWaterColumnRegression_pub,Statistics and information on gauge height vs. water column height regressions used in estimating continuous discharge,site-date,0
-NEON.DOM.SITE.DP1.20163.001,alg_algaeExternalLabQA_pub,Algae chemistry external lab data quality assurance,lab-all,0
-NEON.DOM.SITE.DP1.20066.001,apl_taxonomyProcessed_pub,Aquatic plant bryophyte lichen macroalgae clip harvest identifications by expert taxonomists - desynonimized,site-date,0
-NEON.DOM.SITE.DP1.20120.001,inv_identificationHistory_pub,Aquatic macroinvertebrate identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.20093.001,swc_asiPOMFieldData_pub,Surface water stable isotopes field data,site-date,0
-NEON.DOM.SITE.DP1.00038.001,wdi_collectionIso_pub,Wet deposition isotope parent sample data,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_metabarcodeTaxonomyStandard_pub,Macroinvertebrate metabarcode taxon table from bioinformatics pipeline for macroinvertebrate standard samples,lab-all,0
-NEON.DOM.SITE.DP1.20003.001,sur_surveyPoints_pub,Aquatic instrument system site survey data associated with mapped cross-section transects used to delineate hydrologic controls,site-date,0
-NEON.DOM.SITE.DP1.00101.001,dpm_lab_pub,Particulate mass laboratory analysis summary per sample,site-date,0
-NEON.DOM.SITE.DP1.20190.001,rea_externalLabDataGas_pub,Reaeration external lab gas data,site-date,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_stageDischargeCurveInfo_pub,stage-discharge rating curve summary information,site-date,0
-NEON.DOM.SITE.DP1.20282.001,mmg_swRawDataFiles_pub,Raw sequence data files for microbial marker gene sequencing from surface water samples,site-date,0
-NEON.DOM.SITE.DP1.00038.001,wdi_isoPerSample_pub,Wet deposition H2O stable isotope data per sample,site-date,0
-NEON.DOM.SITE.DP1.20281.001,mic_swDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from surface water samples,site-date,0
-NEON.DOM.SITE.DP1.20193.001,sbd_backgroundFieldSaltData_pub,Background salt per station per date for salt-based discharge,site-date,0
-NEON.DOM.SITE.DP1.20254.001,dep_profileHeader_pub,Header information for depth profile field data collection per site per sampling day,site-date,0
-NEON.DOM.SITE.DP1.10026.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
-NEON.DOM.SITE.DP1.00133.001,sdrc_controlType_pub,Control type and geometry used for determining prior parameters,site-date,0
-NEON.DOM.SITE.DP1.00096.001,mgp_perbulksample_pub,Data collected on bulk density sample,site-date,0
-NEON.DOM.SITE.DP1.10072.001,mam_pertrapnight_pub,Small mammal trapping data per trap per night,site-date,0
-NEON.DOM.SITE.DP1.20193.001,sbd_backgroundFieldCondData_pub,Background conductivity logger per station per date for salt-based discharge,site-date,0
-NEON.DOM.SITE.DP1.20093.001,swc_externalLabBlanksByAnalyte_pub,Blank sample water chemistry from external lab,site-all,0
-NEON.DOM.SITE.DP4.00132.001,bat_processedSonarTrackData_pub,Bathymetry sonar data for specific locations within a processed survey track,site-date,0
-NEON.DOM.SITE.DP1.10055.001,phe_perindividual_pub,Geolocation and taxonomic identification for phenology plants,site-all,0
-NEON.DOM.SITE.DP1.20042.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.10072.001,mam_voucher_pub,Voucher specimens,site-all,0
-NEON.DOM.SITE.DP1.20066.001,apc_voucher_pub,Plant voucher specimen sample data,site-all,0
-NEON.DOM.SITE.DP1.00046.001,THRPRE_1min,Throughfall pooled over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.20138.001,amc_cellCounts_pub,Aquatic cell counts laboratory data,site-date,0
-NEON.DOM.SITE.DP1.20008.001,SCSW_30_min,Specific conductivity of surface water averaged over 30 minutes,site-date,30
-NEON.DOM.SITE.DP1.10047.001,spc_perhorizon_pub,Soil initial characterization field data collected per horizon,site-date,0
-NEON.DOM.SITE.DP1.10008.001,spc_externalLabSummary_pub,Long-term uncertainty values for soil initial characterization laboratory analyses,lab-current,0
-NEON.DOM.SITE.DP1.10066.001,mpr_perpitprofile_pub,Data collected per megapit profile,site-date,0
-NEON.DOM.SITE.DP1.10026.001,cfc_chemistrySubsampling_pub,Subsampling for chemical analyses of foliar samples,site-date,0
-NEON.DOM.SITE.DP1.10033.001,ltr_fielddata_pub,Field collection details and sample tracking,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_dnaExtractionStandard_pub,Ingest of laboratory metadata from DNA extraction for macroinvertebrate standard samples,lab-all,0
-NEON.DOM.SITE.DP1.10086.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
-NEON.DOM.SITE.DP1.20280.001,mmg_benthicPcrAmplification_ITS_pub,Laboratory metadata from ITS PCR amplification of DNA from aquatic benthic samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.10003.001,brd_personnel_pub,Personnel conducting breeding landbird point count data and quiz scores,site-all,0
-NEON.DOM.SITE.DP1.20281.001,amc_fieldGenetic_pub,Field data for the genetic sample of surface water microbes,site-date,0
-NEON.DOM.SITE.DP1.10038.001,mos_BOLDvoucherInfo_pub,Mosquito sequences DNA barcode - voucher info,site-date,0
-NEON.DOM.SITE.DP1.00096.001,mgp_permegapit_pub,Data collected per megapit,site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_taxonomyProcessedComp_pub,"Periphyton, seston, and phytoplankton composite identifications by expert taxonomists - desynonimized",site-date,0
-NEON.DOM.SITE.DP1.20280.001,mmg_benthicRawDataFiles_pub,Raw sequence data files for microbial marker gene sequencing from aquatic benthic samples,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_thalwegByHabitatID_pub,Data that describe each stream habitat unit mapped during the survey,site-date,0
-NEON.DOM.SITE.DP1.20072.001,apc_voucher_pub,Plant voucher specimen sample data,site-all,0
-NEON.DOM.SITE.DP4.00001.001,wss_daily_pres,Daily weather summary statistics,site-date,24
-NEON.DOM.SITE.DP1.00013.001,wdp_collectionChem_pub,Wet deposition chemistry per sample,site-date,0
-NEON.DOM.SITE.DP1.20107.001,fsh_invertBycatchIDHistory_pub,Macroinvertebrate bycatch identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.10047.001,spc_externalLabSummary_pub,Long-term uncertainty values for soil initial characterization laboratory analyses,lab-all,0
-NEON.DOM.SITE.DP1.10108.001,mmg_soilDnaExtraction_pub,Laboratory metadata from DNA extraction of soil samples for microbial analyses,site-date,0
-NEON.DOM.SITE.DP1.10081.002,mct_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_AISsiteSurveyResultsFile_pub,AIS site survey file of results,site-date,0
-NEON.DOM.SITE.DP1.20141.001,mcc_swTaxonTableMetadata_ITS_pub,Taxonomic table metadata for surface water microbes from ITS marker gene sequencing analysis,site-date,0
-NEON.DOM.SITE.DP1.10076.001,mam_barcodingqa_pub,Small mammal barcoding quality assurance data from external labs,lab-all,0
-NEON.DOM.SITE.DP1.10026.001,vst_mappingandtagging_pub,"Mapping, identifying and tagging of individual stems for remeasurement",site-all,0
-NEON.DOM.SITE.DP4.00001.001,wss_daily_wind,Daily weather summary statistics,site-date,24
-NEON.DOM.SITE.DP1.20166.001,alg_archive_pub,Aquatic algae archived subsamples,site-date,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_posteriorParameters_pub,Posterior rating curve parameters,site-date,0
-NEON.DOM.SITE.DP1.20015.001,SCGW_5_minute,Specific conductivity in groundwater taken every 5 minutes,site-date,5
-NEON.DOM.SITE.DP1.10066.001,mpr_perrootsample_pub,Data collected per root sample,site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_sonarRecord_pub,Bathymetry sonar record,site-date,0
-NEON.DOM.SITE.DP1.10003.001,brd_references_pub,"Identification references used to identify birds, by site and year",site-all,0
-NEON.DOM.SITE.DP1.20206.001,asi_POMExternalLabDataPerSample_pub,POM stable isotopes external lab data,site-date,0
-NEON.DOM.SITE.DP1.00038.001,wdi_collectionIsoTest_pub,Wet deposition isotope analysis subsample data,site-date,0
-NEON.DOM.SITE.DP1.10066.001,mpr_perdepthincrement_pub,Data collected per depth increment,site-date,0
-NEON.DOM.SITE.DP1.10038.001,mos_BOLDspecimenDetails_pub,Mosquito sequences DNA barcode - specimen details,site-date,0
-NEON.DOM.SITE.DP1.00133.001,csd_dischargeRegressionUSGS_pub,Statistics and information on NEON vs. USGS discharge regressions used in estimating continuous discharge,site-date,0
-NEON.DOM.SITE.DP1.10076.001,mam_BOLDtaxonomy_pub,Small mammal sequences DNA barcode - taxonomy,site-date,0
-NEON.DOM.SITE.DP1.20059.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20190.001,rea_widthFieldData_pub,Wetted width per site per date,site-date,0
-NEON.DOM.SITE.DP1.10043.001,mos_archivepooling_pub,Mosquito archival information from external labs,site-date,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_sampledParameters_pub,Sampled MCMC parameters,site-date,0
-NEON.DOM.SITE.DP1.10109.001,mga_soilLabSummary_pub,Summary data on laboratory methods for qPCR results in soil samples,lab-all,0
-NEON.DOM.SITE.DP1.20279.001,mms_benthicRawDataFiles_pub,Benthic metagenomics raw sequence data,site-date,0
-NEON.DOM.SITE.DP1.20126.001,inv_dnaRawDataFiles_pub,Raw sequence data files for macroinvertebrate marker gene sequencing,site-date,0
-NEON.DOM.SITE.DP1.10067.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
-NEON.DOM.SITE.DP1.10093.001,tck_archive_pub,Tick archive information,site-date,0
-NEON.DOM.SITE.DP1.20053.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.10003.001,brd_identificationHistory_pub,Bird identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP1.10017.001,dhp_perimagefile_pub,Digital hemispherical photo sampling information per image file within a plot,site-date,0
-NEON.DOM.SITE.DP1.30012.001,fsp_boutMetadata_pub,Instrument parameters for field spectral measurements,site-date,0
-NEON.DOM.SITE.DP1.20276.001,gsi_wellStabilization_pub,Field data for recording stabilization of ground water well before sampling,site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_resultsFile_pub,Bathymetry file of results,site-date,0
-NEON.DOM.SITE.DP1.10035.001,bry_productivity_pub,Field collection and dry mass of bryophyte sample per clip per bout,site-date,0
-NEON.DOM.SITE.DP1.20217.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.10081.001,mcc_soilTaxonTableMetadata_16S_pub,Taxonomic table metadata for soil microbes from 16S marker gene sequencing analysis,site-date,0
-NEON.DOM.SITE.DP4.00132.001,bat_processedHabitatResults_pub,Bathymetry habitat data from the processed sonar survey,site-date,0
-NEON.DOM.SITE.DP1.00046.001,THRPRE_30min,Throughfall pooled over 30 minutes,site-date,30
-NEON.DOM.SITE.DP4.00131.001,geo_processedSurveyData_pub,"Survey data generated during post-processing, including point classifications and real world coordinates",site-date,0
-NEON.DOM.SITE.DP1.20166.001,alg_identificationHistory_pub,"Periphyton, seston, and phytoplankton identification history for records where identifications have changed",site-all,0
-NEON.DOM.SITE.DP1.10072.001,mam_perplotnight_pub,Small mammal trapping summary data per plot per night,site-date,0
-NEON.DOM.SITE.DP1.20219.001,zoo_identificationHistory_pub,Aquatic zooplankton identification history for records where identifications have changed,site-all,0
-NEON.DOM.SITE.DP4.00133.001,sdrc_curveIdentification_pub,Active dates of a rating curve and associated control survey date,site-date,0
-NEON.DOM.SITE.DP1.10086.001,ntr_internalLab_pub,NEON domain lab potassium chloride extraction data for initial and final soil cores,site-date,0
-NEON.DOM.SITE.DP1.20261.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20048.001,dsc_fieldDataADCP_pub,Discharge ADCP survey data per site per bout,site-date,0
-NEON.DOM.SITE.DP1.00101.001,dpm_sensor_pub,Dust particulate mass sensor data,site-date,0
-NEON.DOM.SITE.DP1.20163.001,alg_algaeDataPerSampleCompChl_pub,Algae external lab chlorophyll and pheophytin data for composite samples,site-date,0
-NEON.DOM.SITE.DP1.10107.001,mms_rawDataFiles_pub,Soil metagenomics raw sequence data,site-date,0
-NEON.DOM.SITE.DP1.20066.001,apc_morphospecies_pub,Plant morphospecies resolution data,site-all,0
-NEON.DOM.SITE.DP1.00133.001,sdrc_controlInfo_pub,Activation state of the controls used for a rating curve,site-date,0
-NEON.DOM.SITE.DP4.00131.001,geo_geomorphicFeatureCount_pub,The type and total count of all geomorphic features mapped during the survey,site-date,0
-NEON.DOM.SITE.DP1.20276.001,asi_externalLabSummaryData_pub,H2O stable isotopes external lab summary data,lab-all,0
-NEON.DOM.SITE.DP1.20033.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.10041.001,mos_pathogenpooling_pub,Mosquito pathogen pool size information from external labs,site-date,0
-NEON.DOM.SITE.DP1.00101.001,dpm_filterBlank_pub,Particulate mass laboratory blank filter processing table,lab-all,0
-NEON.DOM.SITE.DP1.00044.002,WEIPRE_1min,Weighing Gauge Precipitation pooled over 1 minute,site-date,1
-NEON.DOM.SITE.DP1.10092.001,tck_pathogenqa_pub,Tick pathogen testing quality assurance data from external labs,lab-all,0
-NEON.DOM.SITE.DP1.20105.001,fsh_BOLDtaxonomy_pub,Fish sequences DNA barcode - taxonomy,site-date,0
-NEON.DOM.SITE.DP1.20093.001,swc_externalLabAbsorbanceScan_pub,Surface water chemistry absorbance scan from external lab,site-date,0
-NEON.DOM.SITE.DP4.00001.001,wss_monthly_temp,Monthly weather summary statistics,site-date,12
-NEON.DOM.SITE.DP1.00133.001,sdrc_ratingCurveIDByEventID_pub,All rating curve IDs in which a discharge measurement is included in long format,site-date,0
-NEON.DOM.SITE.DP1.00038.001,asi_externalLabSummaryData_pub,Wet deposition H2O stable isotope external lab summary data,lab-all,0
-NEON.DOM.SITE.DP1.10076.001,mam_BOLDvoucherInfo_pub,Small mammal sequences DNA barcode - voucher info,site-date,0
-NEON.DOM.SITE.DP1.20100.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
-NEON.DOM.SITE.DP1.20100.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.20190.001,rea_conductivityFieldData_pub,Reaeration logger field data,site-date,0
-NEON.DOM.SITE.DP1.10020.001,bet_BOLDvoucherInfo_pub,Ground beetle sequences DNA barcode - voucher info,site-date,0
-NEON.DOM.SITE.DP1.20190.001,rea_backgroundFieldCondData_pub,Background conductivity logger per station per date,site-date,0
-NEON.DOM.SITE.DP1.20015.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
-NEON.DOM.SITE.DP1.00013.001,wdp_sensor_pub,Wet deposition collector automated sensor data,site-date,0
+DP1.20221.001,zoo_pcrAmplification_pub,Ingest of laboratory metadata from PCR amplification of DNA for zooplankton analyses,site-date,0
+DP1.20120.001,inv_persample_pub,Aquatic macroinvertebrate habitat data and QC metrics per sample,site-date,0
+DP1.20008.001,SCSW_5_min,Specific conductivity of surface water averaged over 5 minutes,site-date,5
+DP1.20093.001,swc_domainLabData_pub,Surface water chemistry ALK and ANC domain lab data summary data,site-date,0
+DP1.10047.001,spc_biogeochem_pub,Soil initial characterization chemical measurements,site-date,0
+DP1.20141.002,mct_surfaceWaterSampleMetadata_ITS_pub,Metadata for surface water samples used in the analysis of ITS marker gene sequences to derive community composition,site-date,0
+DP1.10099.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
+DP1.10108.001,mmg_soilRawDataFiles_pub,Raw sequence data files for microbial marker gene sequencing from soil samples,site-date,0
+DP1.00026.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
+DP1.10104.001,sme_batchResults_pub,Microbial biomass batch-level data,lab-all,0
+DP1.30012.001,fsp_sampleMetadata_pub,Foliar sample metaddata,site-date,0
+DP1.00023.001,SLRNR_1min,Shortwave and Longwave Radiation averaged over 1 minute,site-date,1
+DP1.00026.001,ais_sunaCleanAndCal_pub,Record of SUNA cleaning and calibration activities,site-date,0
+DP1.20221.001,zoo_fieldData_pub,Aquatic zooplankton field data,site-date,0
+DP1.20166.001,alg_qualityCheck_pub,Aquatic algae quality data,site-date,0
+DP1.20092.001,gwc_fieldSuperParent_pub,Field data for the parent sample of groundwater chemistry,site-date,0
+DP1.20194.001,asc_externalLabSummary_pub,Sediment chemistry external lab long-term summary data,lab-current,0
+DP1.10058.001,div_voucher_pub,Voucher specimens,site-all,0
+DP1.10086.001,sls_metagenomicsPooling_pub,Sample information for soil subsamples collected for metagenomics analysis,site-date,0
+DP1.20271.001,RHbuoy_30min,Relative Humidity on buoy averaged over 30 minutes,site-date,30
+DP1.10055.001,phe_statusintensity_pub,Plant phenophase status and intensity data,site-date,0
+DP1.10093.001,tck_taxonomyProcessed_pub,Tick identifications by expert taxonomists - desynonimized,site-date,0
+DP1.00003.001,TAAT_30min,Triple aspirated air temperature averaged over 30 minutes,site-date,30
+DP1.10010.001,cdw_tally_identificationHistory_pub,Coarse downed wood survey identification history for records where identifications have changed,site-all,0
+DP1.00098.001,RH_30min,Relative Humidity averaged over 30 minutes,site-date,30
+DP1.20277.001,mga_benthicGroupAbundances_pub,Laboratory results of gene copy number data in benthic aquatic samples,site-date,0
+DP1.00002.001,SAAT_1min,Single aspirated air temperature averaged over 1 minute,site-date,1
+DP1.10026.001,cfc_fieldData_pub,Field collection of foliar samples,site-date,0
+DP1.20032.001,SLRNRB_30min,Shortwave and Longwave Radiation on buoy averaged over 30 minutess,site-date,30
+DP1.00024.001,PARPAR_30min,Photosynthetically Active Radiation averaged over 30 minutes,site-date,30
+DP1.10010.001,cdw_fieldtally_pub,Tally and raw measurement of coarse downed wood >= 2 cm diameter,site-date,0
+DP1.10086.001,sls_soilCoreCollection_pub,Field data of soils collected for microbial or biogeochemistry sampling,site-date,0
+DP1.20138.001,amc_fieldCellCounts_pub,Aquatic microbes field data specific to sample for cell counts,site-date,0
+DP1.10072.001,mam_voucherIdentificationHistory_pub,Non-bout vertebrate voucher specimens identification history for records where identifications have changed,site-all,0
+DP1.20163.001,alg_fieldData_pub,"Periphyton, seston, and phytoplankton field collection data from streams, lakes, and non-wadeable streams",site-date,0
+DP1.10047.001,spc_perplot_pub,Soil initial characterization field data collected per plot,site-date,0
+DP4.00131.001,geo_trimbleData_pub,Field collected spatial data,site-date,0
+DP1.20053.001,TSW_5min,Temperature of surface water from PRT summarized over 5 minutes,site-date,5
+DP1.20191.001,rip_percentComposition_pub,Assessment of riparian vegetation percent cover in wadeable streams,site-date,0
+DP1.20166.001,alg_taxonomyRaw_pub,"Periphyton, seston, and phytoplankton identifications by expert taxonomists - raw",site-date,0
+DP1.10020.001,bet_BOLDspecimenDetails_pub,Ground beetle sequences DNA barcode - specimen details,site-date,0
+DP1.20219.001,zoo_fieldData_pub,Aquatic zooplankton field data,site-date,0
+DP1.00133.001,sdrc_priorParameters_pub,Prior rating curve parameters used to develop rating curve,site-date,0
+DP1.00045.001,TIPPRE_1min,Tipping Bucket Precipitation pooled over 1 minute,site-date,1
+DP1.00001.001,2DWSD_2min,2D wind speed and direction averaged over 2 minutes,site-date,2
+DP1.10086.001,ntr_externalSummary_pub,Long-term uncertainty values for analysis of inorganic nitrogen concentrations,lab-all,0
+DP4.00133.001,sdrc_gaugeDischargeMeas_pub,Individual gauge and discharge measurements used to develop rating curve,site-date,0
+DP1.00101.001,dpm_field_pub,Particulate mass field collection summary per site,site-date,0
+DP4.00001.001,wss_yearly_temp,Yearly weather summary statistics,site-date,365
+DP1.00026.001,ais_aquaticLocationRecord_pub,Aquatic location tracking record information,site-date,0
+DP1.20126.001,inv_markerGeneSequencingStandard_pub,Ingest of laboratory metadata for macroinvertebrate standard sample marker gene sequencing,lab-all,0
+DP1.20001.001,rap_pebbleCount_pub,Sediment particle size data collected during rapid habitat assessment pebble count sampling,site-date,0
+DP1.20193.001,sdg_externalLabSummaryData_pub,"Dissolved gas, gas tracer, and salt tracer external lab summary data",lab-all,0
+DP1.10022.001,bet_archivepooling_pub,Pitfall samples pooled by NEON technicians,site-date,0
+DP4.00132.001,bat_groundTruthPoints_pub,Bathymetry field collected ground truth data,site-date,0
+DP4.00132.001,bat_processedPlantCoverage_pub,Bathymetry plant coverage data from the processed sonar survey,site-date,0
+DP1.10107.001,mms_soilDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from soil samples,site-date,0
+DP1.20107.001,fsh_perFish_pub,Fish sampling field data per specimen captured,site-date,0
+DP1.20194.001,asc_fieldDataZone_pub,Zone level sediment collection field data,site-date,0
+DP1.20059.001,WSDBuoy_2min,Windspeed and direction above water on-buoy 2 minute mean,site-date,2
+DP1.20015.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20288.001,waq_instantaneous_pub,Instantaneous water quality measurements,site-date,100
+DP1.20066.001,apl_clipHarvest_pub,Aquatic plant bryophyte lichen macroalgae clip harvest data,site-date,0
+DP1.20282.001,mmg_swMarkerGeneSequencing_ITS_pub,Laboratory metadata for microbial ITS marker gene sequencing from surface water samples,site-date,0
+DP1.10058.001,div_10m2Data100m2Data_pub,Plant species identifications within 10 square meter and 100 square meter subplots,site-date,0
+DP1.20282.001,mmg_swMarkerGeneSequencing_16S_pub,Laboratory metadata for microbial 16S marker gene sequencing from surface water samples,site-date,0
+DP1.10047.001,spc_particlesize_pub,Soil initial characterization particle size measurements,site-date,0
+DP1.20288.001,ais_multisondeCleanCal_pub,Information related to multisonde cleaning and calibration activities,site-date,0
+DP1.10043.001,mos_trapping_pub,Mosquito trapping data from field operations,site-date,0
+DP1.20267.001,gag_fieldData_pub,Field metadata and gauge height per site per date,site-date,0
+DP1.20097.001,sdg_externalLabData_pub,Dissolved gas external lab data,site-date,0
+DP4.00131.001,geo_thalwegByHabitatType_pub,Summary level data for stream habitat units mapped during the survey,site-date,0
+DP1.20221.001,inv_pcrAmplificationStandard_pub,Ingest of laboratory metadata from PCR amplification of DNA for macroinvertebrate standard samples,lab-all,0
+DP1.20092.001,gwc_wellStabilization_pub,Field data for recording stabilization of ground water well before sampling,site-date,0
+DP1.00017.001,dpsd_60_minutes,Dust and particulate size distribution median over 60 minutes,site-date,60
+DP1.20054.001,TOSW_30_min,Temperature (digital thermistor) of surface water averaged over 30 minutes,site-date,30
+DP1.00005.001,IRBT_30_minute,IR Biological Temperature averaged over 30 minute,site-date,30
+DP1.00040.001,SHF_30min,The amount of thermal energy moving by conduction across an area of soil averaged over 30 minutes,site-date,30
+DP1.10022.001,bet_expertTaxonomistIDProcessed_pub,Ground beetle identifications by expert taxonomists - desynonomized,site-date,0
+DP1.20015.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
+DP1.20072.001,apc_taxonomyProcessed_pub,"Aquatic plant bryophyte lichen macroalgae point transect identifications by expert taxonomists, desynonimized",site-date,0
+DP1.20126.001,inv_dnaStandardTaxon_pub,Macroinvertebrate DNA standard sample taxonomy,lab-all,0
+DP1.20279.001,amb_fieldParent_pub,Aquatic benthic microbes field data,site-date,0
+DP1.10014.001,cdw_densitylog_pub,Tree level data for coarse downed wood disk collection,site-date,0
+DP1.10104.001,sme_labSummary_pub,Long-term uncertainty values for soil microbial biomass analysis,lab-all,0
+DP1.10055.001,phe_perindividualperyear_pub,Annual census of size and disease status on phenology plants,site-date,0
+DP1.20063.001,apl_biomass_pub,Domain lab aquatic clip harvest biomass,site-date,0
+DP1.20221.001,inv_metabarcodeSummary_pub,Summary data on laboratory methods for metabarcode community results,lab-all,0
+DP4.00131.001,geo_surveyFieldData_pub,Table to restrict Fulcrum loading until survey is complete,site-date,0
+DP1.00006.001,SECPRE_30min,Secondary Precipitation pooled over 30 minutes,site-date,30
+DP1.20066.001,apl_biomass_pub,Domain lab aquatic clip harvest biomass,site-date,0
+DP1.10076.001,mam_BOLDcollectionData_pub,Small mammal sequences DNA barcode - collection data,site-date,0
+DP1.20086.002,mct_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
+DP1.10108.001,mmg_soilPcrAmplification_ITS_pub,Laboratory metadata from ITS PCR amplification of DNA from soil samples for microbial analyses,site-date,0
+DP1.10108.001,mmg_soilPcrAmplification_16S_pub,Laboratory metadata from 16S PCR amplification of DNA from soil samples for microbial analyses,site-date,0
+DP1.20001.001,rap_pebbleFieldData_pub,Sediment particle size distribution summary data associated with pebble count sampling during the rapid habitat assessment survey,site-date,0
+DP1.20264.001,TSD_1_min,Temperature at specific depths of surface water taken every 1 minute,site-date,1
+DP1.10067.001,bbc_percore_pub,Field data collected per soil core,site-date,0
+DP1.20163.001,alg_domainLabChemistryComp_pub,"Periphyton, seston, and phytoplankton domain lab data for composite chemistry samples",site-date,0
+DP1.20282.001,mmg_swMarkerGeneSequencingQA_ITS_pub,Laboratory quality assurance metadata for microbial ITS marker gene sequencing from surface water samples,site-date,0
+DP1.00026.001,ais_maintenanceSensorReplacement_pub,Information related to replacement of sensors and infrastructure,site-date,0
+DP1.10104.001,sme_scaledMicrobialBiomass_pub,"Laboratory results of microbial biomass data, scaled to an internal standard",site-date,0
+DP1.00023.001,SLRNR_30min,Shortwave and Longwave Radiation averaged over 30 minute,site-date,30
+DP1.20217.001,TGW_5_minute,Temperature of groundwater taken every 5 minutes,site-date,5
+DP1.20252.001,dep_secchi_pub,Secchi field data collection per site per sampling day,site-date,0
+DP1.20099.001,agw_groundwaterFieldData_pub,Field metadata and groundwater measurements per site per date,site-date,0
+DP1.00014.001,SRDDP_1min,Shortwave radiation (direct and diffuse pyranometer) averaged over 1 minute,site-date,1
+DP1.10033.001,ltr_litterLignin_pub,External lab analysis of lignin concentrations in litter,site-date,0
+DP1.20206.001,asi_fieldSuperParent_pub,Field data for the parent sample of surface water stable isotopes,site-date,0
+DP1.20033.001,NSW_15_minute,Nitrate in surface water summarized from burst of measurements taken every 15 minutes,site-date,15
+DP1.10067.001,bbc_rootChemistry_pub,External lab analysis of carbon and nitrogen concentrations in roots,site-date,0
+DP1.10104.001,sme_microbialBiomass_pub,Laboratory results of microbial biomass data,site-date,0
+DP1.10102.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
+DP1.20055.001,SST_30min,Temperature and specific conductance at specific depths in surface water taken every 30 minutes,site-date,30
+DP1.10026.001,cfc_chlorophyll_pub,External lab analysis of foliar chlorophyll concentrations,site-date,0
+DP1.20004.001,BP_30min,Barometric Pressure averaged over 30 minutes,site-date,30
+DP1.00017.001,dpsd_30_minutes,Dust and particulate size distribution median over 30 minutes,site-date,30
+DP1.10058.001,div_morphospecies_pub,Diversity morphospecies resolution data,site-all,0
+DP1.20280.001,mmg_benthicPcrAmplification_16S_pub,Laboratory metadata from 16S PCR amplification of DNA from aquatic benthic samples for microbial analyses,site-date,0
+DP1.10066.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
+DP1.00026.001,ais_multisondeCleanCal_pub,Information related to multisonde cleaning and calibration activities,site-date,0
+DP1.20072.001,apc_morphospecies_pub,Plant morphospecies resolution data,site-all,0
+DP1.10043.001,mos_expertTaxonomistIDProcessed_pub,Mosquito identifications by expert taxonomists - desynonomized,site-date,0
+DP1.10072.001,mam_identificationHistory_pub,Small mammal identification history for records where identifications have changed,site-all,0
+DP1.10023.001,hbp_perbout_pub,"Herbaceous clip harvest spatial and temporal sampling information, and sampling metadata",site-date,0
+DP1.10093.001,tck_taxonomyRaw_pub,Tick identifications by expert taxonomists - raw,site-date,0
+DP4.00131.001,geo_rapidHabitatAssessment_pub,Data associated with the rapid habitat assessment portion of the stream morphology protocol,site-date,0
+DP1.00014.001,SRDDP_30min,Shortwave radiation (direct and diffuse pyranometer) averaged over 30 minutes,site-date,30
+DP1.10033.001,ltr_vegetationCover_pub,Cover of qualifying vegetation from AOP survey,site-all,0
+DP1.00045.001,TIPPRE_30min,Tipping Bucket Precipitation pooled over 30 minutes,site-date,30
+DP1.20086.001,mcc_benthicSeqVariantMetadata_16S_pub,Taxon table metadata for benthic microbes from sequence variant data analysis of the 16S marker gene,site-date,0
+DP1.20126.001,inv_metabarcodeTaxonList_pub,Metabarcode full taxonomic list for every sequenceName,lab-all,0
+DP1.20280.001,mic_benthicDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from benthic samples,site-date,0
+DP1.20107.001,fsh_bulkCount_pub,Fish sampling field data bulk count,site-date,0
+DP1.00004.001,BP_30min,Barometric Pressure averaged over 30 minutes,site-date,30
+DP1.20166.001,alg_taxonomyRawComp_pub,"Periphyton, seston, and phytoplankton composite identifications by expert taxonomists - raw",site-date,0
+DP1.20276.001,gsi_fieldSuperParent_pub,Field data for the parent sample of groundwater stable isotopes,site-date,0
+DP1.20093.001,swc_externalLabDataByAnalyte_pub,Surface water chemistry from external lab in long format,site-date,0
+DP1.00098.001,RH_1min,Relative Humidity averaged over 1 minute,site-date,1
+DP1.10014.001,cdw_densitydisk_pub,Disk and sample level data for coarse downed wood disk collection,site-date,0
+DP1.00002.001,SAAT_30min,Single aspirated air temperature averaged over 30 minutes,site-date,30
+DP1.20097.001,sdg_fieldDataProc_pub,Dissolved gas field sample processing per site per date,site-date,0
+DP1.10067.001,bbc_dilution_pub,Data collected per root dilution sample,site-date,0
+DP1.10100.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
+DP1.20001.001,rap_rapidHabitatAssessment_pub,Habitat characterization and spatial data associated with the rapid habitat assessment survey,site-date,0
+DP1.10058.001,div_geneticarchive_pub,Genetic archive samples,site-all,0
+DP1.20092.001,gwc_domainLabData_pub,Groundwater chemistry ALK and ANC domain lab data summary data,site-date,0
+DP1.20219.001,zoo_taxonomyRaw_pub,Aquatic zooplankton identifications by expert taxonomists - raw,site-date,0
+DP1.00006.001,THRPRE_30min,Throughfall pooled over 30 minutes,site-date,30
+DP1.10058.001,div_1m2Data_pub,"Plant species identifications and cover, and cover of abiotic variables within 1 square meter subplots",site-date,0
+DP1.20282.001,amc_fieldSuperParent_pub,Field data for the parent sample of surface water microbes,site-date,0
+DP1.00026.001,ais_siteSurveyStationFeature_pub,Aquatic instrument system site survey feature information,site-date,0
+DP1.20097.001,sdg_fieldData_pub,Dissolved gas field data per station per date,site-date,0
+DP1.20221.001,inv_dnaExtractionStandard_pub,Ingest of laboratory metadata from DNA extraction for macroinvertebrate standard samples,lab-all,0
+DP1.20086.001,mcc_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
+DP1.20032.001,SLRNRB_1min,Shortwave and Longwave Radiation on buoy averaged over 1 minute,site-date,1
+DP1.00095.001,SCO2C_30_minute,Soil CO2 concentration averaged over 30 minutes,site-date,30
+DP1.20107.001,fsh_fieldData_pub,Fish sampling field data per sub-sampling reach,site-date,0
+DP1.20086.001,mcc_benthicSeqVariantMetadata_ITS_pub,Taxon table metadata for benthic microbes from sequence variant data analysis of the ITS marker gene,site-date,0
+DP1.20042.001,PARWS_1min,Photosynthetically Active Radiation at Water Surface averaged over 1 minute,site-date,1
+DP1.20066.001,apc_voucherTaxonomyProcessed_pub,"Identifications by expert taxonomists for voucher specimens, desynonimized",site-all,0
+DP1.20092.001,swc_externalLabBlanksByAnalyte_pub,Blank sample water chemistry from external lab,site-all,0
+DP1.10086.001,sls_soilpH_pub,Soil pH data for microbial and biogeochemical samples,site-date,0
+DP1.10041.001,mos_pathogenresults_pub,Mosquito pathogen testing results from external labs,site-date,0
+DP1.20066.001,apl_taxonomyRaw_pub,Aquatic plant bryophyte lichen macroalgae clip harvest identifications by expert taxonomists - raw,site-date,0
+DP1.10098.001,vst_apparentindividual_pub,Biomass and productivity measurements of woody individuals,site-date,0
+DP1.20072.001,apc_perTaxon_pub,Point transect data for each taxon,site-date,0
+DP1.20280.001,amb_fieldParent_pub,Aquatic benthic microbes field data,site-date,0
+DP1.20015.001,SCGW_30_minute,Specific conductivity in groundwater averaged over 30 minutes,site-date,30
+DP1.20219.001,zoo_taxonomyProcessed_pub,Aquatic zooplankton identifications by expert taxonomists - desynonimized,site-date,0
+DP1.10098.001,vst_mappingandtagging_pub,"Mapping, identifying and tagging of individual stems for remeasurement",site-all,0
+DP1.00095.001,SCO2C_1_minute,Soil CO2 concentration averaged over 1 minute,site-date,1
+DP1.10043.001,mos_subsampling_pub,"Generation of mosquito samples for barcoding, archiving and pathogen testing",site-date,0
+DP1.00094.001,SWS_1_minute,Soil water content and water salinity averaged over 1 minute,site-date,1
+DP1.20163.001,alg_algaeExternalLabDataPerSample_pub,Algae external lab chemistry data,site-date,0
+DP1.20138.001,amc_cellCountLabSummary_pub,Summary data on laboratory methods for cell count results,lab-all,0
+DP1.10022.001,bet_sorting_pub,Sorting of field-collected pitfall samples by NEON parataxonomists,site-date,0
+DP4.00132.001,bat_pointcollection_pub,Bathymetry field point collection,site-date,0
+DP1.20282.001,amc_fieldGenetic_pub,Field data for the genetic sample of surface water microbes,site-date,0
+DP1.00066.001,PARQL_1min,Photosynthetically active radiation (quantum line) averaged over 1 minute,site-date,1
+DP1.20086.001,mcc_benthicTaxonTableMetadata_16S_pub,Taxonomic table metadata for benthic microbes from 16S marker gene sequencing analysis,site-date,0
+DP1.10081.001,mcc_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
+DP1.10098.001,vst_perplotperyear_pub,"Per plot sampling metadata, including presence/absence of each growthForm",site-date,0
+DP1.00026.001,ais_siteSurveyMappedPointError_pub,Aquatic instrument system site survey mapped points that contain errors,site-date,0
+DP1.20261.001,uPAR_1min,Photosynthetically Active Radiation below water surface averaged over 1 minute,site-date,1
+DP1.20163.001,alg_domainLabChemistry_pub,"Periphyton, seston, and phytoplankton domain lab data for chemistry samples",site-date,0
+DP1.10058.001,div_identificationHistory_pub,Plant diversity identification history for records where identifications have changed,site-all,0
+DP1.10038.001,mos_BOLDcollectionData_pub,Mosquito sequences DNA barcode - collection data,site-date,0
+DP1.20004.001,BP_1min,Barometric Pressure averaged over 1 minute,site-date,1
+DP4.00131.001,geo_transectBankfullWidths_pub,Data that describe channel widths measured at mapped cross-section transects,site-date,0
+DP1.20072.001,apc_taxonomyRaw_pub,"Aquatic plant bryophyte lichen macroalgae point transect identifications by expert taxonomists, raw",site-date,0
+DP1.20105.001,fsh_BOLDcollectionData_pub,Fish sequences DNA barcode - collection data,site-date,0
+DP1.10020.001,bet_BOLDcollectionData_pub,Ground beetle sequences DNA barcode - collection data,site-date,0
+DP1.10081.002,mct_soilSampleMetadata_16S_pub,Metadata for soil samples used in the analysis of 16S marker gene sequences to derive community composition,site-date,0
+DP1.20217.001,TGW_30_minute,Temperature of groundwater averaged over 30 minutes,site-date,30
+DP1.20278.001,mga_batchResults_pub,Batch-level results of analysis of gene copy number in surface water samples,lab-all,0
+DP4.00133.001,sdrc_resultsResiduals_pub,Results residuals for the gauge and discharge measurements used to develop rating curve,site-date,0
+DP1.20282.001,mmg_swPcrAmplification_16S_pub,Laboratory metadata from 16S PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
+DP1.00066.001,PARQL_30min,Photosynthetically active radiation (quantum line) averaged over 30 minutes,site-date,30
+DP1.20193.001,sbd_externalLabDataSalt_pub,Reaeration external lab salt data for salt-based discharge,site-date,0
+DP1.20221.001,inv_dnaRawDataFilesStandard_pub,Raw sequence data files for macroinvertebrate standard sample marker gene sequencing,lab-all,0
+DP1.00026.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP4.00132.001,bat_processedVolumeData_pub,Bathymetry volume data from the processed sonar survey,site-date,0
+DP1.20193.001,sbd_plateauMeasurementFieldData_pub,Field data collected at plateau per station per date for salt-based discharge,site-date,0
+DP1.00005.001,IRBT_1_minute,IR Biological Temperature averaged over 1 minute,site-date,1
+DP1.20281.001,mms_swMetagenomeDnaExtraction_pub,Laboratory metadata from surface water DNA extraction for metagenomics sequencing,site-date,0
+DP1.20107.001,fsh_morphospecies_pub,Fish morphospecies resolution data,site-all,0
+DP1.20221.001,zoo_metabarcodeTaxonomy_pub,Zooplankton metabarcode taxon table from bioinformatics pipeline,site-date,0
+DP1.10111.001,sim_locationVisitsAndAttributes_pub,"Summary of annual visit totals, environmental context, and mitigation actions by location to support estimates of sampling impact and location vulnerability",site-all,0
+DP1.10026.001,cfc_elements_pub,"External lab analysis of major, minor, and trace element concentrations in foliage",site-date,0
+DP1.20221.001,inv_metabarcodeTaxonList_pub,Metabarcode full taxonomic list for every sequenceName,lab-all,0
+DP1.10026.001,cfc_LMA_pub,Leaf mass per area measurement of foliar samples,site-date,0
+DP1.00096.001,mgp_perarchivesample_pub,Archived sample information,site-date,0
+DP4.00131.001,geo_rapidHabitatResultsFile_pub,Rapid habitat assessment file of results,site-date,0
+DP1.20016.001,EOS_30_min,Elevation of surface water averaged over 30 minutes,site-date,30
+DP1.20042.001,PARWS_30min,Photosynthetically Active Radiation at Water Surface averaged over 30 minutes,site-date,30
+DP1.10086.001,ntr_externalLab_pub,External lab analysis of inorganic nitrogen concentrations in kcl extracts,site-date,0
+DP1.10053.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
+DP1.20141.001,mcc_swTaxonTableMetadata_16S_pub,Taxonomic table metadata for surface water microbes from 16S marker gene sequencing analysis,site-date,0
+DP1.20280.001,mmg_benthicMarkerGeneSequencing_ITS_pub,Laboratory metadata for microbial ITS marker gene sequencing from aquatic benthic samples,site-date,0
+DP1.20278.001,mic_swDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from surface water samples,site-date,0
+DP1.20221.001,inv_metabarcodeTaxonomyStandard_pub,Macroinvertebrate metabarcode taxon table from bioinformatics pipeline for macroinvertebrate standard samples,lab-all,0
+DP4.00130.001,csd_constantBiasShift_pub,Information on the date range and magnitude of constant bias shifts applied to Instrumented Systems (IS) data streams during gap-filling,site-date,0
+DP1.20097.001,sdg_fieldDataAir_pub,Dissolved gas reference air collection per site per date,site-date,0
+DP1.20277.001,mga_batchResults_pub,Batch-level results of analysis of gene copy number in benthic aquatic samples,lab-all,0
+DP1.10109.001,mga_labSummary_pub,Summary data on laboratory methods for qPCR results in soil samples,lab-all,0
+DP1.10043.001,mos_barcoding_pub,Mosquito barcoding sample data from external labs,site-date,0
+DP1.10031.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-current,0
+DP1.20126.001,inv_metabarcodeTaxonomy_pub,Macroinvertebrate metabarcode taxon table from bioinformatics pipeline,site-date,0
+DP1.20206.001,asi_externalLabSummaryData_pub,H2O stable isotopes external lab summary data,lab-all,0
+DP1.20264.001,TSD_30_min,Temperature at specific depths of surface water averaged over 30 minutes,site-date,30
+DP1.10064.002,rpt2_pathogentesting_pub,Rodent pathogen testing results from external labs,site-date,0
+DP1.20281.001,mms_swMetagenomeSequencing_pub,Surface water metagenomics sequencing metadata,site-date,0
+DP1.10043.001,mos_barcodingqa_pub,Mosquito barcoding quality assurance data from external labs,lab-all,0
+DP4.00001.001,wss_monthly_humid,Monthly weather summary statistics,site-date,12
+DP1.20008.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.10093.001,tck_identificationHistory_pub,Tick identification history for records where identifications have changed,site-all,0
+DP1.20194.001,asc_fieldDataStation_pub,Station level sediment collection field data,site-date,0
+DP1.20221.001,zoo_markerGeneSequencing_pub,Ingest of laboratory metadata for zooplankton marker gene sequencing,site-date,0
+DP1.10026.001,cfc_chlorophyllParameters_pub,External lab parameters used in foliar chlorophyll measurements,lab-all,0
+DP1.20063.001,apl_plantExternalLabQA_pub,Plant chemistry external lab data quality assurance,lab-all,0
+DP1.20206.001,asi_fieldData_pub,Surface water stable isotopes field data,site-date,0
+DP1.10022.001,bet_bycatchIDHistory_pub,Identification history for beetle bycatch records where identifications have changed,site-all,0
+DP1.20042.001,PARWS_5min,Photosynthetically Active Radiation at Water Surface averaged over 5 minutes,site-date,5
+DP1.00026.001,ais_siteSurveyStation_pub,Aquatic instrument system site survey station information,site-date,0
+DP1.10041.001,mos_pathogenqa_pub,Mosquito pathogen testing quality assurance data from external labs,lab-all,0
+DP1.10067.001,bbc_chemistryPooling_pub,Identifiers for subsamples created for chemical analyses or archive,site-date,0
+DP1.20166.001,alg_fieldData_pub,"Periphyton, seston, and phytoplankton field collection data from streams, lakes, and non-wadeable streams",site-date,0
+DP1.20279.001,mms_benthicMetagenomeSequencing_pub,Benthic metagenomics sequencing metadata,site-date,0
+DP1.10038.001,mos_BOLDtaxonomy_pub,Mosquito sequences DNA barcode - taxonomy,site-date,0
+DP1.20163.001,alg_algaeDataPerSampleCompCNPS_pub,"Algae external lab chemistry data for composite C, N, P, and S samples",site-date,0
+DP1.20281.001,amc_fieldSuperParent_pub,Field data for the parent sample of surface water microbes,site-date,0
+DP1.00022.001,SRPP_1min,Shortwave radiation (primary pyranometer) averaged over 1 minute,site-date,1
+DP1.20100.001,EOG_30_min,Elevation of groundwater averaged over 30 minutes,site-date,30
+DP1.20126.001,inv_markerGeneSequencing_pub,Ingest of laboratory metadata for macroinvertebrate marker gene sequencing,site-date,0
+DP1.10098.001,vst_shrubgroup_pub,Biomass and productivity measurements of groups of shrubs,site-date,0
+DP1.20059.001,WSDBuoy_30min,Windspeed and direction above water on-buoy averaged over 30 minutes,site-date,30
+DP1.00038.001,wdi_collection_pub,Wet deposition field collection data,site-date,0
+DP1.20141.001,mcc_swSeqVariantMetadata_16S_pub,Taxon table metadata for surface water microbes from sequence variant data analysis of the 16S marker gene,site-date,0
+DP1.00096.001,mgp_perhorizon_pub,Per soil horizon metadata,site-date,0
+DP4.00133.001,sdrc_controlType_pub,Control type and geometry used for determining prior parameters,site-date,0
+DP1.20141.002,mct_surfaceWaterSampleMetadata_16S_pub,Metadata for surface water samples used in the analysis of 16S marker gene sequences to derive community composition,site-date,0
+DP1.10086.001,sls_soilMoisture_pub,Soil moisture data for microbial and biogeochemical samples,site-date,0
+DP1.00001.001,2DWSD_30min,2D wind speed and direction averaged over 30 minutes,site-date,30
+DP1.10055.001,phe_identificationHistory_pub,Phenology identification history for records where identifications have changed,site-all,0
+DP1.10033.001,ltr_chemistrySubsampling_pub,Identifiers for subsamples created for chemical analyses or archive,site-date,0
+DP1.00024.001,PARPAR_1min,Photosynthetically Active Radiation averaged over 1 minute,site-date,1
+DP1.30012.001,fsp_spectralData_pub,Spectral data reference and metadata,site-date,0
+DP1.00041.001,ST_30_minute,Soil temperature averaged over 30 minutes,site-date,30
+DP1.10043.001,mos_sorting_pub,Mosquito sorting data from external labs,site-date,0
+DP1.10017.001,dhp_perplot_pub,Digital hemispherical photo sampling information per plot per bout,site-date,0
+DP1.20093.001,swc_fieldData_pub,Surface water chemistry summary data per site per bout,site-date,0
+DP1.20107.001,fsh_invertBycatch_pub,Fish sampling macroinvertebrate bycatch,site-date,0
+DP4.00131.001,geo_pebbleCount_pub,Sediment particle size data collected during pebble count sampling,site-date,0
+DP1.20221.001,zoo_dnaExtraction_pub,Ingest of laboratory metadata from DNA extraction for zooplankton analyses,site-date,0
+DP1.10086.001,sls_soilChemistry_pub,External lab analysis of carbon and nitrogen concentrations in soil,site-date,0
+DP1.20166.001,alg_slideLocations_pub,Metadata for diatom slide transect locations,site-date,0
+DP1.20166.001,alg_biomass_pub,"Periphyton, seston, and phytoplankton biomass data",site-date,0
+DP1.20261.001,uPAR_30min,Photosynthetically Active Radiation below water surface averaged over 30 minutes,site-date,30
+DP1.10003.001,brd_perpoint_pub,Per point metadata for breeding landbirds,site-date,0
+DP4.00001.001,wss_yearly_press,Yearly weather summary statistics,site-date,365
+DP1.20100.001,EOG_5_min,Elevation of groundwater taken every 5 minutes,site-date,5
+DP4.00131.001,geo_thalwegLongProfile_pub,Data associated with points mapped on the streambed along the thalweg,site-date,0
+DP1.20282.001,mmg_swPcrAmplificationQA_16S_pub,Laboratory quality assurance metadata from 16S PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
+DP1.20166.001,alg_taxonomyProcessed_pub,"Periphyton, seston, and phytoplankton identifications by expert taxonomists - desynonimized",site-date,0
+DP4.00132.001,bat_fieldData_pub,Bathymetry field collection data,site-date,0
+DP1.00133.001,csd_constantBiasShift_pub,Information on the date range and magnitude of constant bias shifts applied to Instrumented Systems (IS) data streams during gap-filling,site-date,0
+DP1.20053.001,TSW_30min,Temperature of surface water from PRT summarized over 30 minutes,site-date,30
+DP1.20092.001,swc_externalLabSummaryData_pub,Surface water chemistry external lab summary data,lab-all,0
+DP1.00006.001,THRPRE_1min,Throughfall pooled over 1 minute,site-date,1
+DP1.20193.001,sbd_conductivityFieldData_pub,Reaeration logger field data for salt-based discharge,site-date,0
+DP4.00131.001,geo_rawSurveyData_pub,"Raw data generated during the survey, including a unique identifier and raw coordinate values for each point mapped",site-date,0
+DP1.00013.001,wdp_externalLabSummaryData_pub,Wet deposition chemistry external lab long-term summary data,lab-all,0
+DP1.10081.001,mcc_soilSeqVariantMetadata_16S_pub,Taxon table metadata for soil microbes from sequence variant data analysis of the 16S marker gene,site-date,0
+DP1.00013.001,wdp_chemLab_pub,Wet deposition chemistry per sample,site-date,0
+DP1.20277.001,mic_benthicDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from benthic samples,site-date,0
+DP1.00096.001,mgp_perbiogeosample_pub,Data collected on biogeochemistry sample,site-date,0
+DP1.20072.001,apc_voucherTaxonomyRaw_pub,"Identifications by expert taxonomists for voucher specimens, raw",site-all,0
+DP1.20217.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
+DP1.20278.001,mga_labSummary_pub,Summary data on laboratory methods for qPCR results in surface water samples,lab-all,0
+DP1.10033.001,ltr_litterCarbonNitrogen_pub,External lab analysis of carbon and nitrogen concentrations in litter,site-date,0
+DP1.10026.001,lig_externalSummary_pub,Long-term uncertainty values for lignin analysis in plant tissue,lab-all,0
+DP1.20280.001,mmg_benthicDnaExtraction_pub,Laboratory metadata from DNA extraction of aquatic benthic samples for microbial analyses,site-date,0
+DP1.10064.002,rpt2_pathogenqa_pub,Rodent pathogen testing quality assurance data from external labs,lab-all,0
+DP1.10026.001,cfc_lignin_pub,External lab analysis of lignin concentrations in foliage,site-date,0
+DP1.00026.001,ais_aquaticLocationTroll_pub,Aquatic location TROLL measurements for impacted well,site-date,0
+DP1.10026.001,cfc_chlorophyllSummary_pub,Long-term uncertainty values for chlorophyll analyses,lab-all,0
+DP1.20126.001,inv_fieldData_pub,Aquatic macroinvertebrate field data,site-date,0
+DP1.20092.001,gwc_fieldData_pub,Groundwater chemistry summary data per site per bout,site-date,0
+DP1.20217.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
+DP1.20194.001,asc_externalLabData_pub,Sediment chemical and physical properties external lab data,site-date,0
+DP1.20107.001,fsh_perPass_pub,Fish sampling field data per pass,site-date,0
+DP1.20100.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20271.001,RHbuoy_1min,Relative Humidity on buoy averaged over 1 minute,site-date,1
+DP1.20275.001,rip_identificationHistory_pub,Riparian identification history for records where identifications have changed,site-all,0
+DP1.20072.001,apc_pointTransect_pub,Stream aquatic plant bryophyte lichen macroalgae point transect field data,site-date,0
+DP4.00001.001,wss_monthly_wind,Monthly weather summary statistics,site-date,12
+DP4.00130.001,csd_15_min,Continuous discharge data calculated from in situ pressure and stage-discharge rating curve averaged over 15 minutes,site-date,15
+DP1.10111.001,sim_eventData_pub,"Record of land management activities, disturbances, and other incidents of ecological note within a NEON site",site-date,0
+DP1.20278.001,mga_swGroupAbundances_pub,Laboratory results of gene copy number data in surface water samples,site-date,0
+DP1.20126.001,inv_metabarcodeSummary_pub,Summary data on laboratory methods for metabarcode community results,lab-all,0
+DP1.20126.001,inv_dnaExtraction_pub,Ingest of laboratory metadata from DNA extraction for macroinvertebrate analyses,site-date,0
+DP1.10047.001,spc_bulkdensity_pub,Soil initial characterization bulk density measurements,site-date,0
+DP1.00026.001,ais_closedLoops_pub,Aquatic instrument system site survey loop closure information,site-date,0
+DP1.10022.001,bet_parataxonomistID_pub,Ground beetle pinning/pointing and identifications by NEON parataxonomists,site-date,0
+DP1.10092.001,tck_pathogen_pub,Tick pathogen testing data,site-date,0
+DP1.20280.001,mmg_benthicMarkerGeneSequencing_16S_pub,Laboratory metadata for microbial 16S marker gene sequencing from aquatic benthic samples,site-date,0
+DP1.20063.001,asi_externalLabPOMSummaryData_pub,"Plant, algae and POM chemistry external lab summary data",lab-all,0
+DP1.20282.001,mmg_swPcrAmplificationQA_ITS_pub,Laboratory quality assurance metadata from ITS PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
+DP1.20016.001,EOS_5_min,Elevation of surface water averaged over 5 minutes,site-date,5
+DP1.10003.001,brd_countdata_pub,Point count data for breeding landbirds,site-date,0
+DP1.10109.001,mga_soilBatchResults_pub,Batch-level results of analysis of gene copy number in soil samples,lab-all,0
+DP1.20107.001,fsh_identificationHistory_pub,Fish identification history for records where identifications have changed,site-all,0
+DP1.20190.001,rea_externalLabDataSalt_pub,Reaeration external lab salt data,site-date,0
+DP1.20066.001,apl_identificationHistory_pub,Aquatic plant bryophyte lichen macroalgae identification history for records where identifications have changed,site-all,0
+DP1.00022.001,SRPP_30min,Shortwave radiation (primary pyranometer) averaged over 30 minutes,site-date,30
+DP1.20141.001,mcc_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
+DP1.10108.001,mmg_soilMarkerGeneSequencing_16S_pub,Laboratory metadata for microbial 16S marker gene sequencing from soil samples,site-date,0
+DP1.20206.001,asi_externalLabPOMSummaryData_pub,"Plant, algae and POM chemistry external lab summary data",lab-all,0
+DP1.10026.001,cfc_carbonNitrogen_pub,External lab analysis of carbon and nitrogen concentrations and stable isotopes in foliage,site-date,0
+DP1.20277.001,mga_labSummary_pub,Summary data on laboratory methods for qPCR results in benthic aquatic samples,lab-all,0
+DP1.20190.001,rea_fieldData_pub,Field data per site per date,site-date,0
+DP4.00131.001,geo_surveyPoints_pub,Data associated with mapped cross-section transects used to delineate hydrologic controls,site-date,0
+DP1.20141.002,mct_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
+DP4.00130.001,csd_gaugeWaterColumnRegression_pub,Statistics and information on gauge height vs. water column height regressions used in estimating continuous discharge,site-date,0
+DP1.00026.001,ais_missingLineWorkflow_pub,Aquatic instrument system site survey missing line workflow information,site-date,0
+DP1.10020.001,bet_BOLDtaxonomy_pub,Ground beetle sequences DNA barcode - taxonomy,site-date,0
+DP1.10066.001,mpr_carbonNitrogen_pub,External lab analysis of carbon and nitrogen concentrations in roots,site-date,0
+DP1.00004.001,BP_1min,Barometric Pressure averaged over 1 minute,site-date,1
+DP1.20086.002,mct_benthicSampleMetadata_ITS_pub,Metadata for benthic samples used in the analysis of ITS marker gene sequences to derive community composition,site-date,0
+DP1.20097.001,sdg_externalLabSummaryData_pub,Dissolved gas external lab summary data,lab-all,0
+DP1.10033.001,lig_externalSummary_pub,Long-term uncertainty values for lignin analysis in plant tissue,lab-all,0
+DP4.00131.001,geo_surveySummary_pub,"Summary data associated with the survey, including summary statistics such as survey completeness, physical channel characteristics, relationships between upstream and downstream sensor sets, and data download URLs",site-date,0
+DP1.10093.001,tck_fielddata_pub,Tick field collection data,site-date,0
+DP1.00013.001,wdp_collection_pub,Wet deposition chemistry per sample,site-date,0
+DP1.20086.001,mcc_benthicTaxonTableMetadata_ITS_pub,Taxonomic table metadata for benthic microbes from ITS marker gene sequencing analysis,site-date,0
+DP1.20120.001,inv_taxonomyRaw_pub,Aquatic macroinvertebrate identifications by expert taxonomists - raw,site-date,0
+DP1.20016.001,EOS_1_min,Elevation of surface water taken every 1 minute,site-date,1
+DP1.10107.001,mms_metagenomeSequencing_pub,Soil metagenomics sequencing metadata,site-date,0
+DP4.00131.001,geo_mappedPointErrors_pub,Data that describe any survey errors that need to be resolved during post-processing,site-date,0
+DP1.10107.001,mms_metagenomeDnaExtraction_pub,Laboratory metadata from soil DNA extraction for metagenomics sequencing,site-date,0
+DP1.20016.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20063.001,apl_clipHarvest_pub,Aquatic plant bryophyte lichen macroalgae clip harvest data,site-date,0
+DP1.20166.001,alg_biomassComp_pub,"Periphyton, seston, and phytoplankton biomass data for composite samples",site-date,0
+DP1.20193.001,sbd_fieldData_pub,Field data per site per date for salt-based discharge,site-date,0
+DP1.00094.001,SWS_30_minute,Soil water content and water salinity averaged over 30 minutes,site-date,30
+DP4.00133.001,sdrc_controlInfo_pub,Activation state of the controls used for a rating curve,site-date,0
+DP1.00041.001,ST_1_minute,Soil temperature averaged over 1 minute,site-date,1
+DP1.10108.001,mmg_soilMarkerGeneSequencing_ITS_pub,Laboratory metadata for microbial ITS marker gene sequencing from soil samples,site-date,0
+DP1.20275.001,rip_assessment_pub,Riparian Assessment at Aquatic Sites per transect,site-date,0
+DP1.00133.001,csd_dataGapToFillMethodMapping_pub,Summary of data gaps in cleaned Instrumented Systems (IS) data streams and the methods selected to gap-fill each data gap,site-date,0
+DP1.10067.001,bbc_rootmass_pub,Lab data collected per soil core,site-date,0
+DP1.00044.001,WEIPRE_60min,Weighing Gauge Precipitation pooled over 60 minutes,site-date,60
+DP1.20221.001,zoo_dnaRawDataFiles_pub,Raw sequence data files for zooplankton marker gene sequencing,site-date,0
+DP1.10022.001,bet_identificationHistory_pub,Beetle identification history for records where identifications have changed,site-all,0
+DP1.10109.001,mga_batchResults_pub,Batch-level results of analysis of gene copy number in soil samples,lab-all,0
+DP1.10086.001,ntr_internalLabBlanks_pub,NEON domain lab potassium chloride blank reference sample creation,site-date,0
+DP1.20219.001,zoo_perSample_pub,Zooplankton subsampling data and QC metrics per sample,site-date,0
+DP1.20004.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.00026.001,ais_aquaticLocationWellOffset_pub,Aquatic location well offset measurements,site-date,0
+DP4.00130.001,csd_continuousDischarge_pub,Continuous discharge data calculated from in situ pressure and stage-discharge rating curve,site-date,1
+DP1.20072.001,apc_voucherTaxonomyProcessed_pub,"Identifications by expert taxonomists for voucher specimens, desynonimized",site-all,0
+DP1.20282.001,mmg_swPcrAmplification_ITS_pub,Laboratory metadata from ITS PCR amplification of DNA from surface water samples for microbial analyses,site-date,0
+DP4.00130.001,csd_gapFillingRegression_pub,Statistics and information on regressions developed for gap-filling Instrumented Systems (IS) data streams,site-date,0
+DP1.20093.001,swc_fieldSuperParent_pub,Field data for the parent sample of surface water chemistry,site-date,0
+DP1.10081.001,mcc_soilSeqVariantMetadata_ITS_pub,Taxon table metadata for soil microbes from sequence variant data analysis of the ITS marker gene,site-date,0
+DP4.00131.001,geo_missingLine_pub,Data associated with the missing line workflow used to orient the first total station location during the survey,site-date,0
+DP1.20072.001,apc_identificationHistory_pub,Aquatic plant bryophyte lichen macroalgae identification history for records where identifications have changed,site-all,0
+DP1.20190.001,rea_backgroundFieldSaltData_pub,Background salt per station per date,site-date,0
+DP4.00130.001,csd_continuousDischargeUSGS_pub,Continuous discharge data from the nearby USGS station,site-date,100
+DP1.20138.001,amc_cellCountsBlankQA_pub,Aquatic cell counts laboratory blank quality assurance data,site-date,0
+DP4.00131.001,geo_benchmarkLocations_pub,Spatial data associated with benchmark locations,site-all,0
+DP1.00026.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
+DP4.00001.001,wss_daily_humid,Daily weather summary statistics,site-date,24
+DP1.00040.001,SHF_1min,The amount of thermal energy moving by conduction across an area of soil averaged over 1 minute,site-date,1
+DP1.20141.001,mcc_swSeqVariantMetadata_ITS_pub,Taxon table metadata for surface water microbes from sequence variant data analysis of the ITS marker gene,site-date,0
+DP1.20092.001,gwc_externalLabDataByAnalyte_pub,Groundwater chemistry from external lab in long format,site-date,0
+DP1.00006.001,SECPRE_1min,Secondary Precipitation pooled over 1 minute,site-date,1
+DP1.20066.001,apc_voucherTaxonomyRaw_pub,"Identifications by expert taxonomists for voucher specimens, raw",site-all,0
+DP1.00044.001,WEIPRE_daily,Weighing Gauge Precipitation pooled over 1 day,site-date,24
+DP1.10098.001,vst_identificationHistory_pub,Plant identification history for records where identifications have changed,site-all,0
+DP4.00001.001,wss_yearly_humid,Yearly weather summary statistics,site-date,365
+DP1.20163.001,alg_labBlank_pub,Lab deionized water blank filters,site-date,0
+DP1.20282.001,mmg_swDnaExtraction_pub,Laboratory metadata from DNA extraction of surface water samples for microbial analyses,site-date,0
+DP1.20126.001,inv_dnaRawDataFilesStandard_pub,Raw sequence data files for macroinvertebrate standard sample marker gene sequencing,lab-all,0
+DP1.10086.001,sls_bgcSubsampling_pub,Processing data for soil subsamples for biogeochemical analysis and archiving,site-date,0
+DP1.20120.001,inv_pervial_pub,Aquatic macroinvertebrate identified archive data,site-date,0
+DP1.20063.001,apl_plantExternalLabDataPerSample_pub,Plant external lab chemistry data,site-date,0
+DP1.20105.001,fsh_BOLDvoucherInfo_pub,Fish sequences DNA barcode - voucher info,site-date,0
+DP1.20126.001,inv_pcrAmplification_pub,Ingest of laboratory metadata from PCR amplification of DNA for macroinvertebrate analyses,site-date,0
+DP1.20166.001,alg_voucherTaxonomy_pub,Algae voucher flora taxonomy versioning,lab-all,0
+DP1.20097.001,sdg_fieldSuperParent_pub,"Field data for the parent sample of water chemistry, dissolved gas, stable isotopes and surface water microbes for dissolved gas publication",site-date,0
+DP1.20048.001,dsc_individualFieldData_pub,Discharge manual wading survey data per point per transect,site-date,0
+DP1.20093.001,swc_externalLabSummaryData_pub,Surface water chemistry external lab summary data,lab-all,0
+DP4.00132.001,bat_processedSiteLevelSummary_pub,Bathymetry summary data associated with the processed survey,site-date,0
+DP1.20194.001,asc_fieldDataPoint_pub,Point level sediment collection field data,site-date,0
+DP4.00131.001,geo_resultsFile_pub,Morphology file of results,site-date,0
+DP1.20288.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20190.001,rea_plateauSampleFieldData_pub,Field data collected at plateau per sample,site-date,0
+DP1.10022.001,bet_expertTaxonomistIDRaw_pub,Ground beetle identifications by expert taxonomists - raw,site-date,0
+DP1.00133.001,csd_gapFillingRegression_pub,Statistics and information on regressions developed for gap-filling Instrumented Systems (IS) data streams,site-date,0
+DP1.20193.001,sbd_plateauSampleFieldData_pub,Field data collected at plateau per sample for salt-based discharge,site-date,0
+DP1.10020.001,bet_barcodingqa_pub,Ground beetle barcoding quality assurance data from external labs,lab-all,0
+DP1.20105.001,fsh_barcodingqa_pub,Fish barcoding quality assurance data from external labs,lab-all,0
+DP1.10033.001,ltr_massdata_pub,Dry mass of litter and fine woody debris components per trap per bout,site-date,0
+DP4.00130.001,csd_dataGapToFillMethodMapping_pub,Summary of data gaps in cleaned Instrumented Systems (IS) data streams and the methods selected to gap-fill each data gap,site-date,0
+DP4.00131.001,geo_totalStation_pub,"Data that describe each total station location setup, including control point and thalweg point identifiers, geomorphic features surveyed from each location, and associated error metrics",site-date,0
+DP1.20126.001,inv_pcrAmplificationStandard_pub,Ingest of laboratory metadata from PCR amplification of DNA for macroinvertebrate standard samples,lab-all,0
+DP1.10033.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
+DP4.00131.001,geo_misclosureInfo_pub,Data associated with survey misclosure,site-date,0
+DP1.20092.001,gwc_externalLabAbsorbanceScan_pub,Groundwater chemistry absorbance scan from external lab,site-date,0
+DP1.00133.001,sdrc_curveIdentification_pub,Active dates of a rating curve and associated control survey date,site-date,0
+DP1.20138.001,amc_fieldSuperParent_pub,Field data for the parent sample of surface water microbes,site-date,0
+DP1.20001.001,rap_surveySummary_pub,"Summary data associated with the rapid habitat assessment survey, including survey metadata and data download URLs",site-date,0
+DP1.20254.001,dep_profileData_pub,Depth profile field data collection per site per sampling day,site-date,0
+DP1.20120.001,inv_taxonomyProcessed_pub,Aquatic macroinvertebrate identifications by expert taxonomists - desynonymized,site-date,0
+DP4.00133.001,sdrc_priorParameters_pub,Prior rating curve parameters used to develop rating curve,site-date,0
+DP1.20279.001,mic_benthicDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from benthic samples,site-date,0
+DP1.20163.001,asi_externalLabPOMSummaryData_pub,"Plant, algae and POM chemistry external lab summary data",lab-all,0
+DP1.10109.001,mga_soilGroupAbundances_pub,Laboratory results of gene copy number data in soil samples,site-date,0
+DP1.10023.001,hbp_massdata_pub,Herbaceous clip harvest dry mass and QA dry mass data,site-date,0
+DP4.00133.001,sdrc_gaugePressureRelationship_pub,Information relating staff gauge readings to pressure measurements,site-date,0
+DP1.10033.001,ltr_pertrap_pub,"Record of trap establishment, contains date, trap type and location",site-all,0
+DP1.10014.001,cdw_identificationHistory_pub,Coarse downed wood density identification history for records where identifications have changed,site-all,0
+DP1.20271.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP4.00001.001,wss_monthly_pres,Monthly weather summary statistics,site-date,12
+DP1.20276.001,gsi_externalLabH2OIsotopes_pub,Groundwater H2O stable isotopes external lab data,site-date,0
+DP1.10081.001,mcc_soilTaxonTableMetadata_ITS_pub,Taxonomic table metadata for soil microbes from ITS marker gene sequencing analysis,site-date,0
+DP1.20048.001,dsc_fieldData_pub,Discharge manual wading survey data per site per bout,site-date,0
+DP1.00038.001,wdp_sensor_pub,Wet deposition collector automated sensor data,site-date,0
+DP1.00044.002,WEIPRE_30min,Weighing Gauge Precipitation pooled over 30 minutes,site-date,30
+DP1.20221.001,inv_markerGeneSequencingStandard_pub,Ingest of laboratory metadata for macroinvertebrate standard sample marker gene sequencing,lab-all,0
+DP4.00131.001,geo_featureInfo_pub,Data associated with mapped cross-section transects,site-date,0
+DP1.00133.001,sdrc_AISsiteSurveyResultsFile_pub,AIS site survey file of results,site-date,0
+DP1.10064.001,rpt_bloodtesting_pub,Rodent pathogen antibody data from external lab,site-date,0
+DP1.20032.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.10043.001,mos_expertTaxonomistIDRaw_pub,Mosquito identifications by expert taxonomists - raw,site-date,0
+DP4.00001.001,wss_yearly_wind,Yearly weather summary statistics,site-date,365
+DP1.20279.001,mms_benthicMetagenomeDnaExtraction_pub,Laboratory metadata from benthic DNA extraction for metagenomics sequencing,site-date,0
+DP1.20282.001,mmg_swMarkerGeneSequencingQA_16S_pub,Laboratory quality assurance metadata for microbial 16S marker gene sequencing from surface water samples,site-date,0
+DP1.20190.001,rea_plateauMeasurementFieldData_pub,Field data collected at plateau per station per date,site-date,0
+DP4.00131.001,geo_pebbleFieldData_pub,Sediment particle size distribution summary data associated with pebble count sampling during the survey,site-date,0
+DP1.00003.001,TAAT_1min,Triple aspirated air temperature averaged over 1 minute,site-date,1
+DP1.20276.001,gsi_fieldData_pub,Groundwater stable isotopes field data,site-date,0
+DP1.20166.001,alg_biovolumes_pub,Biovolumes for algal taxonomy,lab-all,0
+DP1.20190.001,sdg_externalLabSummaryData_pub,"Dissolved gas, gas tracer, and salt tracer external lab summary data",lab-all,0
+DP1.10076.001,mam_BOLDspecimenDetails_pub,Small mammal sequences DNA barcode - specimen details,site-date,0
+DP1.10022.001,bet_fielddata_pub,Ground beetle metadata on field collection,site-date,0
+DP1.20282.001,mic_swDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from surface water samples,site-date,0
+DP4.00130.001,csd_dischargeRegressionUSGS_pub,Information relating NEON discharge readings to USGS discharge readings,site-date,0
+DP1.20054.001,TOSW_5_min,Temperature (digital thermistor) of surface water averaged over 5 minutes,site-date,5
+DP1.20120.001,inv_fieldData_pub,Aquatic macroinvertebrate field data,site-date,0
+DP4.00001.001,wss_daily_temp,Daily weather summary statistics,site-date,24
+DP1.10026.001,cfc_shapefile_pub,Metadata for shapefiles that contain crown polygons,site-date,0
+DP1.20105.001,fsh_BOLDspecimenDetails_pub,Fish sequences DNA barcode - specimen details,site-date,0
+DP1.20206.001,asi_externalLabH2OIsotopes_pub,Surface water H2O stable isotopes external lab data,site-date,0
+DP1.20219.001,zoo_perVial_pub,Aquatic zooplankton identified archive data,site-date,0
+DP1.00026.001,ais_siteSurvey_pub,Information about aquatic instrument system site survey,site-date,0
+DP1.20086.002,mct_benthicSampleMetadata_16S_pub,Metadata for benthic samples used in the analysis of 16S marker gene sequences to derive community composition,site-date,0
+DP1.10098.001,vst_non-woody_pub,"Biomass and productivity measurements of non-herbaceous perennial plants (e.g. cacti, ferns)",site-date,0
+DP1.20054.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20033.001,ais_sunaCleanAndCal_pub,Record of SUNA cleaning and calibration activities,site-date,0
+DP1.10081.002,mct_soilSampleMetadata_ITS_pub,Metadata for soil samples used in the analysis of ITS marker gene sequences to derive community composition,site-date,0
+DP1.10026.001,cfc_elementsSummary_pub,"Long-term uncertainty values for major, minor, and trace element analyses",lab-all,0
+DP1.20281.001,mms_swRawDataFiles_pub,Surface water metagenomics raw sequence data,site-date,0
+DP1.10043.001,mos_identificationHistory_pub,Mosquito identification history for records where identifications have changed,site-all,0
+DP4.00130.001,sdrc_gaugePressureRelationship_pub,Information relating staff gauge readings to pressure measurements,site-date,0
+DP1.00133.001,csd_gaugeWaterColumnRegression_pub,Statistics and information on gauge height vs. water column height regressions used in estimating continuous discharge,site-date,0
+DP1.20163.001,alg_algaeExternalLabQA_pub,Algae chemistry external lab data quality assurance,lab-all,0
+DP1.20066.001,apl_taxonomyProcessed_pub,Aquatic plant bryophyte lichen macroalgae clip harvest identifications by expert taxonomists - desynonimized,site-date,0
+DP1.20120.001,inv_identificationHistory_pub,Aquatic macroinvertebrate identification history for records where identifications have changed,site-all,0
+DP1.20093.001,swc_asiPOMFieldData_pub,Surface water stable isotopes field data,site-date,0
+DP1.00038.001,wdi_collectionIso_pub,Wet deposition isotope parent sample data,site-date,0
+DP1.20126.001,inv_metabarcodeTaxonomyStandard_pub,Macroinvertebrate metabarcode taxon table from bioinformatics pipeline for macroinvertebrate standard samples,lab-all,0
+DP1.20003.001,sur_surveyPoints_pub,Aquatic instrument system site survey data associated with mapped cross-section transects used to delineate hydrologic controls,site-date,0
+DP1.00101.001,dpm_lab_pub,Particulate mass laboratory analysis summary per sample,site-date,0
+DP1.20190.001,rea_externalLabDataGas_pub,Reaeration external lab gas data,site-date,0
+DP4.00133.001,sdrc_stageDischargeCurveInfo_pub,stage-discharge rating curve summary information,site-date,0
+DP1.20282.001,mmg_swRawDataFiles_pub,Raw sequence data files for microbial marker gene sequencing from surface water samples,site-date,0
+DP1.00038.001,wdi_isoPerSample_pub,Wet deposition H2O stable isotope data per sample,site-date,0
+DP1.20281.001,mic_swDnaPooling_pub,Laboratory processing metadata for pooling of DNA extractions from surface water samples,site-date,0
+DP1.20193.001,sbd_backgroundFieldSaltData_pub,Background salt per station per date for salt-based discharge,site-date,0
+DP1.20254.001,dep_profileHeader_pub,Header information for depth profile field data collection per site per sampling day,site-date,0
+DP1.10026.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
+DP1.00133.001,sdrc_controlType_pub,Control type and geometry used for determining prior parameters,site-date,0
+DP1.00096.001,mgp_perbulksample_pub,Data collected on bulk density sample,site-date,0
+DP1.10072.001,mam_pertrapnight_pub,Small mammal trapping data per trap per night,site-date,0
+DP1.20193.001,sbd_backgroundFieldCondData_pub,Background conductivity logger per station per date for salt-based discharge,site-date,0
+DP1.20093.001,swc_externalLabBlanksByAnalyte_pub,Blank sample water chemistry from external lab,site-all,0
+DP4.00132.001,bat_processedSonarTrackData_pub,Bathymetry sonar data for specific locations within a processed survey track,site-date,0
+DP1.10055.001,phe_perindividual_pub,Geolocation and taxonomic identification for phenology plants,site-all,0
+DP1.20042.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.10072.001,mam_voucher_pub,Voucher specimens,site-all,0
+DP1.20066.001,apc_voucher_pub,Plant voucher specimen sample data,site-all,0
+DP1.00046.001,THRPRE_1min,Throughfall pooled over 1 minute,site-date,1
+DP1.20138.001,amc_cellCounts_pub,Aquatic cell counts laboratory data,site-date,0
+DP1.20008.001,SCSW_30_min,Specific conductivity of surface water averaged over 30 minutes,site-date,30
+DP1.10047.001,spc_perhorizon_pub,Soil initial characterization field data collected per horizon,site-date,0
+DP1.10008.001,spc_externalLabSummary_pub,Long-term uncertainty values for soil initial characterization laboratory analyses,lab-current,0
+DP1.10066.001,mpr_perpitprofile_pub,Data collected per megapit profile,site-date,0
+DP1.10026.001,cfc_chemistrySubsampling_pub,Subsampling for chemical analyses of foliar samples,site-date,0
+DP1.10033.001,ltr_fielddata_pub,Field collection details and sample tracking,site-date,0
+DP1.20126.001,inv_dnaExtractionStandard_pub,Ingest of laboratory metadata from DNA extraction for macroinvertebrate standard samples,lab-all,0
+DP1.10086.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
+DP1.20280.001,mmg_benthicPcrAmplification_ITS_pub,Laboratory metadata from ITS PCR amplification of DNA from aquatic benthic samples for microbial analyses,site-date,0
+DP1.10003.001,brd_personnel_pub,Personnel conducting breeding landbird point count data and quiz scores,site-all,0
+DP1.20281.001,amc_fieldGenetic_pub,Field data for the genetic sample of surface water microbes,site-date,0
+DP1.10038.001,mos_BOLDvoucherInfo_pub,Mosquito sequences DNA barcode - voucher info,site-date,0
+DP1.00096.001,mgp_permegapit_pub,Data collected per megapit,site-date,0
+DP1.20166.001,alg_taxonomyProcessedComp_pub,"Periphyton, seston, and phytoplankton composite identifications by expert taxonomists - desynonimized",site-date,0
+DP1.20280.001,mmg_benthicRawDataFiles_pub,Raw sequence data files for microbial marker gene sequencing from aquatic benthic samples,site-date,0
+DP4.00131.001,geo_thalwegByHabitatID_pub,Data that describe each stream habitat unit mapped during the survey,site-date,0
+DP1.20072.001,apc_voucher_pub,Plant voucher specimen sample data,site-all,0
+DP4.00001.001,wss_daily_pres,Daily weather summary statistics,site-date,24
+DP1.00013.001,wdp_collectionChem_pub,Wet deposition chemistry per sample,site-date,0
+DP1.20107.001,fsh_invertBycatchIDHistory_pub,Macroinvertebrate bycatch identification history for records where identifications have changed,site-all,0
+DP1.10047.001,spc_externalLabSummary_pub,Long-term uncertainty values for soil initial characterization laboratory analyses,lab-all,0
+DP1.10108.001,mmg_soilDnaExtraction_pub,Laboratory metadata from DNA extraction of soil samples for microbial analyses,site-date,0
+DP1.10081.002,mct_taxonTableLabSummary_pub,Summary data on laboratory methods for microbial taxon table results,lab-all,0
+DP4.00133.001,sdrc_AISsiteSurveyResultsFile_pub,AIS site survey file of results,site-date,0
+DP1.20141.001,mcc_swTaxonTableMetadata_ITS_pub,Taxonomic table metadata for surface water microbes from ITS marker gene sequencing analysis,site-date,0
+DP1.10076.001,mam_barcodingqa_pub,Small mammal barcoding quality assurance data from external labs,lab-all,0
+DP1.10026.001,vst_mappingandtagging_pub,"Mapping, identifying and tagging of individual stems for remeasurement",site-all,0
+DP4.00001.001,wss_daily_wind,Daily weather summary statistics,site-date,24
+DP1.20166.001,alg_archive_pub,Aquatic algae archived subsamples,site-date,0
+DP4.00133.001,sdrc_posteriorParameters_pub,Posterior rating curve parameters,site-date,0
+DP1.20015.001,SCGW_5_minute,Specific conductivity in groundwater taken every 5 minutes,site-date,5
+DP1.10066.001,mpr_perrootsample_pub,Data collected per root sample,site-date,0
+DP4.00132.001,bat_sonarRecord_pub,Bathymetry sonar record,site-date,0
+DP1.10003.001,brd_references_pub,"Identification references used to identify birds, by site and year",site-all,0
+DP1.20206.001,asi_POMExternalLabDataPerSample_pub,POM stable isotopes external lab data,site-date,0
+DP1.00038.001,wdi_collectionIsoTest_pub,Wet deposition isotope analysis subsample data,site-date,0
+DP1.10066.001,mpr_perdepthincrement_pub,Data collected per depth increment,site-date,0
+DP1.10038.001,mos_BOLDspecimenDetails_pub,Mosquito sequences DNA barcode - specimen details,site-date,0
+DP1.00133.001,csd_dischargeRegressionUSGS_pub,Statistics and information on NEON vs. USGS discharge regressions used in estimating continuous discharge,site-date,0
+DP1.10076.001,mam_BOLDtaxonomy_pub,Small mammal sequences DNA barcode - taxonomy,site-date,0
+DP1.20059.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20190.001,rea_widthFieldData_pub,Wetted width per site per date,site-date,0
+DP1.10043.001,mos_archivepooling_pub,Mosquito archival information from external labs,site-date,0
+DP4.00133.001,sdrc_sampledParameters_pub,Sampled MCMC parameters,site-date,0
+DP1.10109.001,mga_soilLabSummary_pub,Summary data on laboratory methods for qPCR results in soil samples,lab-all,0
+DP1.20279.001,mms_benthicRawDataFiles_pub,Benthic metagenomics raw sequence data,site-date,0
+DP1.20126.001,inv_dnaRawDataFiles_pub,Raw sequence data files for macroinvertebrate marker gene sequencing,site-date,0
+DP1.10067.001,bgc_CNiso_externalSummary_pub,Long-term uncertainty values for analysis of carbon and nitrogen concentrations and stable isotopes,lab-all,0
+DP1.10093.001,tck_archive_pub,Tick archive information,site-date,0
+DP1.20053.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.10003.001,brd_identificationHistory_pub,Bird identification history for records where identifications have changed,site-all,0
+DP1.10017.001,dhp_perimagefile_pub,Digital hemispherical photo sampling information per image file within a plot,site-date,0
+DP1.30012.001,fsp_boutMetadata_pub,Instrument parameters for field spectral measurements,site-date,0
+DP1.20276.001,gsi_wellStabilization_pub,Field data for recording stabilization of ground water well before sampling,site-date,0
+DP4.00132.001,bat_resultsFile_pub,Bathymetry file of results,site-date,0
+DP1.10035.001,bry_productivity_pub,Field collection and dry mass of bryophyte sample per clip per bout,site-date,0
+DP1.20217.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.10081.001,mcc_soilTaxonTableMetadata_16S_pub,Taxonomic table metadata for soil microbes from 16S marker gene sequencing analysis,site-date,0
+DP4.00132.001,bat_processedHabitatResults_pub,Bathymetry habitat data from the processed sonar survey,site-date,0
+DP1.00046.001,THRPRE_30min,Throughfall pooled over 30 minutes,site-date,30
+DP4.00131.001,geo_processedSurveyData_pub,"Survey data generated during post-processing, including point classifications and real world coordinates",site-date,0
+DP1.20166.001,alg_identificationHistory_pub,"Periphyton, seston, and phytoplankton identification history for records where identifications have changed",site-all,0
+DP1.10072.001,mam_perplotnight_pub,Small mammal trapping summary data per plot per night,site-date,0
+DP1.20219.001,zoo_identificationHistory_pub,Aquatic zooplankton identification history for records where identifications have changed,site-all,0
+DP4.00133.001,sdrc_curveIdentification_pub,Active dates of a rating curve and associated control survey date,site-date,0
+DP1.10086.001,ntr_internalLab_pub,NEON domain lab potassium chloride extraction data for initial and final soil cores,site-date,0
+DP1.20261.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.20048.001,dsc_fieldDataADCP_pub,Discharge ADCP survey data per site per bout,site-date,0
+DP1.00101.001,dpm_sensor_pub,Dust particulate mass sensor data,site-date,0
+DP1.20163.001,alg_algaeDataPerSampleCompChl_pub,Algae external lab chlorophyll and pheophytin data for composite samples,site-date,0
+DP1.10107.001,mms_rawDataFiles_pub,Soil metagenomics raw sequence data,site-date,0
+DP1.20066.001,apc_morphospecies_pub,Plant morphospecies resolution data,site-all,0
+DP1.00133.001,sdrc_controlInfo_pub,Activation state of the controls used for a rating curve,site-date,0
+DP4.00131.001,geo_geomorphicFeatureCount_pub,The type and total count of all geomorphic features mapped during the survey,site-date,0
+DP1.20276.001,asi_externalLabSummaryData_pub,H2O stable isotopes external lab summary data,lab-all,0
+DP1.20033.001,ais_maintenance_pub,Information related to aquatic sensor and infrastructure maintenance,site-date,0
+DP1.10041.001,mos_pathogenpooling_pub,Mosquito pathogen pool size information from external labs,site-date,0
+DP1.00101.001,dpm_filterBlank_pub,Particulate mass laboratory blank filter processing table,lab-all,0
+DP1.00044.002,WEIPRE_1min,Weighing Gauge Precipitation pooled over 1 minute,site-date,1
+DP1.10092.001,tck_pathogenqa_pub,Tick pathogen testing quality assurance data from external labs,lab-all,0
+DP1.20105.001,fsh_BOLDtaxonomy_pub,Fish sequences DNA barcode - taxonomy,site-date,0
+DP1.20093.001,swc_externalLabAbsorbanceScan_pub,Surface water chemistry absorbance scan from external lab,site-date,0
+DP4.00001.001,wss_monthly_temp,Monthly weather summary statistics,site-date,12
+DP1.00133.001,sdrc_ratingCurveIDByEventID_pub,All rating curve IDs in which a discharge measurement is included in long format,site-date,0
+DP1.00038.001,asi_externalLabSummaryData_pub,Wet deposition H2O stable isotope external lab summary data,lab-all,0
+DP1.10076.001,mam_BOLDvoucherInfo_pub,Small mammal sequences DNA barcode - voucher info,site-date,0
+DP1.20100.001,ais_wellDevelopment_pub,Record of groundwater well development,site-date,0
+DP1.20100.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
+DP1.20190.001,rea_conductivityFieldData_pub,Reaeration logger field data,site-date,0
+DP1.10020.001,bet_BOLDvoucherInfo_pub,Ground beetle sequences DNA barcode - voucher info,site-date,0
+DP1.20190.001,rea_backgroundFieldCondData_pub,Background conductivity logger per station per date,site-date,0
+DP1.20015.001,ais_maintenanceGroundwater_pub,Information related to groundwater sensor and infrastructure maintenance,site-date,0
+DP1.00013.001,wdp_sensor_pub,Wet deposition collector automated sensor data,site-date,0
 DP1.10045.001,vst_perplotperyear,"Per plot sampling metadata, including presence/absence of each growthForm",site-date,0
 DP1.10045.001,nst_perindividual,"Field measurements of individual non-herbaceous perennial plants (e.g. cacti, ferns)",site-date,0
 DP1.20197.001,asc_fieldDataPoint,Point level sediment collection field data,site-date,0

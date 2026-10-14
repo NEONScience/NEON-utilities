@@ -58,6 +58,11 @@ stackFrameFiles <- function(framefiles, dpID,
     tabnm <- "per_sample"
   }
   
+  # add sequence type suffix if needed
+  if(grepl(pattern="[_]$", tabnm)) {
+    tabnm <- paste(tabnm, seqType, sep="")
+  }
+  
   if(isFALSE(noschema)) {
     
     # get schema from custom variables file and read dataset
