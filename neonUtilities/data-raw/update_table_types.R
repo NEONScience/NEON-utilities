@@ -66,7 +66,8 @@ update_table_types <- function(){
   usethis::use_data(table_types, added_fields, science_review_variables, shared_flights, 
                     sensor_position_variables, sensor_position_legacy,
                     shared_aquatic, release_2021, chem_bundles, other_bundles, relevant_EPSG, 
-                    cit_prov_template, frame_file_codes, 
+                    cit_prov_template, frame_file_codes, frame_names_internal,
+                    frame_file_variables_internal,
                     internal=TRUE, overwrite=TRUE)
   usethis::use_data(table_types, shared_flights, shared_aquatic, chem_bundles, other_bundles, 
                     internal=FALSE, overwrite=TRUE)
@@ -80,6 +81,8 @@ update_table_types <- function(){
   data.table::fwrite(shared_flights, paste(Sys.getenv('NU_REPO'), 'helper_files/shared_flights.csv', sep='/'))
   data.table::fwrite(table_types, paste(Sys.getenv('NU_REPO'), 'helper_files/table_types.csv', sep='/'))
   data.table::fwrite(frame_file_codes, paste(Sys.getenv('NU_REPO'), 'helper_files/frame_file_codes.csv', sep='/'))
+  data.table::fwrite(frame_names_internal, paste(Sys.getenv('NU_REPO'), 'helper_files/frame_names.csv', sep='/'))
+  data.table::fwrite(frame_file_variables_internal, paste(Sys.getenv('NU_REPO'), 'helper_files/frame_file_variables.csv', sep='/'))
   
 }
 

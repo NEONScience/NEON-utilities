@@ -29,10 +29,13 @@ stackFrameFiles <- function(framefiles, dpID,
                               silent=TRUE)
   frame_defs <- try(utils::read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_codes.csv"),
                     silent=TRUE)
+  frame_names <- try(utils::read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_names.csv"),
+                     silent=TRUE)
   if(inherits(frame_defs, "try-error")) {
     message("Internet connection error. Some metadata may rely on cached versions.")
     frame_defs <- frame_file_codes
     frame_file_variables <- frame_file_variables_internal
+    frame_names <- frame_names_internal
   }
   
   # get custom variables file for relevant dpID
@@ -49,38 +52,11 @@ stackFrameFiles <- function(framefiles, dpID,
   }
   
   # assign table name
-  tabnm <- "per_sample"
-  if(dpID=="DP1.20190.001") {
-    tabnm <- "rea_conductivityRawData"
+  if(dpID %in% frame_names$dpID) {
+    tabnm <- frame_names$tableName[which(frame_names$dpID==dpID)]
+  } else {
+    tabnm <- "per_sample"
   }
-  if(dpID=="DP1.20193.001") {
-    tabnm <- "sbd_conductivityRawData"
-  }
-  if(dpID=="DP4.00132.001") {
-    tabnm <- "bat_processedSonarFile"
-  }
-  if(dpID=="DP1.30012.001") {
-    tabnm <- "fsp_rawSpectra"
-  }
-  if(dpID=="DP1.10081.001") {
-    tabnm <- paste("mcc_soilPerSampleTaxonomy_", seqType, sep="")
-  }
-  if(dpID=="DP1.20086.001") {
-    tabnm <- paste("mcc_benthicPerSampleTaxonomy_", seqType, sep="")
-  }
-  if(dpID=="DP1.20141.001") {
-    tabnm <- paste("mcc_surfaceWaterPerSampleTaxonomy_", seqType, sep="")
-  }
-  if(dpID=="DP1.10081.002") {
-    tabnm <- paste("mct_soilPerSampleTaxonomy_", seqType, sep="")
-  }
-  if(dpID=="DP1.20086.002") {
-    tabnm <- paste("mct_benthicPerSampleTaxonomy_", seqType, sep="")
-  }
-  if(dpID=="DP1.20141.002") {
-    tabnm <- paste("mct_surfaceWaterPerSampleTaxonomy_", seqType, sep="")
-  }
-  
   
   if(isFALSE(noschema)) {
     
