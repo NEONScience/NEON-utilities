@@ -73,11 +73,16 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE,
   # start list of tables
   stacklist <- list()
   
+  # get list of data frame products
+  frame_defs <- try(read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_codes.csv"),
+                     silent=TRUE)
+  if(inherits(frame_defs, "try-error")) {
+    message("Internet connection error. Some metadata may rely on cached versions.")
+    frame_defs <- frame_file_codes
+  }
+  
   # handle per-sample (data frame) tables separately
-  if(dpID %in% c("DP1.30012.001", "DP1.10081.001", "DP1.20086.001", 
-                 "DP1.20141.001", "DP1.20190.001", "DP1.20193.001",
-                 "DP1.10081.002", "DP1.20086.002", "DP1.20141.002",
-                 "DP4.00132.001") & 
+  if(dpID %in% frame_defs$dpID & 
      length(grep("^NEON.", basename(filenames), invert=TRUE))>0) {
     framefiles <- filepaths[grep("^NEON.", basename(filenames), invert=TRUE)]
     filepaths <- filepaths[grep("^NEON.", basename(filenames))]
