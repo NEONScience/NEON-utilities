@@ -24,18 +24,20 @@ update_table_types <- function(){
   
   # get publication tables from PDR
   req <- httr::GET(Sys.getenv("PUB_TABLES"))
-  rawx <- XML::xmlToList(httr::content(req, as="text"))
+  rawj <- jsonlite::fromJSON(httr::content(req, as="text", encoding="UTF-8"), 
+                             simplifyDataFrame=TRUE, flatten=TRUE)
   
-  ids <- substring(unlist(lapply(rawx, '[', "dataProductId")), 15, 27)
-  tables <- unlist(lapply(rawx, '[', "tableName"))
-  tables <- gsub("_pub", "", tables, fixed=T)
-  descs <- unlist(lapply(rawx, '[', "description"))
-  typs <- unlist(lapply(rawx, '[', "tableType"))
-  temp <- unlist(lapply(rawx, '[', "pubField"))
-  tmi <- temp[grep("timeIndex", names(temp))]
-  
-  table_types <- data.frame(cbind(ids[-length(ids)], tables[-length(tables)],
-                                  descs[-length(descs)], typs[-length(typs)], tmi))
+  table_types <- rawj$pubTables[,c("dataProductId", "tableName",
+                         "description", "tableType")]
+  tmi <- apply(rawj$pubTables, 1, FUN=function(x) {
+    tmx <- unique(x$pubFields$timeIndex)
+    if(length(tmx)>1) {
+      print(x$tableName)
+      print(x$dataProductId)
+    }
+    return(tmx)
+  })
+  table_types <- cbind(table_types, tmi)
   colnames(table_types) <- c("productID", "tableName", "tableDesc", 
                              "tableType", "tableTMI")
   
@@ -77,6 +79,7 @@ update_table_types <- function(){
   data.table::fwrite(shared_aquatic, paste(Sys.getenv('NU_REPO'), 'helper_files/shared_aquatic.csv', sep='/'))
   data.table::fwrite(shared_flights, paste(Sys.getenv('NU_REPO'), 'helper_files/shared_flights.csv', sep='/'))
   data.table::fwrite(table_types, paste(Sys.getenv('NU_REPO'), 'helper_files/table_types.csv', sep='/'))
+  data.table::fwrite(frame_file_codes, paste(Sys.getenv('NU_REPO'), 'helper_files/frame_file_codes.csv', sep='/'))
   
 }
 
