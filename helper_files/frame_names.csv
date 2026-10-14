@@ -1,0 +1,13 @@
+dpID,tableName
+DP1.20190.001,rea_conductivityRawData
+DP1.20193.001,sbd_conductivityRawData
+DP4.00132.001,bat_processedSonarFile
+DP1.30012.001,fsp_rawSpectra
+DP1.10081.001,mcc_soilPerSampleTaxonomy_
+DP1.20086.001,mcc_benthicPerSampleTaxonomy_
+DP1.20141.001,mcc_surfaceWaterPerSampleTaxonomy_
+DP1.10081.002,mct_soilPerSampleTaxonomy_
+DP1.20086.002,mct_benthicPerSampleTaxonomy_
+DP1.20141.002,mct_surfaceWaterPerSampleTaxonomy_
+DP4.20123.001,inv_perSampleTaxonomy
+DP4.20220.001,zoo_perSampleTaxonomy

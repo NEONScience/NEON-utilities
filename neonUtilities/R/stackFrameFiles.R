@@ -25,16 +25,27 @@ stackFrameFiles <- function(framefiles, dpID,
                             seqType=NA_character_, 
                             cloud.mode=FALSE) {
   
-  frame_file_variables <- utils::read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_variables.csv")
+  frame_file_variables <- try(utils::read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_variables.csv"),
+                              silent=TRUE)
+  frame_defs <- try(utils::read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_codes.csv"),
+                    silent=TRUE)
+  if(inherits(frame_defs, "try-error")) {
+    message("Internet connection error. Some metadata may rely on cached versions.")
+    frame_defs <- frame_file_codes
+    frame_file_variables <- frame_file_variables_internal
+  }
   
   # get custom variables file for relevant dpID
   # if dpID isn't on the list, infer schema
-  if(!dpID %in% frame_file_codes$dpID) {
+  if(!dpID %in% frame_defs$dpID) {
     noschema <- TRUE
   } else {
-    module <- frame_file_codes$code[which(frame_file_codes$dpID==dpID)]
+    module <- frame_defs$code[which(frame_defs$dpID==dpID)]
     vartab <- frame_file_variables[which(frame_file_variables$table==module),]
     noschema <- FALSE
+  }
+  if(length(vartab)==0) {
+    noschema <- TRUE
   }
   
   # assign table name

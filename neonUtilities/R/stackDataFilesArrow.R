@@ -74,7 +74,7 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE,
   stacklist <- list()
   
   # get list of data frame products
-  frame_defs <- try(read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_codes.csv"),
+  frame_defs <- try(utils::read.csv("https://raw.githubusercontent.com/NEONScience/NEON-utilities/refs/heads/main/helper_files/frame_file_codes.csv"),
                      silent=TRUE)
   if(inherits(frame_defs, "try-error")) {
     message("Internet connection error. Some metadata may rely on cached versions.")
@@ -91,9 +91,11 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE,
     # stack frame files
     message("Stacking per-sample files. These files may be very large; download data in smaller subsets if performance problems are encountered.")
 
+    # is this a frame file with both bacteria and fungi files?
+    bacfungdps <- frame_defs$dpID[which(frame_defs$bacfung==1)]
+    
     # stacking for everything except community taxonomy
-    if(!dpID %in% c("DP1.10081.001", "DP1.20086.001", "DP1.20141.001", 
-                    "DP1.10081.002", "DP1.20086.002", "DP1.20141.002")) {
+    if(!dpID %in% bacfungdps) {
       
       # pass to custom stacking function
       frmlst <- stackFrameFiles(framefiles, dpID=dpID, 
