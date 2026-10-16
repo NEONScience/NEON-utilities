@@ -40,7 +40,11 @@ getAttributes <- function(fil, sit, type, valName) {
     lev <- valName
   }
   
-  gAttr <- base::try(rhdf5::h5readAttributes(fil, name=lev), silent=T)
+  gAttr <- base::try(local({
+    h5file <- hdf5r::H5File$new(fil, mode="r")
+    on.exit(h5file$close_all())
+    hdf5r::h5attributes(h5file[[lev]])
+  }), silent=T)
   
   if(inherits(gAttr, "try-error")) {
     gAttr <- data.frame(matrix(data=c(sit, mnth), ncol=2, nrow=1))

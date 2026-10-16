@@ -47,10 +47,9 @@ stackEddy <- function(filepath,
                       runLocal=FALSE,
                       progress=TRUE) {
   
-  # first check for rhdf5 package
-  if(!requireNamespace("rhdf5", quietly=T)) {
-    stop("Package rhdf5 is required for this function to work.
-         \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
+  # first check for hdf5r package
+  if(!requireNamespace("hdf5r", quietly=T)) {
+    stop("Package hdf5r is required for this function to work. Install with install.packages('hdf5r').")
   }
   
   # also check for fasttime package, if used
@@ -221,81 +220,93 @@ stackEddy <- function(filepath,
   # extract data from each file
   for(i in 1:length(files)) {
     
-    listObj <- base::try(rhdf5::h5ls(files[i]), silent=T)
+    h5file <- base::try(hdf5r::H5File$new(files[i], mode="r"), silent=T)
     
-    if(inherits(listObj, "try-error")) {
+    if(inherits(h5file, "try-error")) {
       cat(paste("\n", paste(files[i], " could not be read.", sep="")))
       next
     }
     
-    listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
-    listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
-    listObjSpl <- tidyr::separate(listDataObj, col="group", 
-                                  into=c(NA, "site", "level", "category", "system", 
-                                         "horvertmi", "subsys"), 
-                                  sep="/", fill="right")
-    
-    # filter by variable/level selections
-    levelInd <- grep(level, listDataName)
-    
-    if(level!="dp04" & level!="dp03" & level!="dp02" & !all(is.na(var))) {
-      if(length(which(listObjSpl$system %in% var))>0) {
-        if(length(which(listDataObj$name %in% var))>0) {
-          varInd <- base::intersect(which(listDataObj$name %in% var), 
-                                    which(listObjSpl$system %in% var))
+    tryCatch({
+      listObj <- h5file$ls(recursive=TRUE)
+      listDataObj <- listObj[listObj$obj_type == "H5I_DATASET", , drop=FALSE]
+      listDataObj <- data.frame(group=paste0("/", dirname(listDataObj$name)),
+                                name=basename(listDataObj$name))
+      listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
+      listObjSpl <- tidyr::separate(listDataObj, col="group",
+                                    into=c(NA, "site", "level", "category", "system",
+                                           "horvertmi", "subsys"),
+                                    sep="/", fill="right")
+
+      # filter by variable/level selections
+      levelInd <- grep(level, listDataName)
+
+      if(level!="dp04" & level!="dp03" & level!="dp02" & !all(is.na(var))) {
+        if(length(which(listObjSpl$system %in% var))>0) {
+          if(length(which(listDataObj$name %in% var))>0) {
+            varInd <- base::intersect(which(listDataObj$name %in% var),
+                                      which(listObjSpl$system %in% var))
+          } else {
+            varInd <- which(listObjSpl$system %in% var)
+          }
         } else {
-          varInd <- which(listObjSpl$system %in% var)
+          if(length(which(listDataObj$name %in% var))>0) {
+            varInd <- which(listObjSpl$name %in% var)
+          } else {
+            stop(paste("No data found for variables ", paste(var, collapse=" "), sep=""))
+          }
         }
+
       } else {
-        if(length(which(listDataObj$name %in% var))>0) {
-          varInd <- which(listObjSpl$name %in% var)
+        varInd <- 1:length(listDataName)
+      }
+      if(level!="dp04" & level!="dp03" & level!="dp02" & !is.na(avg)) {
+        avgInd <- grep(paste(avg, "m", sep=""), listDataName)
+      } else {
+        if(level=="dp01") {
+          stop("If level=='dp01', avg is a required input.")
         } else {
-          stop(paste("No data found for variables ", paste(var, collapse=" "), sep=""))
+          avgInd <- 1:length(listDataName)
         }
       }
       
-    } else {
-      varInd <- 1:length(listDataName)
-    }
-    if(level!="dp04" & level!="dp03" & level!="dp02" & !is.na(avg)) {
-      avgInd <- grep(paste(avg, "m", sep=""), listDataName)
-    } else {
-      if(level=="dp01") {
-        stop("If level=='dp01', avg is a required input.")
+      # exclude footprint grid data from expanded packages
+      if(length(grep("foot/grid", listDataName))>0) {
+        gridInd <- grep("foot/grid", listDataName, invert=T)
       } else {
-        avgInd <- 1:length(listDataName)
+        gridInd <- 1:length(listDataName)
       }
-    }
-    
-    # exclude footprint grid data from expanded packages
-    if(length(grep("foot/grid", listDataName))>0) {
-      gridInd <- grep("foot/grid", listDataName, invert=T)
-    } else {
-      gridInd <- 1:length(listDataName)
-    }
-    
-    # index that includes all filtering criteria
-    ind <- intersect(intersect(levelInd, intersect(varInd, avgInd)), gridInd)
-    
-    # check that you haven't filtered to nothing
-    if(length(ind)==0) {
-      message(paste("There are no data meeting the criteria level ", level, 
-                 ", averaging interval ", avg, ", and variables ", 
-                 paste(var, collapse=" "), " in file ", files[i], sep=""))
-      names(tableList)[i] <- paste("skip", i, sep="")
-      next
-    }
-    
-    listDataName <- listDataName[ind]
-    
-    # add extracted data to the list
-    tableList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=files[i], read.attributes=T)
-    base::names(tableList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
-    
-    if(isTRUE(progress)) {
-      utils::setTxtProgressBar(pb, i/length(files))
-    }
+
+      # index that includes all filtering criteria
+      ind <- intersect(intersect(levelInd, intersect(varInd, avgInd)), gridInd)
+
+      # check that you haven't filtered to nothing
+      if(length(ind)==0) {
+        message(paste("There are no data meeting the criteria level ", level,
+                   ", averaging interval ", avg, ", and variables ",
+                   paste(var, collapse=" "), " in file ", files[i], sep=""))
+        names(tableList)[i] <- paste("skip", i, sep="")
+        next
+      }
+
+      listDataName <- listDataName[ind]
+
+      # add extracted data to the list
+      tableList[[i]] <- base::lapply(listDataName, function(path) {
+        dataset <- h5file[[path]]
+        values <- dataset$read()
+        datasetAttributes <- hdf5r::h5attributes(dataset)
+        for(attributeName in names(datasetAttributes)) {
+          attr(values, attributeName) <- datasetAttributes[[attributeName]]
+        }
+        return(values)
+      })
+      base::names(tableList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
+
+      if(isTRUE(progress)) {
+        utils::setTxtProgressBar(pb, i/length(files))
+      }
+    }, finally=h5file$close_all())
     
   }
   if(isTRUE(progress)) {
@@ -594,7 +605,11 @@ stackEddy <- function(filepath,
   }
   
   # get one objDesc table and add it and variables table to list
-  objDesc <- base::try(rhdf5::h5read(files[1], name="//objDesc"), silent=T)
+  objDesc <- base::try(local({
+    h5file <- hdf5r::H5File$new(files[1], mode="r")
+    on.exit(h5file$close_all())
+    h5file[["objDesc"]]$read()
+  }), silent=T)
   # if processing gets this far without failing, don't fail here, just return data without objDesc table
   if(inherits(objDesc, "try-error")) {
     objDesc <- NA
