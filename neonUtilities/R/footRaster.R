@@ -38,10 +38,9 @@
 footRaster <- function(filepath,
                        progress=TRUE) {
   
-  # first check for rhdf5 package
-  if(!requireNamespace("rhdf5", quietly=T)) {
-    stop("Package rhdf5 is required for this function to work.
-         \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
+  # first check for hdf5r package
+  if(!requireNamespace("hdf5r", quietly=T)) {
+    stop("Package hdf5r is required for this function to work. Install with install.packages('hdf5r').")
   }
   
   # also check for terra package
@@ -132,92 +131,104 @@ footRaster <- function(filepath,
   # extract footprint data from each file
   for(i in 1:length(files)) {
     
-    listObj <- base::try(rhdf5::h5ls(files[i]), silent=T)
+    h5file <- base::try(hdf5r::H5File$new(files[i], mode="r"), silent=T)
     
-    if(base::inherits(listObj, "try-error")) {
+    if(base::inherits(h5file, "try-error")) {
       stop(paste("\n", files[i], " could not be read.", sep=""))
     }
     
-    listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
-    listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
-    
-    # filter by variable/level selections
-    levelInd <- grep("dp04", listDataName)
-    
-    # get only the footprint grid data
-    if(length(grep("foot/grid", listDataName))==0) {
-      stop("No footprint data available.")
-    } else {
-      gridInd <- grep("foot/grid", listDataName)
-    }
-    
-    ind <- intersect(levelInd, gridInd)
-    
-    # check that you haven't filtered to nothing
-    if(length(ind)==0) {
-      stop("No footprint data available.")
-    }
-    
-    listDataName <- listDataName[ind]
-    
-    # get footprints for each half hour
-    gridList[[i]] <- base::lapply(listDataName, rhdf5::h5read, 
-                                 file=files[i], read.attributes=T)
-    base::names(gridList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
-    
-    # transpose: eddy4R transposes the data to make them compatible with Python and other systems; need to be transposed back in R
-    gridList[[i]] <- base::lapply(gridList[[i]], base::t)
-    
-    # get location data on first pass
-    if(i==1) {
-      locAttr <- rhdf5::h5readAttributes(file=files[i], name=listObj$group[2])
+    tryCatch({
+      listObj <- h5file$ls(recursive=TRUE)
+      listDataObj <- listObj[listObj$obj_type == "H5I_DATASET", , drop=FALSE]
+      listDataObj <- data.frame(group=paste0("/", dirname(listDataObj$name)),
+                                name=basename(listDataObj$name))
+      listDataName <- base::paste(listDataObj$group, listDataObj$name, sep = "/")
+
+      # filter by variable/level selections
+      levelInd <- grep("dp04", listDataName)
       
-      # get grid cell dimensions
-      oriAttr <- rhdf5::h5read(file=files[i],
-                               name=paste(listDataObj$group[intersect(grep('/dp04/data/foot', 
-                                                                           listDataObj$group),
-                                                                      grep('stat',
-                                                                           listDataObj$name))],
-                                          'stat', sep='/'))
-      # check for internal consistency
-      if(length(unique(oriAttr$distReso))!=1) {
-        message('Resolution attribute is inconsistent. Rasters are unscaled.')
-        locAttr$distReso <- 0
+      # get only the footprint grid data
+      if(length(grep("foot/grid", listDataName))==0) {
+        stop("No footprint data available.")
       } else {
-        locAttr$distReso <- unique(oriAttr$distReso)
+        gridInd <- grep("foot/grid", listDataName)
       }
       
-    }
-    
-    # after first pass, check for consistency
-    if(i!=1) {
-      newAttr <- rhdf5::h5readAttributes(file=files[i], name=listObj$group[2])
-      newOri <- rhdf5::h5read(file=files[i],
-                               name=paste(listDataObj$group[intersect(grep('/dp04/data/foot', 
-                                                                           listDataObj$group),
-                                                                      grep('stat',
-                                                                           listDataObj$name))],
-                                          'stat', sep='/'))
-      newAttr$distReso <- newOri$distReso
+      ind <- intersect(levelInd, gridInd)
+
+      # check that you haven't filtered to nothing
+      if(length(ind)==0) {
+        stop("No footprint data available.")
+      }
       
-      if(unique(newOri$distReso)!=locAttr$distReso) {
-        message('Resolution attribute is inconsistent. Rasters are unscaled.\nCheck input data, inputs may have included multiple sites.')
-        locAttr$distReso <- 0
-      } else {
-        if(!all(c(newAttr$LatTow, newAttr$LonTow, 
-                  newAttr$ZoneUtm)==c(locAttr$LatTow,
-                                      locAttr$LonTow,
-                                      locAttr$ZoneUtm))) {
+      listDataName <- listDataName[ind]
+
+      # get footprints for each half hour
+      gridList[[i]] <- base::lapply(listDataName, function(path) {
+        dataset <- h5file[[path]]
+        values <- dataset$read()
+        datasetAttributes <- hdf5r::h5attributes(dataset)
+        for(attributeName in names(datasetAttributes)) {
+          attr(values, attributeName) <- datasetAttributes[[attributeName]]
+        }
+        return(values)
+      })
+      base::names(gridList[[i]]) <- substring(listDataName, 2, nchar(listDataName))
+
+      # transpose: eddy4R transposes the data to make them compatible with Python and other systems; need to be transposed back in R
+      gridList[[i]] <- base::lapply(gridList[[i]], base::t)
+
+      # get location data on first pass
+      if(i==1) {
+        siteGroup <- strsplit(listDataName[1], "/", fixed=TRUE)[[1]][2]
+        locAttr <- hdf5r::h5attributes(h5file[[siteGroup]])
+
+        # get grid cell dimensions
+        oriAttr <- h5file[[paste(listDataObj$group[intersect(grep('/dp04/data/foot',
+                                                                             listDataObj$group),
+                                                                        grep('stat',
+                                                                             listDataObj$name))],
+                                            'stat', sep='/')]]$read()
+        # check for internal consistency
+        if(length(unique(oriAttr$distReso))!=1) {
+          message('Resolution attribute is inconsistent. Rasters are unscaled.')
+          locAttr$distReso <- 0
+        } else {
+          locAttr$distReso <- unique(oriAttr$distReso)
+        }
+
+      }
+
+      # after first pass, check for consistency
+      if(i!=1) {
+        siteGroup <- strsplit(listDataName[1], "/", fixed=TRUE)[[1]][2]
+        newAttr <- hdf5r::h5attributes(h5file[[siteGroup]])
+        newOri <- h5file[[paste(listDataObj$group[intersect(grep('/dp04/data/foot',
+                                                                             listDataObj$group),
+                                                                        grep('stat',
+                                                                             listDataObj$name))],
+                                            'stat', sep='/')]]$read()
+        newAttr$distReso <- newOri$distReso
+
+        if(unique(newOri$distReso)!=locAttr$distReso) {
           message('Resolution attribute is inconsistent. Rasters are unscaled.\nCheck input data, inputs may have included multiple sites.')
           locAttr$distReso <- 0
+        } else {
+          if(!all(c(newAttr$LatTow, newAttr$LonTow,
+                    newAttr$ZoneUtm)==c(locAttr$LatTow,
+                                        locAttr$LonTow,
+                                        locAttr$ZoneUtm))) {
+            message('Resolution attribute is inconsistent. Rasters are unscaled.\nCheck input data, inputs may have included multiple sites.')
+            locAttr$distReso <- 0
+          }
         }
+
       }
       
-    }
-    
-    if(isTRUE(progress)) {
-      utils::setTxtProgressBar(pb, i/length(files))
-    }
+      if(isTRUE(progress)) {
+        utils::setTxtProgressBar(pb, i/length(files))
+      }
+    }, finally=h5file$close_all())
     
   }
   if(isTRUE(progress)) {
