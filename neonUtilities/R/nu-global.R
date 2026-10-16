@@ -1,6 +1,7 @@
 # Set the base url for the NEON API
 
 nu.globals <- new.env()
+nu.globals$baseurl <- "https://data.neonscience.org/api/v0/"
 
 .onAttach <- function(libname, pkgname) {
   
