@@ -29,19 +29,33 @@
 
 getVarsEddy <- function(filepath) {
   
-  # first check for rhdf5 package
-  if(!requireNamespace("rhdf5", quietly=T)) {
-    stop("Package rhdf5 is required for this function to work.
-         \nrhdf5 is a Bioconductor package. To install, use:\ninstall.packages('BiocManager')\nBiocManager::install('rhdf5')\n")
+  # first check for hdf5r package
+  if(!requireNamespace("hdf5r", quietly=T)) {
+    stop("Package hdf5r is required for this function to work. Install with install.packages('hdf5r').")
   }
   
-  listObj <- base::try(rhdf5::h5ls(filepath), silent=T)
+  h5file <- base::try(hdf5r::H5File$new(filepath, mode="r"), silent=T)
+  if(inherits(h5file, "try-error")) {
+    stop(paste(filepath, " could not be read.", sep=""))
+  }
+  on.exit(h5file$close_all())
+
+  listObj <- base::try(h5file$ls(recursive=TRUE), silent=T)
     
   if(inherits(listObj, "try-error")) {
     stop(paste(filepath, " could not be read.", sep=""))
     }
     
-  listDataObj <- listObj[listObj$otype == "H5I_DATASET",]
+  listDataObj <- listObj[listObj$obj_type == "H5I_DATASET",]
+  groups <- dirname(listDataObj$name)
+  groups <- ifelse(groups == ".", "/", paste0("/", groups))
+  listDataObj <- data.frame(group=groups,
+                           name=basename(listDataObj$name),
+                           otype=as.character(listDataObj$obj_type),
+                           dclass=sub("^H5T_", "", listDataObj$dataset.type_class),
+                           dim=as.character(listDataObj$dataset.dims),
+                           row.names=which(listObj$obj_type == "H5I_DATASET") - 1L,
+                           stringsAsFactors=FALSE)
   
   listObjSpl <- tidyr::separate(listDataObj, col="group", 
                          into=c(NA, "site", "level", "category", "system", 

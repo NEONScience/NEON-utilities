@@ -32,6 +32,44 @@ makeEddyFixture <- function(filepath) {
   h5file[["objDesc"]] <- data.frame(name="mean", description="Mean value")
 }
 
+test_that("getVarsEddy lists dataset metadata with hdf5r", {
+  skip_if_not_installed("hdf5r")
+  filepath <- tempfile(fileext=".h5")
+  on.exit(unlink(filepath))
+  makeEddyFixture(filepath)
+  h5file <- hdf5r::H5File$new(filepath, mode="r+")
+  h5file[["TEST/dp01/data/soni/000_010_30m/matrix"]] <- matrix(1:6, nrow=2)
+  h5file$close_all()
+
+  result <- suppressWarnings(getVarsEddy(filepath))
+  expect_named(result, c("site", "level", "category", "system", "hor",
+                         "ver", "tmi", "subsys", "name", "otype", "dclass",
+                         "dim", "oth"))
+  expect_equal(nrow(result), 10L)
+  expect_true(all(result$otype == "H5I_DATASET"))
+  pressure <- result[result$name == "pres",]
+  expect_equal(pressure$site, rep("TEST", 2))
+  expect_equal(pressure$level, rep("dp01", 2))
+  expect_equal(pressure$category, rep("data", 2))
+  expect_equal(pressure$system, c("co2Stor", "soni"))
+  expect_equal(pressure$hor, rep("000", 2))
+  expect_equal(pressure$ver, rep("010", 2))
+  expect_equal(pressure$tmi, rep("30m", 2))
+  expect_equal(pressure$dclass, rep("COMPOUND", 2))
+  expect_equal(pressure$dim, rep("2", 2))
+  expect_equal(result$dim[result$name == "matrix"], "2 x 3")
+  expect_equal(result$dclass[result$name == "matrix"], "INTEGER")
+  expect_equal(result$site[result$name == "objDesc"], "")
+  expect_true(all(is.na(result$oth)))
+
+  h5file <- hdf5r::H5File$new(filepath, mode="r+")
+  expect_equal(h5file$get_obj_count(), 1)
+  h5file$close_all()
+  expect_error(getVarsEddy(paste0(filepath, ".missing")), "could not be read")
+  writeLines("not an HDF5 file", filepath)
+  expect_error(getVarsEddy(filepath), "could not be read")
+})
+
 test_that("stackEddy reads data and metadata with hdf5r", {
   skip_if_not_installed("hdf5r")
   directory <- tempfile()
