@@ -42,6 +42,8 @@ update_table_types <- function(){
                              "tableType", "tableTMI")
   table_types$productID <- gsub(pattern="NEON.DOM.SITE.", 
                                 replacement="", x=table_types$productID)
+  table_types$tableName <- gsub(pattern="[_]pub", replacement="",
+                                x=table_types$tableName)
   
   # need to keep table definitions for tables that only exist in RELEASE-2021
   table_types <- rbind(table_types, release_2021)
