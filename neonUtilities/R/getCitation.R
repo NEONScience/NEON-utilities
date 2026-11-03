@@ -74,7 +74,7 @@ getCitation <- function(dpID=NA_character_, release=NA_character_) {
       cit <- httr::content(req, as="text", encoding="UTF-8")
       
     } else {
-      message(paste("DOI not found for data product ID ", dpID, "and release",
+      message(paste("DOI not found for data product ID ", dpID, " and release ",
                     release, ". Check inputs.", sep=""))
       return(invisible())
     }
