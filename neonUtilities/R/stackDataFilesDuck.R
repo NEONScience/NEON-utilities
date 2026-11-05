@@ -68,10 +68,10 @@ stackDataFilesDuck <- function(urls,
                                  tab=tabl,
                                  package=package)
     ds <- try(duckdbfs::open_dataset(sources=urls, 
+                                     filename=TRUE,
                                      parser_options = c(
                                        columns=tableschema[[1]],
                                        header=TRUE,
-                                       filename=TRUE,
                                        timestampformat=tableschema[[2]]
                                      ),
                                       format="csv"), silent=TRUE)
@@ -88,10 +88,10 @@ stackDataFilesDuck <- function(urls,
     }
     ds <- try(duckdbfs::open_dataset(sources=urls, 
                                      unify_schemas=TRUE,
+                                     filename=TRUE,
                                      parser_options = c(
                                        all_varchar=TRUE,
-                                       header=TRUE,
-                                       filename=TRUE
+                                       header=TRUE
                                      ),
                                      format="csv"), silent=TRUE)
     if(inherits(ds, "try-error")) {
