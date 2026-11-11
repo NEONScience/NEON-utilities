@@ -602,8 +602,9 @@ stackDataFilesArrow <- function(folder, cloud.mode=FALSE,
   }
   
   # get issue log
-  if(!curl::has_internet()) {
-    message("No internet connection, issue log file not accessed. Issue log can be found in the readme file.")
+  r <- try(httr::HEAD("https://data.neonscience.org/api/v0/products/"), silent=TRUE)
+  if(isFALSE(inherits(r, "response"))) {
+    message("Internet connection failed, issue log file not accessed. Issue log can be found in the readme file.")
   } else {
     # token not used here, since token is not otherwise used/accessible in this function
     issues <- getIssueLog(dpID=dpID)

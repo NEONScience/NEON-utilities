@@ -21,9 +21,9 @@
 
 checkUrlExp <- function(urlIn) {
   
-  urlps <- curl::curl_parse_url(urlIn)
-  urlcreatedate <- urlps$params[grep('Date', names(urlps$params))]
-  urlexpire <- urlps$params[grep('xpire', names(urlps$params))]
+  urlps <- httr::parse_url(urlIn)
+  urlcreatedate <- urlps$query[grep('Date', names(urlps$query))][[1]]
+  urlexpire <- urlps$query[grep('xpire', names(urlps$query))][[1]]
   
   if(length(urlcreatedate)==0 | length(urlexpire)==0) {
     return(invisible())

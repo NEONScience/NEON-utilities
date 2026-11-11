@@ -20,11 +20,6 @@
 
 getAPI <- function(apiURL, token=NA_character_){
 
-  if(!curl::has_internet()) {
-    message("No internet connection detected. Cannot access NEON API.")
-    return(invisible())
-  }
-  
   if(identical(token, "")) {token <- NA_character_}
   
   usera <- paste("neonUtilities/", utils::packageVersion("neonUtilities"), " R/", 

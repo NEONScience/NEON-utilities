@@ -623,8 +623,9 @@ stackEddy <- function(filepath,
   
   # get issue log
   if(!runLocal) {
-    if(!curl::has_internet()) {
-      message("No internet connection, issue log file not accessed. Issue log can be found on the data product details pages.")
+    r <- try(httr::HEAD("https://data.neonscience.org/api/v0/products/"), silent=TRUE)
+    if(isFALSE(inherits(r, "response"))) {
+      message("Internet connection failed, issue log file not accessed. Issue log can be found on the data product details pages.")
     } else {
       # token not used here, since token is not otherwise used/accessible in this function
       varMergList[["issueLog"]] <- getIssueLog(dpID="DP4.00200.001")
