@@ -16,6 +16,8 @@
 #' @param avg Deprecated; use timeIndex
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
+#' @param hor Horizontal location indices to download. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be downloaded. Defaults to NA, which downloads all locations.
+#' @param ver Vertical location indices to download. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be downloaded. Defaults to NA, which downloads all locations.
 #' @param cloud.mode T or F, are files transferred cloud-to-cloud? Defaults to F; set to true only if the destination location (where you are downloading the files to) is in the cloud.
 #' @param check.size T or F, should the user approve the total file size before downloading? Defaults to T. When working in batch mode, or other non-interactive workflow, use check.size=F.
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
@@ -48,7 +50,8 @@
 ##############################################################################################
 
 loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="basic",
-                          release="current", timeIndex="all", tabl="all", cloud.mode=FALSE,
+                          release="current", timeIndex="all", tabl="all", 
+                          hor=NA_character_, ver=NA_character_, cloud.mode=FALSE,
                           check.size=TRUE, include.provisional=FALSE,
                           nCores=1, forceParallel=FALSE, token=NA_character_, 
                           useFasttime=FALSE, avg=NA, progress=TRUE,
@@ -113,7 +116,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     fls <- queryFiles(dpID=dpID, site=site, 
                       startdate=startdate, enddate=enddate,
                       package=package, release=release,
-                      timeIndex=timeIndex, tabl=tabl, metadata=TRUE,
+                      timeIndex=timeIndex, tabl=tabl, 
+                      hor=hor, ver=ver, metadata=TRUE,
                       include.provisional=include.provisional, 
                       token=token)
     out <- stackByTable(filepath=fls, savepath="envt", 
@@ -129,7 +133,8 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
     
     # pass the request to zipsByProduct() to download
     zipsByProduct(dpID=dpID, site=site, startdate=startdate, enddate=enddate, package=package,
-                  release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, check.size=check.size, 
+                  release=release, avg=avg, timeIndex=timeIndex, tabl=tabl, 
+                  hor=hor, ver=ver, check.size=check.size, 
                   savepath=temppath, include.provisional=include.provisional, load=TRUE, 
                   token=token, progress=progress)
     

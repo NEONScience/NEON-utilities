@@ -11,6 +11,8 @@ getZipUrls(
   dpID,
   release,
   tabl,
+  hor,
+  ver,
   include.provisional,
   token = NA_character_,
   progress = TRUE
@@ -28,6 +30,10 @@ getZipUrls(
 \item{release}{Data release to be downloaded}
 
 \item{tabl}{Table name to get}
+
+\item{hor}{Horizontal location indices to download. Only applicable to sensor (IS) data. Defaults to NA, which downloads all locations.}
+
+\item{ver}{Vertical location indices to download. Only applicable to sensor (IS) data. Defaults to NA, which downloads all locations.}
 
 \item{include.provisional}{Should provisional data be included?}
 

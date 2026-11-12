@@ -13,6 +13,8 @@ queryFiles(
   release = "current",
   timeIndex = "all",
   tabl = "all",
+  hor = NA,
+  ver = NA,
   metadata = TRUE,
   include.provisional = FALSE,
   token = NA_character_
@@ -34,6 +36,10 @@ queryFiles(
 \item{timeIndex}{Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
 
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
+
+\item{hor}{Horizontal location indices. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be listed. Defaults to NA, which lists all locations.}
+
+\item{ver}{Vertical location indices. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be listed. Defaults to NA, which lists all locations.}
 
 \item{metadata}{T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to T.}
 

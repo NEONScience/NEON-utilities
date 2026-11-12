@@ -13,6 +13,8 @@ loadByProduct(
   release = "current",
   timeIndex = "all",
   tabl = "all",
+  hor = NA_character_,
+  ver = NA_character_,
   cloud.mode = FALSE,
   check.size = TRUE,
   include.provisional = FALSE,
@@ -41,6 +43,10 @@ loadByProduct(
 \item{timeIndex}{Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
 
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
+
+\item{hor}{Horizontal location indices to download. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be downloaded. Defaults to NA, which downloads all locations.}
+
+\item{ver}{Vertical location indices to download. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be downloaded. Defaults to NA, which downloads all locations.}
 
 \item{cloud.mode}{T or F, are files transferred cloud-to-cloud? Defaults to F; set to true only if the destination location (where you are downloading the files to) is in the cloud.}
 

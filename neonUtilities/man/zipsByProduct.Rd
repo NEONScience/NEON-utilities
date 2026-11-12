@@ -12,6 +12,8 @@ zipsByProduct(
   package = "basic",
   release = "current",
   timeIndex = "all",
+  hor = NA_character_,
+  ver = NA_character_,
   tabl = "all",
   check.size = TRUE,
   include.provisional = FALSE,
@@ -37,6 +39,10 @@ zipsByProduct(
 \item{release}{The data release to be downloaded; either 'current' or the name of a release, e.g. 'RELEASE-2021'. 'current' returns the most recent release, as well as provisional data if include.provisional is set to TRUE. To download only provisional data, use release='PROVISIONAL'. Defaults to 'current'.}
 
 \item{timeIndex}{Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.}
+
+\item{hor}{Horizontal location indices to download. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be downloaded. Defaults to NA, which downloads all locations.}
+
+\item{ver}{Vertical location indices to download. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be downloaded. Defaults to NA, which downloads all locations.}
 
 \item{tabl}{Either the string 'all', or the name of a single data table to download. Defaults to 'all'.}
 

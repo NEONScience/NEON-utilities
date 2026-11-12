@@ -14,6 +14,8 @@
 #' @param release The data release to be downloaded; either 'current' or the name of a release, e.g. 'RELEASE-2021'. 'current' returns the most recent release, as well as provisional data if include.provisional is set to TRUE. To download only provisional data, use release='PROVISIONAL'. Defaults to 'current'.
 #' @param timeIndex Either the string 'all', or the time index of data to download, in minutes. Only applicable to sensor (IS) data. Defaults to 'all'.
 #' @param tabl Either the string 'all', or the name of a single data table to download. Defaults to 'all'.
+#' @param hor Horizontal location indices. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be listed. Defaults to NA, which lists all locations.
+#' @param ver Vertical location indices. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be listed. Defaults to NA, which lists all locations.
 #' @param metadata T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to T.
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
@@ -32,7 +34,8 @@
 
 queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                        package="basic", release="current",
-                       timeIndex="all", tabl="all", metadata=TRUE,
+                       timeIndex="all", tabl="all", hor=NA, ver=NA,
+                       metadata=TRUE,
                        include.provisional=FALSE, token=NA_character_) {
   
   # if token is an empty string, set to NA
@@ -174,7 +177,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   # make data frame of urls, checksums for each file, and checksum of corresponding variables file
   flset <- character()
   relnames <- strsplit(names(fllst), split='.', fixed=TRUE)
-  if(timeIndex=="all" & tabl=="all") {
+  if(timeIndex=="all" & tabl=="all" & all(is.na(hor)) & all(is.na(ver))) {
     for(j in 1:length(fllst)) {
       flsetk <- cbind(fllst[[j]]$url, 
                       fllst[[j]]$md5,
@@ -195,6 +198,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     }
     
   } else {
+    # subset by time index
     if(timeIndex!="all") {
       tiInd <- lapply(fllst, FUN=function(x) {
         base::grep(pattern=paste(timeIndex, "min|", timeIndex, 
@@ -202,52 +206,76 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                                  sep=""),
                    x=x$url)
       })
-      for(k in 1:length(tiInd)) {
-        kInd <- tiInd[[k]]
-        flsetk <- cbind(fllst[[k]]$url[kInd], 
-                        fllst[[k]]$md5[kInd],
-                        rep(ifelse(length(grep(pattern="variables", 
-                                               x=fllst[[k]]$url))==1,
-                                   fllst[[k]]$md5[grep(pattern="variables", 
-                                                       x=fllst[[k]]$url)], 
-                                   NA_character_),
-                            length(fllst[[k]]$url[kInd])),
-                        rep(ifelse(length(grep(pattern="variables", 
-                                               x=fllst[[k]]$url))==1,
-                                   fllst[[k]]$url[grep(pattern="variables", 
-                                                       x=fllst[[k]]$url)], 
-                                   NA_character_),
-                            length(fllst[[k]]$url[kInd])),
-                        rep(relnames[[k]][1], length(fllst[[k]]$url[kInd])))
-        flset <- rbind(flset, flsetk)
-      }
+    } else {
+      tiInd <- lapply(fllst, FUN=function(x) {
+        1:length(x$url)
+      })
     }
-    
+    # subset by table name
     if(tabl!="all") {
       tabInd <- lapply(fllst, FUN=function(x) {
         base::grep(pattern=paste("[.]", tabl, "[.]|variables|readme|sensor_positions|categoricalCodes", 
                                  sep=""),
                    x=x$url)
       })
-      for(k in 1:length(tabInd)) {
-        kInd <- tabInd[[k]]
-        flsetk <- cbind(fllst[[k]]$url[kInd], 
-                        fllst[[k]]$md5[kInd],
-                        rep(ifelse(length(grep(pattern="variables", 
-                                               x=fllst[[k]]$url))==1,
-                                   fllst[[k]]$md5[grep(pattern="variables", 
-                                                       x=fllst[[k]]$url)], 
-                                   NA_character_),
-                            length(fllst[[k]]$url[kInd])),
-                        rep(ifelse(length(grep(pattern="variables", 
-                                               x=fllst[[k]]$url))==1,
-                                   fllst[[k]]$url[grep(pattern="variables", 
-                                                       x=fllst[[k]]$url)], 
-                                   NA_character_),
-                            length(fllst[[k]]$url[kInd])),
-                        rep(relnames[[k]][1], length(fllst[[k]]$url[kInd])))
-        flset <- rbind(flset, flsetk)
-      }
+    } else {
+      tabInd <- lapply(fllst, FUN=function(x) {
+        1:length(x$url)
+      })
+    }
+    # subset by hor and ver index
+    if(!all(is.na(hor)) | !all(is.na(ver))) {
+      hvInd <- lapply(fllst, FUN=function(x) {
+        if(!all(is.na(hor))) {
+          hInd <- base::grep(pattern=paste("00[1-9]{1}[.]", paste(hor, collapse="|"), 
+                                     "[.][0-9]{3}[.][0-9|A-Z]{3}[.]", 
+                                     "|science_review_flags|variables|readme|sensor_positions|categoricalCodes", 
+                                     sep=""), 
+                               x=x$name)
+        } else {
+          hInd <- 1:length(x$name)
+        }
+        if(!all(is.na(ver))) {
+          vInd <- base::grep(pattern=paste("00[1-9]{1}[.][0-9]{3}[.]", paste(ver, collapse="|"), 
+                                     "[.][0-9|A-Z]{3}[.]", 
+                                   "|science_review_flags|variables|readme|sensor_positions|categoricalCodes",
+                                   sep=""), 
+                               x=x$name)
+        } else {
+          vInd <- 1:length(x$name)
+        }
+        hvInd <- base::intersect(hInd, vInd)
+      })
+    } else {
+      hvInd <- lapply(fllst, FUN=function(x) {
+        1:length(x$url)
+      })
+    }
+    # combine subsetting
+    subInd <- list()
+    for(l in 1:length(tiInd)) {
+      subInd[[l]] <- base::intersect(tiInd[[l]], base::intersect(tabInd[[l]], hvInd[[l]]))
+    }
+    
+    # get urls and checksums for subsetted files
+    for(k in 1:length(subInd)) {
+      kInd <- subInd[[k]]
+      flsetk <- cbind(fllst[[k]]$url[kInd], 
+                      fllst[[k]]$md5[kInd],
+                      rep(ifelse(length(grep(pattern="variables", 
+                                             x=fllst[[k]]$url))==1,
+                                 fllst[[k]]$md5[grep(pattern="variables", 
+                                                     x=fllst[[k]]$url)], 
+                                 NA_character_),
+                          length(fllst[[k]]$url[kInd])),
+                      rep(ifelse(length(grep(pattern="variables", 
+                                             x=fllst[[k]]$url))==1,
+                                 fllst[[k]]$url[grep(pattern="variables", 
+                                                     x=fllst[[k]]$url)], 
+                                 NA_character_),
+                          length(fllst[[k]]$url[kInd])),
+                      rep(relnames[[k]][1], length(fllst[[k]]$url[kInd])))
+      flset <- rbind(flset, flsetk)
     }
   }
   
@@ -283,7 +311,7 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   }
   # check for no data
   if(length(urllst)==0) {
-    message(paste("No files found for table ", tabl, " in ", 
+    message(paste("No files found for query criteria in ", 
                   package, " package", sep=""))
     return(invisible())
   } else {

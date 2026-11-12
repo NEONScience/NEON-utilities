@@ -106,7 +106,8 @@ datasetQuery <- function(dpID, site="all",
   urlset <- queryFiles(dpID=dpID, site=site, 
                        startdate=startdate, enddate=enddate,
                        package=package, release=release,
-                       timeIndex="all", tabl=tabl, metadata=FALSE,
+                       timeIndex="all", tabl=tabl, 
+                       hor=NA, ver=NA, metadata=FALSE,
                        include.provisional=include.provisional, 
                        token=token)
   

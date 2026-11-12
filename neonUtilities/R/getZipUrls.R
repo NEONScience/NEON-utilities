@@ -13,6 +13,8 @@
 #' @param dpID Global variable for data product ID
 #' @param release Data release to be downloaded
 #' @param tabl Table name to get
+#' @param hor Horizontal location indices to download. Only applicable to sensor (IS) data. Defaults to NA, which downloads all locations.
+#' @param ver Vertical location indices to download. Only applicable to sensor (IS) data. Defaults to NA, which downloads all locations.
 #' @param include.provisional Should provisional data be included?
 #' @param token User specific API token (generated within data.neonscience.org user accounts)
 #' @param progress T or F: should progress bars be printed?
@@ -31,7 +33,8 @@
 ##############################################################################################
 
 getZipUrls <- function(month.urls, avg, package, dpID, 
-                       release, tabl, include.provisional,
+                       release, tabl, hor, ver,
+                       include.provisional,
                        token = NA_character_,
                        progress=TRUE) {
 
@@ -141,8 +144,8 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       next
     }
 
-    # if only one averaging interval or one table is requested, filter by file names
-    if(avg!="all" | tabl!="all") {
+    # if only one averaging interval or one table, or a hor/ver subset, is requested, filter by file names
+    if(avg!="all" | tabl!="all" | !all(is.na(hor)) | !all(is.na(ver))) {
       
       # get zip file path to append to name
       h <- getAPIHeaders(tmp.files[[i]]$data$packages$url
@@ -206,10 +209,10 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       
       # select files by averaging interval
       if(avg!="all") {
-        all.file <- union(grep(paste(avg, "min", sep=""), unique.files$name, fixed=T),
+        all.file.t <- union(grep(paste(avg, "min", sep=""), unique.files$name, fixed=T),
                           grep(paste(avg, "_min", sep=""), unique.files$name, fixed=T))
         
-        if(length(all.file)==0) {
+        if(length(all.file.t)==0) {
           message(paste("No files with time index", avg, "found for site", 
                         tmp.files[[i]]$data$siteCode,
                         "and month", tmp.files[[i]]$data$month, sep=" "))
@@ -217,12 +220,55 @@ getZipUrls <- function(month.urls, avg, package, dpID,
         }
       }
       
+      # select files by table
       if(tabl!="all") {
-        all.file <- grep(paste("[.]", tabl, "[.]", sep=""), unique.files$name)
+        all.file.t <- grep(paste("[.]", tabl, "[.]", sep=""), unique.files$name)
       }
 
       # no message if table has no files - prints huge numbers if e.g. downloading only a litter chem table
+      if(length(all.file.t)==0) {
+        next
+      }
+      
+      # select files by hor and ver
+      if(!all(is.na(hor)) | !all(is.na(ver))) {
+        if(!all(is.na(hor))) {
+          all.file.hor <- grep(paste("00[1-9]{1}[.]", paste(hor, collapse="|"), 
+                                     "[.][0-9]{3}[.][0-9|A-Z]{3}[.]", sep=""), 
+                               unique.files$name)
+        } else {
+          all.file.hor <- 1:length(unique.files$name)
+        }
+        
+        if(!all(is.na(ver))) {
+          all.file.ver <- grep(paste("00[1-9]{1}[.][0-9]{3}[.]", paste(ver, collapse="|"), 
+                                     "[.][0-9|A-Z]{3}[.]", sep=""), 
+                               unique.files$name)
+        } else {
+          all.file.ver <- 1:length(unique.files$name)
+        }
+        
+        all.file <- intersect(all.file.hor, all.file.ver)
+        
+        # check for no files
+        if(length(all.file)==0) {
+          message(paste("No files with horizontal index ", hor, " and vertical index ",
+                        ver, " found for site ", 
+                        tmp.files[[i]]$data$siteCode,
+                        " and month ", tmp.files[[i]]$data$month, 
+                        ". Check available indices using getHorVer().", sep=""))
+          next
+        }
+      }
+      
+      # combine criteria
+      all.file <- base::intersect(all.file, all.file.t)
+      
+      # check again for no files
       if(length(all.file)==0) {
+        message(paste("No files found for query criteria (table, time index, hor, and ver) at site",
+                      tmp.files[[i]]$data$siteCode,
+                      "and month", tmp.files[[i]]$data$month, sep=" "))
         next
       }
 
