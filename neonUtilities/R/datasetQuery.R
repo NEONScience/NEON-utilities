@@ -90,7 +90,7 @@ datasetQuery <- function(dpID, site="all",
       if(any(nchar(c(hor,ver))!=3)) {
         stop("hor and ver must be 3-digit codes in character format.")
       }
-      if(any(c(length(hor), length(ver))!=1)) {
+      if(any(c(length(hor)>1, length(ver)>1))) {
         stop("Only a single sensor location can be queried; hor and ver must each be a single code.")
       }
     }
