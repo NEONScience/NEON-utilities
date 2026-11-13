@@ -209,20 +209,24 @@ getZipUrls <- function(month.urls, avg, package, dpID,
       
       # select files by averaging interval
       if(avg!="all") {
-        all.file.t <- union(grep(paste(avg, "min", sep=""), unique.files$name, fixed=T),
+        all.file.ti <- union(grep(paste(avg, "min", sep=""), unique.files$name, fixed=T),
                           grep(paste(avg, "_min", sep=""), unique.files$name, fixed=T))
         
-        if(length(all.file.t)==0) {
+        if(length(all.file.ti)==0) {
           message(paste("No files with time index", avg, "found for site", 
                         tmp.files[[i]]$data$siteCode,
                         "and month", tmp.files[[i]]$data$month, sep=" "))
           next
         }
+      } else {
+        all.file.ti <- 1:length(unique.files$name)
       }
       
       # select files by table
       if(tabl!="all") {
         all.file.t <- grep(paste("[.]", tabl, "[.]", sep=""), unique.files$name)
+      } else {
+        all.file.t <- 1:length(unique.files$name)
       }
 
       # no message if table has no files - prints huge numbers if e.g. downloading only a litter chem table
@@ -248,7 +252,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
           all.file.ver <- 1:length(unique.files$name)
         }
         
-        all.file <- intersect(all.file.hor, all.file.ver)
+        all.file.hv <- intersect(all.file.hor, all.file.ver)
         
         # check for no files
         if(length(all.file)==0) {
@@ -259,10 +263,12 @@ getZipUrls <- function(month.urls, avg, package, dpID,
                         ". Check available indices using getHorVer().", sep=""))
           next
         }
+      } else {
+        all.file.hv <- 1:length(unique.files$name)
       }
       
       # combine criteria
-      all.file <- base::intersect(all.file, all.file.t)
+      all.file <- base::intersect(all.file.hv, base::intersect(all.file.ti, all.file.t))
       
       # check again for no files
       if(length(all.file)==0) {
