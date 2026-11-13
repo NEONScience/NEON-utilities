@@ -17,10 +17,11 @@
 #' @param hor Horizontal location indices. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be listed. Defaults to NA, which lists all locations.
 #' @param ver Vertical location indices. Only applicable to sensor (IS) data. Only files matching BOTH hor and ver will be listed. Defaults to NA, which lists all locations.
 #' @param metadata T or F, should urls for metadata files (variables, sensor positions, etc) be included. Defaults to T.
+#' @param simplify.outputs T or F, if data queried are tabular, should the function return only the table of urls and variables files. Defaults to T; F is intended for internal use.
 #' @param include.provisional T or F, should provisional data be included in downloaded files? Defaults to F. See https://www.neonscience.org/data-samples/data-management/data-revisions-releases for details on the difference between provisional and released data.
 #' @param token User specific API token (generated within data.neonscience.org user accounts). Optional.
 #' 
-#' @return A list of two elements: (1) the set of urls matching the query; (2) the most recent variables file for the set of urls
+#' @return For remote sensing (AOP) and eddy covariance (SAE) products, a table of urls and corresponding release tags. For tabular data (IS and OS), if simplify.outputs is TRUE, a table of urls, urls for corresponding variables files, and corresponding release tags. For IS and OS data when simplify.outputs=FALSE (primarily intended for internal use), a list of five elements: (1) the set of urls matching the query; (2) the most recent variables file for the set of urls; (3) a flag indicating whether there is more than one variables file for the url set; (4) a table of urls, checksums for the files, urls pointing to the variables file matching each url, and release tag; (5) urls pointing to the unique variables files for the set.
 
 #' @export
 
@@ -36,7 +37,9 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
                        package="basic", release="current",
                        timeIndex="all", tabl="all", hor=NA, ver=NA,
                        metadata=TRUE,
-                       include.provisional=FALSE, token=NA_character_) {
+                       include.provisional=FALSE, 
+                       simplify.outputs=TRUE,
+                       token=NA_character_) {
   
   # if token is an empty string, set to NA
   if(identical(token, "")) {
@@ -120,6 +123,11 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
     relurl <- ""
   } else {
     relurl <- paste("&release=", release, sep="")
+  }
+  
+  # for AOP products, set package to basic (package is not used in AOP)
+  if((base::grepl(pattern="^DP[1-3]{1}[.]3", x=dpID) & dpID!="DP1.30012.001")) {
+    package <- "basic"
   }
   
   # check package value
@@ -283,46 +291,80 @@ queryFiles <- function(dpID, site="all", startdate=NA, enddate=NA,
   colnames(flset) <- c("url","md5","md5var","urlvar","release")
   
   flset$urlbase <- flset$url
-
-  # get most recent variables file
-  # if multiple checksums for variables files, raise a flag
-  varset <- list()
-  varfls <- base::grep(pattern="variables", x=flset$url, value=TRUE)
-  if(length(unique(flset$md5var))>1) {
-    vardiff <- TRUE
-  } else {
-    vardiff <- FALSE
-  }
-  varu <- unique(flset$md5var)
-  for(k in varu) {
-    varset[[k]] <- getRecentPublication(flset$url[which(flset$md5==k)])[[1]]
-  }
-  varfl <- getRecentPublication(varfls)[[1]]
   
-  if(isFALSE(metadata)) {
-    # subset to only the table, if requested
-    # keep variables files
-    nmInd <- base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), 
-                        x=flset$url)
-    flset <- flset[nmInd,]
-    urllst <- flset$url
-  } else {
-    urllst <- flset$url
-  }
-  # check for no data
-  if(length(urllst)==0) {
-    message(paste("No files found for query criteria in ", 
-                  package, " package", sep=""))
-    return(invisible())
-  } else {
-    # if only metadata, print message but still return the metadata files
-    if(tabl!="all" & length(base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), x=urllst))==0) {
-      message(paste("No files found for table ", tabl, ", only metadata.", sep=""))
+  # for AOP & SAE products, simplify output to just urls and release tags
+  if((base::grepl(pattern="^DP[1-3]{1}[.]3", x=dpID) & dpID!="DP1.30012.001") |
+     dpID=="DP4.00200.001") {
+    flset <- flset[,c("url","release")]
+    return(flset)
+  } else { 
+    
+    # for tabular data, simplify to urls, variables urls, and releases, if requested
+    if(isTRUE(simplify.outputs)) {
+      flset <- flset[,c("url","urlvar","release")]
+      if(isFALSE(metadata)) {
+        # subset to only data table urls, if requested
+        if(tabl!="all") {
+          nmInd <- base::grep(pattern=paste("[.]", tabl, "[.]", sep=""),
+                              x=flset$url)
+        } else {
+          nmInd <- base::grep(pattern="science_review_flags|variables|readme|sensor_positions|categoricalCodes|validation|EML", 
+                              x=flset$url, invert=TRUE)
+        }
+        flset <- flset[nmInd,]
+      }
+      return(flset)
+    
+    } else {
+      
+      # for tabular data, return urls aligned with variables files
+      # get most recent variables file
+      # if multiple checksums for variables files, raise a flag
+      varset <- list()
+      varfls <- base::grep(pattern="variables", x=flset$url, value=TRUE)
+      if(length(unique(flset$md5var))>1) {
+        vardiff <- TRUE
+      } else {
+        vardiff <- FALSE
+      }
+      varu <- unique(flset$md5var)
+      for(k in varu) {
+        varset[[k]] <- getRecentPublication(flset$url[which(flset$md5==k)])[[1]]
+      }
+      varfl <- getRecentPublication(varfls)[[1]]
+      
+      if(isFALSE(metadata)) {
+        # subset to only data table urls, if requested
+        # keep variables files
+        if(tabl!="all") {
+          nmInd <- base::grep(pattern=paste("[.]", tabl, "[.]", sep=""),
+                              x=flset$url)
+        } else {
+          nmInd <- base::grep(pattern="science_review_flags|variables|readme|sensor_positions|categoricalCodes|validation|EML", 
+                              x=flset$url, invert=TRUE)
+        }
+        flset <- flset[nmInd,]
+        urllst <- flset$url
+      } else {
+        urllst <- flset$url
+      }
+      # check for no data
+      if(length(urllst)==0) {
+        message(paste("No files found for query criteria in ", 
+                      package, " package", sep=""))
+        return(invisible())
+      } else {
+        # if only metadata, print message but still return the metadata files
+        if(tabl!="all" & length(base::grep(pattern=paste("[.]", tabl, "[.]", sep=""), x=urllst))==0) {
+          message(paste("No files found for table ", tabl, ", only metadata.", sep=""))
+        }
+      }
+      
+      # if vardiff is FALSE, only need urllst (set of urls to stack) and varfl (variables file to use)
+      # if vardiff is TRUE, need the set of all urls, including variables files
+      return(list(files=urllst, variables=varfl, varcheck=vardiff, 
+                  filesall=flset, varset=varset))
+      
     }
   }
-  
-  # if vardiff is FALSE, only need urllst (set of urls to stack) and varfl (variables file to use)
-  # if vardiff is TRUE, need the set of all urls, including variables files
-  return(list(files=urllst, variables=varfl, varcheck=vardiff, 
-              filesall=flset, varset=varset))
 }

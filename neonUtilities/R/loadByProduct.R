@@ -119,6 +119,7 @@ loadByProduct <- function(dpID, site="all", startdate=NA, enddate=NA, package="b
                       timeIndex=timeIndex, tabl=tabl, 
                       hor=hor, ver=ver, metadata=TRUE,
                       include.provisional=include.provisional, 
+                      simplify.outputs=FALSE,
                       token=token)
     out <- stackByTable(filepath=fls, savepath="envt", 
                         cloud.mode=TRUE, folder=TRUE, 

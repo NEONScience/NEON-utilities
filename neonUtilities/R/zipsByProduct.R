@@ -255,7 +255,7 @@ zipsByProduct <- function(dpID, site="all", startdate=NA, enddate=NA,
     out <- queryFiles(dpID=dpID, site=site, startdate=startdate, 
                       enddate=enddate, package=package, release=release,
                       timeIndex=avg, tabl=tabl, hor=hor, ver=ver,
-                      metadata=TRUE, 
+                      metadata=TRUE, simplify.outputs=TRUE,
                       include.provisional=include.provisional, token=token)
     return(out)
   } else {

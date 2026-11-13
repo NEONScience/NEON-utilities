@@ -109,6 +109,7 @@ datasetQuery <- function(dpID, site="all",
                        timeIndex="all", tabl=tabl, 
                        hor=NA, ver=NA, metadata=FALSE,
                        include.provisional=include.provisional, 
+                       simplify.outputs=FALSE,
                        token=token)
   
   # exit if no files (no message here because queryFiles() prints messages)
