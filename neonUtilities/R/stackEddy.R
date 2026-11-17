@@ -613,6 +613,10 @@ stackEddy <- function(filepath,
   # if processing gets this far without failing, don't fail here, just return data without objDesc table
   if(inherits(objDesc, "try-error")) {
     objDesc <- NA
+  } else {
+    names(objDesc) <- gsub(pattern="X...", 
+                           replacement="",
+                           x=names(objDesc))
   }
   varMergList[["variables"]] <- variables
   varMergList[["objDesc"]] <- objDesc
