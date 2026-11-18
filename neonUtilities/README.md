@@ -169,6 +169,17 @@ Disclaimer
 Change Log
 ----------
 
+#### 2026-09-09 v4.1.0
+Bug fixes:
+* Stacking was failing if a table did not appear in the variables file; now attempts to infer data types
+* Enabled cloud mode for large per-sample files (microbe community, reaeration, etc)
+
+Enhancements:
+* stackEddy() and footRaster() now use hdf5r instead of rhdf5, removing Bioconductor dependency
+* zipsByProduct() and loadByProduct() can now download by horizontal and vertical indices for sensor data products
+* queryFiles() can now be used for remote sensing and eddy covariance files as well as tabular files
+
+
 #### 2026-09-09 v4.0.2
 Updates:
 * Update to special handling for sensor positions files, to align with data publication updates

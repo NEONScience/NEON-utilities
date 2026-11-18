@@ -1,3 +1,18 @@
+# version 4.1.0
+
+Released 2026-11-18
+
+Bug fixes:
+* Stacking was failing if a table did not appear in the variables file; stackByTable() and loadByProduct() now attempt to infer data types in this situation, or set all fields to string if inference fails
+* Cloud mode is now enabled for large per-sample files (microbe community, reaeration, etc)
+
+Enhancements:
+* The eddy covariance functions, including stackEddy() and footRaster(), now use hdf5r instead of rhdf5 to extract data from H5 files, removing the dependency on rhdf5, a Bioconductor package
+* zipsByProduct() and loadByProduct() can now download by sets of horizontal and vertical indices for sensor data products
+* queryFiles() can now be used for remote sensing and eddy covariance files as well as tabular files
+
+
+
 # version 4.0.2
 
 Released 2026-09-09
