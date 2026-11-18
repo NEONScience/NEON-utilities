@@ -255,7 +255,7 @@ getZipUrls <- function(month.urls, avg, package, dpID,
         all.file.hv <- intersect(all.file.hor, all.file.ver)
         
         # check for no files
-        if(length(all.file)==0) {
+        if(length(all.file.hv)==0) {
           message(paste("No files with horizontal index ", hor, " and vertical index ",
                         ver, " found for site ", 
                         tmp.files[[i]]$data$siteCode,
